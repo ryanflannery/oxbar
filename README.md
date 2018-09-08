@@ -1,3 +1,10 @@
+# Status
+
+Note: This is very rough right now. I'm only publishing now to github to track
+my work work and share with a few other folk on irc who seem interested.
+You're welcome to try it out, but it's very unstable, unconfigurable, and
+rough at this point. Collaboration welcomed.
+
 # Motivation
 
 Having a small, concise, visual indicator of numerous system stats is often
