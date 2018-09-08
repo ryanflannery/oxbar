@@ -27,22 +27,25 @@ appearance) and up-to-date, thorough, documentation is mandatory.
 
 Stats currently supported are:
 
-   * CPUs usage & breakdown (historical)
-   * Memory usage & breakdown (historical)
-   * Netowrk usage & breakdown (historical)
-   * PF usage & breakdown (historical)
-   * Number of processes (historical)
-   * Battery/AC status (current only)
-   * Volume/mute status (current only)
-   * Date/time (current only... obviously)
+   * Battery/AC status 
+   * Volume level (mute status forthcoming - need to dive into mixerctl(2))
+   * Number of processes (current total # processes only as of now)
+   * CPUs usage & breakdown (ONLY idle/cpu supported now, have other stats but not plotted yet)
+   * Memory usage & breakdown (current only as of now)
 
 # Usage
 
-# Status
+No configuration options yet - only in code. This will likely be added last,
+after I determine how best to query and display all information.
 
 # Plan / TODO
 
+Roughly in order or my priority...
+
+   * Add plots of historical memory & cpu (support historical plot generically)
+   * Support showing date/time
    * Determine "mute" status in volume (stats/volume.c)...this has proven challenging
-   * Support configuration (time span, XXX)
-   * Determine aesthetic configuration options
+   * Support configuration of the various options & aesthetics
+   * Add module: netowrk usage & breakdown (with history)
+   * Add module: PF usage & breakdown (with history)
 
