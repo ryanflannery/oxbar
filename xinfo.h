@@ -13,6 +13,7 @@ typedef struct xinfo {
 
    uint32_t       bar_width,  bar_height;
    uint32_t       bar_x,      bar_y;
+   uint32_t       bar_padding;
 
    double         font_size;
 
@@ -34,6 +35,11 @@ void setup_xfont(xinfo_t *x, const char *font_description, double font_size);
 
 int  window_draw_text(xinfo_t *xinfo, const char *color, double x, double y, const char *text);
 void window_draw_top_header(xinfo_t *xinfo, const char *color, double x1, double x2);
+
+int  window_draw_vertical_stack_bar(
+      xinfo_t *xinfo,
+      double x,
+      double pct);
 
 void destroy_x(xinfo_t *x);
 void clear_background(xinfo_t *x);

@@ -52,7 +52,7 @@ fmtmemory(int kbytes)
    }
 
    char *ret;
-   if (-1 == asprintf(&ret, "%6.1lf%s", dbytes, suffixes[step]))
+   if (-1 == asprintf(&ret, "%.1lf%s", dbytes, suffixes[step]))
       err(1, "%s: asprintf failed for %d", __FUNCTION__, kbytes);
 
    return ret;

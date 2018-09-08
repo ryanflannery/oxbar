@@ -263,11 +263,41 @@ window_draw_top_header(xinfo_t *xinfo, const char *color, double x1, double x2)
    double r, g, b, a;
    hex2rgba(color, &r, &g, &b, &a);
 
-   cairo_set_source_rgba(xinfo->cairo, r, g, b, 0.7);
-   cairo_set_line_width(xinfo->cairo, 8);
+   cairo_set_source_rgba(xinfo->cairo, r, g, b, 0.7); /* TODO config 0.7 */
+   cairo_set_line_width(xinfo->cairo, xinfo->bar_padding);
    cairo_move_to(xinfo->cairo, x1, 0);
    cairo_line_to(xinfo->cairo, x2, 0);
    cairo_stroke(xinfo->cairo);
+}
+
+int
+window_draw_vertical_stack_bar(
+      xinfo_t *xinfo,
+      double x,
+      double pct)
+{
+   double width = 7.0; /* TODO configurable */
+   double r, g, b, a;
+
+   hex2rgba("dc322f", &r, &g, &b, &a);
+   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
+   cairo_rectangle(xinfo->cairo,
+         x,
+         xinfo->bar_padding,
+         width, xinfo->font_size);
+   cairo_fill(xinfo->cairo);
+
+   double height = (pct/100.0) * xinfo->font_size;
+
+   hex2rgba("859900", &r, &g, &b, &a);
+   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
+   cairo_rectangle(xinfo->cairo,
+         x,
+         xinfo->bar_padding + (xinfo->font_size - height),
+         width, height);
+   cairo_fill(xinfo->cairo);
+
+   return width;
 }
 
 void
