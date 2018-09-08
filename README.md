@@ -30,7 +30,8 @@ Stats currently supported are:
    * Battery/AC status 
    * Volume level (mute status forthcoming - need to dive into mixerctl(2))
    * Number of processes (current total # processes only as of now)
-   * CPUs usage & breakdown (ONLY idle/cpu supported now, have other stats but not plotted yet)
+   * CPUs usage & breakdown (ONLY idle/cpu supported now, have other stats but
+     not plotted yet)
    * Memory usage & breakdown (current only as of now)
 
 # Usage
@@ -44,9 +45,12 @@ Roughly in order or my priority...
 
    * Add plots of historical memory & cpu (support historical plot generically)
    * Support showing date/time
-   * Determine "mute" status in volume (stats/volume.c)...this has proven challenging
+   * Determine "mute" status in volume (stats/volume.c)...this has proven
+     challenging
    * Support configuration of the various options & aesthetics
    * Add module: support named hw.sensor mibs and their values in the display
    * Add module: netowrk usage & breakdown (with history)
    * Add module: PF usage & breakdown (with history)
+   * Use images for stats (like volume/battery/memory/etc)...scaling & licensing
+     here are an issue
 
