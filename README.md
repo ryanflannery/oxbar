@@ -46,6 +46,7 @@ Roughly in order or my priority...
    * Support showing date/time
    * Determine "mute" status in volume (stats/volume.c)...this has proven challenging
    * Support configuration of the various options & aesthetics
+   * Add module: support named hw.sensor mibs and their values in the display
    * Add module: netowrk usage & breakdown (with history)
    * Add module: PF usage & breakdown (with history)
 
