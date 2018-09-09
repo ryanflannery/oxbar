@@ -2,6 +2,7 @@
 #define UI_H
 
 #include "xcore.h"
+#include "histogram.h"
 
 typedef struct oxbarui {
    /* not packed */
@@ -38,6 +39,12 @@ ui_draw_vertical_stack_bar(
       oxbarui_t *ui,
       double x,
       double pct);
+
+uint32_t
+ui_draw_histogram(
+      oxbarui_t *ui,
+      histogram_t *h,
+      double x);
 
 void
 hex2rgba(const char *s, double *r, double *g, double *b, double *a);

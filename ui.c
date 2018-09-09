@@ -155,3 +155,22 @@ ui_draw_vertical_stack_bar(
 
    return width;
 }
+
+uint32_t
+ui_draw_histogram(oxbarui_t *ui, histogram_t *h, double x)
+{
+   double r, g, b, a;
+   int width = h->nsamples;
+
+   /* paint green to start */
+   hex2rgba("859900", &r, &g, &b, &a);
+   cairo_set_source_rgba(ui->xinfo->cairo, r, g, b, a);
+   cairo_rectangle(ui->xinfo->cairo,
+         x,
+         ui->xinfo->padding,
+         width,
+         ui->xinfo->fontpt);
+   cairo_fill(ui->xinfo->cairo);
+
+   return width;
+}
