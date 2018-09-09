@@ -5,23 +5,15 @@ my work work and share with a few other folk on irc who seem interested.
 You're welcome to try it out, but it's very unstable, unconfigurable, and
 rough at this point. Collaboration welcomed.
 
+There is much refactoring needed -- this is known. I'm still organizing key
+features and really building a PoC at this point.
+
 # Motivation
 
 Having a small, concise, visual indicator of numerous system stats is often
 useful on a workstation for developers. While there are many options for Linux,
 there are few that work well with OpenBSD natively. This project aims to offer
 a solution specifically for OpenBSD.
-
-# Goals
-
-Proivde a native, well supported, X11 stats bar for OpenBSD with that can
-**quickly and succinctly** summarize key stats of a workstation that a
-developer may be interested in. It **should not aim to answer every question**,
-but rather provide a clean, easy-to-read visualization of possible issues and
-where to investigate further.
-
-It should support configuration/knobs where appropriate (say
-appearance) and up-to-date, thorough, documentation is mandatory.
 
 # Samples & Features
 
