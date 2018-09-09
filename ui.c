@@ -129,7 +129,6 @@ ui_draw_vertical_stack_bar(
       double x,
       double pct)
 {
-   return 0;
    double width = 7.0; /* TODO configurable width */
    double r, g, b, a;
 
@@ -138,7 +137,7 @@ ui_draw_vertical_stack_bar(
    cairo_rectangle(ui->xinfo->cairo,
          x,
          ui->xinfo->padding,
-         ui->xinfo->w,
+         width,
          ui->xinfo->fontpt);
    cairo_fill(ui->xinfo->cairo);
 

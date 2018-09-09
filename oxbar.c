@@ -10,14 +10,6 @@
 #include "histogram.h"
 #include "stats/stats.h"
 
-void
-histo_test()
-{
-   histogram_t *h = histogram_init(5, 10);
-   histogram_print(h);
-   histogram_free(h);
-}
-
 int
 main ()
 {
@@ -131,7 +123,7 @@ main ()
          x += ui_draw_text(ui, fgcolor, x, y, "MEMORY:");
          x += s;
          /*
-         x += histogram_draw(ui, hist_memory, x);
+         x += ui_draw_histogram(ui, hist_memory, x);
          x += s;
          */
          x += ui_draw_text(ui, "dc322f", x, y, MEMORY.str_active);
