@@ -64,7 +64,7 @@ main ()
                x, y,
                BATTERY.plugged_in ? "AC:" : "BAT:");
          x += s;
-         x += ui_draw_vertical_stack_bar(ui, x, BATTERY.charge_pct);
+         x += ui_draw_vertical_stack_bar(ui, 7, x, BATTERY.charge_pct);
          x += s;
          x += ui_draw_text(ui, fgcolor, x, y, BATTERY.str_charge_pct);
          if (-1 != BATTERY.minutes_remaining) {
@@ -91,7 +91,7 @@ main ()
          x += ui_draw_text(ui, fgcolor, x, y, "VOLUME:");
          x += s;
          if (VOLUME.left_pct == VOLUME.right_pct) {
-            x += ui_draw_vertical_stack_bar(ui, x, VOLUME.left_pct);
+            x += ui_draw_vertical_stack_bar(ui, 7, x, VOLUME.left_pct);
             x += s;
             x += ui_draw_text(ui, fgcolor, x, y, VOLUME.str_left_pct);
          } else {
@@ -114,18 +114,16 @@ main ()
 
       if (MEMORY.is_setup) {
          histogram_update(hist_memory, (double[]) {
-               MEMORY.active_pct,
+               MEMORY.free_pct,
                MEMORY.total_pct,
-               MEMORY.free_pct
+               MEMORY.active_pct
                });
          histogram_print(hist_memory);
          sbarx = x;
          x += ui_draw_text(ui, fgcolor, x, y, "MEMORY:");
          x += s;
-         /*
          x += ui_draw_histogram(ui, hist_memory, x);
          x += s;
-         */
          x += ui_draw_text(ui, "dc322f", x, y, MEMORY.str_active);
          x += s;
          x += ui_draw_text(ui, fgcolor, x, y, "active");

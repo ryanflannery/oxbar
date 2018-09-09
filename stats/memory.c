@@ -66,7 +66,7 @@ memory_update()
    /* update mem percents */
    MEMORY.active_pct = (float)MEMORY.active / (float)total_mem * 100.0;
    MEMORY.free_pct   = (float)MEMORY.free   / (float)total_mem * 100.0;
-   MEMORY.total_pct  = (float)MEMORY.free   / (float)total_mem * 100.0;
+   MEMORY.total_pct  = (float)MEMORY.total  / (float)total_mem * 100.0;
 
    /* update mem strings */
    if (NULL != MEMORY.str_active)   free(MEMORY.str_active);

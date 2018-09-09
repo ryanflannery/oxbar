@@ -37,6 +37,7 @@ ui_draw_top_header(
 uint32_t
 ui_draw_vertical_stack_bar(
       oxbarui_t *ui,
+      double width,
       double x,
       double pct);
 
