@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "xinfo.h"
+#include "xcore.h"
 
 xcb_screen_t*
 get_xscreen(xcb_connection_t *c, int screen)
@@ -34,37 +34,7 @@ get_xvisual(xcb_screen_t *screen)
 }
 
 void
-hex2rgba(const char *s, double *r, double *g, double *b, double *a)
-{
-   unsigned int ir, ig, ib, ia;
-
-   if ('#' == s[0])
-      s++;
-
-   switch (strlen(s)) {
-      case 6:
-         if (3 != sscanf(s, "%02x%02x%02x", &ir, &ig, &ib))
-            errx(1, "%s: malformed rgb color '%s'", __FUNCTION__, s);
-
-         ia = 255;
-         break;
-      case 8:
-         if (4 != sscanf(s, "%02x%02x%02x%02x", &ir, &ig, &ib, &ia))
-            errx(1, "%s: malformed rgba color '%s'", __FUNCTION__, s);
-
-         break;
-      default:
-         errx(1, "%s: malformed color '%s'", __FUNCTION__, s);
-   }
-
-   *r = (double)ir / 255.0;
-   *g = (double)ig / 255.0;
-   *b = (double)ib / 255.0;
-   *a = (double)ia / 255.0;
-}
-
-void
-setup_x_connection_screen_visual(xinfo_t *x)
+xcore_setup_x_connection_screen_visual(xinfo_t *x)
 {
    int   default_screen;
 
@@ -85,13 +55,13 @@ setup_x_connection_screen_visual(xinfo_t *x)
 }
 
 void
-setup_x_window(xinfo_t *xinfo, const char *name,
+xcore_setup_x_window(xinfo_t *xinfo, const char *name,
       uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
-   xinfo->bar_x = x;
-   xinfo->bar_y = y;
-   xinfo->bar_width = w;
-   xinfo->bar_height = h;
+   xinfo->x = x;
+   xinfo->y = y;
+   xinfo->w = w;
+   xinfo->h = h;
 
    xinfo->xwindow = xcb_generate_id(xinfo->xcon);
    xcb_create_window(
@@ -99,10 +69,10 @@ setup_x_window(xinfo_t *xinfo, const char *name,
          XCB_COPY_FROM_PARENT,
          xinfo->xwindow,
          xinfo->xscreen->root,
-         xinfo->bar_x,
-         xinfo->bar_y,
-         xinfo->bar_width,
-         xinfo->bar_height,
+         xinfo->x,
+         xinfo->y,
+         xinfo->w,
+         xinfo->h,
          0, /* border width */
          XCB_WINDOW_CLASS_INPUT_OUTPUT,
          xinfo->xscreen->root_visual,
@@ -135,7 +105,7 @@ setup_x_window(xinfo_t *xinfo, const char *name,
  *                                                                   -ryan
  */
 void
-setup_x_wm_hints(xinfo_t *x)
+xcore_setup_x_wm_hints(xinfo_t *x)
 {
    enum {
       NET_WM_XINFO_TYPE,
@@ -187,9 +157,9 @@ setup_x_wm_hints(xinfo_t *x)
    };
    unsigned long struts[12] = { 0 };
 
-   struts[top] = x->bar_y + x->bar_height;
-   struts[top_start_x] = x->bar_x;
-   struts[top_end_x] = x->bar_x + x->bar_width;
+   struts[top] = x->y + x->h;
+   struts[top_start_x] = x->x;
+   struts[top_end_x] = x->x + x->w;
    /* TODO - see xstatbar.c - need more work here */
 
 	xcb_change_property(x->xcon, XCB_PROP_MODE_REPLACE, x->xwindow,
@@ -213,23 +183,24 @@ setup_x_wm_hints(xinfo_t *x)
 }
 
 void
-setup_cairo(xinfo_t *x)
+xcore_setup_cairo(xinfo_t *x)
 {
    x->csurface = cairo_xcb_surface_create(
          x->xcon,
          x->xwindow,
          x->xvisual,
-         x->bar_width,
-         x->bar_height
+         x->w,
+         x->h
          );
 
    x->cairo = cairo_create(x->csurface);
 }
 
 void
-setup_xfont(xinfo_t *x, const char *font_description, double font_size)
+xcore_setup_xfont(xinfo_t *x, const char *font_description, double font_size)
 {
-   x->font_size = font_size;
+   x->fontpt = font_size;
+   x->font   = font_description;
 
    cairo_select_font_face(
          x->cairo,
@@ -238,70 +209,11 @@ setup_xfont(xinfo_t *x, const char *font_description, double font_size)
          CAIRO_FONT_WEIGHT_NORMAL
          );
 
-   cairo_set_font_size(x->cairo, x->font_size);
-}
-
-int
-window_draw_text(xinfo_t *xinfo, const char *color, double x, double y, const char *text)
-{
-   double r, g, b, a;
-   hex2rgba(color, &r, &g, &b, &a);
-
-   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
-   cairo_move_to(xinfo->cairo, x, y);
-   cairo_show_text(xinfo->cairo, text);
-
-   cairo_text_extents_t extents;
-   cairo_text_extents(xinfo->cairo, text, &extents);
-
-   return extents.x_advance;
+   cairo_set_font_size(x->cairo, x->fontpt);
 }
 
 void
-window_draw_top_header(xinfo_t *xinfo, const char *color, double x1, double x2)
-{
-   double r, g, b, a;
-   hex2rgba(color, &r, &g, &b, &a);
-
-   cairo_set_source_rgba(xinfo->cairo, r, g, b, 0.7); /* TODO config 0.7 */
-   cairo_set_line_width(xinfo->cairo, xinfo->bar_padding);
-   cairo_move_to(xinfo->cairo, x1, 0);
-   cairo_line_to(xinfo->cairo, x2, 0);
-   cairo_stroke(xinfo->cairo);
-}
-
-int
-window_draw_vertical_stack_bar(
-      xinfo_t *xinfo,
-      double x,
-      double pct)
-{
-   double width = 7.0; /* TODO configurable */
-   double r, g, b, a;
-
-   hex2rgba("dc322f", &r, &g, &b, &a);
-   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
-   cairo_rectangle(xinfo->cairo,
-         x,
-         xinfo->bar_padding,
-         width, xinfo->font_size);
-   cairo_fill(xinfo->cairo);
-
-   double height = (pct/100.0) * xinfo->font_size;
-
-   hex2rgba("859900", &r, &g, &b, &a);
-   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
-   cairo_rectangle(xinfo->cairo,
-         x,
-         xinfo->bar_padding + (xinfo->font_size - height),
-         width, height);
-   cairo_fill(xinfo->cairo);
-
-   return width;
-}
-
-void
-destroy_x(xinfo_t *x)
+xcore_destroy_x(xinfo_t *x)
 {
    cairo_destroy(x->cairo);
    cairo_surface_destroy(x->csurface);
@@ -309,7 +221,7 @@ destroy_x(xinfo_t *x)
 }
 
 void
-clear_background(xinfo_t *x)
+xcore_clear_background(xinfo_t *x)
 {
    cairo_paint(x->cairo);
 }
