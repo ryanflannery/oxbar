@@ -45,6 +45,9 @@ main ()
    double sbarx;
 
    histogram_t *hist_memory = histogram_init(30, 3);
+   histogram_t *hist_cpu[CPUS.ncpu];
+   for (int i = 0; i < CPUS.ncpu; i++)
+      hist_cpu[i] = histogram_init(30, CPUSTATES);
 
    while (1) {
       x = bar_padding;
@@ -118,7 +121,6 @@ main ()
                MEMORY.total_pct,
                MEMORY.active_pct
                });
-         histogram_print(hist_memory);
          sbarx = x;
          x += ui_draw_text(ui, fgcolor, x, y, "MEMORY:");
          x += s;
@@ -144,6 +146,15 @@ main ()
          x += ui_draw_text(ui, fgcolor, x, y, "CPUS:");
          x += s;
          for (int i = 0; i < CPUS.ncpu; i++) {
+            histogram_update(hist_cpu[i], (double[]) {
+                  CPUS.cpus[i].percentages[CP_IDLE],
+                  CPUS.cpus[i].percentages[CP_INTR],
+                  CPUS.cpus[i].percentages[CP_SYS],
+                  CPUS.cpus[i].percentages[CP_NICE],
+                  CPUS.cpus[i].percentages[CP_USER]
+                  });
+            x += ui_draw_histogram(ui, hist_cpu[i], x);
+            x += s;
             x += ui_draw_text(ui, fgcolor, x, y,
                   CPUS.cpus[i].str_percentages[CP_IDLE]);
             x += s;

@@ -162,16 +162,19 @@ ui_draw_vertical_stack(
       double       width,
       size_t       nvalues,
       const char **colors,
-      double      *values)
+      double      *percents)
 {
    double r, g, b, a;
    size_t i;
    double offset = 0;
 
    for (i = 0; i < nvalues; i++) {
+      if (0.0 == percents[i])
+         continue;
+
       hex2rgba(colors[i], &r, &g, &b, &a);
       cairo_set_source_rgba(ui->xinfo->cairo, r, g, b, a);
-      double height = values[i] / 100.0 * ui->xinfo->fontpt;
+      double height = percents[i] / 100.0 * ui->xinfo->fontpt;
       cairo_rectangle(ui->xinfo->cairo,
             x,
             ui->xinfo->padding + offset,
@@ -202,9 +205,13 @@ ui_draw_histogram(oxbarui_t *ui, histogram_t *h, double x)
 
    /* TODO need to configure/pass these somehow */
    static const char *colors[] = {
-      "00ff00",
-      "ffff00",
-      "ff0000"
+      "859900",
+      "bbbb00",
+      "dc322f",
+
+      "ff0000",
+      "00ffff",
+      "0000ff"
    };
 
    size_t count, i;

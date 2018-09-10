@@ -15,7 +15,7 @@ typedef struct cpu_states {
     *    1  CP_NICE  nice
     *    2  CP_SYS   system
     *    3  CP_INTR  interrupt
-    *    4  CP_IDEL  idle
+    *    4  CP_IDLL  idle
     */
    float       percentages[CPUSTATES];       /* % time spent in each */
    char       *str_percentages[CPUSTATES];   /* str versions of the above */
