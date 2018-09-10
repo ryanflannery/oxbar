@@ -45,10 +45,10 @@ main ()
 
    double sbarx;
 
-   histogram_t *hist_memory = histogram_init(30, 3);
+   histogram_t *hist_memory = histogram_init(60, 3);
    histogram_t *hist_cpu[CPUS.ncpu];
    for (int i = 0; i < CPUS.ncpu; i++)
-      hist_cpu[i] = histogram_init(30, CPUSTATES);
+      hist_cpu[i] = histogram_init(60, CPUSTATES);
 
    while (1) {
       x = bar_padding;
