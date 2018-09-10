@@ -161,38 +161,6 @@ ui_draw_top_header(
 }
 
 uint32_t
-ui_draw_vertical_stack_bar(
-      oxbarui_t *ui,
-      double width,
-      double x,
-      double pct)
-{
-   double r, g, b, a;
-
-   hex2rgba("dc322f", &r, &g, &b, &a); /* TODO configurable color */
-   cairo_set_source_rgba(ui->xinfo->cairo, r, g, b, a);
-   cairo_rectangle(ui->xinfo->cairo,
-         x,
-         ui->xinfo->padding,
-         width,
-         ui->xinfo->fontpt);
-   cairo_fill(ui->xinfo->cairo);
-
-   double height = (pct/100.0) * ui->xinfo->fontpt;
-
-   hex2rgba("859900", &r, &g, &b, &a); /* TODO configurable color */
-   cairo_set_source_rgba(ui->xinfo->cairo, r, g, b, a);
-   cairo_rectangle(ui->xinfo->cairo,
-         x,
-         ui->xinfo->padding + (ui->xinfo->fontpt - height),
-         width,
-         height);
-   cairo_fill(ui->xinfo->cairo);
-
-   return width;
-}
-
-uint32_t
 ui_draw_vertical_stack(
       oxbarui_t   *ui,
       uint32_t     x,
@@ -225,13 +193,13 @@ ui_draw_vertical_stack(
 }
 
 uint32_t
-ui_draw_histogram(oxbarui_t *ui, histogram_t *h, double x)
+ui_draw_histogram(oxbarui_t *ui, double x, const char **colors, histogram_t *h)
 {
    double r, g, b, a;
    int width = h->nsamples;
 
-   /* paint green to start */
-   hex2rgba("535353", &r, &g, &b, &a);
+   /* paint grey background to start */
+   hex2rgba("535353", &r, &g, &b, &a); /* TODO config */
    cairo_set_source_rgba(ui->xinfo->cairo, r, g, b, a);
    cairo_rectangle(ui->xinfo->cairo,
          x,
@@ -239,17 +207,6 @@ ui_draw_histogram(oxbarui_t *ui, histogram_t *h, double x)
          width,
          ui->xinfo->fontpt);
    cairo_fill(ui->xinfo->cairo);
-
-   /* TODO need to configure/pass these somehow */
-   static const char *colors[] = {
-      "859900",
-      "bbbb00",
-      "dc322f",
-
-      "ff0000",
-      "00ffff",
-      "0000ff"
-   };
 
    size_t count, i;
    for (count = 0, i = h->current + 1; count < h->nsamples; count++, i++) {

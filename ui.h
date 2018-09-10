@@ -45,17 +45,20 @@ ui_draw_top_header(
       double x1, double x2);
 
 uint32_t
-ui_draw_vertical_stack_bar(
-      oxbarui_t *ui,
-      double width,
-      double x,
-      double pct);
+ui_draw_vertical_stack(
+      oxbarui_t   *ui,
+      uint32_t     x,
+      double       width,
+      size_t       nvalues,
+      const char **colors,
+      double      *percents);
 
 uint32_t
 ui_draw_histogram(
       oxbarui_t *ui,
-      histogram_t *h,
-      double x);
+      double x,
+      const char **colors,
+      histogram_t *h);
 
 void
 hex2rgba(const char *s, double *r, double *g, double *b, double *a);

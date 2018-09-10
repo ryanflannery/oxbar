@@ -13,7 +13,7 @@
 int
 main ()
 {
-   /* inputs */
+   /* inputs :: these will be made configurable */
    const char *bgcolor  = "1c1c1c"; /*"#212429";*/
    const char *fgcolor  = "93a1a1"; /*"839496"; "#cc5500";*/
    const char *font     = "DejaVu Sans";
@@ -24,8 +24,26 @@ main ()
    int bar_width        = 1500;  /* -1 means "display width"   */
    int bar_height       = -1;    /* determined by font size (is that right?) */
 
-   oxbarui_t *ui;
-   ui = ui_create(
+   static const char *single_bar_colors[] = {   /* volume + battery */
+      "dc322f",
+      "859900"
+   };
+
+   static const char *memory_bar_colors[] = {
+      "859900",
+      "bbbb00",
+      "dc322f"
+   };
+
+   static const char *cpu_bar_colors[] = {
+      "859900",   /* idle */
+      "d33682",   /* interrupt */
+      "b58900",   /* sys  */
+      "2aa198",   /* nice */
+      "dc322f"    /* user */
+   };
+
+   oxbarui_t *ui = ui_create(
          getprogname(),
          bar_x, bar_y,
          bar_width, bar_height,
@@ -45,10 +63,18 @@ main ()
 
    double sbarx;
 
+   /* initialize histograms
+    * i'm thinking more and more these should be moved to a "widget" library...
+    * the idea being xcore.* remains what it does, ui.* becomes drawing
+    * primitives (drawing text/lines/bars/etc) and then a "widgets.*" module
+    * gets created to handle rendering and possibly state (like a histogram).
+    * Still chewing.
+    */
    histogram_t *hist_memory = histogram_init(60, 3);
    histogram_t *hist_cpu[CPUS.ncpu];
    for (int i = 0; i < CPUS.ncpu; i++)
       hist_cpu[i] = histogram_init(60, CPUSTATES);
+
 
    while (1) {
       x = bar_padding;
@@ -63,7 +89,9 @@ main ()
                x, y,
                BATTERY.plugged_in ? "AC:" : "BAT:");
          x += s;
-         x += ui_draw_vertical_stack_bar(ui, 7, x, BATTERY.charge_pct);
+         x += ui_draw_vertical_stack(ui, x, 7, 2,
+               single_bar_colors,
+               (double[]){100.0 - BATTERY.charge_pct, BATTERY.charge_pct});
          x += s;
          x += ui_draw_text(ui, fgcolor, x, y, BATTERY.str_charge_pct);
          if (-1 != BATTERY.minutes_remaining) {
@@ -90,7 +118,9 @@ main ()
          x += ui_draw_text(ui, fgcolor, x, y, "VOLUME:");
          x += s;
          if (VOLUME.left_pct == VOLUME.right_pct) {
-            x += ui_draw_vertical_stack_bar(ui, 7, x, VOLUME.left_pct);
+            x += ui_draw_vertical_stack(ui, x, 7, 2,
+                  single_bar_colors,
+                  (double[]){100.0 - VOLUME.left_pct, VOLUME.left_pct});
             x += s;
             x += ui_draw_text(ui, fgcolor, x, y, VOLUME.str_left_pct);
          } else {
@@ -120,7 +150,7 @@ main ()
          sbarx = x;
          x += ui_draw_text(ui, fgcolor, x, y, "MEMORY:");
          x += s;
-         x += ui_draw_histogram(ui, hist_memory, x);
+         x += ui_draw_histogram(ui, x, memory_bar_colors, hist_memory);
          x += s;
          x += ui_draw_text(ui, "dc322f", x, y, MEMORY.str_active);
          x += s;
@@ -149,7 +179,7 @@ main ()
                   CPUS.cpus[i].percentages[CP_NICE],
                   CPUS.cpus[i].percentages[CP_USER]
                   });
-            x += ui_draw_histogram(ui, hist_cpu[i], x);
+            x += ui_draw_histogram(ui, x, cpu_bar_colors, hist_cpu[i]);
             x += s;
             x += ui_draw_text(ui, fgcolor, x, y,
                   CPUS.cpus[i].str_percentages[CP_IDLE]);
