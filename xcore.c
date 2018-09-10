@@ -55,8 +55,11 @@ xcore_setup_x_connection_screen_visual(xinfo_t *x)
 }
 
 void
-xcore_setup_x_window(xinfo_t *xinfo, const char *name,
-      uint32_t x, uint32_t y, uint32_t w, uint32_t h)
+xcore_setup_x_window(
+      xinfo_t *xinfo,
+      const char *name,
+      uint32_t x, uint32_t y,
+      uint32_t w, uint32_t h)
 {
    xinfo->x = x;
    xinfo->y = y;
@@ -118,7 +121,7 @@ xcore_setup_x_wm_hints(xinfo_t *x)
       NET_WM_STATE_ABOVE
    };
 
-   const char *atoms[] = {
+   static const char *atoms[] = {
       "_NET_WM_XINFO_TYPE",
       "_NET_WM_XINFO_TYPE_DOCK",
       "_NET_WM_DESKTOP",
@@ -185,19 +188,27 @@ xcore_setup_x_wm_hints(xinfo_t *x)
 void
 xcore_setup_cairo(xinfo_t *x)
 {
-   x->csurface = cairo_xcb_surface_create(
+   x->surface = cairo_xcb_surface_create(
          x->xcon,
          x->xwindow,
          x->xvisual,
          x->w,
-         x->h
-         );
+         x->h);
 
-   x->cairo = cairo_create(x->csurface);
+   x->dbuffer = cairo_surface_create_similar(
+         x->surface,
+         CAIRO_CONTENT_COLOR_ALPHA,
+         x->w,
+         x->h);
+
+   x->cairo = cairo_create(x->surface);
 }
 
 void
-xcore_setup_xfont(xinfo_t *x, const char *font_description, double font_size)
+xcore_setup_xfont(
+      xinfo_t *x,
+      const char *font_description,
+      double font_size)
 {
    x->fontpt = font_size;
    x->font   = font_description;
@@ -213,15 +224,10 @@ xcore_setup_xfont(xinfo_t *x, const char *font_description, double font_size)
 }
 
 void
-xcore_destroy_x(xinfo_t *x)
+xcore_destroy(xinfo_t *x)
 {
+   cairo_surface_destroy(x->surface);
+   cairo_surface_destroy(x->dbuffer);
    cairo_destroy(x->cairo);
-   cairo_surface_destroy(x->csurface);
    xcb_disconnect(x->xcon);
-}
-
-void
-xcore_clear_background(xinfo_t *x)
-{
-   cairo_paint(x->cairo);
 }

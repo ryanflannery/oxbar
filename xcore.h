@@ -26,17 +26,25 @@ typedef struct xinfo {
    xcb_drawable_t    xwindow;    /* oxbar xwindow                    */
    xcb_visualtype_t *xvisual;    /* oxbar window's visual            */
    cairo_t          *cairo;      /* core ciaro object for rendering  */
-   cairo_surface_t  *csurface;   /* core ciaro surface mapped to win */
+   cairo_surface_t  *surface;    /* core ciaro surface mapped to X   */
+   cairo_surface_t  *dbuffer;
 } xinfo_t;
 
 void xcore_setup_x_connection_screen_visual(xinfo_t *x);
-void xcore_setup_x_window(xinfo_t *xinfo, const char *name,
-      uint32_t x, uint32_t y, uint32_t w, uint32_t h);
-void xcore_setup_x_wm_hints(xinfo_t *x);
-void xcore_setup_cairo(xinfo_t *x);
-void xcore_setup_xfont(xinfo_t *x, const char *font_description, double font_size);
 
-void xcore_clear_background(xinfo_t *x);
-void xcore_destroy_x(xinfo_t *x);
+void xcore_setup_x_window(
+      xinfo_t *xinfo,
+      const char *name,          /* name of window (in x/WM world    */
+      uint32_t x, uint32_t y,    /* (x,y) of top-left window pixel   */
+      uint32_t w, uint32_t h);   /* width x height in window pixels  */
+
+void xcore_setup_x_wm_hints(xinfo_t *x);  /* dragons lurk here       */
+
+void xcore_setup_cairo(xinfo_t *x);
+void xcore_setup_xfont(xinfo_t *x,
+   const char *font_description, /* human readable font description  */
+   double font_size);            /* font point size (eg. 12.0, 16.0) */
+
+void xcore_destroy(xinfo_t *x);
 
 #endif

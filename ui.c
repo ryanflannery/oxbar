@@ -45,7 +45,9 @@ ui_create(
       int         height,
       int         padding,
       double      fontpt,
-      const char *font
+      const char *font,
+      const char *bgcolor,
+      const char *fgcolor
       )
 {
    oxbarui_t *ui = malloc(sizeof(oxbarui_t));
@@ -55,6 +57,11 @@ ui_create(
    ui->xinfo = malloc(sizeof(xinfo_t));
    if (NULL == ui->xinfo)
       err(1, "%s: couldn't malloc xinfo", __FUNCTION__);
+
+   ui->bgcolor = strdup(bgcolor);
+   ui->fgcolor = strdup(fgcolor);
+   if (NULL == ui->bgcolor || NULL == ui->fgcolor)
+      err(1, "%s: strdup failed", __FUNCTION__);
 
    /* XXX These need to be done in a specific order */
    xcore_setup_x_connection_screen_visual(ui->xinfo);
@@ -81,10 +88,40 @@ ui_create(
 
    /* now map the window & do an initial paint */
    xcb_map_window(ui->xinfo->xcon, ui->xinfo->xwindow);
-   cairo_surface_flush(ui->xinfo->csurface);
-   xcb_flush(ui->xinfo->xcon);
 
    return ui;
+}
+
+void
+ui_destroy(oxbarui_t *ui)
+{
+   free(ui->bgcolor);
+   free(ui->fgcolor);
+   xcore_destroy(ui->xinfo);
+   free(ui->xinfo);
+   free(ui);
+}
+
+void
+ui_clear(oxbarui_t *ui)
+{
+   double r, g, b, a;
+
+   hex2rgba(ui->bgcolor, &r, &g, &b, &a);
+   cairo_push_group(ui->xinfo->cairo);
+   cairo_set_source_rgba(ui->xinfo->cairo, r, g, b, a);
+   cairo_paint(ui->xinfo->cairo);
+
+}
+
+void
+ui_flush(oxbarui_t *ui)
+{
+   cairo_pop_group_to_source(ui->xinfo->cairo);
+   cairo_paint(ui->xinfo->cairo);
+
+   cairo_surface_flush(ui->xinfo->surface);
+   xcb_flush(ui->xinfo->xcon);
 }
 
 uint32_t

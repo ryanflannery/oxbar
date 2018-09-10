@@ -31,7 +31,8 @@ main ()
          bar_width, bar_height,
          bar_padding,
          font_size,
-         font
+         font,
+         bgcolor, fgcolor
          );
 
    stats_init();
@@ -53,12 +54,7 @@ main ()
       x = bar_padding;
       stats_update();
 
-      double r, g, b, a;
-      hex2rgba(bgcolor, &r, &g, &b, &a);
-      cairo_set_source_rgba(ui->xinfo->cairo, r, g, b, a);  /* FIXME */
-      xcore_clear_background(ui->xinfo); /* FIXME */
-      hex2rgba(fgcolor, &r, &g, &b, &a);
-      cairo_set_source_rgba(ui->xinfo->cairo, r, g, b, a); /* FIXME */
+      ui_clear(ui);
 
       if (BATTERY.is_setup) {
          sbarx = x;
@@ -75,7 +71,7 @@ main ()
             x += ui_draw_text(ui, fgcolor, x, y, BATTERY.str_time_remaining);
          }
 
-         /*
+         /* TODO keeping for posterity - my attempt at rendering an image
          double scale = 0.65;
          cairo_surface_t *png = cairo_image_surface_create_from_png("battery_charging.png");
          cairo_scale(xinfo.cairo, scale, scale);
@@ -163,15 +159,14 @@ main ()
          x += p;
       }
 
-      cairo_surface_flush(ui->xinfo->csurface);
-      xcb_flush(ui->xinfo->xcon);
+      ui_flush(ui);
 
       sleep(1);
    }
 
    histogram_free(hist_memory);
    stats_close();
-   xcore_destroy_x(ui->xinfo);
+   ui_destroy(ui);
 
    return 0;
 }

@@ -6,7 +6,10 @@
 
 typedef struct oxbarui {
    /* not packed */
-   xinfo_t    *xinfo;
+   xinfo_t  *xinfo;
+
+   char     *bgcolor;
+   char     *fgcolor;
 } oxbarui_t;
 
 oxbarui_t*
@@ -18,8 +21,15 @@ ui_create(
       int         height,
       int         padding, /* internal padding between text and border     */
       double      fontpt,  /* font-size in classic point scale             */
-      const char *font     /* font specified by user (natively)            */
+      const char *font,    /* font specified by user (natively)            */
+
+      const char *bgcolor,
+      const char *fgcolor
       );
+
+void ui_destroy(oxbarui_t *ui);
+void ui_flush(oxbarui_t *ui);
+void ui_clear(oxbarui_t *ui);
 
 uint32_t
 ui_draw_text(
