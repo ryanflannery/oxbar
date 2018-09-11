@@ -1,5 +1,5 @@
-#ifndef UI_H
-#define UI_H
+#ifndef XDRAW_H
+#define XDRAW_H
 
 #include "xcore.h"
 #include "histogram.h"
@@ -28,25 +28,42 @@ ui_create(
       );
 
 void ui_destroy(oxbarui_t *ui);
-void ui_flush(oxbarui_t *ui);
-void ui_clear(oxbarui_t *ui);
+
+/*
+ * Clear the entire display / paint color everywhere AND start a new buffer
+ * of drawing (needs xdraw_flush() call below to render everything after this)
+ *
+ * NOTE: This is part of the double buffering - it should be called at the
+ * beginning of each "draw loop" (one full run through of the display) and then
+ * all operations are "flushed" to the actual output when, and only when,
+ * xdraw_flush() below is called.
+ */
+void xdraw_clear_all(xinfo_t *xinfo, const char *color);
+
+/*
+ * Flush all buffered drawing to the actual UI
+ */
+void xdraw_flush(xinfo_t *xinfo);
 
 uint32_t
-ui_draw_text(
-      oxbarui_t *ui,
+xdraw_text(
+      xinfo_t    *xinfo,
       const char *color,
-      double x, double y,
+      double      x,
+      double      y,
       const char *text);
 
 void
-ui_draw_top_header(
-      oxbarui_t *ui,
+xdraw_hline(
+      xinfo_t    *xinfo,
       const char *color,
-      double x1, double x2);
+      double      width,
+      double      x1,
+      double      x2);
 
 uint32_t
-ui_draw_vertical_stack(
-      oxbarui_t   *ui,
+xdraw_vertical_stack(
+      xinfo_t     *xinfo,
       uint32_t     x,
       double       width,
       size_t       nvalues,
@@ -54,13 +71,12 @@ ui_draw_vertical_stack(
       double      *percents);
 
 uint32_t
-ui_draw_histogram(
-      oxbarui_t *ui,
-      double x,
-      const char **colors,
-      histogram_t *h);
+xdraw_histogram(
+      xinfo_t       *xinfo,
+      double         x,
+      const char   **colors,
+      histogram_t   *h);
 
-void
-hex2rgba(const char *s, double *r, double *g, double *b, double *a);
+void hex2rgba(const char *s, double *r, double *g, double *b, double *a);
 
 #endif

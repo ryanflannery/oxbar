@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#include "ui.h"
+#include "xdraw.h"
 #include "histogram.h"
 #include "stats/stats.h"
 
@@ -80,23 +80,23 @@ main ()
       x = bar_padding;
       stats_update();
 
-      ui_clear(ui);
+      xdraw_clear_all(ui->xinfo, ui->bgcolor);
 
       if (BATTERY.is_setup) {
          sbarx = x;
-         x += ui_draw_text(ui,
+         x += xdraw_text(ui->xinfo,
                BATTERY.plugged_in ? fgcolor : "dc322f",
                x, y,
                BATTERY.plugged_in ? "AC:" : "BAT:");
          x += s;
-         x += ui_draw_vertical_stack(ui, x, 7, 2,
+         x += xdraw_vertical_stack(ui->xinfo, x, 7, 2,
                single_bar_colors,
                (double[]){100.0 - BATTERY.charge_pct, BATTERY.charge_pct});
          x += s;
-         x += ui_draw_text(ui, fgcolor, x, y, BATTERY.str_charge_pct);
+         x += xdraw_text(ui->xinfo, fgcolor, x, y, BATTERY.str_charge_pct);
          if (-1 != BATTERY.minutes_remaining) {
             x += s;
-            x += ui_draw_text(ui, fgcolor, x, y, BATTERY.str_time_remaining);
+            x += xdraw_text(ui->xinfo, fgcolor, x, y, BATTERY.str_time_remaining);
          }
 
          /* TODO keeping for posterity - my attempt at rendering an image
@@ -109,35 +109,35 @@ main ()
          cairo_paint(xinfo.cairo);
          */
 
-         ui_draw_top_header(ui, "b58900", sbarx, x);
+         xdraw_hline(ui->xinfo, "b58900b2", ui->xinfo->padding, sbarx, x);
          x += p;
       }
 
       if (VOLUME.is_setup) {
          sbarx = x;
-         x += ui_draw_text(ui, fgcolor, x, y, "VOLUME:");
+         x += xdraw_text(ui->xinfo, fgcolor, x, y, "VOLUME:");
          x += s;
          if (VOLUME.left_pct == VOLUME.right_pct) {
-            x += ui_draw_vertical_stack(ui, x, 7, 2,
+            x += xdraw_vertical_stack(ui->xinfo, x, 7, 2,
                   single_bar_colors,
                   (double[]){100.0 - VOLUME.left_pct, VOLUME.left_pct});
             x += s;
-            x += ui_draw_text(ui, fgcolor, x, y, VOLUME.str_left_pct);
+            x += xdraw_text(ui->xinfo, fgcolor, x, y, VOLUME.str_left_pct);
          } else {
-            x += ui_draw_text(ui, fgcolor, x, y, VOLUME.str_left_pct);
+            x += xdraw_text(ui->xinfo, fgcolor, x, y, VOLUME.str_left_pct);
             x += s;
-            x += ui_draw_text(ui, fgcolor, x, y, VOLUME.str_right_pct);
+            x += xdraw_text(ui->xinfo, fgcolor, x, y, VOLUME.str_right_pct);
          }
-         ui_draw_top_header(ui, "cb4b16", sbarx, x);
+         xdraw_hline(ui->xinfo, "cb4b16b2", ui->xinfo->padding, sbarx, x);
          x += p;
       }
 
       if (NPROCS.is_setup) {
          sbarx = x;
-         x += ui_draw_text(ui, fgcolor, x, y, "#PROCS:");
+         x += xdraw_text(ui->xinfo, fgcolor, x, y, "#PROCS:");
          x += s;
-         x += ui_draw_text(ui, fgcolor, x, y, NPROCS.str_nprocs);
-         ui_draw_top_header(ui, "dc322f", sbarx, x);
+         x += xdraw_text(ui->xinfo, fgcolor, x, y, NPROCS.str_nprocs);
+         xdraw_hline(ui->xinfo, "dc322fb2", ui->xinfo->padding, sbarx, x);
          x += p;
       }
 
@@ -148,28 +148,28 @@ main ()
                MEMORY.active_pct
                });
          sbarx = x;
-         x += ui_draw_text(ui, fgcolor, x, y, "MEMORY:");
+         x += xdraw_text(ui->xinfo, fgcolor, x, y, "MEMORY:");
          x += s;
-         x += ui_draw_histogram(ui, x, memory_bar_colors, hist_memory);
+         x += xdraw_histogram(ui->xinfo, x, memory_bar_colors, hist_memory);
          x += s;
-         x += ui_draw_text(ui, "dc322f", x, y, MEMORY.str_active);
+         x += xdraw_text(ui->xinfo, "dc322f", x, y, MEMORY.str_active);
          x += s;
-         x += ui_draw_text(ui, fgcolor, x, y, "active");
+         x += xdraw_text(ui->xinfo, fgcolor, x, y, "active");
          x += s;
-         x += ui_draw_text(ui, "b58900", x, y, MEMORY.str_total);
+         x += xdraw_text(ui->xinfo, "b58900", x, y, MEMORY.str_total);
          x += s;
-         x += ui_draw_text(ui, fgcolor, x, y, "total");
+         x += xdraw_text(ui->xinfo, fgcolor, x, y, "total");
          x += s;
-         x += ui_draw_text(ui, "859900", x, y, MEMORY.str_free);
+         x += xdraw_text(ui->xinfo, "859900", x, y, MEMORY.str_free);
          x += s;
-         x += ui_draw_text(ui, fgcolor, x, y, "free");
-         ui_draw_top_header(ui, "d33682", sbarx, x);
+         x += xdraw_text(ui->xinfo, fgcolor, x, y, "free");
+         xdraw_hline(ui->xinfo, "d33682b2", ui->xinfo->padding, sbarx, x);
          x += p;
       }
 
       if (CPUS.is_setup) {
          sbarx = x;
-         x += ui_draw_text(ui, fgcolor, x, y, "CPUS:");
+         x += xdraw_text(ui->xinfo, fgcolor, x, y, "CPUS:");
          x += s;
          for (int i = 0; i < CPUS.ncpu; i++) {
             histogram_update(hist_cpu[i], (double[]) {
@@ -179,18 +179,17 @@ main ()
                   CPUS.cpus[i].percentages[CP_NICE],
                   CPUS.cpus[i].percentages[CP_USER]
                   });
-            x += ui_draw_histogram(ui, x, cpu_bar_colors, hist_cpu[i]);
+            x += xdraw_histogram(ui->xinfo, x, cpu_bar_colors, hist_cpu[i]);
             x += s;
-            x += ui_draw_text(ui, fgcolor, x, y,
+            x += xdraw_text(ui->xinfo, fgcolor, x, y,
                   CPUS.cpus[i].str_percentages[CP_IDLE]);
             x += s;
          }
-         ui_draw_top_header(ui, "6c71c4", sbarx, x);
+         xdraw_hline(ui->xinfo, "6c71c4b2", ui->xinfo->padding, sbarx, x);
          x += p;
       }
 
-      ui_flush(ui);
-
+      xdraw_flush(ui->xinfo);
       sleep(1);
    }
 
