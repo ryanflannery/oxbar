@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 
+#include "ui.h"
 #include "xdraw.h"
 #include "histogram.h"
 #include "stats/stats.h"
