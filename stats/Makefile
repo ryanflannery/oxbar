@@ -32,3 +32,4 @@ volume.t: volume.t.o volume.o
 clean:
 	rm -f $(OBJS)
 	rm -f $(TESTS)
+	rm -f *.t.o
