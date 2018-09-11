@@ -1,15 +1,15 @@
 # build flags
-CFLAGS+=-c -std=c89 -Wall -Wextra -Werror -O2
-#CFLAGS+=-c -std=c89 -Wall -Wextra -Werror -O2 -I/usr/X11R6/include -I/usr/X11R6/include/freetype2
-#LDFLAGS+=-L/usr/X11R6/lib -lX11 -lXext -lXrender -lXau -lXdmcp -lm -lXft -lXrandr
-LDFLAGS+=-lm
+CFLAGS	+= -c -std=c89 -Wall -Wextra -Werror -O2
+LDFLAGS	+= -lm
 
-OBJS=battery.o cpu.o memory.o nprocs.o volume.o stats.o
-TESTS=battery.t cpu.t memory.t nprocs.t volume.t
+OBJS		= battery.o cpu.o memory.o nprocs.o volume.o stats.o
+TESTS		= battery.t cpu.t memory.t nprocs.t volume.t
 
-stats: $(OBJS) $(TESTS)
 
-.DEFAULT: stats
+.PHONY: all clean
+.DEFAULT: all
+
+all: $(OBJS) $(TESTS)
 
 .c.o:
 	$(CC) -o $@ $(CFLAGS) $<

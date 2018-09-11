@@ -4,20 +4,32 @@ MANDIR	= /usr/local/man/man1
 
 # build flags
 CFLAGS	+= -c -std=c89 -Wall -Wextra -Werror -O2 -I/usr/X11R6/include -I/usr/local/include
-#LDFLAGS	+= -L/usr/X11R6/lib -lX11 -lXext -lXrender -lXau -lXdmcp -lm -lXft -lXrandr
 LDFLAGS	+= -L/usr/X11R6/lib -L/usr/local/lib -lxcb -lxcb-icccm -lcairo
 
-OBJS=gui.o oxbar.o
-SOBJS=stats/battery.o stats/cpu.o stats/memory.o stats/nprocs.o stats/volume.o stats/stats.o
-GOBJS=gui/histogram.o gui/xcore.o gui/xdraw.o
+# object sets (OBJS = this dir, SOBJS = stats/*, GOBJS = giu/*)
+OBJS	= gui.o oxbar.o
+SOBJS	= stats/battery.o stats/cpu.o stats/memory.o stats/nprocs.o stats/volume.o stats/stats.o
+GOBJS	= gui/histogram.o gui/xcore.o gui/xdraw.o
 
+# by default, recurse into stats/ and gui/ and then build oxbar
+.DEFAULT:
+	$(MAKE) -C stats $(MFLAGS) $@
+	$(MAKE) -C gui   $(MFLAGS) $@
+
+all: .DEFAULT oxbar
+
+# boilerplate
 .c.o:
 	$(CC) $(CFLAGS) $<
 
-oxbar: $(OBJS) $(SOBS)
+oxbar: $(OBJS) $(SOBS) $(GOBJS)
 	$(CC) -o $@ $(LDFLAGS) $(OBJS) $(SOBJS) $(GOBJS)
 
+.PHONY: clean
+
 clean:
+	$(MAKE) -C stats $(MFLAGS) $@
+	$(MAKE) -C gui   $(MFLAGS) $@
 	rm -f $(OBJS)
 	rm -f oxbar
 	rm -f oxbar.core
