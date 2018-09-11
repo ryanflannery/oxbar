@@ -7,7 +7,7 @@ typedef struct nprocs_info {
    bool  is_setup;
 
    int   nprocs;     /* total # of processes */
-   char *str_nprocs; /* %d */
+
 } nprocs_info_t;
 
 extern nprocs_info_t NPROCS;

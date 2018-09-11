@@ -14,12 +14,6 @@ typedef struct memory_info {
    float active_pct, free_pct, total_pct;
    float swap_used_pct;
 
-   /* string (displayable / human readable) values */
-   char *str_active;
-   char *str_free;
-   char *str_total;
-   char *str_swap_used;
-   char *str_swap_total;
 } memory_info_t;
 
 extern memory_info_t MEMORY;

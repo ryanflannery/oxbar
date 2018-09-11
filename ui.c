@@ -117,21 +117,21 @@ ui_widget_battery_draw(
          colors,
          (double[]){100.0 - battery->charge_pct, battery->charge_pct});
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(
+   ui->xcurrent += xdraw_percent(
          ui->xinfo,
          ui->fgcolor,
          ui->xcurrent,
          y,
-         battery->str_charge_pct);
+         battery->charge_pct);
 
    if (-1 != battery->minutes_remaining) {
       ui->xcurrent += ui->small_space;
-      ui->xcurrent += xdraw_text(
+      ui->xcurrent += xdraw_timespan(
             ui->xinfo,
             ui->fgcolor,
             ui->xcurrent,
             y,
-            battery->str_time_remaining);
+            battery->minutes_remaining);
    }
    xdraw_hline(ui->xinfo, "b58900b2", ui->xinfo->padding, startx, ui->xcurrent);
    ui->xcurrent += ui->widget_padding;
@@ -156,11 +156,11 @@ ui_widget_volume_draw(
             colors,
             (double[]){100.0 - volume->left_pct, volume->left_pct});
       ui->xcurrent += ui->small_space;
-      ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, volume->str_left_pct);
+      ui->xcurrent += xdraw_percent(ui->xinfo, ui->fgcolor, ui->xcurrent, y, volume->left_pct);
    } else {
-      ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, volume->str_left_pct);
+      ui->xcurrent += xdraw_percent(ui->xinfo, ui->fgcolor, ui->xcurrent, y, volume->left_pct);
       ui->xcurrent += ui->small_space;
-      ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, volume->str_right_pct);
+      ui->xcurrent += xdraw_percent(ui->xinfo, ui->fgcolor, ui->xcurrent, y, volume->right_pct);
    }
    xdraw_hline(ui->xinfo, "cb4b16b2", ui->xinfo->padding, startx, ui->xcurrent);
    ui->xcurrent += ui->widget_padding;
@@ -176,7 +176,7 @@ ui_widget_nprocs_draw(
 
    ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, "#PROCS:");
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, nprocs->str_nprocs);
+   ui->xcurrent += xdraw_int(ui->xinfo, ui->fgcolor, ui->xcurrent, y, nprocs->nprocs);
    xdraw_hline(ui->xinfo, "dc322fb2", ui->xinfo->padding, startx, ui->xcurrent);
    ui->xcurrent += ui->widget_padding;
 }
@@ -208,15 +208,15 @@ ui_widget_memory_draw(
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_histogram(ui->xinfo, ui->xcurrent, colors, histogram);
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(ui->xinfo, "dc322f", ui->xcurrent, y, memory->str_active);
+   ui->xcurrent += xdraw_memory(ui->xinfo, "dc322f", ui->xcurrent, y, memory->active);
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, "active");
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(ui->xinfo, "b58900", ui->xcurrent, y, memory->str_total);
+   ui->xcurrent += xdraw_memory(ui->xinfo, "b58900", ui->xcurrent, y, memory->total);
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, "total");
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(ui->xinfo, "859900", ui->xcurrent, y, memory->str_free);
+   ui->xcurrent += xdraw_memory(ui->xinfo, "859900", ui->xcurrent, y, memory->free);
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, "free");
    xdraw_hline(ui->xinfo, "d33682b2", ui->xinfo->padding, startx, ui->xcurrent);
@@ -262,8 +262,8 @@ ui_widget_cpus_draw(
             });
       ui->xcurrent += xdraw_histogram(ui->xinfo, ui->xcurrent, colors, hist_cpu[i]);
       ui->xcurrent += ui->small_space;
-      ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y,
-            CPUS.cpus[i].str_percentages[CP_IDLE]);
+      ui->xcurrent += xdraw_percent(ui->xinfo, ui->fgcolor, ui->xcurrent, y,
+            CPUS.cpus[i].percentages[CP_IDLE]);
       ui->xcurrent += ui->small_space;
    }
    xdraw_hline(ui->xinfo, "6c71c4b2", ui->xinfo->padding, startx, ui->xcurrent);

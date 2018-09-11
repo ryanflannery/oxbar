@@ -118,8 +118,6 @@ cpu_update()
       for (state = 0; state < CPUSTATES; state++) {
          if (NULL != CPUS.cpus[cpu].str_percentages[state])
             free(CPUS.cpus[cpu].str_percentages[state]);
-
-         CPUS.cpus[cpu].str_percentages[state] = fmtpercent(CPUS.cpus[cpu].percentages[state]);
       }
    }
 }

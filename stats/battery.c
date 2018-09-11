@@ -31,8 +31,6 @@ battery_init()
    BATTERY.plugged_in = false;
    BATTERY.charge_pct = -1.0;
    BATTERY.minutes_remaining = -1;
-   BATTERY.str_charge_pct = NULL;
-   BATTERY.str_time_remaining = NULL;
 
    BATTERY.is_setup = true;
 }
@@ -60,12 +58,6 @@ battery_update()
 
    BATTERY.charge_pct = apm_info.battery_life;
    BATTERY.minutes_remaining = apm_info.minutes_left;
-
-   if (NULL != BATTERY.str_time_remaining) free(BATTERY.str_time_remaining);
-   if (NULL != BATTERY.str_charge_pct) free(BATTERY.str_charge_pct);
-
-   BATTERY.str_time_remaining = fmttimespan(BATTERY.minutes_remaining);
-   BATTERY.str_charge_pct     = fmtpercent(BATTERY.charge_pct);
 }
 
 void

@@ -79,6 +79,102 @@ xdraw_text(
    return extents.x_advance;
 }
 
+uint32_t
+xdraw_percent(
+      xinfo_t    *xinfo,
+      const char *color,
+      double      x,
+      double      y,
+      double      percent)
+{
+   uint32_t r;
+   char    *s;
+
+   if (-1 == asprintf(&s, "%3.0f%%", percent))
+      err(1, "%s: asprintf failed", __FUNCTION__);
+
+   r = xdraw_text(xinfo, color, x, y, s);
+   free(s);
+   return r;
+}
+
+uint32_t
+xdraw_int(
+      xinfo_t    *xinfo,
+      const char *color,
+      double      x,
+      double      y,
+      int         i)
+{
+   uint32_t r;
+   char    *s;
+
+   if (-1 == asprintf(&s, "%d", i))
+      err(1, "%s: asprintf failed", __FUNCTION__);
+
+   r = xdraw_text(xinfo, color, x, y, s);
+   free(s);
+   return r;
+}
+
+uint32_t
+xdraw_timespan(
+      xinfo_t    *xinfo,
+      const char *color,
+      double      x,
+      double      y,
+      int         minutes)
+{
+   uint32_t r;
+   char    *s;
+
+   if (-1 == minutes) {
+      if (NULL == (s = strdup("?")))
+         err(1, "%s: strdup failed", __FUNCTION__);
+
+      return xdraw_text(xinfo, color, x, y, "?");;
+   }
+
+   int h = minutes / 60;
+   int m = minutes % 60;
+
+   if (-1 == asprintf(&s, "%dh %dm", h, m))
+      err(1, "%s: asprintf failed", __FUNCTION__);
+
+   r = xdraw_text(xinfo, color, x, y, s);
+   free(s);
+   return r;
+}
+
+uint32_t
+xdraw_memory(
+      xinfo_t    *xinfo,
+      const char *color,
+      double      x,
+      double      y,
+      int         kbytes)
+{
+   static const char *suffixes[] = { "K", "M", "G", "T" };
+   static size_t snum            = sizeof(suffixes) / sizeof(suffixes[0]);
+
+   double dbytes  = (double) kbytes;
+   size_t step    = 0;
+
+   if (1024 < kbytes) {
+      for (step = 0; (kbytes / 1024) > 0 && step < snum; step++, kbytes /= 1024)
+         dbytes = kbytes / 1024.0;
+   }
+
+   uint32_t r;
+   char    *s;
+   if (-1 == asprintf(&s, "%.1lf%s", dbytes, suffixes[step]))
+      err(1, "%s: asprintf failed for %d", __FUNCTION__, kbytes);
+
+   r = xdraw_text(xinfo, color, x, y, s);
+   free(s);
+   return r;
+}
+
 void
 xdraw_hline(
       xinfo_t    *xinfo,

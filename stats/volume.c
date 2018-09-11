@@ -133,9 +133,6 @@ volume_init()
    VOLUME.left_pct = -1.0;
    VOLUME.right_pct = -1.0;
 
-   VOLUME.str_left_pct = NULL;
-   VOLUME.str_right_pct = NULL;
-
    VOLUME.is_setup = true;
 }
 
@@ -203,11 +200,6 @@ volume_update()
    /* create percents */
    VOLUME.left_pct  = roundf(100.0 * (float)volume_left / (float)volume_max);
    VOLUME.right_pct = roundf(100.0 * (float)volume_right / (float)volume_max);
-
-   if (NULL != VOLUME.str_left_pct) free(VOLUME.str_left_pct);
-   if (NULL != VOLUME.str_right_pct) free(VOLUME.str_right_pct);
-   VOLUME.str_left_pct = fmtpercent(VOLUME.left_pct);
-   VOLUME.str_right_pct = fmtpercent(VOLUME.right_pct);
 
    /* mute status --- wtf!? */
    /*

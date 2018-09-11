@@ -10,17 +10,15 @@ main()
    if (!BATTERY.is_setup)
       errx(1, "failed to setup battery!");
 
-   printf("%8s\t%8s\t%8s\t%8s%8s\n", "plugged?", "%", "\%str", "minutes", "str");
+   printf("%8s\t%8s\t%8s\n", "plugged?", "%", "minutes");
 
    while (1)
    {
       battery_update();
-      printf("%8s\t%8.1f\t%8s\t%8d%8s\n",
+      printf("%8s\t%8.1f\t%8d\n",
             BATTERY.plugged_in ? "TRUE" : "false",
             BATTERY.charge_pct,
-            BATTERY.str_charge_pct,
-            BATTERY.minutes_remaining,
-            BATTERY.str_time_remaining);
+            BATTERY.minutes_remaining);
 
       sleep(1);
    }

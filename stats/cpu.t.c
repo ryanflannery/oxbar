@@ -24,20 +24,13 @@ main()
    {
       cpu_update();
       for (i = 0; i < CPUS.ncpu; i++) {
-         printf("cpu%1d: %6.1f%% %6.1f%% %6.1f%% %6.1f%% %6.1f%%",
+         printf("cpu%1d: %6.1f%% %6.1f%% %6.1f%% %6.1f%% %6.1f%%\n",
                i,
                CPUS.cpus[i].percentages[CP_USER],
                CPUS.cpus[i].percentages[CP_NICE],
                CPUS.cpus[i].percentages[CP_SYS],
                CPUS.cpus[i].percentages[CP_INTR],
                CPUS.cpus[i].percentages[CP_IDLE]);
-
-         printf("%8s %8s %8s %8s %8s\n",
-               CPUS.cpus[i].str_percentages[CP_USER],
-               CPUS.cpus[i].str_percentages[CP_NICE],
-               CPUS.cpus[i].str_percentages[CP_SYS],
-               CPUS.cpus[i].str_percentages[CP_INTR],
-               CPUS.cpus[i].str_percentages[CP_IDLE]);
       }
       printf("\n");
 

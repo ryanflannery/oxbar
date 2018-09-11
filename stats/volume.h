@@ -9,8 +9,6 @@ typedef struct volume_info {
    bool  muted;
    float left_pct, right_pct;
 
-   char *str_left_pct;
-   char *str_right_pct;
 } volume_info_t;
 
 extern volume_info_t VOLUME;
