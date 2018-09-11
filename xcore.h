@@ -27,7 +27,6 @@ typedef struct xinfo {
    xcb_visualtype_t *xvisual;    /* oxbar window's visual            */
    cairo_t          *cairo;      /* core ciaro object for rendering  */
    cairo_surface_t  *surface;    /* core ciaro surface mapped to X   */
-   cairo_surface_t  *dbuffer;
 } xinfo_t;
 
 void xcore_setup_x_connection_screen_visual(xinfo_t *x);

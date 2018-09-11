@@ -194,14 +194,9 @@ xcore_setup_cairo(xinfo_t *x)
          x->xvisual,
          x->w,
          x->h);
-
-   x->dbuffer = cairo_surface_create_similar(
-         x->surface,
-         CAIRO_CONTENT_COLOR_ALPHA,
-         x->w,
-         x->h);
-
+   /* TODO check surface */
    x->cairo = cairo_create(x->surface);
+   /* TODO check cairo */
 }
 
 void
@@ -227,7 +222,6 @@ void
 xcore_destroy(xinfo_t *x)
 {
    cairo_surface_destroy(x->surface);
-   cairo_surface_destroy(x->dbuffer);
    cairo_destroy(x->cairo);
    xcb_disconnect(x->xcon);
 }
