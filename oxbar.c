@@ -40,41 +40,20 @@ main ()
 
       ui_clear(ui);
 
-      if (BATTERY.is_setup) {
-         ui_widget_battery_draw(ui,
-               BATTERY.plugged_in,
-               BATTERY.charge_pct,
-               BATTERY.str_charge_pct,
-               BATTERY.minutes_remaining,
-               BATTERY.str_time_remaining);
-      }
+      if (BATTERY.is_setup)
+         ui_widget_battery_draw(ui, &BATTERY);
 
-      if (VOLUME.is_setup) {
-         ui_widget_volume_draw(ui,
-               VOLUME.left_pct,
-               VOLUME.right_pct,
-               VOLUME.str_left_pct,
-               VOLUME.str_right_pct);
-      }
+      if (VOLUME.is_setup)
+         ui_widget_volume_draw(ui, &VOLUME);
 
-      if (NPROCS.is_setup) {
-         ui_widget_nprocs_draw(ui,
-               NPROCS.str_nprocs);
-      }
+      if (NPROCS.is_setup)
+         ui_widget_nprocs_draw(ui, &NPROCS);
 
-      if (MEMORY.is_setup) {
-         ui_widget_memory_draw(ui,
-               MEMORY.free_pct,
-               MEMORY.total_pct,
-               MEMORY.active_pct,
-               MEMORY.str_free,
-               MEMORY.str_total,
-               MEMORY.str_active);
-      }
+      if (MEMORY.is_setup)
+         ui_widget_memory_draw(ui, &MEMORY);
 
-      if (CPUS.is_setup) {
+      if (CPUS.is_setup)
          ui_widget_cpus_draw(ui, &CPUS);
-      }
 
       ui_flush(ui);
       sleep(1);

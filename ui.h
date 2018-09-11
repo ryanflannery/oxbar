@@ -42,35 +42,23 @@ void ui_flush(oxbarui_t *ui);
 
 void
 ui_widget_battery_draw(
-      oxbarui_t  *ui,
-      bool        plugged_in,
-      double      charge_pct,
-      const char *str_charge_pct,
-      int         minutes_remaining,
-      const char *str_time_remaining);
+      oxbarui_t      *ui,
+      battery_info_t *battery);
 
 void
 ui_widget_volume_draw(
-      oxbarui_t  *ui,
-      double      left_pct,
-      double      right_pct,
-      const char *str_left_pct,
-      const char *str_right_pct);
+      oxbarui_t      *ui,
+      volume_info_t *volume);
 
 void
 ui_widget_nprocs_draw(
-      oxbarui_t  *ui,
-      const char *str_nprocs);
+      oxbarui_t      *ui,
+      nprocs_info_t  *nprocs);
 
 void
 ui_widget_memory_draw(
-      oxbarui_t  *ui,
-      double      free_pct,
-      double      total_pct,
-      double      active_pct,
-      const char *str_free,
-      const char *str_total,
-      const char *str_active);
+      oxbarui_t      *ui,
+      memory_info_t  *memory);
 
 void
 ui_widget_cpus_draw(

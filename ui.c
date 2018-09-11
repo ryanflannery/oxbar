@@ -92,12 +92,8 @@ ui_flush(oxbarui_t *ui)
 
 void
 ui_widget_battery_draw(
-      oxbarui_t *ui,
-      bool        plugged_in,
-      double      charge_pct,
-      const char *str_charge_pct,
-      int         minutes_remaining,
-      const char *str_time_remaining)
+      oxbarui_t      *ui,
+      battery_info_t *battery)
 {
    static const char *colors[] = {
       "dc322f",
@@ -109,33 +105,33 @@ ui_widget_battery_draw(
 
    ui->xcurrent += xdraw_text(
          ui->xinfo,
-         plugged_in ? ui->fgcolor : "dc322f",
+         battery->plugged_in ? ui->fgcolor : "dc322f",
          ui->xcurrent,
          y,
-         plugged_in ? "AC:" : "BAT:");
+         battery->plugged_in ? "AC:" : "BAT:");
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_vertical_stack(
          ui->xinfo,
          ui->xcurrent,
          7, 2,
          colors,
-         (double[]){100.0 - charge_pct, charge_pct});
+         (double[]){100.0 - battery->charge_pct, battery->charge_pct});
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_text(
          ui->xinfo,
          ui->fgcolor,
          ui->xcurrent,
          y,
-         str_charge_pct);
+         battery->str_charge_pct);
 
-   if (-1 != minutes_remaining) {
+   if (-1 != battery->minutes_remaining) {
       ui->xcurrent += ui->small_space;
       ui->xcurrent += xdraw_text(
             ui->xinfo,
             ui->fgcolor,
             ui->xcurrent,
             y,
-            str_time_remaining);
+            battery->str_time_remaining);
    }
    xdraw_hline(ui->xinfo, "b58900b2", ui->xinfo->padding, startx, ui->xcurrent);
    ui->xcurrent += ui->widget_padding;
@@ -143,11 +139,8 @@ ui_widget_battery_draw(
 
 void
 ui_widget_volume_draw(
-      oxbarui_t  *ui,
-      double      left_pct,
-      double      right_pct,
-      const char *str_left_pct,
-      const char *str_right_pct)
+      oxbarui_t      *ui,
+      volume_info_t  *volume)
 {
    static const char *colors[] = {
       "dc322f",
@@ -158,16 +151,16 @@ ui_widget_volume_draw(
 
    ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, "VOLUME:");
    ui->xcurrent += ui->small_space;
-   if (left_pct == right_pct) {
+   if (volume->left_pct == volume->right_pct) {
       ui->xcurrent += xdraw_vertical_stack(ui->xinfo, ui->xcurrent, 7, 2,
             colors,
-            (double[]){100.0 - left_pct, left_pct});
+            (double[]){100.0 - volume->left_pct, volume->left_pct});
       ui->xcurrent += ui->small_space;
-      ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, str_left_pct);
+      ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, volume->str_left_pct);
    } else {
-      ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, str_left_pct);
+      ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, volume->str_left_pct);
       ui->xcurrent += ui->small_space;
-      ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, str_right_pct);
+      ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, volume->str_right_pct);
    }
    xdraw_hline(ui->xinfo, "cb4b16b2", ui->xinfo->padding, startx, ui->xcurrent);
    ui->xcurrent += ui->widget_padding;
@@ -175,28 +168,23 @@ ui_widget_volume_draw(
 
 void
 ui_widget_nprocs_draw(
-      oxbarui_t  *ui,
-      const char *str_nprocs)
+      oxbarui_t      *ui,
+      nprocs_info_t  *nprocs)
 {
    double startx = ui->xcurrent;
    double y = ui->xinfo->fontpt + ui->xinfo->padding;
 
    ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, "#PROCS:");
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, str_nprocs);
+   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, nprocs->str_nprocs);
    xdraw_hline(ui->xinfo, "dc322fb2", ui->xinfo->padding, startx, ui->xcurrent);
    ui->xcurrent += ui->widget_padding;
 }
 
 void
 ui_widget_memory_draw(
-      oxbarui_t  *ui,
-      double      free_pct,
-      double      total_pct,
-      double      active_pct,
-      const char *str_free,
-      const char *str_total,
-      const char *str_active)
+      oxbarui_t      *ui,
+      memory_info_t  *memory)
 {
    static const char *colors[] = {
       "859900",
@@ -211,24 +199,24 @@ ui_widget_memory_draw(
       histogram = histogram_init(60, 3);
 
    histogram_update(histogram, (double[]) {
-         free_pct,
-         total_pct,
-         active_pct
+         memory->free_pct,
+         memory->total_pct,
+         memory->active_pct
          });
 
    ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, "MEMORY:");
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_histogram(ui->xinfo, ui->xcurrent, colors, histogram);
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(ui->xinfo, "dc322f", ui->xcurrent, y, str_active);
+   ui->xcurrent += xdraw_text(ui->xinfo, "dc322f", ui->xcurrent, y, memory->str_active);
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, "active");
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(ui->xinfo, "b58900", ui->xcurrent, y, str_total);
+   ui->xcurrent += xdraw_text(ui->xinfo, "b58900", ui->xcurrent, y, memory->str_total);
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, "total");
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(ui->xinfo, "859900", ui->xcurrent, y, str_free);
+   ui->xcurrent += xdraw_text(ui->xinfo, "859900", ui->xcurrent, y, memory->str_free);
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, y, "free");
    xdraw_hline(ui->xinfo, "d33682b2", ui->xinfo->padding, startx, ui->xcurrent);
