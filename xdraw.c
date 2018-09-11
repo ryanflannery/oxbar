@@ -1,7 +1,6 @@
 #include <err.h>
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "xdraw.h"
@@ -87,15 +86,13 @@ xdraw_percent(
       double      y,
       double      percent)
 {
-   uint32_t r;
-   char    *s;
+   static const size_t OXBAR_STR_MAX_PERCENT_LEN = 100;
+   static char buffer[OXBAR_STR_MAX_PERCENT_LEN];
 
-   if (-1 == asprintf(&s, "%3.0f%%", percent))
-      err(1, "%s: asprintf failed", __FUNCTION__);
+   if (0 > snprintf(buffer, OXBAR_STR_MAX_PERCENT_LEN, "%3.0f%%", percent))
+      err(1, "%s: snprintf failed", __FUNCTION__);
 
-   r = xdraw_text(xinfo, color, x, y, s);
-   free(s);
-   return r;
+   return xdraw_text(xinfo, color, x, y, buffer);
 }
 
 uint32_t
@@ -106,15 +103,13 @@ xdraw_int(
       double      y,
       int         i)
 {
-   uint32_t r;
-   char    *s;
+   static const size_t OXBAR_STR_MAX_INT_LEN = 100;
+   static char buffer[OXBAR_STR_MAX_INT_LEN];
 
-   if (-1 == asprintf(&s, "%d", i))
-      err(1, "%s: asprintf failed", __FUNCTION__);
+   if (0 > snprintf(buffer, OXBAR_STR_MAX_INT_LEN, "%d", i))
+      err(1, "%s: snprintf failed", __FUNCTION__);
 
-   r = xdraw_text(xinfo, color, x, y, s);
-   free(s);
-   return r;
+   return xdraw_text(xinfo, color, x, y, buffer);
 }
 
 uint32_t
@@ -125,25 +120,19 @@ xdraw_timespan(
       double      y,
       int         minutes)
 {
-   uint32_t r;
-   char    *s;
+   static const size_t OXBAR_STR_MAX_TIMESPAN_LEN = 100;
+   static char buffer[OXBAR_STR_MAX_TIMESPAN_LEN];
 
-   if (-1 == minutes) {
-      if (NULL == (s = strdup("?")))
-         err(1, "%s: strdup failed", __FUNCTION__);
-
+   if (-1 == minutes)
       return xdraw_text(xinfo, color, x, y, "?");;
-   }
 
    int h = minutes / 60;
    int m = minutes % 60;
 
-   if (-1 == asprintf(&s, "%dh %dm", h, m))
-      err(1, "%s: asprintf failed", __FUNCTION__);
+   if (0 > snprintf(buffer, OXBAR_STR_MAX_TIMESPAN_LEN, "%dh %dm", h, m))
+      err(1, "%s: snprintf failed", __FUNCTION__);
 
-   r = xdraw_text(xinfo, color, x, y, s);
-   free(s);
-   return r;
+   return xdraw_text(xinfo, color, x, y, buffer);
 }
 
 uint32_t
@@ -154,8 +143,10 @@ xdraw_memory(
       double      y,
       int         kbytes)
 {
+   static const size_t OXBAR_STR_MAX_MEMORY_LEN = 100;
+   static char        buffer[OXBAR_STR_MAX_MEMORY_LEN];
    static const char *suffixes[] = { "K", "M", "G", "T" };
-   static size_t snum            = sizeof(suffixes) / sizeof(suffixes[0]);
+   static size_t      snum       = sizeof(suffixes) / sizeof(suffixes[0]);
 
    double dbytes  = (double) kbytes;
    size_t step    = 0;
@@ -165,14 +156,10 @@ xdraw_memory(
          dbytes = kbytes / 1024.0;
    }
 
-   uint32_t r;
-   char    *s;
-   if (-1 == asprintf(&s, "%.1lf%s", dbytes, suffixes[step]))
-      err(1, "%s: asprintf failed for %d", __FUNCTION__, kbytes);
+   if (0 > snprintf(buffer, OXBAR_STR_MAX_MEMORY_LEN, "%.1lf%s", dbytes, suffixes[step]))
+      err(1, "%s: snprintf failed for %d", __FUNCTION__, kbytes);
 
-   r = xdraw_text(xinfo, color, x, y, s);
-   free(s);
-   return r;
+   return xdraw_text(xinfo, color, x, y, buffer);
 }
 
 void
