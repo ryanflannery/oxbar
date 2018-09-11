@@ -10,6 +10,7 @@
 
 /* not packed */
 typedef struct xinfo {
+
    /* "human readable" display / core x information */
    const char *wname;
    uint32_t    display_width, display_height;  /* display dimensions */
@@ -40,9 +41,11 @@ void xcore_setup_x_window(
 void xcore_setup_x_wm_hints(xinfo_t *x);  /* dragons lurk here       */
 
 void xcore_setup_cairo(xinfo_t *x);
-void xcore_setup_xfont(xinfo_t *x,
+
+void xcore_setup_xfont(
+   xinfo_t    *x,
    const char *font_description, /* human readable font description  */
-   double font_size);            /* font point size (eg. 12.0, 16.0) */
+   double      font_size);       /* font point size (eg. 12.0, 16.0) */
 
 void xcore_destroy(xinfo_t *x);
 
