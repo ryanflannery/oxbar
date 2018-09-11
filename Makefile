@@ -8,7 +8,7 @@ CFLAGS	+= -c -std=c89 -Wall -Wextra -Werror -O2 -I/usr/X11R6/include -I/usr/loca
 LDFLAGS	+= -L/usr/X11R6/lib -L/usr/local/lib -lxcb -lxcb-icccm -lcairo
 
 OBJS=histogram.o xcore.o xdraw.o ui.o oxbar.o
-SOBS=stats/battery.o stats/cpu.o stats/memory.o stats/nprocs.o stats/volume.o stats/stats.o stats/formats.o
+SOBS=stats/battery.o stats/cpu.o stats/memory.o stats/nprocs.o stats/volume.o stats/stats.o
 
 .c.o:
 	$(CC) $(CFLAGS) $<
