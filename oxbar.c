@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#include "ui.h"
+#include "gui.h"
 #include "stats/stats.h"
 
 int

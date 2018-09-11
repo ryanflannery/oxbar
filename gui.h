@@ -1,9 +1,9 @@
-#ifndef UI_H
-#define UI_H
+#ifndef GUI_H
+#define GUI_H
 
 #include <stdbool.h>
 
-#include "xcore.h"
+#include "gui/xcore.h"
 #include "stats/stats.h"
 
 typedef struct oxbarui {

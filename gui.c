@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ui.h"
-#include "xdraw.h"
-#include "histogram.h"
+#include "gui.h"
+#include "gui/xdraw.h"
+#include "gui/histogram.h"
 
 oxbarui_t*
 ui_create(

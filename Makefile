@@ -7,14 +7,15 @@ CFLAGS	+= -c -std=c89 -Wall -Wextra -Werror -O2 -I/usr/X11R6/include -I/usr/loca
 #LDFLAGS	+= -L/usr/X11R6/lib -lX11 -lXext -lXrender -lXau -lXdmcp -lm -lXft -lXrandr
 LDFLAGS	+= -L/usr/X11R6/lib -L/usr/local/lib -lxcb -lxcb-icccm -lcairo
 
-OBJS=histogram.o xcore.o xdraw.o ui.o oxbar.o
-SOBS=stats/battery.o stats/cpu.o stats/memory.o stats/nprocs.o stats/volume.o stats/stats.o
+OBJS=gui.o oxbar.o
+SOBJS=stats/battery.o stats/cpu.o stats/memory.o stats/nprocs.o stats/volume.o stats/stats.o
+GOBJS=gui/histogram.o gui/xcore.o gui/xdraw.o
 
 .c.o:
 	$(CC) $(CFLAGS) $<
 
 oxbar: $(OBJS) $(SOBS)
-	$(CC) -o $@ $(LDFLAGS) $(OBJS) $(SOBS)
+	$(CC) -o $@ $(LDFLAGS) $(OBJS) $(SOBJS) $(GOBJS)
 
 clean:
 	rm -f $(OBJS)
