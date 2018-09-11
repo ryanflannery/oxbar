@@ -9,7 +9,6 @@
 #include <sys/vmmeter.h>
 
 #include "memory.h"
-#include "formats.h"
 
 memory_info_t MEMORY;
 int   sys_pageshift;

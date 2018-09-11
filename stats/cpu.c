@@ -12,7 +12,6 @@
 #include <sys/vmmeter.h>
 
 #include "cpu.h"
-#include "formats.h"
 
 cpus_t CPUS;
 

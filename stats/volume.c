@@ -13,7 +13,6 @@
 #include <sys/audioio.h>
 
 #include "volume.h"
-#include "formats.h"
 
 volume_info_t VOLUME;
 

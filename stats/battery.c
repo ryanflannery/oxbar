@@ -9,7 +9,6 @@
 #include <machine/apmvar.h>
 
 #include "battery.h"
-#include "formats.h"
 
 battery_info_t BATTERY;
 
