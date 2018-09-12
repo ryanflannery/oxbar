@@ -15,7 +15,6 @@ ui_create(
       int         width,
       int         height,
       int         padding,
-      double      fontpt,
       const char *font,
       const char *bgcolor,
       const char *fgcolor
@@ -34,11 +33,14 @@ ui_create(
    if (NULL == ui->bgcolor || NULL == ui->fgcolor)
       err(1, "%s: strdup failed", __FUNCTION__);
 
-   /* XXX These need to be done in a specific order */
+   /* These need to be done in a specific order */
    xcore_setup_x_connection_screen_visual(ui->xinfo);
 
+   /* TODO this would be lovely to support again. i need to figure out how
+    * to query pango, for a loaded font description, for the font size.
    if (-1 == height)
       height = (uint32_t)(ceil(fontpt + (2 * padding)));
+    */
 
    if (-1 == y)
       y = ui->xinfo->display_height - height;

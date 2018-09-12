@@ -28,7 +28,6 @@ ui_create(
       int         width,   /* (width,height) of oxbar in pixels            */
       int         height,
       int         padding, /* internal padding between text and border     */
-      double      fontpt,  /* font-size in classic point scale             */
       const char *font,    /* font specified by user (natively)            */
 
       const char *bgcolor,

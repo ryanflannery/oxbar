@@ -201,7 +201,7 @@ xdraw_vertical_stack(
 
       hex2rgba(colors[i], &r, &g, &b, &a);
       cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
-      double height = percents[i] / 100.0 * 16; /* FIXME - 16 should be height / font /fuck this */
+      double height = percents[i] / 100.0 * (xinfo->h - xinfo->padding);
       cairo_rectangle(xinfo->cairo,
             x,
             xinfo->padding + offset,
@@ -231,7 +231,7 @@ xdraw_histogram(
          x,
          xinfo->padding,
          width,
-         16); /* FIXME - 16 should be height / font /fuck this */
+         (xinfo->h - xinfo->padding));
    cairo_fill(xinfo->cairo);
 
    size_t count, i;

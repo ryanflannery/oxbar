@@ -3,6 +3,7 @@ BINDIR = /usr/local/bin
 MANDIR = /usr/local/man/man1
 
 # build flags
+CFLAGS  += -fdiagnostics-color
 CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2 `pkg-config --cflags pangocairo`
 LDFLAGS += -L/usr/X11R6/lib `pkg-config --libs pangocairo` -lxcb -lxcb-icccm
 

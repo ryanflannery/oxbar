@@ -15,20 +15,21 @@ main ()
    /* inputs :: these will be made configurable */
    const char *bgcolor  = "1c1c1c"; /*"#212429";*/
    const char *fgcolor  = "93a1a1"; /*"839496"; "#cc5500";*/
-   const char *font     = "DejaVu Sans 16px";
-   double font_size     = 16.0;
-   double bar_padding   = 5.0;
+   const char *font     = "DejaVu Sans 18px";
+   double bar_padding   = 10;
    int bar_x            = 0;
-   int bar_y            = 1385;   /* -1 means "bottom"          */
-   int bar_width        = 1500;  /* -1 means "display width"   */
-   int bar_height       = -1;    /* determined by font size (is that right?) */
+   int bar_y            = -1; /* -1 means "bottom"          */
+   int bar_width        = -1; /* -1 means "display width"   */
+   int bar_height       = 28; /* TODO Nice if i could support determining based
+                                 on font size...but i haven't figured that
+                                 out yet w/ pango
+                              */
 
    oxbarui_t *ui = ui_create(
          getprogname(),
          bar_x, bar_y,
          bar_width, bar_height,
          bar_padding,
-         font_size,
          font,
          bgcolor, fgcolor
          );
