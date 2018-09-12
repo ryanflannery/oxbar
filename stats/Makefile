@@ -12,7 +12,7 @@ TESTS = battery.t cpu.t memory.t nprocs.t volume.t
 all: $(OBJS) $(TESTS)
 
 .c.o:
-	$(CC) -o $@ $(CFLAGS) $<
+	$(CC) $(CFLAGS) $<
 
 battery.t: battery.t.o battery.o
 	$(CC) -o $@ $(LDFLAGS) battery.t.o battery.o

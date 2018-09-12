@@ -10,7 +10,7 @@ all: $(OBJS)
 .DEFAULT: all
 
 .c.o:
-	$(CC) -o $@ $(CFLAGS) $<
+	$(CC) $(CFLAGS) $<
 
 clean:
 	rm -f $(OBJS)
