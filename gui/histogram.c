@@ -39,8 +39,9 @@ void
 histogram_update(histogram_t *h, double data[])
 {
    size_t cur = (h->current + 1) % h->nsamples;
+   size_t i;
 
-   for (size_t i = 0; i < h->nseries; i++)
+   for (i = 0; i < h->nseries; i++)
       h->series[cur][i] = data[i];
 
    h->current = cur;
