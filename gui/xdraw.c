@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <pango/pangocairo.h>
+
 #include "xdraw.h"
 
 void
@@ -66,16 +68,17 @@ xdraw_text(
       const char *text)
 {
    double r, g, b, a;
+   int width, height;
    hex2rgba(color, &r, &g, &b, &a);
 
    cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
    cairo_move_to(xinfo->cairo, x, y);
-   cairo_show_text(xinfo->cairo, text);
 
-   cairo_text_extents_t extents;
-   cairo_text_extents(xinfo->cairo, text, &extents);
+   pango_layout_set_text(xinfo->playout, text, -1);
+   pango_layout_get_pixel_size(xinfo->playout, &width, &height);
+   pango_cairo_show_layout(xinfo->cairo, xinfo->playout);
 
-   return extents.x_advance;
+   return width;
 }
 
 uint32_t
@@ -198,7 +201,7 @@ xdraw_vertical_stack(
 
       hex2rgba(colors[i], &r, &g, &b, &a);
       cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
-      double height = percents[i] / 100.0 * xinfo->fontpt;
+      double height = percents[i] / 100.0 * 16; /* FIXME - 16 should be height / font /fuck this */
       cairo_rectangle(xinfo->cairo,
             x,
             xinfo->padding + offset,
@@ -228,7 +231,7 @@ xdraw_histogram(
          x,
          xinfo->padding,
          width,
-         xinfo->fontpt);
+         16); /* FIXME - 16 should be height / font /fuck this */
    cairo_fill(xinfo->cairo);
 
    size_t count, i;

@@ -2,11 +2,13 @@
 #define XINFO_H
 
 #include <sys/types.h>
+
+#include <xcb/xcb.h>
+#include <xcb/xcb_icccm.h>
 #include <cairo/cairo.h>
 #include <cairo/cairo-svg.h>
 #include <cairo/cairo-xcb.h>
-#include <xcb/xcb.h>
-#include <xcb/xcb_icccm.h>
+#include <pango/pangocairo.h>
 
 /* not packed */
 typedef struct xinfo {
@@ -18,16 +20,19 @@ typedef struct xinfo {
    uint32_t    w, h;             /* (w,h) pixel dimensions of oxbar  */
    uint32_t    padding;          /* internal padding of oxbar        */
 
-   double      fontpt;           /* font-size in classic point scale */
+   /*double      fontpt;            font-size in classic point scale */
    const char *font;             /* font specified by user (natively)*/
 
-   /* core xcb/cairo components */
+   /* core xcb/cairo/pango components */
    xcb_connection_t *xcon;       /* connection to x server           */
    xcb_screen_t     *xscreen;    /* screen we render to              */
    xcb_drawable_t    xwindow;    /* oxbar xwindow                    */
    xcb_visualtype_t *xvisual;    /* oxbar window's visual            */
    cairo_t          *cairo;      /* core ciaro object for rendering  */
    cairo_surface_t  *surface;    /* core ciaro surface mapped to X   */
+
+   PangoLayout          *playout;
+   PangoFontDescription *pfont;
 } xinfo_t;
 
 /*
@@ -60,8 +65,7 @@ void xcore_setup_cairo(xinfo_t *x);
  */
 void xcore_setup_xfont(
    xinfo_t    *x,
-   const char *font_description, /* human readable font description  */
-   double      font_size);       /* font point size (eg. 12.0, 16.0) */
+   const char *font_description);   /* PangoFontDescription spec */
 
 /*
  * Disconnects & destroys all pango/cairo/x11/xcb related objects

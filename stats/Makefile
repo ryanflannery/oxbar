@@ -1,9 +1,9 @@
 # build flags
-CFLAGS	+= -c -std=c89 -Wall -Wextra -Werror -O2
-LDFLAGS	+= -lm
+CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2
+LDFLAGS += -lm
 
-OBJS		= battery.o cpu.o memory.o nprocs.o volume.o stats.o
-TESTS		= battery.t cpu.t memory.t nprocs.t volume.t
+OBJS  = battery.o cpu.o memory.o nprocs.o volume.o stats.o
+TESTS = battery.t cpu.t memory.t nprocs.t volume.t
 
 
 .PHONY: all clean

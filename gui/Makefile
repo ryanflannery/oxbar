@@ -1,6 +1,6 @@
 # build flags
-CFLAGS	+= -c -std=c89 -Wall -Wextra -Werror -O2 -I/usr/X11R6/include -I/usr/local/include
-LDFLAGS	+= -lm -L/usr/X11R6/lib -L/usr/local/lib -lxcb -lxcb-icccm -lcairo
+CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2 `pkg-config --cflags pangocairo`
+LDFLAGS += -lm `pkg-config --libs pangocairo`
 
 OBJS		= xcore.o xdraw.o histogram.o
 

@@ -202,25 +202,20 @@ xcore_setup_cairo(xinfo_t *x)
 void
 xcore_setup_xfont(
       xinfo_t *x,
-      const char *font_description,
-      double font_size)
+      const char *font_description)
 {
-   x->fontpt = font_size;
-   x->font   = font_description;
+   if (NULL == (x->font = strdup(font_description)))
+      err(1, "%s: strdup failed", __FUNCTION__);
 
-   cairo_select_font_face(
-         x->cairo,
-         font_description,
-         CAIRO_FONT_SLANT_NORMAL,
-         CAIRO_FONT_WEIGHT_NORMAL
-         );
-
-   cairo_set_font_size(x->cairo, x->fontpt);
+   x->playout = pango_cairo_create_layout(x->cairo);
+   x->pfont = pango_font_description_from_string(x->font);
+   pango_layout_set_font_description(x->playout, x->pfont);
 }
 
 void
 xcore_destroy(xinfo_t *x)
 {
+   pango_font_description_free(x->pfont);
    cairo_surface_destroy(x->surface);
    cairo_destroy(x->cairo);
    xcb_disconnect(x->xcon);
