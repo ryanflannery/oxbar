@@ -28,6 +28,9 @@ oxbar: $(OBJS) $(SOBS) $(GOBJS)
 
 .PHONY: clean
 
+profile: clean
+	CFLAGS="-fno-pie -g -pg" LDFLAGS="-g -pg -fno-pie -lc_p" $(MAKE)
+
 clean:
 	$(MAKE) -C stats $(MFLAGS) $@
 	$(MAKE) -C gui   $(MFLAGS) $@
