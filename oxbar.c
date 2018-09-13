@@ -25,6 +25,8 @@ main ()
    stats_init();
 
    /* NOTE: we are now ready to update stats and draw.... */
+   stats_update();   /* first stats collection */
+   draw_oxbar();     /* initializes first-time widget properties */
 
    signal(SIGHUP,  signal_handler);
    signal(SIGINT,  signal_handler);
@@ -91,9 +93,9 @@ setup_timer()
       err(1, "%s: sigaction failed", __FUNCTION__);
 
    /* setup timer details */
-   timer.it_value.tv_sec = 0;
-   timer.it_value.tv_usec = 1;
-   timer.it_interval.tv_sec = 1;
+   timer.it_value.tv_sec = 1;       /* wait 1 second for first timer fire */
+   timer.it_value.tv_usec = 0;
+   timer.it_interval.tv_sec = 1;    /* wait 1 second for subsequent fires */
    timer.it_interval.tv_usec = 0;
 
    /* register timer */
