@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+#include "settings.h"
 #include "gui/xcore.h"
 #include "stats/stats.h"
 
@@ -11,29 +12,19 @@ typedef struct oxbarui {
    xinfo_t *xinfo;
 
    /* core settings (static after init) */
-   char    *bgcolor;
-   char    *fgcolor;
-   double   widget_padding;
-   double   small_space;
+   settings_t *settings;
 
    /* state */
    double   xcurrent;
+
+   /* TODO to be removed once migrated over fully to settings */
+   int widget_padding;
+   int small_space;
+   char *fgcolor;
+   char *bgcolor;
 } oxbarui_t;
 
-oxbarui_t*
-ui_create(
-      const char *wname,   /* name for window in window manager            */
-      int         x,       /* (x,y) top-left pixel coordinates for oxbar   */
-      int         y,
-      int         width,   /* (width,height) of oxbar in pixels            */
-      int         height,
-      int         padding, /* internal padding between text and border     */
-      const char *font,    /* font specified by user (natively)            */
-
-      const char *bgcolor,
-      const char *fgcolor
-      );
-
+oxbarui_t* ui_create(settings_t *s);
 void ui_destroy(oxbarui_t *ui);
 
 void ui_clear(oxbarui_t *ui);
@@ -63,5 +54,9 @@ void
 ui_widget_cpus_draw(
       oxbarui_t  *ui,
       cpus_t     *cpus);
+
+void
+ui_widget_time_draw(
+      oxbarui_t  *ui);
 
 #endif

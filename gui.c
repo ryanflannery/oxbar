@@ -8,17 +8,7 @@
 #include "gui/histogram.h"
 
 oxbarui_t*
-ui_create(
-      const char *wname,
-      int         x,
-      int         y,
-      int         width,
-      int         height,
-      int         padding,
-      const char *font,
-      const char *bgcolor,
-      const char *fgcolor
-      )
+ui_create(settings_t *s)
 {
    oxbarui_t *ui = malloc(sizeof(oxbarui_t));
    if (NULL == ui)
@@ -27,11 +17,6 @@ ui_create(
    ui->xinfo = malloc(sizeof(xinfo_t));
    if (NULL == ui->xinfo)
       err(1, "%s: couldn't malloc xinfo", __FUNCTION__);
-
-   ui->bgcolor = strdup(bgcolor);
-   ui->fgcolor = strdup(fgcolor);
-   if (NULL == ui->bgcolor || NULL == ui->fgcolor)
-      err(1, "%s: strdup failed", __FUNCTION__);
 
    /* These need to be done in a specific order */
    xcore_setup_x_connection_screen_visual(ui->xinfo);
@@ -42,29 +27,35 @@ ui_create(
       height = (uint32_t)(ceil(fontpt + (2 * padding)));
     */
 
-   if (-1 == y)
-      y = ui->xinfo->display_height - height;
+   if (-1 == s->display.y)
+      s->display.y = ui->xinfo->display_height - s->display.h ;
 
-   if (-1 == width)
-      width = ui->xinfo->display_width;
+   if (-1 == s->display.w)
+      s->display.w = ui->xinfo->display_width;
 
-   ui->xinfo->padding = padding;
+   ui->xinfo->padding = s->display.top_padding;
 
    xcore_setup_x_window(
          ui->xinfo,
-         wname,
-         x, y,
-         width, height);
+         s->display.wmname,
+         s->display.x, s->display.y,
+         s->display.w, s->display.h);
+
    xcore_setup_x_wm_hints(ui->xinfo);
    xcore_setup_cairo(ui->xinfo);
-   xcore_setup_xfont(ui->xinfo, font);
+   xcore_setup_xfont(ui->xinfo, s->display.font);
 
    /* now map the window & do an initial paint */
    xcb_map_window(ui->xinfo->xcon, ui->xinfo->xwindow);
 
-   /* TODO configurable */
-   ui->widget_padding = 10.0;
-   ui->small_space = 5.0;
+   ui->settings = s;
+
+   /* TODO remove these once migrated over to settings */
+   ui->widget_padding = ui->settings->display.widget_padding;
+   ui->fgcolor = strdup(ui->settings->display.fgcolor);
+   ui->bgcolor = strdup(ui->settings->display.bgcolor);
+   /* end TODO */
+   ui->small_space = xdraw_text(ui->xinfo, NULL, 0, 0, " ");
 
    return ui;
 }
@@ -82,7 +73,7 @@ ui_destroy(oxbarui_t *ui)
 void
 ui_clear(oxbarui_t *ui)
 {
-   xdraw_clear_all(ui->xinfo, ui->bgcolor);
+   xdraw_clear_all(ui->xinfo, ui->settings->display.bgcolor);
    ui->xcurrent = ui->xinfo->padding;
 }
 
@@ -104,38 +95,47 @@ ui_widget_battery_draw(
 
    double startx = ui->xcurrent;
 
+   const char *fgcolor = ui->settings->display.fgcolor;
+   if (!battery->plugged_in && NULL != ui->settings->battery.color_unplugged)
+      fgcolor = ui->settings->battery.color_unplugged;
+
+   if (NULL != ui->settings->battery.chart_color_remaining)
+      colors[0] = ui->settings->battery.chart_color_remaining;
+
+   if (NULL != ui->settings->battery.chart_color_power)
+      colors[1] = ui->settings->battery.chart_color_power;
+
    ui->xcurrent += xdraw_text(
          ui->xinfo,
-         battery->plugged_in ? ui->fgcolor : "dc322f",
+         fgcolor,
          ui->xcurrent,
          ui->xinfo->padding,
-         battery->plugged_in ? "AC:" : "BAT:");
-   ui->xcurrent += ui->small_space;
+         battery->plugged_in ? "AC " : "BAT ");
    ui->xcurrent += xdraw_vertical_stack(
          ui->xinfo,
          ui->xcurrent,
-         7, 2,
-         colors,
+         ui->settings->battery.chart_width,
+         2, colors,
          (double[]){100.0 - battery->charge_pct, battery->charge_pct});
-   ui->xcurrent += ui->small_space;
+   /*ui->xcurrent += ui->small_space;*/
    ui->xcurrent += xdraw_percent(
          ui->xinfo,
-         ui->fgcolor,
+         ui->settings->display.fgcolor,
          ui->xcurrent,
          ui->xinfo->padding,
          battery->charge_pct);
 
    if (-1 != battery->minutes_remaining) {
-      ui->xcurrent += ui->small_space;
+      /*ui->xcurrent += ui->small_space;*/
       ui->xcurrent += xdraw_timespan(
             ui->xinfo,
-            ui->fgcolor,
+            ui->settings->display.fgcolor,
             ui->xcurrent,
             ui->xinfo->padding,
             battery->minutes_remaining);
    }
-   xdraw_hline(ui->xinfo, "b58900b2", ui->xinfo->padding, startx, ui->xcurrent);
-   ui->xcurrent += ui->widget_padding;
+   xdraw_hline(ui->xinfo, ui->settings->battery.hdcolor, ui->xinfo->padding, startx, ui->xcurrent);
+   ui->xcurrent += ui->settings->display.widget_padding;
 }
 
 void
@@ -154,13 +154,12 @@ ui_widget_volume_draw(
          ui->fgcolor,
          ui->xcurrent,
          ui->xinfo->padding,
-         "VOLUME:");
-   ui->xcurrent += ui->small_space;
+         "VOLUME: ");
    if (volume->left_pct == volume->right_pct) {
       ui->xcurrent += xdraw_vertical_stack(ui->xinfo, ui->xcurrent, 7, 2,
             colors,
             (double[]){100.0 - volume->left_pct, volume->left_pct});
-      ui->xcurrent += ui->small_space;
+      /*ui->xcurrent += ui->small_space;*/
       ui->xcurrent += xdraw_percent(
             ui->xinfo,
             ui->fgcolor,
@@ -174,7 +173,7 @@ ui_widget_volume_draw(
             ui->xcurrent,
             ui->xinfo->padding,
             volume->left_pct);
-      ui->xcurrent += ui->small_space;
+      /*ui->xcurrent += ui->small_space;*/
       ui->xcurrent += xdraw_percent(
             ui->xinfo,
             ui->fgcolor,
@@ -198,8 +197,7 @@ ui_widget_nprocs_draw(
          ui->fgcolor,
          ui->xcurrent,
          ui->xinfo->padding,
-         "#PROCS:");
-   ui->xcurrent += ui->small_space;
+         "#PROCS: ");
    ui->xcurrent += xdraw_int(
          ui->xinfo,
          ui->fgcolor,
@@ -232,7 +230,7 @@ ui_widget_memory_draw(
          memory->active_pct
          });
 
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "MEMORY:");
+   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "MEMORY: ");
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_histogram(ui->xinfo, ui->xcurrent, colors, histogram);
    ui->xcurrent += ui->small_space;
@@ -277,8 +275,7 @@ ui_widget_cpus_draw(
          hist_cpu[i] = histogram_init(60, CPUSTATES);
    }
 
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "CPUS:");
-   ui->xcurrent += ui->small_space;
+   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "CPUS: ");
    for (i = 0; i < cpus->ncpu; i++) {
       histogram_update(hist_cpu[i], (double[]) {
             cpus->cpus[i].percentages[CP_IDLE],
@@ -288,7 +285,7 @@ ui_widget_cpus_draw(
             cpus->cpus[i].percentages[CP_USER]
             });
       ui->xcurrent += xdraw_histogram(ui->xinfo, ui->xcurrent, colors, hist_cpu[i]);
-      ui->xcurrent += ui->small_space;
+      /*ui->xcurrent += ui->small_space;*/
       ui->xcurrent += xdraw_percent(ui->xinfo, ui->fgcolor, ui->xcurrent,
             ui->xinfo->padding,
             CPUS.cpus[i].percentages[CP_IDLE]);
@@ -297,4 +294,24 @@ ui_widget_cpus_draw(
    xdraw_hline(ui->xinfo, "6c71c4b2", ui->xinfo->padding, startx, ui->xcurrent);
 
    ui->xcurrent += ui->widget_padding;
+}
+
+void
+ui_widget_time_draw(
+      oxbarui_t  *ui)
+{
+   static const size_t OXBAR_STR_MAX_TIME_LEN = 100;
+   static char buffer[OXBAR_STR_MAX_TIME_LEN];
+
+   time_t now = time(NULL);
+   strftime(buffer, OXBAR_STR_MAX_TIME_LEN, "%a %d %b %Y %I:%M:%S %p", localtime(&now));
+   int width = xdraw_text_right_aligned(
+         ui->xinfo,
+         ui->fgcolor,
+         ui->xinfo->display_width,
+         ui->xinfo->padding,
+         buffer);
+
+   xdraw_hline(ui->xinfo, "268bd2b2", ui->xinfo->padding,
+         ui->xinfo->display_width - width, ui->xinfo->display_width);
 }

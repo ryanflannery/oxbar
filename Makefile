@@ -8,7 +8,7 @@ CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2 `pkg-config --cflags pangocairo
 LDFLAGS += -L/usr/X11R6/lib `pkg-config --libs pangocairo` -lxcb -lxcb-icccm
 
 # object sets (OBJS = this dir, SOBJS = stats/*, GOBJS = giu/*)
-OBJS  = gui.o oxbar.o
+OBJS  = gui.o oxbar.o settings.o
 SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/nprocs.o stats/volume.o stats/stats.o
 GOBJS = gui/histogram.o gui/xcore.o gui/xdraw.o
 

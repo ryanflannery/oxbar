@@ -12,6 +12,11 @@ hex2rgba(const char *s, double *r, double *g, double *b, double *a)
 {
    unsigned int ir, ig, ib, ia;
 
+   if (NULL == s || '\0' == s[0]) {
+      *r = *g = *b = *a = 1.0;
+      return;
+   }
+
    if ('#' == s[0])
       s++;
 
@@ -71,11 +76,33 @@ xdraw_text(
    int width, height;
    hex2rgba(color, &r, &g, &b, &a);
 
+   pango_layout_set_text(xinfo->playout, text, -1);
+   pango_layout_get_pixel_size(xinfo->playout, &width, &height);
+
    cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
    cairo_move_to(xinfo->cairo, x, y);
+   pango_cairo_show_layout(xinfo->cairo, xinfo->playout);
+
+   return width;
+}
+
+uint32_t
+xdraw_text_right_aligned(
+      xinfo_t    *xinfo,
+      const char *color,
+      double      x,
+      double      y,
+      const char *text)
+{
+   double r, g, b, a;
+   int width, height;
+   hex2rgba(color, &r, &g, &b, &a);
 
    pango_layout_set_text(xinfo->playout, text, -1);
    pango_layout_get_pixel_size(xinfo->playout, &width, &height);
+
+   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
+   cairo_move_to(xinfo->cairo, x - width, y);
    pango_cairo_show_layout(xinfo->cairo, xinfo->playout);
 
    return width;

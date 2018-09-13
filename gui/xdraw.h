@@ -29,6 +29,14 @@ xdraw_text(
       const char *text);
 
 uint32_t
+xdraw_text_right_aligned(
+      xinfo_t    *xinfo,
+      const char *color,
+      double      x,
+      double      y,
+      const char *text);
+
+uint32_t
 xdraw_int(
       xinfo_t    *xinfo,
       const char *color,

@@ -7,33 +7,15 @@
 #include <sys/types.h>
 
 #include "gui.h"
+#include "settings.h"
 #include "stats/stats.h"
 
 int
 main ()
 {
-   /* inputs :: these will be made configurable */
-   const char *bgcolor  = "1c1c1c"; /*"#212429";*/
-   const char *fgcolor  = "93a1a1"; /*"839496"; "#cc5500";*/
-   const char *font     = "DejaVu Sans 18px";
-   double bar_padding   = 10;
-   int bar_x            = 0;
-   int bar_y            = -1; /* -1 means "bottom"          */
-   int bar_width        = -1; /* -1 means "display width"   */
-   int bar_height       = 28; /* TODO Nice if i could support determining based
-                                 on font size...but i haven't figured that
-                                 out yet w/ pango
-                              */
-
-   oxbarui_t *ui = ui_create(
-         getprogname(),
-         bar_x, bar_y,
-         bar_width, bar_height,
-         bar_padding,
-         font,
-         bgcolor, fgcolor
-         );
-
+   settings_t settings;
+   settings_load_defaults(&settings);
+   oxbarui_t *ui = ui_create(&settings);
    stats_init();
 
    while (1) {
@@ -55,6 +37,8 @@ main ()
 
       if (CPUS.is_setup)
          ui_widget_cpus_draw(ui, &CPUS);
+
+      ui_widget_time_draw(ui);
 
       ui_flush(ui);
       sleep(1);
