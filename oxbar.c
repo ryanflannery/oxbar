@@ -47,7 +47,7 @@ main ()
             draw_oxbar();
             break;
          default:
-            printf("recieved some other event\n");
+            /* TODO - i get these - what are they!? */
             break;
       }
    }
