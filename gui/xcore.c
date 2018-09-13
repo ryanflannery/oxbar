@@ -61,6 +61,11 @@ xcore_setup_x_window(
       uint32_t x, uint32_t y,
       uint32_t w, uint32_t h)
 {
+   static uint32_t valwin[2] = {
+      XCB_NONE,
+      XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_BUTTON_PRESS
+   };
+
    xinfo->x = x;
    xinfo->y = y;
    xinfo->w = w;
@@ -79,8 +84,8 @@ xcore_setup_x_window(
          0, /* border width */
          XCB_WINDOW_CLASS_INPUT_OUTPUT,
          xinfo->xscreen->root_visual,
-         XCB_CW_BACK_PIXEL,
-         &xinfo->xscreen->black_pixel);
+         XCB_CW_EVENT_MASK | XCB_CW_BACK_PIXMAP,
+         valwin);
 
    xcb_icccm_set_wm_name(
          xinfo->xcon,
