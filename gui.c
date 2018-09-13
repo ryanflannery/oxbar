@@ -154,7 +154,7 @@ ui_widget_volume_draw(
          ui->fgcolor,
          ui->xcurrent,
          ui->xinfo->padding,
-         "VOLUME: ");
+         "Volume: ");
    if (volume->left_pct == volume->right_pct) {
       ui->xcurrent += xdraw_vertical_stack(ui->xinfo, ui->xcurrent, 7, 2,
             colors,
@@ -197,7 +197,7 @@ ui_widget_nprocs_draw(
          ui->fgcolor,
          ui->xcurrent,
          ui->xinfo->padding,
-         "#PROCS: ");
+         "#Procs: ");
    ui->xcurrent += xdraw_int(
          ui->xinfo,
          ui->fgcolor,
@@ -230,7 +230,7 @@ ui_widget_memory_draw(
          memory->active_pct
          });
 
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "MEMORY: ");
+   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "Memory: ");
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_histogram(ui->xinfo, ui->xcurrent, colors, histogram);
    ui->xcurrent += ui->small_space;
@@ -257,10 +257,10 @@ ui_widget_cpus_draw(
 {
    static const char *colors[] = {
       "859900",   /* idle */
-      "d33682",   /* interrupt */
-      "b58900",   /* sys  */
-      "2aa198",   /* nice */
-      "dc322f"    /* user */
+      "ff0000",   /* user */
+      "ffff00",   /* sys  */
+      "0000ff",   /* nice */
+      "ff00ff"    /* interrupt */
    };
    double startx = ui->xcurrent;
    int i;
@@ -275,14 +275,14 @@ ui_widget_cpus_draw(
          hist_cpu[i] = histogram_init(60, CPUSTATES);
    }
 
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "CPUS: ");
+   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "CPUs: ");
    for (i = 0; i < cpus->ncpu; i++) {
       histogram_update(hist_cpu[i], (double[]) {
             cpus->cpus[i].percentages[CP_IDLE],
-            cpus->cpus[i].percentages[CP_INTR],
+            cpus->cpus[i].percentages[CP_USER],
             cpus->cpus[i].percentages[CP_SYS],
             cpus->cpus[i].percentages[CP_NICE],
-            cpus->cpus[i].percentages[CP_USER]
+            cpus->cpus[i].percentages[CP_INTR]
             });
       ui->xcurrent += xdraw_histogram(ui->xinfo, ui->xcurrent, colors, hist_cpu[i]);
       /*ui->xcurrent += ui->small_space;*/
