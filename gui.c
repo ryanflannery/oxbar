@@ -181,7 +181,7 @@ ui_widget_volume_draw(
             ui->xinfo->padding,
             volume->right_pct);
    }
-   xdraw_hline(ui->xinfo, "cb4b16b2", ui->xinfo->padding, startx, ui->xcurrent);
+   xdraw_hline(ui->xinfo, "cb4b16", ui->xinfo->padding, startx, ui->xcurrent);
    ui->xcurrent += ui->widget_padding;
 }
 
@@ -204,7 +204,7 @@ ui_widget_nprocs_draw(
          ui->xcurrent,
          ui->xinfo->padding,
          nprocs->nprocs);
-   xdraw_hline(ui->xinfo, "dc322fb2", ui->xinfo->padding, startx, ui->xcurrent);
+   xdraw_hline(ui->xinfo, "dc322f", ui->xinfo->padding, startx, ui->xcurrent);
    ui->xcurrent += ui->widget_padding;
 }
 
@@ -245,7 +245,7 @@ ui_widget_memory_draw(
    ui->xcurrent += xdraw_memory(ui->xinfo, "859900", ui->xcurrent, ui->xinfo->padding, memory->free);
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "free");
-   xdraw_hline(ui->xinfo, "d33682b2", ui->xinfo->padding, startx, ui->xcurrent);
+   xdraw_hline(ui->xinfo, "d33682", ui->xinfo->padding, startx, ui->xcurrent);
 
    ui->xcurrent += ui->widget_padding;
 }
@@ -291,9 +291,25 @@ ui_widget_cpus_draw(
             CPUS.cpus[i].percentages[CP_IDLE]);
       ui->xcurrent += ui->small_space;
    }
-   xdraw_hline(ui->xinfo, "6c71c4b2", ui->xinfo->padding, startx, ui->xcurrent);
+   xdraw_hline(ui->xinfo, "6c71c4", ui->xinfo->padding, startx, ui->xcurrent);
 
    ui->xcurrent += ui->widget_padding;
+}
+
+void
+ui_widget_net_draw(
+      oxbarui_t  *ui,
+      net_info_t *net)
+{
+   double startx = ui->xcurrent;
+   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "Network: ");
+   ui->xcurrent += xdraw_int(ui->xinfo, "859900b2", ui->xcurrent, ui->xinfo->padding, net->new_ip_packets_in);
+   ui->xcurrent += ui->small_space;
+   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "in ");
+   ui->xcurrent += xdraw_int(ui->xinfo, "dc322fb2", ui->xcurrent, ui->xinfo->padding, net->new_ip_packets_out);
+   ui->xcurrent += ui->small_space;
+   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "out");
+   xdraw_hline(ui->xinfo, "268bd2", ui->xinfo->padding, startx, ui->xcurrent);
 }
 
 void
@@ -304,7 +320,7 @@ ui_widget_time_draw(
    static char buffer[OXBAR_STR_MAX_TIME_LEN];
 
    time_t now = time(NULL);
-   strftime(buffer, OXBAR_STR_MAX_TIME_LEN, "%a %d %b %Y %I:%M:%S %p", localtime(&now));
+   strftime(buffer, OXBAR_STR_MAX_TIME_LEN, "%a %d %b %Y  %I:%M:%S %p", localtime(&now));
    int width = xdraw_text_right_aligned(
          ui->xinfo,
          ui->fgcolor,
@@ -312,6 +328,6 @@ ui_widget_time_draw(
          ui->xinfo->padding,
          buffer);
 
-   xdraw_hline(ui->xinfo, "268bd2b2", ui->xinfo->padding,
+   xdraw_hline(ui->xinfo, "859900", ui->xinfo->padding,
          ui->xinfo->display_width - width, ui->xinfo->display_width);
 }

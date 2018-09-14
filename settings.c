@@ -9,7 +9,7 @@ settings_load_defaults(settings_t *s)
    s->display.x = 0;
    s->display.y = -1; /*1360;*/
    s->display.w = -1;
-   s->display.h = 28;
+   s->display.h = 30;
    s->display.top_padding = 10;
    s->display.widget_padding = 15;
    s->display.wmname  = strdup(getprogname());
@@ -17,7 +17,7 @@ settings_load_defaults(settings_t *s)
    s->display.fgcolor = strdup("93a1a1");
    s->display.font    = strdup("DejaVu Sans 18px");
 
-   s->battery.hdcolor = strdup("b58900b2");
+   s->battery.hdcolor = strdup("b58900");
    s->battery.color_unplugged = strdup("dc322f");
    s->battery.chart_width = 7;
    s->battery.chart_color_power = strdup("859900");

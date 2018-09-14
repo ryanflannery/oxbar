@@ -56,6 +56,11 @@ ui_widget_cpus_draw(
       cpus_t     *cpus);
 
 void
+ui_widget_net_draw(
+      oxbarui_t  *ui,
+      net_info_t *net);
+
+void
 ui_widget_time_draw(
       oxbarui_t  *ui);
 

@@ -4,6 +4,7 @@
 #include "battery.h"
 #include "cpu.h"
 #include "memory.h"
+#include "net.h"
 #include "nprocs.h"
 #include "volume.h"
 

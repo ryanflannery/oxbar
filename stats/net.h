@@ -2,6 +2,7 @@
 #define NET_H
 
 #include <stdbool.h>
+#include <sys/types.h>
 
 typedef struct net_info {
    bool  is_setup;

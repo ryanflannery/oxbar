@@ -123,6 +123,9 @@ draw_oxbar()
    if (CPUS.is_setup)
       ui_widget_cpus_draw(g_ui, &CPUS);
 
+   if (NET.is_setup)
+      ui_widget_net_draw(g_ui, &NET);
+
    ui_widget_time_draw(g_ui);
 
    ui_flush(g_ui);
