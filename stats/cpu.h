@@ -18,7 +18,6 @@ typedef struct cpu_states {
     *    4  CP_IDLL  idle
     */
    float       percentages[CPUSTATES];       /* % time spent in each */
-   char       *str_percentages[CPUSTATES];   /* str versions of the above */
    u_int64_t   raw_ticks[CPUSTATES];         /* raw tick counters for each */
 } cpu_states_t;
 

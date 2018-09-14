@@ -111,14 +111,6 @@ cpu_update()
       for (state = 0; state < CPUSTATES; state++)
          CPUS.cpus[0].raw_ticks[state] = current_ticks[state];
    }
-
-   /* update string versions */
-   for (cpu = 0; cpu < CPUS.ncpu; cpu++) {
-      for (state = 0; state < CPUSTATES; state++) {
-         if (NULL != CPUS.cpus[cpu].str_percentages[state])
-            free(CPUS.cpus[cpu].str_percentages[state]);
-      }
-   }
 }
 
 void
