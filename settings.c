@@ -24,8 +24,8 @@ settings_load_defaults(settings_t *s)
    s->battery.chart_color_remaining = strdup("dc322f");
 }
 
-/* FIXME meh... this is becoming too much work... chew on simpler way
- * think of settings arrays built by macros i've seen eleswhere
+/* TODO Create Settings Abstraction
+ * See previous todo's on this
 void
 settings_free(settings_t *s)
 {

@@ -21,8 +21,15 @@ ui_create(settings_t *s)
    /* These need to be done in a specific order */
    xcore_setup_x_connection_screen_visual(ui->xinfo);
 
-   /* TODO this would be lovely to support again. i need to figure out how
-    * to query pango, for a loaded font description, for the font size.
+   /* TODO Support display height based on font size
+    * I used to support this using the cairo font API where the font size was
+    * explicit, and I could use that to autoscale the display height as an
+    * option (display height = font size + 2 * padding).
+    * This would be great to support again, but after migrating to pango for
+    * font loading and rendering (a big improvement in appearance) I haven't
+    * yet figured out how to retrieve font height (not specific TEXT RENDERED
+    * IN A FONT but rather generic font height).
+    *
    if (-1 == height)
       height = (uint32_t)(ceil(fontpt + (2 * padding)));
     */
@@ -50,11 +57,13 @@ ui_create(settings_t *s)
 
    ui->settings = s;
 
-   /* TODO remove these once migrated over to settings */
+   /* TODO Create settings abstraction
+    * Remove these once i've migrated over to that
+    */
    ui->widget_padding = ui->settings->display.widget_padding;
    ui->fgcolor = strdup(ui->settings->display.fgcolor);
    ui->bgcolor = strdup(ui->settings->display.bgcolor);
-   /* end TODO */
+   /* XXX Regarding the above todo, I think this one might make sense to keep */
    ui->small_space = xdraw_text(ui->xinfo, NULL, 0, 0, " ");
 
    return ui;
@@ -83,11 +92,53 @@ ui_flush(oxbarui_t *ui)
    xdraw_flush(ui->xinfo);
 }
 
+/* TODO Remove state From ui_widget_*_draw(...) components
+ * So currently, *most* ui_widget_*_draw() routines are stateless: they take
+ * in the ui object and the relevant stat\/.* component(s) and render them.
+ * The ones that need to draw history (say for histograms or timeseries),
+ * however, store a static local histogram initialized on the first call.
+ * I've debated moving each of these into their own object.
+ *    1. Making proper widget objects has an appeal - there are properties and
+ *       logic seperate to each, likely with a common (enough) interface to
+ *       abstract.
+ *    2. On the other hand, in the case of oxbar, I will *NEVER* have two of
+ *       the same widgets (I can't see a scenario for this). So it seems
+ *       wasteful to create a bunch of objects whose sole purpose to maintain
+ *       state that could otherwise be done simply like below.
+ *    3. Some other yet-to-be-determined, and hopefully elegant, solution.
+ */
+
+/* TODO Simplify xdraw.* For widget rendering
+ * See the widget below. They all follow the same pattern of passing the
+ * x/y start and other information to each underlying xdraw.* primitive.
+ * It works...but it's damn cumbersome. I'd rather try to simplify that more.
+ * Could a simple ui-context object encapsulating all that help simplify
+ * things? (putting x/y/w/h in there?)
+ * That's very similar to what cairo does with its rendering API. You just
+ * call methods to alter the current state and then execute that state.
+ *
+ * Remember the ultimate goal here is:
+ *              TO MAKE CREATING AND TWEAKING WIDGETS EASY!
+ * That way it's easy and more likely for me to do so in the future.
+ */
+
 void
 ui_widget_battery_draw(
       oxbarui_t      *ui,
       battery_info_t *battery)
 {
+   /* TODO For settings abstraction: simplify this case
+    * Notice this widget will use the settings.* component for picking the
+    * colors of the bar. But I still need defaults defined here as a fallback
+    * option in case those settings weren't set.
+    * Now, I could just enforce defaults and that fallback logic in my
+    * settings.* component...right? But then here I just have to "assume" those
+    * colors are set/kosher/not-null/etc. I don't necessary like that.
+    * I want a hard gaurantee that such things are set entering here.
+    *
+    * This same issue occurs in the memory and cpu components below (and likely
+    * more).
+    */
    static const char *colors[] = {
       "dc322f",
       "859900"
@@ -117,7 +168,6 @@ ui_widget_battery_draw(
          ui->settings->battery.chart_width,
          2, colors,
          (double[]){100.0 - battery->charge_pct, battery->charge_pct});
-   /*ui->xcurrent += ui->small_space;*/
    ui->xcurrent += xdraw_percent(
          ui->xinfo,
          ui->settings->display.fgcolor,
@@ -159,7 +209,6 @@ ui_widget_volume_draw(
       ui->xcurrent += xdraw_vertical_stack(ui->xinfo, ui->xcurrent, 7, 2,
             colors,
             (double[]){100.0 - volume->left_pct, volume->left_pct});
-      /*ui->xcurrent += ui->small_space;*/
       ui->xcurrent += xdraw_percent(
             ui->xinfo,
             ui->fgcolor,
@@ -173,7 +222,6 @@ ui_widget_volume_draw(
             ui->xcurrent,
             ui->xinfo->padding,
             volume->left_pct);
-      /*ui->xcurrent += ui->small_space;*/
       ui->xcurrent += xdraw_percent(
             ui->xinfo,
             ui->fgcolor,

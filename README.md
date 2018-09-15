@@ -37,7 +37,7 @@ Stats currently supported are:
 No configuration options yet - only in code. This will likely be added last,
 after I determine how best to query and display all information.
 
-# Plan / TODO
+# Plan / Priorities
 
 Roughly in order or my priority...
 

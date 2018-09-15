@@ -42,12 +42,16 @@ main ()
     */
    xcb_generic_event_t *xevent;
    while ((xevent = xcb_wait_for_event(g_ui->xinfo->xcon))) {
-      switch (xevent->response_type & ~0x80) {   /* TODO: wtf is "& ~0x80?" */
+      /* TODO WTF is "& ~0x80?" needed for in this xcb_event_t check?
+       * This is straight from xcb documentation. I have no idea why it's
+       * needed and haven't figured out yet.
+       */
+      switch (xevent->response_type & ~0x80) {
          case XCB_EXPOSE:
             draw_oxbar();
             break;
          default:
-            /* TODO - i get these - what are they!? */
+            /* TODO Identify what the other X events are we recieve */
             break;
       }
    }
@@ -58,19 +62,40 @@ main ()
    return 0;
 }
 
+/* TODO Fix XCB event handling and signal handling
+ * I have some issues below - namely in a signal handler I'm calling non-
+ * reentrant safe code (stats_update() and draw_oxbar()).
+ * That's horrible...and I know it.
+ *
+ * I need to rectify using xcb_wait_for_event(..) for my main X loop (a
+ * blocking API) with my use of setitimer(2) for the 1-second updates
+ * -or-
+ * Go full pthread?
+ * -or-
+ * sem_poll(2) below?
+ * -or-
+ *  Something else...?
+ */
 void
 signal_handler(int sig)
 {
    switch (sig) {
-      case SIGHUP:   /* TODO: reload config on this, once i hvae that */
+      /* TODO On SIGHUP, reload config instead of quiting */
+      case SIGHUP:
       case SIGINT:
       case SIGQUIT:
       case SIGTERM:
+         /* TODO Bad signal handler! Bad! These aren't reentrant!
+          * See todo above this function.
+          */
          ui_destroy(g_ui);
          stats_close();
          exit(1);
          break;
       case SIGALRM:
+         /* TODO Bad signal handler! Bad! These aren't reentrant!
+          * See todo above this function.
+          */
          stats_update();
          draw_oxbar();
          break;

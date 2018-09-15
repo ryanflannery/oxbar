@@ -17,7 +17,14 @@ typedef struct oxbarui {
    /* state */
    double   xcurrent;
 
-   /* TODO to be removed once migrated over fully to settings */
+   /* TODO Create settings abstraction
+    * Once all settings abstracted away (to settings.* ?) remove the below.
+    * These are hangovers from my migration to abstracting all settings into
+    * a new component, settings.h|c, which the gui would then use. My approach
+    * though is...tedious. I've only migrated core X setup (x,y,width,height)
+    * and the battery widget to use the new settings.* component. As such,
+    * the other widgets, and the below settings, still need seperate handling.
+    */
    int widget_padding;
    int small_space;
    char *fgcolor;

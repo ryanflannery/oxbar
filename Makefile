@@ -26,10 +26,16 @@ all: .DEFAULT oxbar
 oxbar: $(OBJS) $(SOBS) $(GOBJS)
 	$(CC) -o $@ $(LDFLAGS) $(OBJS) $(SOBJS) $(GOBJS)
 
-.PHONY: clean
+.PHONY: clean TODO
 
+# TODO Get gprof Profiling Working
+# I'd really love to inspect and optimize my stats update and render loops
+# to try and make oxbar snappier!
 profile: clean
 	CFLAGS="-fno-pie -g -pg" LDFLAGS="-g -pg -fno-pie -lc_p" $(MAKE)
+
+TODO:
+	grep -nr TODO * | sed "s/ *\/\* *TODO/TODO/" | sed "s/ *\*\///" | sed "s/ *\# *TODO/TODO/" > $@
 
 clean:
 	$(MAKE) -C stats $(MFLAGS) $@

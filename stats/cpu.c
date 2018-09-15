@@ -40,6 +40,17 @@ cpu_update()
    static int  mib[] = { CTL_KERN, 0, 0 };
    int         cpu, state;
 
+   /* TODO Remove duplicate logic in CPU update logic
+    * The below logic splits based on # of cpus: one path for 1cpu and another
+    * for multiple (bsd vs bsd.mp kernels). I've tested both and they work,
+    * but there are subtle differences (I think only type at this point?).
+    *
+    * I could/should try to consolidate further, but frankly I only use the
+    * multiprocessor path, and I imagine every laptop in the past 15 years
+    * would default to that path also. As such, this is very low priority for
+    * me.
+    */
+
    /* get RAW cpu ticks & update percentages */
    if (CPUS.ncpu > 1) {
       mib[1] = KERN_CPTIME2;
@@ -116,5 +127,5 @@ cpu_update()
 void
 cpu_close()
 {
-   /* TODO: free shiz */
+   /* TODO CPU cleanup routine should free/cleanup shiz */
 }

@@ -107,6 +107,12 @@ xcore_setup_x_window(
  *       minimized/hidden/etc during common window manager actions (like
  *       switching "spaces"/"workplaces"/etc).
  *
+ * When starting oxbar, I searched for other applications who were doing such
+ * things to see how "the modern folk" were doing this. The code I found from
+ * yabar and a couple others looked like xstatbar's (my previous app), but
+ * introduced an enum to replaced magic numbers. I did that below...it's an
+ * improvement to the chaos. I still don't get it though.
+ *
  * I'm sure this could be done better, and I welcome the brave knight who
  * succeeds in doing so. Their righteous pull request would earn an instant
  * pitcher of "Beer of Thou's Chosing" from me.
@@ -168,7 +174,6 @@ xcore_setup_x_wm_hints(xinfo_t *x)
    struts[top] = x->y + x->h;
    struts[top_start_x] = x->x;
    struts[top_end_x] = x->x + x->w;
-   /* TODO - see xstatbar.c - need more work here */
 
 	xcb_change_property(x->xcon, XCB_PROP_MODE_REPLACE, x->xwindow,
          xatoms[NET_WM_XINFO_TYPE], XCB_ATOM_ATOM, 32, 1,
@@ -199,9 +204,8 @@ xcore_setup_cairo(xinfo_t *x)
          x->xvisual,
          x->w,
          x->h);
-   /* TODO check surface */
    x->cairo = cairo_create(x->surface);
-   /* TODO check cairo */
+   /* TODO Should I be checking the surface & cairo objects here? */
 }
 
 void
@@ -215,6 +219,7 @@ xcore_setup_xfont(
    x->playout = pango_cairo_create_layout(x->cairo);
    x->pfont = pango_font_description_from_string(x->font);
    pango_layout_set_font_description(x->playout, x->pfont);
+   /* TODO Are there any error checking methods to call after pango? */
 }
 
 void

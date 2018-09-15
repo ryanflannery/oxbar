@@ -31,7 +31,6 @@ memory_init()
    MEMORY.active = MEMORY.free = MEMORY.total = 0;
    MEMORY.swap_used = MEMORY.swap_total = 0;
 
-
    /* default values: percentages */
    MEMORY.active_pct = MEMORY.free_pct = 0.0;
    MEMORY.swap_used_pct = 0.0;
@@ -86,5 +85,5 @@ memory_update()
 void
 memory_close()
 {
-   /* TODO: free shit and audit above */
+   /* TODO MEMORY cleanup routine should free/cleanup shiz */
 }

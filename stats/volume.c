@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-
 #include <err.h>
 #include <fcntl.h>
 #include <math.h>
@@ -135,13 +134,23 @@ volume_init()
    VOLUME.is_setup = true;
 }
 
+/* TODO GET VOLUME "IS MUTED?" WORKING
+ * There's a great deal of commented-out code here. This is mostly around
+ * trying to figure out how to determine "mute" status, which is something
+ * I would really like.
+ *
+ * I've been digging through mixerctl(1) code and it nicely shows how to
+ * recursively iterate through all devices and check their stats. I haven't
+ * been able to extract from that how to determine mute status though.
+ *
+ * Jacob Meuser gave some great advice in the thread below about how best to
+ * query all devices and extract such stats. What I need to do is dedicate
+ * an evening to just dive-into and figure this.
+ * See: https://marc.info/?l=openbsd-ports&m=125177906413076&w=2
+ */
 void
 volume_update_mute()
 {
-   /*
-    * TODO FIXME XXX
-    * this is still in the works
-    */
    static mixer_devinfo_t vinfo;
 
    if (!VOLUME.is_setup)
@@ -175,8 +184,6 @@ volume_update()
 
    if (!VOLUME.is_setup)
       return;
-
-   /* TODO FIXME fuccck why is this hard!? volume_update_mute();*/
 
    /* query info */
    vinfo.dev = volume_master_idx;

@@ -47,7 +47,9 @@ net_update_packets()
    NET.raw_ip_packets_out = stats.ips_localout;
 }
 
-/*
+/* TODO Implement network #bytes in/out on egress widget
+ * Checking out the source code for netstart/if.c, this seems doable easily.
+ * And it would be useful!
 void
 net_update_bytes()
 {
@@ -67,5 +69,5 @@ net_update()
 void
 net_close()
 {
-   /* TODO free shiz? */
+   /* TODO NET cleanup routine should free/cleanup shiz */
 }

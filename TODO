@@ -1,0 +1,29 @@
+Makefile:29:.PHONY: clean TODO
+Makefile:31:TODO Get gprof Profiling Working
+Makefile:37:TODO:
+Makefile:38:	grep -nr TODO * | sed "s/ *\/\* *TODO/TODO/" | sed "s/ *\*\///" | sed "s/ *\# *TODO/TODO/" > $@
+gui/xcore.c:208:TODO Should I be checking the surface & cairo objects here?
+gui/xcore.c:222:TODO Are there any error checking methods to call after pango?
+gui.c:24:TODO Support display height based on font size
+gui.c:60:TODO Create settings abstraction
+gui.c:95:TODO Remove state From ui_widget_*_draw(...) components
+gui.c:111:TODO Simplify xdraw.* For widget rendering
+gui.c:130:TODO For settings abstraction: simplify this case
+gui.h:20:TODO Create settings abstraction
+oxbar.c:45:TODO WTF is "& ~0x80?" needed for in this xcb_event_t check?
+oxbar.c:54:TODO Identify what the other X events are we recieve
+oxbar.c:65:TODO Fix XCB event handling and signal handling
+oxbar.c:83:TODO On SIGHUP, reload config instead of quiting
+oxbar.c:88:TODO Bad signal handler! Bad! These aren't reentrant!
+oxbar.c:96:TODO Bad signal handler! Bad! These aren't reentrant!
+settings.c:27:TODO Create Settings Abstraction
+settings.h:4:TODO Create Settings Abstraction
+settings.h:62:TODO Implement the below settings.* loaders once settings are settled
+stats/brightness.h:1:TODO Build a working brightness widget
+stats/cpu.c:43:TODO Remove duplicate logic in CPU update logic
+stats/cpu.c:130:TODO CPU cleanup routine should free/cleanup shiz
+stats/memory.c:88:TODO MEMORY cleanup routine should free/cleanup shiz
+stats/volume.c:137:TODO GET VOLUME "IS MUTED?" WORKING
+stats/volume.h:9:TODO GET VOLUME "IS MUTED?" WORKING
+stats/net.c:50:TODO Implement network #bytes in/out on egress widget
+stats/net.c:72:TODO NET cleanup routine should free/cleanup shiz

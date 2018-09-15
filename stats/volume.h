@@ -6,6 +6,7 @@
 typedef struct volume_info {
    bool  is_setup;
 
+   /* TODO GET VOLUME "IS MUTED?" WORKING */
    bool  muted;
    float left_pct, right_pct;
 
