@@ -2,8 +2,8 @@
 CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2
 LDFLAGS += -lm
 
-OBJS  = battery.o cpu.o memory.o net.o nprocs.o volume.o stats.o
-TESTS = battery.t cpu.t memory.t net.t nprocs.t volume.t
+OBJS  = battery.o cpu.o memory.o net.o nprocs.o pf.o volume.o stats.o
+TESTS = battery.t cpu.t memory.t net.t nprocs.t pf.t volume.t
 
 
 .PHONY: all clean
@@ -28,6 +28,9 @@ net.t: net.t.o net.o
 
 nprocs.t: nprocs.t.o nprocs.o
 	$(CC) -o $@ $(LDFLAGS) nprocs.t.o nprocs.o
+
+pf.t: pf.t.o pf.o
+	$(CC) -o $@ $(LDFLAGS) pf.t.o pf.o
 
 volume.t: volume.t.o volume.o
 	$(CC) -o $@ $(LDFLAGS) volume.t.o volume.o

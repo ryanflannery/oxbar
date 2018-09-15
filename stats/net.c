@@ -24,11 +24,11 @@ net_init()
 }
 
 void
-net_update()
+net_update_packets()
 {
-   struct ipstat stats;
-	int mib[] = { CTL_NET, PF_INET, IPPROTO_IP, IPCTL_STATS };
-	size_t len = sizeof(stats);
+   static struct ipstat stats;
+	static int mib[] = { CTL_NET, PF_INET, IPPROTO_IP, IPCTL_STATS };
+	static size_t len = sizeof(stats);
 
 	if (-1 == sysctl(mib, sizeof(mib) / sizeof(mib[0]), &stats, &len, NULL, 0))
       err(1, "sysctl CTL_NET.PF_INET.IPPROTO_IP.IPCTL_STATS failed");
@@ -45,6 +45,23 @@ net_update()
 
    NET.raw_ip_packets_in  = stats.ips_total;
    NET.raw_ip_packets_out = stats.ips_localout;
+}
+
+/*
+void
+net_update_bytes()
+{
+   static struct ipstat stats;
+	static int mib[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
+	static size_t len = sizeof(stats);
+}
+*/
+
+void
+net_update()
+{
+   net_update_packets();
+   /*net_update_bytes();*/
 }
 
 void
