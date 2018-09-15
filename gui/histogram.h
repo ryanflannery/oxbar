@@ -3,11 +3,19 @@
 
 #include <sys/types.h>
 
+/*
+ * A histogram is an N x M array of percentags (doubles), where
+ * N = number of series
+ * M = number of samples of each series
+ *
+ * Each sample is a percentage, represented as a double.
+ * The sum of all series for a given sample should sum to 100.
+ */
 typedef struct histogram {
    size_t   nseries;    /* how many series the histogram has         */
    size_t   nsamples;   /* how many samples of each series there are */
    size_t   current;    /* index of current column in series         */
-   double **series;     /* the nseries x nsamples array of data      */
+   double **series;     /* the nseries x nsamples array of percents  */
 } histogram_t;
 
 histogram_t* histogram_init(size_t nsamples, size_t nseries);
