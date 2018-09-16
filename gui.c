@@ -176,13 +176,12 @@ ui_widget_battery_draw(
          "% 3.0f%%", battery->charge_pct);
 
    if (-1 != battery->minutes_remaining) {
-      ui->xcurrent += ui->small_space;
       ui->xcurrent += xdraw_printf(
             ui->xinfo,
             ui->settings->display.fgcolor,
             ui->xcurrent,
             ui->xinfo->padding,
-            "%dh %dm",
+            " %dh %dm",
                battery->minutes_remaining / 60,
                battery->minutes_remaining % 60);
    }
