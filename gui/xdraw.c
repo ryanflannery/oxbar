@@ -175,7 +175,7 @@ xdraw_memory(
 {
    static const size_t OXBAR_STR_MAX_MEMORY_LEN = 100;
    static char        buffer[OXBAR_STR_MAX_MEMORY_LEN];
-   static const char *suffixes[] = { "K", "M", "G", "T" };
+   static const char *suffixes[] = { "k", "M", "G", "T", "P" };
    static size_t      snum       = sizeof(suffixes) / sizeof(suffixes[0]);
 
    double dbytes  = (double) kbytes;
@@ -236,6 +236,51 @@ xdraw_vertical_stack(
             height);
       offset += height;
       cairo_fill(xinfo->cairo);
+   }
+
+   return width;
+}
+
+uint32_t
+xdraw_series(
+      xinfo_t       *xinfo,
+      double         x,
+      const char   **colors,
+      tseries_t     *t)
+{
+   double r, g, b, a;
+   size_t width = t->size;
+
+   /* paint grey background to start */
+   hex2rgba("535353", &r, &g, &b, &a);
+   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
+   cairo_rectangle(xinfo->cairo,
+         x,
+         xinfo->padding,
+         width,
+         (xinfo->h - xinfo->padding));
+   cairo_fill(xinfo->cairo);
+
+   size_t count, i;
+   double max = t->values[0];
+   for (i = 1; i < t->size; i++)
+      if (t->values[i] > max)
+         max = t->values[i];
+
+   for (count = 0, i = t->current + 1; count < t->size; count++, i++) {
+      if (i >= t->size)
+         i = 0;
+
+      xdraw_vertical_stack(
+            xinfo,
+            x + count,
+            1,
+            2,
+            colors,
+            (double[]) {
+               (max - t->values[i]) / max * 100,
+               t->values[i] / max * 100
+            });
    }
 
    return width;

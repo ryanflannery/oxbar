@@ -349,14 +349,46 @@ ui_widget_net_draw(
       oxbarui_t  *ui,
       net_info_t *net)
 {
+   static const char *colors_in[] = {
+      "859900",   /* free */
+      "157ad2",   /* in */
+   };
+   static const char *colors_out[] = {
+      "859900",   /* free */
+      "dc322f",   /* out */
+   };
+
+   static tseries_t *bytes_in  = NULL;
+   static tseries_t *bytes_out = NULL;
+
+   if (NULL == bytes_in || NULL == bytes_out) {
+      bytes_in  = tseries_init(60);
+      bytes_out = tseries_init(60);
+   }
+
+   tseries_update(bytes_in,  net->new_bytes_in);
+   tseries_update(bytes_out, net->new_bytes_out);
+
    double startx = ui->xcurrent;
+
    ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "Network: ");
+   /*
+    * TODO I'm not sure seeing the #packets in/out is...useful. Remove?
    ui->xcurrent += xdraw_int(ui->xinfo, "859900b2", ui->xcurrent, ui->xinfo->padding, net->new_ip_packets_in);
+   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, " in");
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "in ");
    ui->xcurrent += xdraw_int(ui->xinfo, "dc322fb2", ui->xcurrent, ui->xinfo->padding, net->new_ip_packets_out);
+   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, " out ");
+   */
+
+   ui->xcurrent += xdraw_series(ui->xinfo, ui->xcurrent, colors_in, bytes_in);
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "out");
+   ui->xcurrent += xdraw_memory(ui->xinfo, "268bd2", ui->xcurrent, ui->xinfo->padding, net->new_bytes_in / 1000);
+   ui->xcurrent += ui->small_space;
+   ui->xcurrent += xdraw_series(ui->xinfo, ui->xcurrent, colors_out, bytes_out);
+   ui->xcurrent += ui->small_space;
+   ui->xcurrent += xdraw_memory(ui->xinfo, "dc322f", ui->xcurrent, ui->xinfo->padding, net->new_bytes_out / 1000);
+
    xdraw_hline(ui->xinfo, "268bd2", ui->xinfo->padding, startx, ui->xcurrent);
 }
 

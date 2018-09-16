@@ -8,12 +8,16 @@ typedef struct net_info {
    bool  is_setup;
 
    /* raw counters (these can rollover) */
-   u_long  raw_ip_packets_in;
-   u_long  raw_ip_packets_out;
+   u_long   raw_ip_packets_in;
+   u_long   raw_ip_packets_out;
+   uint64_t raw_bytes_in;
+   uint64_t raw_bytes_out;
 
    /* diff since last update */
-   u_long  new_ip_packets_in;
-   u_long  new_ip_packets_out;
+   u_long   new_ip_packets_in;
+   u_long   new_ip_packets_out;
+   uint64_t new_bytes_in;
+   uint64_t new_bytes_out;
 
 } net_info_t;
 

@@ -2,6 +2,7 @@
 #define XDRAW_H
 
 #include "xcore.h"
+#include "tseries.h"
 #include "histogram.h"
 
 /*
@@ -84,6 +85,13 @@ xdraw_vertical_stack(
       size_t       nvalues,
       const char **colors,
       double      *percents);
+
+uint32_t
+xdraw_series(
+      xinfo_t       *xinfo,
+      double         x,
+      const char   **colors,
+      tseries_t     *t);
 
 uint32_t
 xdraw_histogram(

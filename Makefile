@@ -10,7 +10,7 @@ LDFLAGS += -L/usr/X11R6/lib `pkg-config --libs pangocairo` -lxcb -lxcb-icccm
 # object sets (OBJS = this dir, SOBJS = stats/*, GOBJS = giu/*)
 OBJS  = gui.o oxbar.o settings.o
 SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o stats/volume.o stats/stats.o
-GOBJS = gui/histogram.o gui/xcore.o gui/xdraw.o
+GOBJS = gui/histogram.o gui/xcore.o gui/xdraw.o gui/tseries.o
 
 # by default, recurse into stats/ and gui/ and then build oxbar
 .DEFAULT:
@@ -35,7 +35,11 @@ profile: clean
 	CFLAGS="-fno-pie -g -pg" LDFLAGS="-g -pg -fno-pie -lc_p" $(MAKE)
 
 TODO:
-	grep -nr TODO * | sed "s/ *\/\* *TODO/TODO/" | sed "s/ *\*\///" | sed "s/ *\# *TODO/TODO/" > $@
+	grep -nr TODO * \
+		| sed 's/ *\/\* *TODO/TODO/' \
+		| sed 's/ *\*\///' \
+		| sed 's/ *\# *TODO/TODO/' \
+		| grep -v '^Makefile' > $@
 
 clean:
 	$(MAKE) -C stats $(MFLAGS) $@

@@ -1,7 +1,4 @@
-Makefile:29:.PHONY: clean TODO
-Makefile:31:TODO Get gprof Profiling Working
-Makefile:37:TODO:
-Makefile:38:	grep -nr TODO * | sed "s/ *\/\* *TODO/TODO/" | sed "s/ *\*\///" | sed "s/ *\# *TODO/TODO/" > $@
+Binary file grep.core matches
 gui/xcore.c:208:TODO Should I be checking the surface & cairo objects here?
 gui/xcore.c:222:TODO Are there any error checking methods to call after pango?
 gui.c:24:TODO Support display height based on font size
@@ -25,5 +22,6 @@ stats/cpu.c:130:TODO CPU cleanup routine should free/cleanup shiz
 stats/memory.c:88:TODO MEMORY cleanup routine should free/cleanup shiz
 stats/volume.c:137:TODO GET VOLUME "IS MUTED?" WORKING
 stats/volume.h:9:TODO GET VOLUME "IS MUTED?" WORKING
-stats/net.c:50:TODO Implement network #bytes in/out on egress widget
-stats/net.c:72:TODO NET cleanup routine should free/cleanup shiz
+stats/net.c:56:TODO Refactor network bytes logic
+stats/net.c:119:TODO Support configurable interface -or- just use egress
+stats/net.c:144:TODO NET cleanup routine should free/cleanup shiz
