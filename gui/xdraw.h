@@ -22,12 +22,13 @@ void xdraw_clear_all(xinfo_t *xinfo, const char *color);
 void xdraw_flush(xinfo_t *xinfo);
 
 uint32_t
-xdraw_text(
+xdraw_printf(
       xinfo_t    *xinfo,
       const char *color,
       double      x,
       double      y,
-      const char *text);
+      const char *fmt,
+      ...);
 
 uint32_t
 xdraw_text_right_aligned(
@@ -36,46 +37,6 @@ xdraw_text_right_aligned(
       double      x,
       double      y,
       const char *text);
-
-uint32_t
-xdraw_int(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      x,
-      double      y,
-      int         i);
-
-uint32_t
-xdraw_percent(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      x,
-      double      y,
-      double      percent);
-
-uint32_t
-xdraw_timespan(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      x,
-      double      y,
-      int         minutes);
-
-uint32_t
-xdraw_memory(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      x,
-      double      y,
-      int         kbytes);
-
-uint32_t
-xdraw_memory_noprecision(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      x,
-      double      y,
-      int         kbytes);
 
 void
 xdraw_hline(

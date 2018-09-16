@@ -7,6 +7,8 @@
 typedef struct net_info {
    bool  is_setup;
 
+   /* TODO Raw # packets in/out isn't used anymore. Remove? */
+
    /* raw counters (these can rollover) */
    u_long   raw_ip_packets_in;
    u_long   raw_ip_packets_out;

@@ -64,7 +64,7 @@ ui_create(settings_t *s)
    ui->fgcolor = strdup(ui->settings->display.fgcolor);
    ui->bgcolor = strdup(ui->settings->display.bgcolor);
    /* XXX Regarding the above todo, I think this one might make sense to keep */
-   ui->small_space = xdraw_text(ui->xinfo, NULL, 0, 0, " ");
+   ui->small_space = xdraw_printf(ui->xinfo, NULL, 0, 0, " ");
 
    return ui;
 }
@@ -156,7 +156,7 @@ ui_widget_battery_draw(
    if (NULL != ui->settings->battery.chart_color_power)
       colors[1] = ui->settings->battery.chart_color_power;
 
-   ui->xcurrent += xdraw_text(
+   ui->xcurrent += xdraw_printf(
          ui->xinfo,
          fgcolor,
          ui->xcurrent,
@@ -168,22 +168,25 @@ ui_widget_battery_draw(
          ui->settings->battery.chart_width,
          2, colors,
          (double[]){100.0 - battery->charge_pct, battery->charge_pct});
-   ui->xcurrent += xdraw_percent(
+   ui->xcurrent += xdraw_printf(
          ui->xinfo,
          ui->settings->display.fgcolor,
          ui->xcurrent,
          ui->xinfo->padding,
-         battery->charge_pct);
+         "% 3.0f%%", battery->charge_pct);
 
    if (-1 != battery->minutes_remaining) {
       ui->xcurrent += ui->small_space;
-      ui->xcurrent += xdraw_timespan(
+      ui->xcurrent += xdraw_printf(
             ui->xinfo,
             ui->settings->display.fgcolor,
             ui->xcurrent,
             ui->xinfo->padding,
-            battery->minutes_remaining);
+            "%dh %dm",
+               battery->minutes_remaining / 60,
+               battery->minutes_remaining % 60);
    }
+
    xdraw_hline(ui->xinfo, ui->settings->battery.hdcolor, ui->xinfo->padding, startx, ui->xcurrent);
    ui->xcurrent += ui->settings->display.widget_padding;
 }
@@ -199,36 +202,32 @@ ui_widget_volume_draw(
    };
    double startx = ui->xcurrent;
 
-   ui->xcurrent += xdraw_text(
+   ui->xcurrent += xdraw_printf(
          ui->xinfo,
          ui->fgcolor,
          ui->xcurrent,
          ui->xinfo->padding,
          "Volume: ");
-   if (volume->left_pct == volume->right_pct) {
-      ui->xcurrent += xdraw_vertical_stack(ui->xinfo, ui->xcurrent, 7, 2,
-            colors,
-            (double[]){100.0 - volume->left_pct, volume->left_pct});
-      ui->xcurrent += xdraw_percent(
-            ui->xinfo,
-            ui->fgcolor,
-            ui->xcurrent,
-            ui->xinfo->padding,
-            volume->left_pct);
-   } else {
-      ui->xcurrent += xdraw_percent(
-            ui->xinfo,
-            ui->fgcolor,
-            ui->xcurrent,
-            ui->xinfo->padding,
-            volume->left_pct);
-      ui->xcurrent += xdraw_percent(
-            ui->xinfo,
-            ui->fgcolor,
-            ui->xcurrent,
-            ui->xinfo->padding,
-            volume->right_pct);
-   }
+
+   /* TODO Should volume widget ever handle this case!?
+    * I used to render seperate bars & percentages for each. I don't think
+    * I've ever used that though in...10 years!?
+    * I'm going to skip doing it in oxbar and just warn here.
+    */
+   if (volume->left_pct != volume->right_pct)
+      warnx("%s: warnings! I don't properly render when left & right volume %%s aren't the same", __FUNCTION__);
+
+   ui->xcurrent += xdraw_vertical_stack(ui->xinfo, ui->xcurrent, 7, 2,
+         colors,
+         (double[]){100.0 - volume->left_pct, volume->left_pct});
+
+   ui->xcurrent += xdraw_printf(
+         ui->xinfo,
+         ui->fgcolor,
+         ui->xcurrent,
+         ui->xinfo->padding,
+         "% 3.0f%%", volume->left_pct);
+
    xdraw_hline(ui->xinfo, "cb4b16", ui->xinfo->padding, startx, ui->xcurrent);
    ui->xcurrent += ui->widget_padding;
 }
@@ -240,20 +239,42 @@ ui_widget_nprocs_draw(
 {
    double startx = ui->xcurrent;
 
-   ui->xcurrent += xdraw_text(
+   ui->xcurrent += xdraw_printf(
          ui->xinfo,
          ui->fgcolor,
          ui->xcurrent,
          ui->xinfo->padding,
-         "#Procs: ");
-   ui->xcurrent += xdraw_int(
-         ui->xinfo,
-         ui->fgcolor,
-         ui->xcurrent,
-         ui->xinfo->padding,
-         nprocs->nprocs);
+         "#Procs: %d", nprocs->nprocs);
+
    xdraw_hline(ui->xinfo, "dc322f", ui->xinfo->padding, startx, ui->xcurrent);
    ui->xcurrent += ui->widget_padding;
+}
+
+const char *
+fmt_memory(const char *fmt, int kbytes)
+{
+   static const size_t  OXBAR_FMT_MEM_MAX_LEN = 100;
+   static char          buffer[OXBAR_FMT_MEM_MAX_LEN];
+   static const char   *suffixes[] = { "k", "M", "G", "T", "P" };
+   static size_t        snum       = sizeof(suffixes) / sizeof(suffixes[0]);
+
+   double dbytes = (double) kbytes;
+   size_t step   = 0;
+   int    ret;
+
+   if (1024 < kbytes)
+      for (step = 0; (kbytes / 1024) > 0 && step < snum; step++, kbytes /= 1024)
+         dbytes = kbytes / 1024.0;
+
+   ret = snprintf(buffer, OXBAR_FMT_MEM_MAX_LEN, fmt, dbytes);
+   if (0 > ret)
+      err(1, "%s: snprintf failed for %d", __FUNCTION__, kbytes);
+
+   ret = snprintf(buffer + ret, OXBAR_FMT_MEM_MAX_LEN - ret, "%s", suffixes[step]);
+   if (0 > ret)
+      err(1, "%s: snprintf failed for %s", __FUNCTION__, suffixes[step]);
+
+   return buffer;
 }
 
 void
@@ -278,23 +299,23 @@ ui_widget_memory_draw(
          memory->active_pct
          });
 
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "Memory: ");
+   ui->xcurrent += xdraw_printf(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "Memory: ");
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_histogram(ui->xinfo, ui->xcurrent, colors, histogram);
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_memory(ui->xinfo, "dc322f", ui->xcurrent, ui->xinfo->padding, memory->active);
+   ui->xcurrent += xdraw_printf(ui->xinfo, "dc322f", ui->xcurrent, ui->xinfo->padding, "%s", fmt_memory("%.1lf", memory->active));
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "active");
+   ui->xcurrent += xdraw_printf(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "active");
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_memory(ui->xinfo, "b58900", ui->xcurrent, ui->xinfo->padding, memory->total);
+   ui->xcurrent += xdraw_printf(ui->xinfo, "b58900", ui->xcurrent, ui->xinfo->padding, "%s", fmt_memory("%.1lf", memory->total));
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "total");
+   ui->xcurrent += xdraw_printf(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "total");
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_memory(ui->xinfo, "859900", ui->xcurrent, ui->xinfo->padding, memory->free);
+   ui->xcurrent += xdraw_printf(ui->xinfo, "859900", ui->xcurrent, ui->xinfo->padding, fmt_memory("%.1lf", memory->free));
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "free");
-   xdraw_hline(ui->xinfo, "d33682", ui->xinfo->padding, startx, ui->xcurrent);
+   ui->xcurrent += xdraw_printf(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "free");
 
+   xdraw_hline(ui->xinfo, "d33682", ui->xinfo->padding, startx, ui->xcurrent);
    ui->xcurrent += ui->widget_padding;
 }
 
@@ -323,7 +344,7 @@ ui_widget_cpus_draw(
          hist_cpu[i] = histogram_init(60, CPUSTATES);
    }
 
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "CPUs: ");
+   ui->xcurrent += xdraw_printf(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "CPUs: ");
    for (i = 0; i < cpus->ncpu; i++) {
       histogram_update(hist_cpu[i], (double[]) {
             cpus->cpus[i].percentages[CP_IDLE],
@@ -334,13 +355,13 @@ ui_widget_cpus_draw(
             });
       ui->xcurrent += xdraw_histogram(ui->xinfo, ui->xcurrent, colors, hist_cpu[i]);
       /*ui->xcurrent += ui->small_space;*/
-      ui->xcurrent += xdraw_percent(ui->xinfo, ui->fgcolor, ui->xcurrent,
+      ui->xcurrent += xdraw_printf(ui->xinfo, ui->fgcolor, ui->xcurrent,
             ui->xinfo->padding,
-            CPUS.cpus[i].percentages[CP_IDLE]);
+            "% 3.0f%%", CPUS.cpus[i].percentages[CP_IDLE]);
       ui->xcurrent += ui->small_space;
    }
-   xdraw_hline(ui->xinfo, "6c71c4", ui->xinfo->padding, startx, ui->xcurrent);
 
+   xdraw_hline(ui->xinfo, "6c71c4", ui->xinfo->padding, startx, ui->xcurrent);
    ui->xcurrent += ui->widget_padding;
 }
 
@@ -371,23 +392,14 @@ ui_widget_net_draw(
 
    double startx = ui->xcurrent;
 
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "Network: ");
-   /*
-    * TODO I'm not sure seeing the #packets in/out is...useful. Remove?
-   ui->xcurrent += xdraw_int(ui->xinfo, "859900b2", ui->xcurrent, ui->xinfo->padding, net->new_ip_packets_in);
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, " in");
-   ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_int(ui->xinfo, "dc322fb2", ui->xcurrent, ui->xinfo->padding, net->new_ip_packets_out);
-   ui->xcurrent += xdraw_text(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, " out ");
-   */
-
+   ui->xcurrent += xdraw_printf(ui->xinfo, ui->fgcolor, ui->xcurrent, ui->xinfo->padding, "Network: ");
    ui->xcurrent += xdraw_series(ui->xinfo, ui->xcurrent, colors_in, bytes_in);
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_memory_noprecision(ui->xinfo, "268bd2", ui->xcurrent, ui->xinfo->padding, net->new_bytes_in / 1000);
+   ui->xcurrent += xdraw_printf(ui->xinfo, "268bd2", ui->xcurrent, ui->xinfo->padding, "%s", fmt_memory("% 4.0f", net->new_bytes_in / 1000));
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_series(ui->xinfo, ui->xcurrent, colors_out, bytes_out);
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_memory_noprecision(ui->xinfo, "dc322f", ui->xcurrent, ui->xinfo->padding, net->new_bytes_out / 1000);
+   ui->xcurrent += xdraw_printf(ui->xinfo, "dc322f", ui->xcurrent, ui->xinfo->padding, "%s", fmt_memory("% 4.0f", net->new_bytes_out / 1000));
 
    xdraw_hline(ui->xinfo, "268bd2", ui->xinfo->padding, startx, ui->xcurrent);
 }

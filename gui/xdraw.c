@@ -65,18 +65,27 @@ xdraw_flush(xinfo_t *xinfo)
 }
 
 uint32_t
-xdraw_text(
+xdraw_printf(
       xinfo_t    *xinfo,
       const char *color,
       double      x,
       double      y,
-      const char *text)
+      const char *fmt,
+      ...)
 {
+   static const size_t bufflen = 1000;
+   static char buffer[bufflen];
+
    double r, g, b, a;
    int width, height;
    hex2rgba(color, &r, &g, &b, &a);
 
-   pango_layout_set_text(xinfo->playout, text, -1);
+   va_list ap;
+   va_start(ap, fmt);
+   vsnprintf(buffer, bufflen, fmt, ap);
+   va_end(ap);
+
+   pango_layout_set_text(xinfo->playout, buffer, -1);
    pango_layout_get_pixel_size(xinfo->playout, &width, &height);
 
    cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
@@ -106,121 +115,6 @@ xdraw_text_right_aligned(
    pango_cairo_show_layout(xinfo->cairo, xinfo->playout);
 
    return width;
-}
-
-uint32_t
-xdraw_percent(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      x,
-      double      y,
-      double      percent)
-{
-   static const size_t OXBAR_STR_MAX_PERCENT_LEN = 100;
-   static char buffer[OXBAR_STR_MAX_PERCENT_LEN];
-
-   if (0 > snprintf(buffer, OXBAR_STR_MAX_PERCENT_LEN, "%3.0f%%", percent))
-      err(1, "%s: snprintf failed", __FUNCTION__);
-
-   return xdraw_text(xinfo, color, x, y, buffer);
-}
-
-uint32_t
-xdraw_int(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      x,
-      double      y,
-      int         i)
-{
-   static const size_t OXBAR_STR_MAX_INT_LEN = 100;
-   static char buffer[OXBAR_STR_MAX_INT_LEN];
-
-   if (0 > snprintf(buffer, OXBAR_STR_MAX_INT_LEN, "%d", i))
-      err(1, "%s: snprintf failed", __FUNCTION__);
-
-   return xdraw_text(xinfo, color, x, y, buffer);
-}
-
-uint32_t
-xdraw_timespan(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      x,
-      double      y,
-      int         minutes)
-{
-   static const size_t OXBAR_STR_MAX_TIMESPAN_LEN = 100;
-   static char buffer[OXBAR_STR_MAX_TIMESPAN_LEN];
-
-   if (-1 == minutes)
-      return xdraw_text(xinfo, color, x, y, "?");;
-
-   int h = minutes / 60;
-   int m = minutes % 60;
-
-   if (0 > snprintf(buffer, OXBAR_STR_MAX_TIMESPAN_LEN, "%dh %dm", h, m))
-      err(1, "%s: snprintf failed", __FUNCTION__);
-
-   return xdraw_text(xinfo, color, x, y, buffer);
-}
-
-uint32_t
-xdraw_memory(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      x,
-      double      y,
-      int         kbytes)
-{
-   static const size_t OXBAR_STR_MAX_MEMORY_LEN = 100;
-   static char        buffer[OXBAR_STR_MAX_MEMORY_LEN];
-   static const char *suffixes[] = { "k", "M", "G", "T", "P" };
-   static size_t      snum       = sizeof(suffixes) / sizeof(suffixes[0]);
-
-   double dbytes  = (double) kbytes;
-   size_t step    = 0;
-
-   if (1024 < kbytes) {
-      for (step = 0; (kbytes / 1024) > 0 && step < snum; step++, kbytes /= 1024)
-         dbytes = kbytes / 1024.0;
-   }
-
-   if (0 > snprintf(buffer, OXBAR_STR_MAX_MEMORY_LEN, "%.1lf%s", dbytes, suffixes[step]))
-      err(1, "%s: snprintf failed for %d", __FUNCTION__, kbytes);
-
-   return xdraw_text(xinfo, color, x, y, buffer);
-}
-
-uint32_t
-xdraw_memory_noprecision(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      x,
-      double      y,
-      int         kbytes)
-{
-   /* TODO Unify both xdraw_memory* renderers
-    * This is planned and upcoming. It will be part of a larger xdraw
-    * refactoring. I just did this to improve my own experience for now.
-    */
-   static const size_t OXBAR_STR_MAX_MEMORY_LEN = 100;
-   static char        buffer[OXBAR_STR_MAX_MEMORY_LEN];
-   static const char *suffixes[] = { "k", "M", "G", "T", "P" };
-   static size_t      snum       = sizeof(suffixes) / sizeof(suffixes[0]);
-
-   double dbytes  = (double) kbytes;
-   size_t step    = 0;
-
-   if (1024 < kbytes) {
-      for (step = 0; (kbytes / 1024) > 0 && step < snum; step++, kbytes /= 1024)
-         dbytes = kbytes / 1024.0;
-   }
-
-   if (0 > snprintf(buffer, OXBAR_STR_MAX_MEMORY_LEN, "%.0lf%s", dbytes, suffixes[step]))
-      err(1, "%s: snprintf failed for %d", __FUNCTION__, kbytes);
-
-   return xdraw_text(xinfo, color, x, y, buffer);
 }
 
 void
