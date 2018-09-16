@@ -253,8 +253,8 @@ ui_widget_nprocs_draw(
 const char *
 fmt_memory(const char *fmt, int kbytes)
 {
-   static const size_t  OXBAR_FMT_MEM_MAX_LEN = 100;
-   static char          buffer[OXBAR_FMT_MEM_MAX_LEN];
+#define GUI_FMT_MEMORY_BUFFER_MAXLEN 100
+   static char          buffer[GUI_FMT_MEMORY_BUFFER_MAXLEN];
    static const char   *suffixes[] = { "k", "M", "G", "T", "P" };
    static size_t        snum       = sizeof(suffixes) / sizeof(suffixes[0]);
 
@@ -266,11 +266,11 @@ fmt_memory(const char *fmt, int kbytes)
       for (step = 0; (kbytes / 1024) > 0 && step < snum; step++, kbytes /= 1024)
          dbytes = kbytes / 1024.0;
 
-   ret = snprintf(buffer, OXBAR_FMT_MEM_MAX_LEN, fmt, dbytes);
+   ret = snprintf(buffer, GUI_FMT_MEMORY_BUFFER_MAXLEN, fmt, dbytes);
    if (0 > ret)
       err(1, "%s: snprintf failed for %d", __FUNCTION__, kbytes);
 
-   ret = snprintf(buffer + ret, OXBAR_FMT_MEM_MAX_LEN - ret, "%s", suffixes[step]);
+   ret = snprintf(buffer + ret, GUI_FMT_MEMORY_BUFFER_MAXLEN- ret, "%s", suffixes[step]);
    if (0 > ret)
       err(1, "%s: snprintf failed for %s", __FUNCTION__, suffixes[step]);
 
@@ -408,11 +408,11 @@ void
 ui_widget_time_draw(
       oxbarui_t  *ui)
 {
-   static const size_t OXBAR_STR_MAX_TIME_LEN = 100;
-   static char buffer[OXBAR_STR_MAX_TIME_LEN];
+#define GUI_TIME_MAXLEN 100
+   static char buffer[GUI_TIME_MAXLEN];
 
    time_t now = time(NULL);
-   strftime(buffer, OXBAR_STR_MAX_TIME_LEN, "%a %d %b %Y  %I:%M:%S %p", localtime(&now));
+   strftime(buffer, GUI_TIME_MAXLEN, "%a %d %b %Y  %I:%M:%S %p", localtime(&now));
    int width = xdraw_text_right_aligned(
          ui->xinfo,
          ui->fgcolor,

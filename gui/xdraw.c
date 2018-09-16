@@ -73,8 +73,8 @@ xdraw_printf(
       const char *fmt,
       ...)
 {
-   static const size_t bufflen = 1000;
-   static char buffer[bufflen];
+#define XDRAW_PRINTF_BUFF_MAXLEN 1000
+   static char buffer[XDRAW_PRINTF_BUFF_MAXLEN];
 
    double r, g, b, a;
    int width, height;
@@ -82,7 +82,7 @@ xdraw_printf(
 
    va_list ap;
    va_start(ap, fmt);
-   vsnprintf(buffer, bufflen, fmt, ap);
+   vsnprintf(buffer, XDRAW_PRINTF_BUFF_MAXLEN, fmt, ap);
    va_end(ap);
 
    pango_layout_set_text(xinfo->playout, buffer, -1);
