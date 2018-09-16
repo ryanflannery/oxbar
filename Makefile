@@ -27,11 +27,12 @@ oxbar: $(OBJS) $(SOBS) $(GOBJS)
 
 .PHONY: clean TODO
 
-# TODO Get gprof Profiling Working
-# I'd really love to inspect and optimize my stats update and render loops
-# to try and make oxbar snappier!
-profile: clean
-	CFLAGS="-fno-pie -g -pg" LDFLAGS="-g -pg -fno-pie -lc_p" $(MAKE)
+clean:
+	$(MAKE) -C stats $(MFLAGS) $@
+	$(MAKE) -C gui   $(MFLAGS) $@
+	rm -f $(OBJS)
+	rm -f oxbar
+	rm -f oxbar.core
 
 TODO:
 	grep -nr TODO * \
@@ -40,9 +41,15 @@ TODO:
 		| sed 's/ *\# *TODO/TODO/' \
 		| grep -v '^Makefile' > $@
 
-clean:
-	$(MAKE) -C stats $(MFLAGS) $@
-	$(MAKE) -C gui   $(MFLAGS) $@
-	rm -f $(OBJS)
-	rm -f oxbar
-	rm -f oxbar.core
+cppcheck:
+	cppcheck --std=c89 --enable=all . > /dev/null
+
+scan-build:
+	make clean
+	scan-build make
+
+# TODO Get gprof Profiling Working
+# I'd really love to inspect and optimize my stats update and render loops
+# to try and make oxbar snappier!
+profile: clean
+	CFLAGS="-fno-pie -g -pg" LDFLAGS="-g -pg -fno-pie -lc_p" $(MAKE)

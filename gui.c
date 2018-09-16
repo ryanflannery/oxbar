@@ -256,7 +256,7 @@ fmt_memory(const char *fmt, int kbytes)
 #define GUI_FMT_MEMORY_BUFFER_MAXLEN 100
    static char          buffer[GUI_FMT_MEMORY_BUFFER_MAXLEN];
    static const char   *suffixes[] = { "k", "M", "G", "T", "P" };
-   static size_t        snum       = sizeof(suffixes) / sizeof(suffixes[0]);
+   static const size_t  snum       = sizeof(suffixes) / sizeof(suffixes[0]);
 
    double dbytes = (double) kbytes;
    size_t step   = 0;
