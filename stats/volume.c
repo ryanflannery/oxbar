@@ -58,7 +58,7 @@ volume_init()
    if (file == NULL)
       file = "/dev/mixer";
 
-   if ((volume_dev_fd = open("/dev/mixer", O_RDWR)) < 0)
+   if ((volume_dev_fd = open(file, O_RDWR)) < 0)
    {
       warn("volume: failed to open /dev/mixer");
       return;
