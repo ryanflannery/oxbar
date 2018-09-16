@@ -69,6 +69,14 @@ xdraw_memory(
       double      y,
       int         kbytes);
 
+uint32_t
+xdraw_memory_noprecision(
+      xinfo_t    *xinfo,
+      const char *color,
+      double      x,
+      double      y,
+      int         kbytes);
+
 void
 xdraw_hline(
       xinfo_t    *xinfo,

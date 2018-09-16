@@ -383,11 +383,11 @@ ui_widget_net_draw(
 
    ui->xcurrent += xdraw_series(ui->xinfo, ui->xcurrent, colors_in, bytes_in);
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_memory(ui->xinfo, "268bd2", ui->xcurrent, ui->xinfo->padding, net->new_bytes_in / 1000);
+   ui->xcurrent += xdraw_memory_noprecision(ui->xinfo, "268bd2", ui->xcurrent, ui->xinfo->padding, net->new_bytes_in / 1000);
    ui->xcurrent += ui->small_space;
    ui->xcurrent += xdraw_series(ui->xinfo, ui->xcurrent, colors_out, bytes_out);
    ui->xcurrent += ui->small_space;
-   ui->xcurrent += xdraw_memory(ui->xinfo, "dc322f", ui->xcurrent, ui->xinfo->padding, net->new_bytes_out / 1000);
+   ui->xcurrent += xdraw_memory_noprecision(ui->xinfo, "dc322f", ui->xcurrent, ui->xinfo->padding, net->new_bytes_out / 1000);
 
    xdraw_hline(ui->xinfo, "268bd2", ui->xinfo->padding, startx, ui->xcurrent);
 }

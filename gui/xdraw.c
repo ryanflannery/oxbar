@@ -192,6 +192,37 @@ xdraw_memory(
    return xdraw_text(xinfo, color, x, y, buffer);
 }
 
+uint32_t
+xdraw_memory_noprecision(
+      xinfo_t    *xinfo,
+      const char *color,
+      double      x,
+      double      y,
+      int         kbytes)
+{
+   /* TODO Unify both xdraw_memory* renderers
+    * This is planned and upcoming. It will be part of a larger xdraw
+    * refactoring. I just did this to improve my own experience for now.
+    */
+   static const size_t OXBAR_STR_MAX_MEMORY_LEN = 100;
+   static char        buffer[OXBAR_STR_MAX_MEMORY_LEN];
+   static const char *suffixes[] = { "k", "M", "G", "T", "P" };
+   static size_t      snum       = sizeof(suffixes) / sizeof(suffixes[0]);
+
+   double dbytes  = (double) kbytes;
+   size_t step    = 0;
+
+   if (1024 < kbytes) {
+      for (step = 0; (kbytes / 1024) > 0 && step < snum; step++, kbytes /= 1024)
+         dbytes = kbytes / 1024.0;
+   }
+
+   if (0 > snprintf(buffer, OXBAR_STR_MAX_MEMORY_LEN, "%.0lf%s", dbytes, suffixes[step]))
+      err(1, "%s: snprintf failed for %d", __FUNCTION__, kbytes);
+
+   return xdraw_text(xinfo, color, x, y, buffer);
+}
+
 void
 xdraw_hline(
       xinfo_t    *xinfo,
