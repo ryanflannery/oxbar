@@ -69,6 +69,4 @@ xdraw_histogram(
       const char   **colors,
       histogram_t   *h);
 
-void hex2rgba(const char *s, double *r, double *g, double *b, double *a);
-
 #endif
