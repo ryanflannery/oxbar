@@ -47,15 +47,38 @@ typedef struct settings {
 
    struct widget_battery{
       const char *hdcolor;
-      const char *color_unplugged;
+      const char *fgcolor_unplugged;
       int         chart_width;
-      const char *chart_color_power;
-      const char *chart_color_remaining;
+      const char *chart_color_bgcolor;
+      const char *chart_color_pgcolor;
    } battery;
 
    struct widget_volume {
-      const char *intro;
+      const char *hdcolor;
+      int         chart_width;
+      const char *chart_bgcolor;
+      const char *chart_pgcolor;
    } volume;
+
+   struct widget_nprocs {
+      const char *hdcolor;
+   } nprocs;
+
+   struct widget_memory {
+      const char *hdcolor;
+      const char *chart_color_free;
+      const char *chart_color_total;
+      const char *chart_color_active;
+   } memory;
+
+   struct widget_cpus {
+      const char *hdcolor;
+      const char *chart_color_idle;
+      const char *chart_color_user;
+      const char *chart_color_sys;
+      const char *chart_color_nice;
+      const char *chart_color_interrupt;
+   } cpus;
 
 } settings_t;
 
@@ -67,37 +90,5 @@ void settings_load_defaults(settings_t *s);
 void settings_parse_config(settings_t *s, const char *file);
 void settings_parse_cmdline(settings_t *s, int argc, char *argv[]);
  */
-
-typedef enum {
-   TINT,
-   TFLOAT,
-   TSTRING
-} setting_type;
-
-typedef struct setting {
-
-   const char  *name;
-   setting_type type;
-
-   union  foo {
-      struct isetting {
-         int   v;
-         int   dfault;
-      } i;
-      struct fsetting {
-         float v;
-         float dfault;
-      } f;
-      struct ssetting {
-         char *v;
-         char *dfault;
-      } s;
-   } un;
-
-} setting_t;
-
-extern setting_t NewSettings[];
-extern size_t nsettings;
-void print_new_settings();
 
 #endif
