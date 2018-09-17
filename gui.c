@@ -101,20 +101,6 @@ ui_flush(oxbarui_t *ui)
  *    3. Some other yet-to-be-determined, and hopefully elegant, solution.
  */
 
-/* TODO Simplify xdraw.* For widget rendering
- * See the widget below. They all follow the same pattern of passing the
- * x/y start and other information to each underlying xdraw.* primitive.
- * It works...but it's damn cumbersome. I'd rather try to simplify that more.
- * Could a simple ui-context object encapsulating all that help simplify
- * things? (putting x/y/w/h in there?)
- * That's very similar to what cairo does with its rendering API. You just
- * call methods to alter the current state and then execute that state.
- *
- * Remember the ultimate goal here is:
- *              TO MAKE CREATING AND TWEAKING WIDGETS EASY!
- * That way it's easy and more likely for me to do so in the future.
- */
-
 void
 ui_widget_battery_draw(
       oxbarui_t      *ui,
