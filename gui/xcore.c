@@ -59,7 +59,8 @@ xcore_setup_x_window(
       xinfo_t *xinfo,
       const char *name,
       uint32_t x, uint32_t y,
-      uint32_t w, uint32_t h)
+      uint32_t w, uint32_t h,
+      const char *bgcolor)
 {
    static uint32_t valwin[2] = {
       XCB_NONE,
@@ -93,6 +94,10 @@ xcore_setup_x_window(
          XCB_ATOM_STRING, 8,
          strlen(name),
          name);
+
+   xinfo->bgcolor = strdup(bgcolor);
+   if (NULL == xinfo->bgcolor)
+      err(1, "%s: strdup failed", __FUNCTION__);
 }
 
 /*

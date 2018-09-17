@@ -1,6 +1,7 @@
 #include <err.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <pango/pangocairo.h>
@@ -42,35 +43,52 @@ hex2rgba(const char *s, double *r, double *g, double *b, double *a)
    *a = (double)ia / 255.0;
 }
 
+xdraw_context_t*
+xdraw_context_init(xinfo_t *xinfo)
+{
+   xdraw_context_t *ctx = malloc(sizeof(xdraw_context_t));
+   if (NULL == ctx)
+      err(1, "%s: malloc failed", __FUNCTION__);
+
+   ctx->xinfo = xinfo;
+   ctx->xoffset = xinfo->padding;
+   ctx->yoffset = xinfo->padding;
+   return ctx;
+}
+
 void
-xdraw_clear_all(xinfo_t *xinfo, const char *color)
+xdraw_context_free(xdraw_context_t *ctx)
+{
+   free(ctx);
+}
+
+void
+xdraw_clear(xdraw_context_t *ctx)
 {
    double r, g, b, a;
+   hex2rgba(ctx->xinfo->bgcolor, &r, &g, &b, &a);
+   cairo_push_group(ctx->xinfo->cairo);
+   cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
+   cairo_paint(ctx->xinfo->cairo);
 
-   hex2rgba(color, &r, &g, &b, &a);
-   cairo_push_group(xinfo->cairo);
-   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
-   cairo_paint(xinfo->cairo);
-
+   ctx->xoffset = ctx->xinfo->padding;
+   ctx->yoffset = ctx->xinfo->padding;
 }
 
 void
-xdraw_flush(xinfo_t *xinfo)
+xdraw_flush(xdraw_context_t *ctx)
 {
-   cairo_pop_group_to_source(xinfo->cairo);
-   cairo_paint(xinfo->cairo);
-
-   cairo_surface_flush(xinfo->surface);
-   xcb_flush(xinfo->xcon);
+   cairo_pop_group_to_source(ctx->xinfo->cairo);
+   cairo_paint(ctx->xinfo->cairo);
+   cairo_surface_flush(ctx->xinfo->surface);
+   xcb_flush(ctx->xinfo->xcon);
 }
 
-uint32_t
+void
 xdraw_printf(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      x,
-      double      y,
-      const char *fmt,
+      xdraw_context_t   *ctx,
+      const char        *color,
+      const char        *fmt,
       ...)
 {
 #define XDRAW_PRINTF_BUFF_MAXLEN 1000
@@ -85,14 +103,14 @@ xdraw_printf(
    vsnprintf(buffer, XDRAW_PRINTF_BUFF_MAXLEN, fmt, ap);
    va_end(ap);
 
-   pango_layout_set_text(xinfo->playout, buffer, -1);
-   pango_layout_get_pixel_size(xinfo->playout, &width, &height);
+   pango_layout_set_text(ctx->xinfo->playout, buffer, -1);
+   pango_layout_get_pixel_size(ctx->xinfo->playout, &width, &height);
 
-   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
-   cairo_move_to(xinfo->cairo, x, y);
-   pango_cairo_show_layout(xinfo->cairo, xinfo->playout);
+   cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
+   cairo_move_to(ctx->xinfo->cairo, ctx->xoffset, ctx->yoffset);
+   pango_cairo_show_layout(ctx->xinfo->cairo, ctx->xinfo->playout);
 
-   return width;
+   ctx->xoffset += width;
 }
 
 uint32_t
@@ -134,14 +152,14 @@ xdraw_hline(
    cairo_stroke(xinfo->cairo);
 }
 
-uint32_t
+void
 xdraw_vertical_stack(
-      xinfo_t     *xinfo,
-      uint32_t     x,
-      double       width,
-      size_t       nvalues,
-      const char **colors,
-      double      *percents)
+      xdraw_context_t  *ctx,
+      double            x,
+      double            width,
+      size_t            nvalues,
+      const char      **colors,
+      double           *percents)
 {
    double r, g, b, a;
    size_t i;
@@ -152,39 +170,37 @@ xdraw_vertical_stack(
          continue;
 
       hex2rgba(colors[i], &r, &g, &b, &a);
-      cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
-      double height = percents[i] / 100.0 * (xinfo->h - xinfo->padding);
-      cairo_rectangle(xinfo->cairo,
+      cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
+      double height = percents[i] / 100.0 * (ctx->xinfo->h - ctx->xinfo->padding);
+      cairo_rectangle(ctx->xinfo->cairo,
             x,
-            xinfo->padding + offset,
+            ctx->xinfo->padding + offset,
             width,
             height);
       offset += height;
-      cairo_fill(xinfo->cairo);
+      cairo_fill(ctx->xinfo->cairo);
    }
-
-   return width;
+   /* ctx->xoffset += width; */
 }
 
-uint32_t
+void
 xdraw_series(
-      xinfo_t       *xinfo,
-      double         x,
-      const char   **colors,
-      tseries_t     *t)
+      xdraw_context_t  *ctx,
+      const char      **colors,
+      tseries_t        *t)
 {
    double r, g, b, a;
    size_t width = t->size;
 
    /* paint grey background to start */
    hex2rgba("535353", &r, &g, &b, &a);
-   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
-   cairo_rectangle(xinfo->cairo,
-         x,
-         xinfo->padding,
+   cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
+   cairo_rectangle(ctx->xinfo->cairo,
+         ctx->xoffset,
+         ctx->xinfo->padding,
          width,
-         (xinfo->h - xinfo->padding));
-   cairo_fill(xinfo->cairo);
+         (ctx->xinfo->h - ctx->xinfo->padding));
+   cairo_fill(ctx->xinfo->cairo);
 
    size_t count, i;
    double max = t->values[0];
@@ -197,8 +213,8 @@ xdraw_series(
          i = 0;
 
       xdraw_vertical_stack(
-            xinfo,
-            x + count,
+            ctx,
+            ctx->xoffset + count,
             1,
             2,
             colors,
@@ -207,29 +223,27 @@ xdraw_series(
                t->values[i] / max * 100
             });
    }
-
-   return width;
+   ctx->xoffset += width;
 }
 
-uint32_t
+void
 xdraw_histogram(
-      xinfo_t     *xinfo,
-      double       x,
-      const char **colors,
-      histogram_t *h)
+      xdraw_context_t *ctx,
+      const char     **colors,
+      histogram_t      *h)
 {
    double r, g, b, a;
    int width = h->nsamples;
 
    /* paint grey background to start */
    hex2rgba("535353", &r, &g, &b, &a);
-   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
-   cairo_rectangle(xinfo->cairo,
-         x,
-         xinfo->padding,
+   cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
+   cairo_rectangle(ctx->xinfo->cairo,
+         ctx->xoffset,
+         ctx->xinfo->padding,
          width,
-         (xinfo->h - xinfo->padding));
-   cairo_fill(xinfo->cairo);
+         (ctx->xinfo->h - ctx->xinfo->padding));
+   cairo_fill(ctx->xinfo->cairo);
 
    size_t count, i;
    for (count = 0, i = h->current + 1; count < h->nsamples; count++, i++) {
@@ -237,13 +251,12 @@ xdraw_histogram(
          i = 0;
 
       xdraw_vertical_stack(
-            xinfo,
-            x + count,
+            ctx,
+            ctx->xoffset + count,
             1,
             h->nseries,
             colors,
             h->series[i]);
    }
-
-   return width;
+   ctx->xoffset += width;
 }

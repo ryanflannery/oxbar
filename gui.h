@@ -5,17 +5,18 @@
 
 #include "settings.h"
 #include "gui/xcore.h"
+#include "gui/xdraw.h"
 #include "stats/stats.h"
 
 typedef struct oxbarui {
    /* not packed */
-   xinfo_t *xinfo;
+   xinfo_t          *xinfo;
+   xdraw_context_t  *xcontext;
 
    /* core settings (static after init) */
    settings_t *settings;
 
    /* state */
-   double   xcurrent;
    int      space_width;   /* width of a space " " in the font */
 } oxbarui_t;
 

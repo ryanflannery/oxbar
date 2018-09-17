@@ -47,7 +47,8 @@ ui_create(settings_t *s)
          ui->xinfo,
          ui->settings->display.wmname,
          ui->settings->display.x, ui->settings->display.y,
-         ui->settings->display.w, ui->settings->display.h);
+         ui->settings->display.w, ui->settings->display.h,
+         ui->settings->display.bgcolor);
 
    xcore_setup_x_wm_hints(ui->xinfo);
    xcore_setup_cairo(ui->xinfo);
@@ -56,7 +57,10 @@ ui_create(settings_t *s)
    /* now map the window & do an initial paint */
    xcb_map_window(ui->xinfo->xcon, ui->xinfo->xwindow);
 
-   ui->space_width = xdraw_printf(ui->xinfo, NULL, 0, 0, " ");
+   ui->xcontext = xdraw_context_init(ui->xinfo);
+   xdraw_printf(ui->xcontext, NULL, " ");    /* TODO this now actually draws */
+   ui->space_width = ui->xcontext->xoffset;
+
    return ui;
 }
 
@@ -64,6 +68,7 @@ void
 ui_destroy(oxbarui_t *ui)
 {
    xcore_destroy(ui->xinfo);
+   xdraw_context_free(ui->xcontext);
    free(ui->xinfo);
    free(ui);
 }
@@ -71,14 +76,13 @@ ui_destroy(oxbarui_t *ui)
 void
 ui_clear(oxbarui_t *ui)
 {
-   xdraw_clear_all(ui->xinfo, ui->settings->display.bgcolor);
-   ui->xcurrent = ui->xinfo->padding;
+   xdraw_clear(ui->xcontext);
 }
 
 void
 ui_flush(oxbarui_t *ui)
 {
-   xdraw_flush(ui->xinfo);
+   xdraw_flush(ui->xcontext);
 }
 
 /* TODO Remove state From ui_widget_*_draw(...) components
@@ -121,42 +125,37 @@ ui_widget_battery_draw(
       ui->settings->battery.chart_color_pgcolor
    };
 
-   double startx = ui->xcurrent;
+   double startx = ui->xcontext->xoffset;
 
-   ui->xcurrent += xdraw_printf(
-         ui->xinfo,
+   xdraw_printf(
+         ui->xcontext,
          battery->plugged_in ?
             ui->settings->display.fgcolor :
             ui->settings->battery.fgcolor_unplugged ,
-         ui->xcurrent,
-         ui->xinfo->padding,
          battery->plugged_in ? "AC " : "BAT ");
-   ui->xcurrent += xdraw_vertical_stack(
-         ui->xinfo,
-         ui->xcurrent,
+   xdraw_vertical_stack(
+         ui->xcontext,
+         ui->xcontext->xoffset,
          ui->settings->battery.chart_width,
          2, colors,
          (double[]){100.0 - battery->charge_pct, battery->charge_pct});
-   ui->xcurrent += xdraw_printf(
-         ui->xinfo,
+   ui->xcontext->xoffset += ui->settings->battery.chart_width;
+   xdraw_printf(
+         ui->xcontext,
          ui->settings->display.fgcolor,
-         ui->xcurrent,
-         ui->xinfo->padding,
          "% 3.0f%%", battery->charge_pct);
 
    if (-1 != battery->minutes_remaining) {
-      ui->xcurrent += xdraw_printf(
-            ui->xinfo,
+      xdraw_printf(
+            ui->xcontext,
             ui->settings->display.fgcolor,
-            ui->xcurrent,
-            ui->xinfo->padding,
             " %dh %dm",
                battery->minutes_remaining / 60,
                battery->minutes_remaining % 60);
    }
 
-   xdraw_hline(ui->xinfo, ui->settings->battery.hdcolor, ui->xinfo->padding, startx, ui->xcurrent);
-   ui->xcurrent += ui->settings->display.widget_padding;
+   xdraw_hline(ui->xinfo, ui->settings->battery.hdcolor, ui->xinfo->padding, startx, ui->xcontext->xoffset);
+   ui->xcontext->xoffset += ui->settings->display.widget_padding;
 }
 
 void
@@ -164,13 +163,11 @@ ui_widget_volume_draw(
       oxbarui_t      *ui,
       volume_info_t  *volume)
 {
-   double startx = ui->xcurrent;
+   double startx = ui->xcontext->xoffset;
 
-   ui->xcurrent += xdraw_printf(
-         ui->xinfo,
+   xdraw_printf(
+         ui->xcontext,
          ui->settings->display.fgcolor,
-         ui->xcurrent,
-         ui->xinfo->padding,
          "Volume: ");
 
    /* TODO Should volume widget ever handle this case!?
@@ -181,9 +178,9 @@ ui_widget_volume_draw(
    if (volume->left_pct != volume->right_pct)
       warnx("%s: left & right volume aren't properly rendered if not equal", __FUNCTION__);
 
-   ui->xcurrent += xdraw_vertical_stack(
-         ui->xinfo,
-         ui->xcurrent,
+   xdraw_vertical_stack(
+         ui->xcontext,
+         ui->xcontext->xoffset,
          ui->settings->volume.chart_width,
          2,
          (const char *[]){
@@ -195,15 +192,14 @@ ui_widget_volume_draw(
             volume->left_pct
          });
 
-   ui->xcurrent += xdraw_printf(
-         ui->xinfo,
+   ui->xcontext->xoffset += ui->settings->volume.chart_width;
+   xdraw_printf(
+         ui->xcontext,
          ui->settings->display.fgcolor,
-         ui->xcurrent,
-         ui->xinfo->padding,
          "% 3.0f%%", volume->left_pct);
 
-   xdraw_hline(ui->xinfo, ui->settings->volume.hdcolor, ui->xinfo->padding, startx, ui->xcurrent);
-   ui->xcurrent += ui->settings->display.widget_padding;
+   xdraw_hline(ui->xinfo, ui->settings->volume.hdcolor, ui->xinfo->padding, startx, ui->xcontext->xoffset);
+   ui->xcontext->xoffset += ui->settings->display.widget_padding;
 }
 
 void
@@ -211,17 +207,15 @@ ui_widget_nprocs_draw(
       oxbarui_t      *ui,
       nprocs_info_t  *nprocs)
 {
-   double startx = ui->xcurrent;
+   double startx = ui->xcontext->xoffset;
 
-   ui->xcurrent += xdraw_printf(
-         ui->xinfo,
+   xdraw_printf(
+         ui->xcontext,
          ui->settings->display.fgcolor,
-         ui->xcurrent,
-         ui->xinfo->padding,
          "#Procs: %d", nprocs->nprocs);
 
-   xdraw_hline(ui->xinfo, ui->settings->nprocs.hdcolor, ui->xinfo->padding, startx, ui->xcurrent);
-   ui->xcurrent += ui->settings->display.widget_padding;
+   xdraw_hline(ui->xinfo, ui->settings->nprocs.hdcolor, ui->xinfo->padding, startx, ui->xcontext->xoffset);
+   ui->xcontext->xoffset += ui->settings->display.widget_padding;
 }
 
 const char *
@@ -261,7 +255,7 @@ ui_widget_memory_draw(
       ui->settings->memory.chart_color_total,
       ui->settings->memory.chart_color_active
    };
-   double startx = ui->xcurrent;
+   double startx = ui->xcontext->xoffset;
 
    static histogram_t *histogram = NULL;
    if (NULL == histogram)
@@ -273,24 +267,17 @@ ui_widget_memory_draw(
          memory->active_pct
          });
 
-   ui->xcurrent += xdraw_printf(ui->xinfo, ui->settings->display.fgcolor, ui->xcurrent, ui->xinfo->padding, "Memory: ");
-   ui->xcurrent += ui->space_width;
-   ui->xcurrent += xdraw_histogram(ui->xinfo, ui->xcurrent, colors, histogram);
-   ui->xcurrent += ui->space_width;
-   ui->xcurrent += xdraw_printf(ui->xinfo, "dc322f", ui->xcurrent, ui->xinfo->padding, "%s", fmt_memory("%.1lf", memory->active));
-   ui->xcurrent += ui->space_width;
-   ui->xcurrent += xdraw_printf(ui->xinfo, ui->settings->display.fgcolor, ui->xcurrent, ui->xinfo->padding, "active");
-   ui->xcurrent += ui->space_width;
-   ui->xcurrent += xdraw_printf(ui->xinfo, "b58900", ui->xcurrent, ui->xinfo->padding, "%s", fmt_memory("%.1lf", memory->total));
-   ui->xcurrent += ui->space_width;
-   ui->xcurrent += xdraw_printf(ui->xinfo, ui->settings->display.fgcolor, ui->xcurrent, ui->xinfo->padding, "total");
-   ui->xcurrent += ui->space_width;
-   ui->xcurrent += xdraw_printf(ui->xinfo, "859900", ui->xcurrent, ui->xinfo->padding, fmt_memory("%.1lf", memory->free));
-   ui->xcurrent += ui->space_width;
-   ui->xcurrent += xdraw_printf(ui->xinfo, ui->settings->display.fgcolor, ui->xcurrent, ui->xinfo->padding, "free");
+   xdraw_printf(ui->xcontext, ui->settings->display.fgcolor, "Memory: ");
+   xdraw_histogram(ui->xcontext, colors, histogram);
+   xdraw_printf(ui->xcontext, "dc322f", " %s", fmt_memory("%.1lf", memory->active));
+   xdraw_printf(ui->xcontext, ui->settings->display.fgcolor, " active ");
+   xdraw_printf(ui->xcontext, "b58900", "%s", fmt_memory("%.1lf", memory->total));
+   xdraw_printf(ui->xcontext, ui->settings->display.fgcolor, " total ");
+   xdraw_printf(ui->xcontext, "859900", fmt_memory("%.1lf", memory->free));
+   xdraw_printf(ui->xcontext, ui->settings->display.fgcolor, " free");
 
-   xdraw_hline(ui->xinfo, ui->settings->memory.hdcolor, ui->xinfo->padding, startx, ui->xcurrent);
-   ui->xcurrent += ui->settings->display.widget_padding;
+   xdraw_hline(ui->xinfo, ui->settings->memory.hdcolor, ui->xinfo->padding, startx, ui->xcontext->xoffset);
+   ui->xcontext->xoffset += ui->settings->display.widget_padding;
 }
 
 void
@@ -305,7 +292,7 @@ ui_widget_cpus_draw(
       ui->settings->cpus.chart_color_nice,
       ui->settings->cpus.chart_color_interrupt
    };
-   double startx = ui->xcurrent;
+   double startx = ui->xcontext->xoffset;
    int i;
 
    static histogram_t **hist_cpu = NULL;
@@ -318,7 +305,7 @@ ui_widget_cpus_draw(
          hist_cpu[i] = histogram_init(60, CPUSTATES);
    }
 
-   ui->xcurrent += xdraw_printf(ui->xinfo, ui->settings->display.fgcolor, ui->xcurrent, ui->xinfo->padding, "CPUs: ");
+   xdraw_printf(ui->xcontext, ui->settings->display.fgcolor, "CPUs: ");
    for (i = 0; i < cpus->ncpu; i++) {
       histogram_update(hist_cpu[i], (double[]) {
             cpus->cpus[i].percentages[CP_IDLE],
@@ -327,17 +314,13 @@ ui_widget_cpus_draw(
             cpus->cpus[i].percentages[CP_NICE],
             cpus->cpus[i].percentages[CP_INTR]
             });
-      ui->xcurrent += xdraw_histogram(ui->xinfo, ui->xcurrent, colors, hist_cpu[i]);
-      ui->xcurrent += xdraw_printf(ui->xinfo,
-            ui->settings->display.fgcolor,
-            ui->xcurrent,
-            ui->xinfo->padding,
-            "% 3.0f%%", CPUS.cpus[i].percentages[CP_IDLE]);
-      ui->xcurrent += ui->space_width;
+      xdraw_histogram(ui->xcontext, colors, hist_cpu[i]);
+      xdraw_printf(ui->xcontext, ui->settings->display.fgcolor, "% 3.0f%%", CPUS.cpus[i].percentages[CP_IDLE]);
+      ui->xcontext->xoffset += ui->space_width;
    }
 
-   xdraw_hline(ui->xinfo, ui->settings->cpus.hdcolor, ui->xinfo->padding, startx, ui->xcurrent);
-   ui->xcurrent += ui->settings->display.widget_padding;
+   xdraw_hline(ui->xinfo, ui->settings->cpus.hdcolor, ui->xinfo->padding, startx, ui->xcontext->xoffset);
+   ui->xcontext->xoffset += ui->settings->display.widget_padding;
 }
 
 void
@@ -365,18 +348,19 @@ ui_widget_net_draw(
    tseries_update(bytes_in,  net->new_bytes_in);
    tseries_update(bytes_out, net->new_bytes_out);
 
-   double startx = ui->xcurrent;
+   double startx = ui->xcontext->xoffset;
 
-   ui->xcurrent += xdraw_printf(ui->xinfo, ui->settings->display.fgcolor, ui->xcurrent, ui->xinfo->padding, "Network: ");
-   ui->xcurrent += xdraw_series(ui->xinfo, ui->xcurrent, colors_in, bytes_in);
-   ui->xcurrent += ui->space_width;
-   ui->xcurrent += xdraw_printf(ui->xinfo, "268bd2", ui->xcurrent, ui->xinfo->padding, "%s", fmt_memory("% 4.0f", net->new_bytes_in / 1000));
-   ui->xcurrent += ui->space_width;
-   ui->xcurrent += xdraw_series(ui->xinfo, ui->xcurrent, colors_out, bytes_out);
-   ui->xcurrent += ui->space_width;
-   ui->xcurrent += xdraw_printf(ui->xinfo, "dc322f", ui->xcurrent, ui->xinfo->padding, "%s", fmt_memory("% 4.0f", net->new_bytes_out / 1000));
+   xdraw_printf(ui->xcontext, ui->settings->display.fgcolor, "Network: ");
+   xdraw_series(ui->xcontext, colors_in, bytes_in);
+   ui->xcontext->xoffset += ui->space_width;
+   xdraw_printf(ui->xcontext, "268bd2", "%s", fmt_memory("% 4.0f", net->new_bytes_in / 1000));
+   ui->xcontext->xoffset += ui->space_width;
+   xdraw_series(ui->xcontext, colors_out, bytes_out);
+   ui->xcontext->xoffset += ui->space_width;
+   xdraw_printf(ui->xcontext, "dc322f", "%s", fmt_memory("% 4.0f", net->new_bytes_out / 1000));
 
-   xdraw_hline(ui->xinfo, ui->settings->network.hdcolor, ui->xinfo->padding, startx, ui->xcurrent);
+   xdraw_hline(ui->xinfo, ui->settings->network.hdcolor, ui->xinfo->padding, startx, ui->xcontext->xoffset);
+   ui->xcontext->xoffset += ui->settings->display.widget_padding;
 }
 
 void
