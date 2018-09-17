@@ -1,6 +1,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include <stdlib.h>
+
 /* TODO Create Settings Abstraction
  * This was my first attempt at abstracting settings away from manually
  * passing them around (which I was doing when starting to build oxbar).
@@ -65,5 +67,37 @@ void settings_load_defaults(settings_t *s);
 void settings_parse_config(settings_t *s, const char *file);
 void settings_parse_cmdline(settings_t *s, int argc, char *argv[]);
  */
+
+typedef enum {
+   TINT,
+   TFLOAT,
+   TSTRING
+} setting_type;
+
+typedef struct setting {
+
+   const char  *name;
+   setting_type type;
+
+   union  foo {
+      struct isetting {
+         int   v;
+         int   dfault;
+      } i;
+      struct fsetting {
+         float v;
+         float dfault;
+      } f;
+      struct ssetting {
+         char *v;
+         char *dfault;
+      } s;
+   } un;
+
+} setting_t;
+
+extern setting_t NewSettings[];
+extern size_t nsettings;
+void print_new_settings();
 
 #endif

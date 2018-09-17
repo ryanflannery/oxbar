@@ -24,6 +24,7 @@ main ()
    g_ui = ui_create(&settings);
    stats_init();
 
+   print_new_settings();
    /* NOTE: we are now ready to update stats and draw.... */
    stats_update();   /* first stats collection */
    draw_oxbar();     /* initializes first-time widget properties */
