@@ -113,26 +113,24 @@ xdraw_printf(
    ctx->xoffset += width;
 }
 
-uint32_t
+void
 xdraw_text_right_aligned(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      x,
-      double      y,
-      const char *text)
+      xdraw_context_t  *ctx,
+      const char       *color,
+      const char       *text)
 {
    double r, g, b, a;
    int width, height;
    hex2rgba(color, &r, &g, &b, &a);
 
-   pango_layout_set_text(xinfo->playout, text, -1);
-   pango_layout_get_pixel_size(xinfo->playout, &width, &height);
+   pango_layout_set_text(ctx->xinfo->playout, text, -1);
+   pango_layout_get_pixel_size(ctx->xinfo->playout, &width, &height);
 
-   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
-   cairo_move_to(xinfo->cairo, x - width, y);
-   pango_cairo_show_layout(xinfo->cairo, xinfo->playout);
+   cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
+   cairo_move_to(ctx->xinfo->cairo, ctx->xoffset - width, ctx->yoffset);
+   pango_cairo_show_layout(ctx->xinfo->cairo, ctx->xinfo->playout);
 
-   return width;
+   ctx->xoffset -= width;
 }
 
 void

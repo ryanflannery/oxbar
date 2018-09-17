@@ -42,12 +42,10 @@ xdraw_printf(
       const char *fmt,
       ...);
 
-uint32_t
+void
 xdraw_text_right_aligned(
-      xinfo_t    *xinfo,
+      xdraw_context_t *ctx,
       const char *color,
-      double      x,
-      double      y,
       const char *text);
 
 void

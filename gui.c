@@ -372,13 +372,18 @@ ui_widget_time_draw(
 
    time_t now = time(NULL);
    strftime(buffer, GUI_TIME_MAXLEN, "%a %d %b %Y  %I:%M:%S %p", localtime(&now));
-   int width = xdraw_text_right_aligned(
-         ui->xinfo,
+
+   xdraw_context_t newctx;
+   newctx.xinfo = ui->xcontext->xinfo;
+   newctx.xoffset = ui->xcontext->xinfo->w;
+   newctx.yoffset = ui->xcontext->yoffset;
+
+   double startx = newctx.xoffset;
+   xdraw_text_right_aligned(
+         &newctx,
          ui->settings->display.fgcolor,
-         ui->xinfo->w,
-         ui->xinfo->padding,
          buffer);
 
    xdraw_hline(ui->xinfo, "859900", ui->xinfo->padding,
-         ui->xinfo->w - width, ui->xinfo->display_width);
+         newctx.xoffset, startx);
 }
