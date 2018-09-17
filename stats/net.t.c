@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <inttypes.h>
 
 #include "net.h"
 
@@ -19,7 +20,7 @@ main()
    while (1)
    {
       net_update();
-      printf("%10ld %10ld %10ld %10ld %10lld %10lld %10lld %10lld\n",
+      printf("%10ld %10ld %10ld %10ld %10llu %10llu %10llu %10llu\n",
             NET.raw_ip_packets_in, NET.raw_ip_packets_out,
             NET.new_ip_packets_in, NET.new_ip_packets_out,
             NET.raw_bytes_in, NET.raw_bytes_out,

@@ -345,13 +345,13 @@ ui_widget_net_draw(
       oxbarui_t  *ui,
       net_info_t *net)
 {
-   static const char *colors_in[] = {
-      "859900",   /* free */
-      "157ad2",   /* in */
+   const char *colors_in[] = {
+      ui->settings->network.inbound_chart_color_bgcolor,
+      ui->settings->network.inbound_chart_color_pgcolor
    };
-   static const char *colors_out[] = {
-      "859900",   /* free */
-      "dc322f",   /* out */
+   const char *colors_out[] = {
+      ui->settings->network.outbound_chart_color_bgcolor,
+      ui->settings->network.outbound_chart_color_pgcolor
    };
 
    static tseries_t *bytes_in  = NULL;
@@ -376,7 +376,7 @@ ui_widget_net_draw(
    ui->xcurrent += ui->space_width;
    ui->xcurrent += xdraw_printf(ui->xinfo, "dc322f", ui->xcurrent, ui->xinfo->padding, "%s", fmt_memory("% 4.0f", net->new_bytes_out / 1000));
 
-   xdraw_hline(ui->xinfo, "268bd2", ui->xinfo->padding, startx, ui->xcurrent);
+   xdraw_hline(ui->xinfo, ui->settings->network.hdcolor, ui->xinfo->padding, startx, ui->xcurrent);
 }
 
 void
@@ -391,10 +391,10 @@ ui_widget_time_draw(
    int width = xdraw_text_right_aligned(
          ui->xinfo,
          ui->settings->display.fgcolor,
-         ui->xinfo->display_width,
+         ui->xinfo->w,
          ui->xinfo->padding,
          buffer);
 
    xdraw_hline(ui->xinfo, "859900", ui->xinfo->padding,
-         ui->xinfo->display_width - width, ui->xinfo->display_width);
+         ui->xinfo->w - width, ui->xinfo->display_width);
 }

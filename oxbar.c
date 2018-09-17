@@ -17,10 +17,13 @@ void setup_timer();
 void draw_oxbar();
 
 int
-main ()
+main(int argc, char *argv[])
 {
    settings_t settings;
+
    settings_load_defaults(&settings);
+   settings_parse_cmdline(&settings, argc, argv);
+
    g_ui = ui_create(&settings);
    stats_init();
 
