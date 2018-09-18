@@ -15,6 +15,7 @@ oxbarui_t *gui;
 pthread_t  pthread_gui;
 pthread_t  pthread_stats_updater;
 pthread_t  pthread_sig_handler;
+pthread_mutex_t mutex_gui;
 
 void*
 thread_gui()
@@ -32,7 +33,9 @@ thread_gui()
        */
       switch (xevent->response_type & ~0x80) {
       case XCB_EXPOSE:
+         pthread_mutex_lock(&mutex_gui);
          ui_draw(gui);
+         pthread_mutex_unlock(&mutex_gui);
          break;
       default:
          break;
@@ -52,7 +55,9 @@ thread_stats_updater()
    while (1) {
       usleep(1000000);  /* 1 second */
       stats_update();
+      pthread_mutex_lock(&mutex_gui);
       ui_draw(gui);
+      pthread_mutex_unlock(&mutex_gui);
    }
    return NULL;
 }
@@ -94,7 +99,7 @@ thread_sig_handler()
       err(1, "%s: sigaction failed", __FUNCTION__);
 
    while (1) {
-      usleep(100000);  /* 1/10 second */
+      usleep(100000);   /* 1/10 second */
       if (SIG_QUIT) {
          if (pthread_cancel(pthread_gui)
          ||  pthread_cancel(pthread_stats_updater)
