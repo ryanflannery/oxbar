@@ -21,7 +21,8 @@ thread_gui()
 {
    sigset_t set;
    sigfillset(&set);
-   pthread_sigmask(SIG_SETMASK, &set, NULL);  /* TODO check */
+   if (pthread_sigmask(SIG_SETMASK, &set, NULL))
+      errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
 
    xcb_generic_event_t *xevent;
    while ((xevent = xcb_wait_for_event(gui->xinfo->xcon))) {
@@ -45,7 +46,8 @@ thread_stats_updater()
 {
    sigset_t set;
    sigfillset(&set);
-   pthread_sigmask(SIG_SETMASK, &set, NULL);  /* TODO check */
+   if (pthread_sigmask(SIG_SETMASK, &set, NULL))
+      errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
 
    while (1) {
       usleep(1000000);  /* 1 second */
@@ -61,10 +63,10 @@ void
 signal_handler(int sig)
 {
    switch (sig) {
-   case SIGHUP:
+   case SIGHUP:      /* TODO: reload config file here (once supported) */
    case SIGINT:
-   case SIGTERM:
    case SIGQUIT:
+   case SIGTERM:
       SIG_QUIT = 1;
       break;
    }
@@ -77,25 +79,27 @@ thread_sig_handler()
    sigemptyset(&set);
    sigaddset(&set, SIGHUP);
    sigaddset(&set, SIGINT);
-   sigaddset(&set, SIGTERM);
    sigaddset(&set, SIGQUIT);
-   pthread_sigmask(SIG_SETMASK, &set, NULL);  /* TODO check */
+   sigaddset(&set, SIGTERM);
+   if (pthread_sigmask(SIG_SETMASK, &set, NULL))
+      errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
 
    struct sigaction sig_act;
    sig_act.sa_flags = 0;
    sig_act.sa_handler = signal_handler;
    if (sigaction(SIGHUP,  &sig_act, NULL)
-    || sigaction(SIGINT,  &sig_act, NULL)
-    || sigaction(SIGTERM, &sig_act, NULL)
-    || sigaction(SIGQUIT, &sig_act, NULL))
+   ||  sigaction(SIGINT,  &sig_act, NULL)
+   ||  sigaction(SIGQUIT, &sig_act, NULL)
+   ||  sigaction(SIGTERM, &sig_act, NULL))
       err(1, "%s: sigaction failed", __FUNCTION__);
 
    while (1) {
       usleep(100000);  /* 1/10 second */
       if (SIG_QUIT) {
-         pthread_cancel(pthread_gui);
-         pthread_cancel(pthread_stats_updater);
-         pthread_cancel(pthread_sig_handler);   /* ...it's painless */
+         if (pthread_cancel(pthread_gui)
+         ||  pthread_cancel(pthread_stats_updater)
+         ||  pthread_cancel(pthread_sig_handler))        /* ...it's painless */
+            errx(1, "%s: pthread_cancels failed", __FUNCTION__);
       }
    }
    return NULL;
@@ -111,20 +115,23 @@ main(int argc, char *argv[])
    gui = ui_init(&settings);
    stats_init();
 
-   /* we are now ready to update stats and draw / do first of each */
+   /* initial stats & draw */
    stats_update();
    ui_draw(gui);
 
-   /* TODO checks */
-   pthread_create(&pthread_gui, NULL, thread_gui, NULL);
-   pthread_create(&pthread_stats_updater, NULL, thread_stats_updater, NULL);
-   pthread_create(&pthread_sig_handler, NULL, thread_sig_handler, NULL);
+   if (pthread_create(&pthread_gui, NULL, thread_gui, NULL)
+   ||  pthread_create(&pthread_stats_updater, NULL, thread_stats_updater, NULL)
+   ||  pthread_create(&pthread_sig_handler, NULL, thread_sig_handler, NULL))
+      errx(1, "pthread_creates failed");
 
-   /* TODO checks */
-   pthread_join(pthread_gui, NULL);
-   pthread_join(pthread_stats_updater, NULL);
-   pthread_join(pthread_sig_handler, NULL);
+   /* and we're running! */
 
+   if (pthread_join(pthread_gui, NULL)
+   ||  pthread_join(pthread_stats_updater, NULL)
+   ||  pthread_join(pthread_sig_handler, NULL))
+      errx(1, "pthread_joins failed");
+
+   printf("cleaning up\n");
    stats_close();
    ui_free(gui);
 
