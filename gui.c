@@ -99,6 +99,26 @@ ui_draw(oxbarui_t *ui)
  *    3. Some other yet-to-be-determined, and hopefully elegant, solution.
  */
 
+/* TODO Reduce widget boilerplate
+ * Currently, every widget needs to follow the below pattern to render
+ * properly:
+      void
+      ui_widget_FOO_draw(
+            oxbarui_t      *ui,
+            FOO_info_t  *nprocs)
+      {
+         double startx = ui->xcontext->xoffset;
+
+         ... xdraw_stuff() ...
+
+         xdraw_hline(ui->xinfo, ui->settings->FOO.hdcolor, ui->xinfo->padding, startx, ui->xcontext->xoffset);
+         ui->xcontext->xoffset += ui->settings->display.widget_padding;
+      }
+ * This is cumbersome and error prone. If I move widgets to their own section,
+ * I could enforce the boilerplate elsewhere (in gui.*, while widgets live
+ * elsewhere).
+ */
+
 void
 ui_widget_battery_draw(
       oxbarui_t      *ui,
