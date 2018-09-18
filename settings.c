@@ -24,13 +24,13 @@ settings_load_defaults(settings_t *s)
    s->battery.hdcolor             = strdup("b58900");
    s->battery.fgcolor_unplugged   = strdup("dc322f");
    s->battery.chart_width         = 7;
-   s->battery.chart_color_bgcolor = strdup("dc322f");
-   s->battery.chart_color_pgcolor = strdup("859900");
+   s->battery.chart_bgcolor = strdup("dc322f");
+   s->battery.chart_pgcolor = strdup("859900");
 
    s->volume.hdcolor       = strdup("cb4b16");
    s->volume.chart_width   = 7;
-   s->volume.chart_bgcolor = strdup("859900");
-   s->volume.chart_pgcolor = strdup("dc322f");
+   s->volume.chart_bgcolor = strdup("dc322f");
+   s->volume.chart_pgcolor = strdup("859900");
 
    s->nprocs.hdcolor = strdup("dc322f");
 
@@ -118,8 +118,8 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
    SET_STRING_VALUE(battery.hdcolor);
    SET_STRING_VALUE(battery.fgcolor_unplugged);
    SET_INT_VALUE(battery.chart_width);
-   SET_STRING_VALUE(battery.chart_color_bgcolor);
-   SET_STRING_VALUE(battery.chart_color_pgcolor);
+   SET_STRING_VALUE(battery.chart_bgcolor);
+   SET_STRING_VALUE(battery.chart_pgcolor);
 
    /* volume */
    SET_STRING_VALUE(volume.hdcolor);

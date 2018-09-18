@@ -182,6 +182,40 @@ xdraw_vertical_stack(
 }
 
 void
+xdraw_progress_bar(
+      xdraw_context_t  *ctx,
+      const char       *bgcolor,
+      const char       *pgcolor,
+      double            width,
+      double            pct)
+{
+   double r, g, b, a;
+   double height = ctx->xinfo->h - ctx->xinfo->padding;
+
+   hex2rgba(bgcolor, &r, &g, &b, &a);
+   cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
+   cairo_rectangle(
+         ctx->xinfo->cairo,
+         ctx->xoffset,
+         ctx->xinfo->padding,
+         width,
+         height);
+   cairo_fill(ctx->xinfo->cairo);
+
+   hex2rgba(pgcolor, &r, &g, &b, &a);
+   cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
+   cairo_rectangle(
+         ctx->xinfo->cairo,
+         ctx->xoffset,
+         ctx->xinfo->padding + ((100.0 - pct)/100.0) * height,
+         width,
+         (pct/100.0) * height);
+   cairo_fill(ctx->xinfo->cairo);
+
+   ctx->xoffset += width;
+}
+
+void
 xdraw_series(
       xdraw_context_t  *ctx,
       const char      **colors,

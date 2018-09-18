@@ -20,8 +20,8 @@ typedef struct settings {
       char *hdcolor;
       char *fgcolor_unplugged;
       int   chart_width;
-      char *chart_color_bgcolor;
-      char *chart_color_pgcolor;
+      char *chart_bgcolor;
+      char *chart_pgcolor;
    } battery;
 
    struct widget_volume {

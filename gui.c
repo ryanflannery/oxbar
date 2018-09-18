@@ -104,11 +104,6 @@ ui_widget_battery_draw(
       oxbarui_t      *ui,
       battery_info_t *battery)
 {
-   const char *colors[] = {
-      ui->settings->battery.chart_color_bgcolor,
-      ui->settings->battery.chart_color_pgcolor
-   };
-
    double startx = ui->xcontext->xoffset;
 
    xdraw_printf(
@@ -117,13 +112,14 @@ ui_widget_battery_draw(
             ui->settings->display.fgcolor :
             ui->settings->battery.fgcolor_unplugged ,
          battery->plugged_in ? "AC " : "BAT ");
-   xdraw_vertical_stack(
+
+   xdraw_progress_bar(
          ui->xcontext,
-         ui->xcontext->xoffset,
+         ui->settings->battery.chart_bgcolor,
+         ui->settings->battery.chart_pgcolor,
          ui->settings->battery.chart_width,
-         2, colors,
-         (double[]){100.0 - battery->charge_pct, battery->charge_pct});
-   ui->xcontext->xoffset += ui->settings->battery.chart_width;
+         battery->charge_pct);
+
    xdraw_printf(
          ui->xcontext,
          ui->settings->display.fgcolor,
@@ -162,21 +158,13 @@ ui_widget_volume_draw(
    if (volume->left_pct != volume->right_pct)
       warnx("%s: left & right volume aren't properly rendered if not equal", __FUNCTION__);
 
-   xdraw_vertical_stack(
+   xdraw_progress_bar(
          ui->xcontext,
-         ui->xcontext->xoffset,
+         ui->settings->volume.chart_bgcolor,
+         ui->settings->volume.chart_pgcolor,
          ui->settings->volume.chart_width,
-         2,
-         (const char *[]){
-            ui->settings->volume.chart_pgcolor,
-            ui->settings->volume.chart_bgcolor
-         },
-         (double[]){
-            100.0 - volume->left_pct,
-            volume->left_pct
-         });
+         volume->left_pct);
 
-   ui->xcontext->xoffset += ui->settings->volume.chart_width;
    xdraw_printf(
          ui->xcontext,
          ui->settings->display.fgcolor,
@@ -289,7 +277,7 @@ ui_widget_cpus_draw(
          hist_cpu[i] = histogram_init(60, CPUSTATES);
    }
 
-   xdraw_printf(ui->xcontext, ui->settings->display.fgcolor, "CPUs: ");
+   xdraw_printf(ui->xcontext, ui->settings->display.fgcolor, "CPUs:");
    for (i = 0; i < cpus->ncpu; i++) {
       histogram_update(hist_cpu[i], (double[]) {
             cpus->cpus[i].percentages[CP_IDLE],
@@ -298,9 +286,9 @@ ui_widget_cpus_draw(
             cpus->cpus[i].percentages[CP_NICE],
             cpus->cpus[i].percentages[CP_INTR]
             });
+      ui->xcontext->xoffset += ui->space_width / 2.0;
       xdraw_histogram(ui->xcontext, colors, hist_cpu[i]);
       xdraw_printf(ui->xcontext, ui->settings->display.fgcolor, "% 3.0f%%", CPUS.cpus[i].percentages[CP_IDLE]);
-      ui->xcontext->xoffset += ui->space_width;
    }
 
    xdraw_hline(ui->xinfo, ui->settings->cpus.hdcolor, ui->xinfo->padding, startx, ui->xcontext->xoffset);

@@ -56,15 +56,13 @@ xdraw_hline(
       double      x1,
       double      x2);
 
-/* TODO remove xdraw_vertical_stack() - replace with a logical */
 void
-xdraw_vertical_stack(
+xdraw_progress_bar(
       xdraw_context_t  *ctx,
-      double            x,
+      const char       *bgcolor,
+      const char       *pgcolor,
       double            width,
-      size_t            nvalues,
-      const char      **colors,
-      double           *percents);
+      double            pct);
 
 void
 xdraw_series(
