@@ -1,48 +1,17 @@
 #include <err.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <pthread.h>
-#include <sys/types.h>
 
 #include "gui.h"
 #include "settings.h"
 #include "stats/stats.h"
 
 oxbarui_t *gui;
-pthread_t  pthread_gui;
-pthread_t  pthread_stats_updater;
-pthread_t  pthread_sig_handler;
-pthread_mutex_t mutex_gui;
-
-void*
-thread_gui()
-{
-   sigset_t set;
-   sigfillset(&set);
-   if (pthread_sigmask(SIG_SETMASK, &set, NULL))
-      errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
-
-   xcb_generic_event_t *xevent;
-   while ((xevent = xcb_wait_for_event(gui->xinfo->xcon))) {
-      /* TODO WTF is "& ~0x80?" needed for in this xcb_event_t check?
-       * This is straight from xcb documentation. I have no idea why it's
-       * needed and haven't figured out yet.
-       */
-      switch (xevent->response_type & ~0x80) {
-      case XCB_EXPOSE:
-         pthread_mutex_lock(&mutex_gui);
-         ui_draw(gui);
-         pthread_mutex_unlock(&mutex_gui);
-         break;
-      default:
-         break;
-      }
-   }
-   return NULL;
-}
+pthread_t  pthread_stats_updater;   /* update stats & redraw every 1 second   */
+pthread_t  pthread_sig_handler;     /* listen & respond to signals (SIGKILL)  */
+pthread_t  pthread_gui;             /* handle x events and redraw             */
+pthread_mutex_t mutex_gui;          /* guard all calls to x11/pango/cairo     */
+volatile sig_atomic_t SIG_QUIT = 0; /* "should i exit?" flag (set by signals) */
 
 void*
 thread_stats_updater()
@@ -61,8 +30,6 @@ thread_stats_updater()
    }
    return NULL;
 }
-
-volatile sig_atomic_t SIG_QUIT = 0;
 
 void
 signal_handler(int sig)
@@ -101,10 +68,37 @@ thread_sig_handler()
    while (1) {
       usleep(100000);   /* 1/10 second */
       if (SIG_QUIT) {
-         if (pthread_cancel(pthread_gui)
-         ||  pthread_cancel(pthread_stats_updater)
-         ||  pthread_cancel(pthread_sig_handler))        /* ...it's painless */
+         if (pthread_cancel(pthread_stats_updater)
+         ||  pthread_cancel(pthread_sig_handler)          /* ...it's painless */
+         ||  pthread_cancel(pthread_gui))
             errx(1, "%s: pthread_cancels failed", __FUNCTION__);
+      }
+   }
+   return NULL;
+}
+
+void*
+thread_gui()
+{
+   sigset_t set;
+   sigfillset(&set);
+   if (pthread_sigmask(SIG_SETMASK, &set, NULL))
+      errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
+
+   xcb_generic_event_t *xevent;
+   while ((xevent = xcb_wait_for_event(gui->xinfo->xcon))) {
+      /* TODO WTF is "& ~0x80?" needed for in this xcb_event_t check?
+       * This is straight from xcb documentation. I have no idea why it's
+       * needed and haven't figured out yet.
+       */
+      switch (xevent->response_type & ~0x80) {
+      case XCB_EXPOSE:
+         pthread_mutex_lock(&mutex_gui);
+            ui_draw(gui);
+         pthread_mutex_unlock(&mutex_gui);
+         break;
+      default:
+         break;
       }
    }
    return NULL;
@@ -120,20 +114,20 @@ main(int argc, char *argv[])
    gui = ui_init(&settings);
    stats_init();
 
-   /* initial stats & draw */
+   /* initial stats update & draw */
    stats_update();
    ui_draw(gui);
 
-   if (pthread_create(&pthread_gui, NULL, thread_gui, NULL)
-   ||  pthread_create(&pthread_stats_updater, NULL, thread_stats_updater, NULL)
-   ||  pthread_create(&pthread_sig_handler, NULL, thread_sig_handler, NULL))
+   if (pthread_create(&pthread_stats_updater, NULL, thread_stats_updater, NULL)
+   ||  pthread_create(&pthread_sig_handler, NULL, thread_sig_handler, NULL)
+   ||  pthread_create(&pthread_gui, NULL, thread_gui, NULL))
       errx(1, "pthread_creates failed");
 
    /* and we're running! */
 
-   if (pthread_join(pthread_gui, NULL)
-   ||  pthread_join(pthread_stats_updater, NULL)
-   ||  pthread_join(pthread_sig_handler, NULL))
+   if (pthread_join(pthread_stats_updater, NULL)
+   ||  pthread_join(pthread_sig_handler, NULL)
+   ||  pthread_join(pthread_gui, NULL))
       errx(1, "pthread_joins failed");
 
    stats_close();
