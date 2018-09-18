@@ -16,11 +16,13 @@ volatile sig_atomic_t SIG_QUIT = 0; /* "should i exit?" flag (set by signals) */
 void*
 thread_stats_updater()
 {
+   /* ignore all signals */
    sigset_t set;
    sigfillset(&set);
    if (pthread_sigmask(SIG_SETMASK, &set, NULL))
       errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
 
+   /* every 1 second, update stats and re-draw the ui */
    while (1) {
       usleep(1000000);  /* 1 second */
       pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
@@ -36,6 +38,7 @@ thread_stats_updater()
 void
 signal_handler(int sig)
 {
+   /* just set global flags (all that's safe in a signal handler) */
    switch (sig) {
    case SIGHUP:      /* TODO: reload config file here (once supported) */
    case SIGINT:
@@ -49,6 +52,7 @@ signal_handler(int sig)
 void*
 thread_sig_handler()
 {
+   /* this thread listens to these signals */
    sigset_t set;
    sigemptyset(&set);
    sigaddset(&set, SIGHUP);
@@ -58,6 +62,7 @@ thread_sig_handler()
    if (pthread_sigmask(SIG_SETMASK, &set, NULL))
       errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
 
+   /* upon recieving these signals, execute signal_handler in this thread */
    struct sigaction sig_act;
    sig_act.sa_flags = 0;
    sig_act.sa_handler = signal_handler;
@@ -67,6 +72,7 @@ thread_sig_handler()
    ||  sigaction(SIGTERM, &sig_act, NULL))
       err(1, "%s: sigaction failed", __FUNCTION__);
 
+   /* every 1/10th of a second, check the status of that signal handler */
    while (1) {
       usleep(100000);   /* 1/10 second */
       if (SIG_QUIT) {
@@ -82,11 +88,13 @@ thread_sig_handler()
 void*
 thread_gui()
 {
+   /* ignore all signals */
    sigset_t set;
    sigfillset(&set);
    if (pthread_sigmask(SIG_SETMASK, &set, NULL))
       errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
 
+   /* enter x event loop (blocking & infinite) - redraw on certain events */
    xcb_generic_event_t *xevent;
    while ((xevent = xcb_wait_for_event(gui->xinfo->xcon))) {
       /* TODO WTF is "& ~0x80?" needed for in this xcb_event_t check?
@@ -111,31 +119,31 @@ thread_gui()
 int
 main(int argc, char *argv[])
 {
+   /* init settings */
    settings_t settings;
    settings_load_defaults(&settings);
    settings_parse_cmdline(&settings, argc, argv);
 
-   gui = ui_init(&settings);
+   /* setup gui and stats, then do initial stats update and paint */
    stats_init();
-
-   /* initial stats update & draw */
    stats_update();
+   gui = ui_init(&settings);
    ui_draw(gui);
 
+   /* and we're running! start all threads */
    if (pthread_create(&pthread_stats_updater, NULL, thread_stats_updater, NULL)
    ||  pthread_create(&pthread_sig_handler, NULL, thread_sig_handler, NULL)
    ||  pthread_create(&pthread_gui, NULL, thread_gui, NULL))
       errx(1, "pthread_creates failed");
 
-   /* and we're running! */
-
+   /* wait for done (only from signal handler) */
    if (pthread_join(pthread_stats_updater, NULL)
    ||  pthread_join(pthread_sig_handler, NULL)
    ||  pthread_join(pthread_gui, NULL))
       errx(1, "pthread_joins failed");
 
+   /* cleanup */
    stats_close();
    ui_free(gui);
-
    return 0;
 }
