@@ -97,11 +97,7 @@ thread_gui()
    /* enter x event loop (blocking & infinite) - redraw on certain events */
    xcb_generic_event_t *xevent;
    while ((xevent = xcb_wait_for_event(gui->xinfo->xcon))) {
-      /* TODO WTF is "& ~0x80?" needed for in this xcb_event_t check?
-       * This is straight from xcb documentation. I have no idea why it's
-       * needed and haven't figured out yet.
-       */
-      switch (xevent->response_type & ~0x80) {
+      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
       case XCB_EXPOSE:
          pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
          pthread_mutex_lock(&mutex_gui);
