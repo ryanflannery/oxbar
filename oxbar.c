@@ -6,7 +6,7 @@
 #include "settings.h"
 #include "stats/stats.h"
 
-oxbarui_t *gui;
+oxbarui_t *gui;                     /* global gui object                      */
 pthread_t  pthread_stats_updater;   /* update stats & redraw every 1 second   */
 pthread_t  pthread_sig_handler;     /* listen & respond to signals (SIGKILL)  */
 pthread_t  pthread_gui;             /* handle x events and redraw             */
