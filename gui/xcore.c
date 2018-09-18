@@ -33,6 +33,9 @@ get_xvisual(xcb_screen_t *screen)
    return NULL;
 }
 
+/*
+ * Creates core XCB/X11 connection
+ */
 void
 xcore_setup_x_connection_screen_visual(xinfo_t *x)
 {
@@ -234,4 +237,62 @@ xcore_destroy(xinfo_t *x)
    cairo_surface_destroy(x->surface);
    cairo_destroy(x->cairo);
    xcb_disconnect(x->xcon);
+}
+
+xinfo_t *
+xcore_init(
+      const char *name,
+      double x, double y,
+      double w, double h,
+      double padding,
+      const char *bgcolor,
+      const char *font)
+{
+   xinfo_t *xinfo = malloc(sizeof(xinfo_t));
+   if (NULL == xinfo)
+      err(1, "%s: couldn't malloc xinfo", __FUNCTION__);
+
+   /* These need to be done in a specific order */
+   xcore_setup_x_connection_screen_visual(xinfo);
+
+   /* TODO Support display height based on font size
+    * I used to support this using the cairo font API where the font size was
+    * explicit, and I could use that to autoscale the display height as an
+    * option (display height = font size + 2 * padding).
+    * This would be great to support again, but after migrating to pango for
+    * font loading and rendering (a big improvement in appearance) I haven't
+    * yet figured out how to retrieve font height (not specific TEXT RENDERED
+    * IN A FONT but rather generic font height).
+    *
+   if (-1 == height)
+      height = (uint32_t)(ceil(fontpt + (2 * padding)));
+    */
+   if (-1 == y)
+      y = xinfo->display_height - h;
+
+   if (-1 == w)
+      w = xinfo->display_width;
+
+   xinfo->padding = padding;
+   xcore_setup_x_window(
+         xinfo,
+         name,
+         x, y,
+         w, h,
+         bgcolor);
+   xcore_setup_x_wm_hints(xinfo);
+   xcore_setup_cairo(xinfo);
+   xcore_setup_xfont(xinfo, font);
+   xcb_map_window(xinfo->xcon, xinfo->xwindow);
+   return xinfo;
+}
+
+void
+xcore_free(xinfo_t *x)
+{
+   pango_font_description_free(x->pfont);
+   cairo_surface_destroy(x->surface);
+   cairo_destroy(x->cairo);
+   xcb_disconnect(x->xcon);
+   free(x);
 }

@@ -8,55 +8,26 @@
 #include "gui/histogram.h"
 
 oxbarui_t*
-ui_create(settings_t *s)
+ui_init(settings_t *s)
 {
    oxbarui_t *ui = malloc(sizeof(oxbarui_t));
    if (NULL == ui)
       err(1, "%s: couldn't malloc ui", __FUNCTION__);
 
    ui->settings = s;
-   ui->xinfo = malloc(sizeof(xinfo_t));
-   if (NULL == ui->xinfo)
-      err(1, "%s: couldn't malloc xinfo", __FUNCTION__);
-
-   /* These need to be done in a specific order */
-   xcore_setup_x_connection_screen_visual(ui->xinfo);
-
-   /* TODO Support display height based on font size
-    * I used to support this using the cairo font API where the font size was
-    * explicit, and I could use that to autoscale the display height as an
-    * option (display height = font size + 2 * padding).
-    * This would be great to support again, but after migrating to pango for
-    * font loading and rendering (a big improvement in appearance) I haven't
-    * yet figured out how to retrieve font height (not specific TEXT RENDERED
-    * IN A FONT but rather generic font height).
-    *
-   if (-1 == height)
-      height = (uint32_t)(ceil(fontpt + (2 * padding)));
-    */
-
-   if (-1 == ui->settings->display.y)
-      ui->settings->display.y = ui->xinfo->display_height - ui->settings->display.h ;
-
-   if (-1 == ui->settings->display.w)
-      ui->settings->display.w = ui->xinfo->display_width;
-
-   ui->xinfo->padding = ui->settings->display.top_padding;
-
-   xcore_setup_x_window(
-         ui->xinfo,
+   ui->xinfo = xcore_init(
          ui->settings->display.wmname,
          ui->settings->display.x, ui->settings->display.y,
          ui->settings->display.w, ui->settings->display.h,
-         ui->settings->display.bgcolor);
+         ui->settings->display.top_padding,
+         ui->settings->display.bgcolor,
+         ui->settings->display.font);
 
-   xcore_setup_x_wm_hints(ui->xinfo);
-   xcore_setup_cairo(ui->xinfo);
-   xcore_setup_xfont(ui->xinfo, ui->settings->display.font);
+   /* xcore_init can mutate some settings */
+   ui->settings->display.y = ui->xinfo->y;
+   ui->settings->display.w = ui->xinfo->w;
 
-   /* now map the window & do an initial paint */
-   xcb_map_window(ui->xinfo->xcon, ui->xinfo->xwindow);
-
+   /* initial context */
    ui->xcontext = xdraw_context_init(ui->xinfo);
    xdraw_printf(ui->xcontext, NULL, " ");    /* TODO this now actually draws */
    ui->space_width = ui->xcontext->xoffset;
@@ -65,11 +36,9 @@ ui_create(settings_t *s)
 }
 
 void
-ui_destroy(oxbarui_t *ui)
+ui_free(oxbarui_t *ui)
 {
-   xcore_destroy(ui->xinfo);
-   xdraw_context_free(ui->xcontext);
-   free(ui->xinfo);
+   xcore_free(ui->xinfo);
    free(ui);
 }
 
@@ -83,6 +52,34 @@ void
 ui_flush(oxbarui_t *ui)
 {
    xdraw_flush(ui->xcontext);
+}
+
+void
+ui_draw(oxbarui_t *ui)
+{
+   ui_clear(ui);
+
+   if (BATTERY.is_setup)
+      ui_widget_battery_draw(ui, &BATTERY);
+
+   if (VOLUME.is_setup)
+      ui_widget_volume_draw(ui, &VOLUME);
+
+   if (NPROCS.is_setup)
+      ui_widget_nprocs_draw(ui, &NPROCS);
+
+   if (MEMORY.is_setup)
+      ui_widget_memory_draw(ui, &MEMORY);
+
+   if (CPUS.is_setup)
+      ui_widget_cpus_draw(ui, &CPUS);
+
+   if (NET.is_setup)
+      ui_widget_net_draw(ui, &NET);
+
+   ui_widget_time_draw(ui);
+
+   ui_flush(ui);
 }
 
 /* TODO Remove state From ui_widget_*_draw(...) components

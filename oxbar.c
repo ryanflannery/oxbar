@@ -14,7 +14,6 @@ oxbarui_t *g_ui;
 
 void signal_handler(int sig);
 void setup_timer();
-void draw_oxbar();
 
 int
 main(int argc, char *argv[])
@@ -24,12 +23,12 @@ main(int argc, char *argv[])
    settings_load_defaults(&settings);
    settings_parse_cmdline(&settings, argc, argv);
 
-   g_ui = ui_create(&settings);
+   g_ui = ui_init(&settings);
    stats_init();
 
    /* NOTE: we are now ready to update stats and draw.... */
    stats_update();   /* first stats collection */
-   draw_oxbar();     /* initializes first-time widget properties */
+   ui_draw(g_ui);     /* initializes first-time widget properties */
 
    signal(SIGHUP,  signal_handler);
    signal(SIGINT,  signal_handler);
@@ -51,7 +50,7 @@ main(int argc, char *argv[])
        */
       switch (xevent->response_type & ~0x80) {
          case XCB_EXPOSE:
-            draw_oxbar();
+            ui_draw(g_ui);
             break;
          default:
             /* TODO Identify what the other X events are we recieve */
@@ -60,14 +59,14 @@ main(int argc, char *argv[])
    }
 
    stats_close();
-   ui_destroy(g_ui);
+   ui_free(g_ui);
 
    return 0;
 }
 
 /* TODO Fix XCB event handling and signal handling
  * I have some issues below - namely in a signal handler I'm calling non-
- * reentrant safe code (stats_update() and draw_oxbar()).
+ * reentrant safe code (stats_update() and ui_draw()).
  * That's horrible...and I know it.
  *
  * I need to rectify using xcb_wait_for_event(..) for my main X loop (a
@@ -91,7 +90,7 @@ signal_handler(int sig)
          /* TODO Bad signal handler! Bad! These aren't reentrant!
           * See todo above this function.
           */
-         ui_destroy(g_ui);
+         ui_free(g_ui);
          stats_close();
          exit(1);
          break;
@@ -100,7 +99,7 @@ signal_handler(int sig)
           * See todo above this function.
           */
          stats_update();
-         draw_oxbar();
+         ui_draw(g_ui);
          break;
    }
 }
@@ -131,30 +130,3 @@ setup_timer()
       err(1, "%s: setitimer failed", __FUNCTION__);
 }
 
-void
-draw_oxbar()
-{
-   ui_clear(g_ui);
-
-   if (BATTERY.is_setup)
-      ui_widget_battery_draw(g_ui, &BATTERY);
-
-   if (VOLUME.is_setup)
-      ui_widget_volume_draw(g_ui, &VOLUME);
-
-   if (NPROCS.is_setup)
-      ui_widget_nprocs_draw(g_ui, &NPROCS);
-
-   if (MEMORY.is_setup)
-      ui_widget_memory_draw(g_ui, &MEMORY);
-
-   if (CPUS.is_setup)
-      ui_widget_cpus_draw(g_ui, &CPUS);
-
-   if (NET.is_setup)
-      ui_widget_net_draw(g_ui, &NET);
-
-   ui_widget_time_draw(g_ui);
-
-   ui_flush(g_ui);
-}
