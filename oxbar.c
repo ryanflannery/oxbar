@@ -136,7 +136,6 @@ main(int argc, char *argv[])
    ||  pthread_join(pthread_sig_handler, NULL))
       errx(1, "pthread_joins failed");
 
-   printf("cleaning up\n");
    stats_close();
    ui_free(gui);
 
