@@ -38,6 +38,7 @@ ui_init(settings_t *s)
 void
 ui_free(oxbarui_t *ui)
 {
+   xdraw_context_free(ui->xcontext);
    xcore_free(ui->xinfo);
    free(ui);
 }

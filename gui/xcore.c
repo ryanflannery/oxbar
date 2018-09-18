@@ -230,15 +230,6 @@ xcore_setup_xfont(
    /* TODO Are there any error checking methods to call after pango? */
 }
 
-void
-xcore_destroy(xinfo_t *x)
-{
-   pango_font_description_free(x->pfont);
-   cairo_surface_destroy(x->surface);
-   cairo_destroy(x->cairo);
-   xcb_disconnect(x->xcon);
-}
-
 xinfo_t *
 xcore_init(
       const char *name,

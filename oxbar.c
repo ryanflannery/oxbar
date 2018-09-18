@@ -23,10 +23,12 @@ thread_stats_updater()
 
    while (1) {
       usleep(1000000);  /* 1 second */
+      pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
       stats_update();
       pthread_mutex_lock(&mutex_gui);
       ui_draw(gui);
       pthread_mutex_unlock(&mutex_gui);
+      pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
    }
    return NULL;
 }
@@ -68,9 +70,9 @@ thread_sig_handler()
    while (1) {
       usleep(100000);   /* 1/10 second */
       if (SIG_QUIT) {
-         if (pthread_cancel(pthread_stats_updater)
-         ||  pthread_cancel(pthread_sig_handler)          /* ...it's painless */
-         ||  pthread_cancel(pthread_gui))
+         if (pthread_cancel(pthread_gui)
+         ||  pthread_cancel(pthread_stats_updater)
+         ||  pthread_cancel(pthread_sig_handler))         /* ...it's painless */
             errx(1, "%s: pthread_cancels failed", __FUNCTION__);
       }
    }
@@ -93,9 +95,11 @@ thread_gui()
        */
       switch (xevent->response_type & ~0x80) {
       case XCB_EXPOSE:
+         pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
          pthread_mutex_lock(&mutex_gui);
-            ui_draw(gui);
+         ui_draw(gui);
          pthread_mutex_unlock(&mutex_gui);
+         pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
          break;
       default:
          break;
