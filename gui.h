@@ -46,37 +46,37 @@ void ui_flush(oxbarui_t *ui);
  */
 
 void
-ui_widget_battery_draw(
+widget_battery_draw(
       oxbarui_t      *ui,
       battery_info_t *battery);
 
 void
-ui_widget_volume_draw(
+widget_volume_draw(
       oxbarui_t      *ui,
       volume_info_t *volume);
 
 void
-ui_widget_nprocs_draw(
+widget_nprocs_draw(
       oxbarui_t      *ui,
       nprocs_info_t  *nprocs);
 
 void
-ui_widget_memory_draw(
+widget_memory_draw(
       oxbarui_t      *ui,
       memory_info_t  *memory);
 
 void
-ui_widget_cpus_draw(
+widget_cpus_draw(
       oxbarui_t  *ui,
       cpus_t     *cpus);
 
 void
-ui_widget_net_draw(
+widget_net_draw(
       oxbarui_t  *ui,
       net_info_t *net);
 
 void
-ui_widget_time_draw(
+widget_time_draw(
       oxbarui_t  *ui);
 
 #endif

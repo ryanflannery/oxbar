@@ -61,24 +61,24 @@ ui_draw(oxbarui_t *ui)
    ui_clear(ui);
 
    if (BATTERY.is_setup)
-      ui_widget_battery_draw(ui, &BATTERY);
+      widget_battery_draw(ui, &BATTERY);
 
    if (VOLUME.is_setup)
-      ui_widget_volume_draw(ui, &VOLUME);
+      widget_volume_draw(ui, &VOLUME);
 
    if (NPROCS.is_setup)
-      ui_widget_nprocs_draw(ui, &NPROCS);
+      widget_nprocs_draw(ui, &NPROCS);
 
    if (MEMORY.is_setup)
-      ui_widget_memory_draw(ui, &MEMORY);
+      widget_memory_draw(ui, &MEMORY);
 
    if (CPUS.is_setup)
-      ui_widget_cpus_draw(ui, &CPUS);
+      widget_cpus_draw(ui, &CPUS);
 
    if (NET.is_setup)
-      ui_widget_net_draw(ui, &NET);
+      widget_net_draw(ui, &NET);
 
-   ui_widget_time_draw(ui);
+   widget_time_draw(ui);
 
    ui_flush(ui);
 }
@@ -120,7 +120,7 @@ ui_draw(oxbarui_t *ui)
  */
 
 void
-ui_widget_battery_draw(
+widget_battery_draw(
       oxbarui_t      *ui,
       battery_info_t *battery)
 {
@@ -159,7 +159,7 @@ ui_widget_battery_draw(
 }
 
 void
-ui_widget_volume_draw(
+widget_volume_draw(
       oxbarui_t      *ui,
       volume_info_t  *volume)
 {
@@ -195,7 +195,7 @@ ui_widget_volume_draw(
 }
 
 void
-ui_widget_nprocs_draw(
+widget_nprocs_draw(
       oxbarui_t      *ui,
       nprocs_info_t  *nprocs)
 {
@@ -238,7 +238,7 @@ fmt_memory(const char *fmt, int kbytes)
 }
 
 void
-ui_widget_memory_draw(
+widget_memory_draw(
       oxbarui_t      *ui,
       memory_info_t  *memory)
 {
@@ -273,7 +273,7 @@ ui_widget_memory_draw(
 }
 
 void
-ui_widget_cpus_draw(
+widget_cpus_draw(
       oxbarui_t  *ui,
       cpus_t     *cpus)
 {
@@ -316,7 +316,7 @@ ui_widget_cpus_draw(
 }
 
 void
-ui_widget_net_draw(
+widget_net_draw(
       oxbarui_t  *ui,
       net_info_t *net)
 {
@@ -356,7 +356,7 @@ ui_widget_net_draw(
 }
 
 void
-ui_widget_time_draw(
+widget_time_draw(
       oxbarui_t  *ui)
 {
 #define GUI_TIME_MAXLEN 100
