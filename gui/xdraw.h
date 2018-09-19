@@ -1,6 +1,7 @@
 #ifndef XDRAW_H
 #define XDRAW_H
 
+#include "chart.h"
 #include "xcore.h"
 #include "tseries.h"
 #include "histogram.h"
@@ -72,15 +73,15 @@ xdraw_progress_bar(
       double            pct);
 
 void
+xdraw_chart(
+      xdraw_context_t  *ctx,
+      chart_t          *chart
+      );
+
+void
 xdraw_series(
       xdraw_context_t  *ctx,
       const char      **colors,
       tseries_t        *t);
-
-void
-xdraw_histogram(
-      xdraw_context_t  *ctx,
-      const char      **colors,
-      histogram_t      *h);
 
 #endif

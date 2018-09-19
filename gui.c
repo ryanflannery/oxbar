@@ -233,23 +233,23 @@ widget_memory_draw(
       memory_info_t     *memory)
 {
    const char *colors[] = {
-      settings->memory.chart_color_free,
+      settings->memory.chart_color_active,
       settings->memory.chart_color_total,
-      settings->memory.chart_color_active
+      settings->memory.chart_color_free
    };
 
-   static histogram_t *histogram = NULL;
-   if (NULL == histogram)
-      histogram = histogram_init(60, 3);
+   static chart_t *chart = NULL;
+   if (NULL == chart)
+      chart = chart_init(60, 3, true, "555555", colors);
 
-   histogram_update(histogram, (double[]) {
-         memory->free_pct,
+   chart_update(chart, (double[]) {
+         memory->active_pct,
          memory->total_pct,
-         memory->active_pct
+         memory->free_pct
          });
 
    xdraw_printf(context, settings->display.fgcolor, "Memory: ");
-   xdraw_histogram(context, colors, histogram);
+   xdraw_chart(context, chart);
    xdraw_printf(context, "dc322f", " %s", fmt_memory("%.1lf", memory->active));
    xdraw_printf(context, settings->display.fgcolor, " active ");
    xdraw_printf(context, "b58900", "%s", fmt_memory("%.1lf", memory->total));
@@ -265,34 +265,36 @@ widget_cpus_draw(
       cpus_t            *cpus)
 {
    const char *colors[] = {
-      settings->cpus.chart_color_idle,
-      settings->cpus.chart_color_user,
-      settings->cpus.chart_color_sys,
+      settings->cpus.chart_color_interrupt,
       settings->cpus.chart_color_nice,
-      settings->cpus.chart_color_interrupt
+      settings->cpus.chart_color_sys,
+      settings->cpus.chart_color_user,
+      settings->cpus.chart_color_idle
    };
+
    int i;
 
-   static histogram_t **hist_cpu = NULL;
-   if (NULL == hist_cpu) {
-      hist_cpu = calloc(cpus->ncpu, sizeof(histogram_t*));
-      if (NULL == hist_cpu)
-         err(1, "%s: calloc hist_cpu failed", __FUNCTION__);
+   static chart_t **charts = NULL;
+   if (NULL == charts) {
+      charts = calloc(cpus->ncpu, sizeof(chart_t*));
+      if (NULL == charts)
+         err(1, "%s: calloc charts failed", __FUNCTION__);
 
       for (i = 0; i < cpus->ncpu; i++)
-         hist_cpu[i] = histogram_init(60, CPUSTATES);
+         charts[i] = chart_init(60, CPUSTATES, true, "555555", colors);
    }
+
 
    xdraw_printf(context, settings->display.fgcolor, "CPUs: ");
    for (i = 0; i < cpus->ncpu; i++) {
-      histogram_update(hist_cpu[i], (double[]) {
-            cpus->cpus[i].percentages[CP_IDLE],
-            cpus->cpus[i].percentages[CP_USER],
-            cpus->cpus[i].percentages[CP_SYS],
+      chart_update(charts[i], (double[]) {
+            cpus->cpus[i].percentages[CP_INTR],
             cpus->cpus[i].percentages[CP_NICE],
-            cpus->cpus[i].percentages[CP_INTR]
+            cpus->cpus[i].percentages[CP_SYS],
+            cpus->cpus[i].percentages[CP_USER],
+            cpus->cpus[i].percentages[CP_IDLE]
             });
-      xdraw_histogram(context, colors, hist_cpu[i]);
+      xdraw_chart(context, charts[i]);
       xdraw_printf(context, settings->display.fgcolor, "% 3.0f%%", CPUS.cpus[i].percentages[CP_IDLE]);
       if (i != cpus->ncpu - 1) xdraw_printf(context, "000000", " ");
    }

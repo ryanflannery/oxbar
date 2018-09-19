@@ -216,6 +216,58 @@ xdraw_progress_bar(
 }
 
 void
+xdraw_chart(
+      xdraw_context_t  *ctx,
+      chart_t          *c
+      )
+{
+   const double chart_height = ctx->xinfo->h - ctx->xinfo->padding;
+   double r, g, b, a;
+
+   hex2rgba(c->bgcolor, &r, &g, &b, &a);
+   cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
+   cairo_rectangle(
+         ctx->xinfo->cairo,
+         ctx->xoffset,
+         ctx->xinfo->padding,
+         c->nsamples,
+         chart_height);
+   cairo_fill(ctx->xinfo->cairo);
+
+   size_t i, j, count;
+   for (count = 0, i = c->current + 1; count < c->nsamples; count++, i++) {
+      if (i >= c->nsamples)
+         i = 0;
+
+      /* we draw the bars for this sample from the bottom UP */
+      double y_bottom = ctx->xinfo->h;
+      for (j = 0; j < c->nseries; j++) {
+         if (!c->values[i][j])
+            continue;
+
+         double height = c->values[i][j] / 100.0 * chart_height;
+         double y_top = y_bottom - height;
+
+         /* don't go past the top (can happen w/ double rounding */
+         if (y_top < ctx->xinfo->padding)
+            y_top = ctx->xinfo->padding;
+
+         /* NOTE: using cairo lines appears fuzzy - stick w/ rectangle */
+         hex2rgba(c->colors[j], &r, &g, &b, &a);
+         cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
+         cairo_rectangle(ctx->xinfo->cairo,
+               ctx->xoffset + count,
+               y_top,
+               1.0,
+               height);
+         cairo_fill(ctx->xinfo->cairo);
+         y_bottom = y_top;
+      }
+   }
+   ctx->xoffset += c->nsamples;
+}
+
+void
 xdraw_series(
       xdraw_context_t  *ctx,
       const char      **colors,
@@ -254,41 +306,6 @@ xdraw_series(
                (max - t->values[i]) / max * 100,
                t->values[i] / max * 100
             });
-   }
-   ctx->xoffset += width;
-}
-
-void
-xdraw_histogram(
-      xdraw_context_t *ctx,
-      const char     **colors,
-      histogram_t      *h)
-{
-   double r, g, b, a;
-   int width = h->nsamples;
-
-   /* paint grey background to start */
-   hex2rgba("535353", &r, &g, &b, &a);
-   cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
-   cairo_rectangle(ctx->xinfo->cairo,
-         ctx->xoffset,
-         ctx->xinfo->padding,
-         width,
-         (ctx->xinfo->h - ctx->xinfo->padding));
-   cairo_fill(ctx->xinfo->cairo);
-
-   size_t count, i;
-   for (count = 0, i = h->current + 1; count < h->nsamples; count++, i++) {
-      if (i >= h->nsamples)
-         i = 0;
-
-      xdraw_vertical_stack(
-            ctx,
-            ctx->xoffset + count,
-            1,
-            h->nseries,
-            colors,
-            h->series[i]);
    }
    ctx->xoffset += width;
 }
