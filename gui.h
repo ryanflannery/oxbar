@@ -12,16 +12,12 @@
  * call their render methods and stores their order, setting-up and passing
  * xcontext & xinfo to them and knowing their order. That's it.
  */
+/* not packed */
 typedef struct gui {
-   /* not packed */
-   xinfo_t          *xinfo;
-   xdraw_context_t  *xcontext;
+   xinfo_t           *xinfo;
+   xdraw_context_t   *xcontext;
+   settings_t        *settings;
 
-   /* core settings (static after init) */
-   settings_t *settings;
-
-   /* state */
-   int      space_width;   /* width of a space " " in the font */
 } gui_t;
 
 gui_t* gui_init(settings_t *s);

@@ -37,8 +37,6 @@ gui_init(settings_t *s)
 
    /* initial context */
    gui->xcontext = xdraw_context_init(gui->xinfo);
-   xdraw_printf(gui->xcontext, NULL, " ");    /* TODO this now actually draws */
-   gui->space_width = gui->xcontext->xoffset;
 
    return gui;
 }
@@ -293,7 +291,7 @@ widget_cpus_draw(
          hist_cpu[i] = histogram_init(60, CPUSTATES);
    }
 
-   xdraw_printf(gui->xcontext, gui->settings->display.fgcolor, "CPUs:");
+   xdraw_printf(gui->xcontext, gui->settings->display.fgcolor, "CPUs: ");
    for (i = 0; i < cpus->ncpu; i++) {
       histogram_update(hist_cpu[i], (double[]) {
             cpus->cpus[i].percentages[CP_IDLE],
@@ -302,9 +300,9 @@ widget_cpus_draw(
             cpus->cpus[i].percentages[CP_NICE],
             cpus->cpus[i].percentages[CP_INTR]
             });
-      gui->xcontext->xoffset += gui->space_width / 2.0;
       xdraw_histogram(gui->xcontext, colors, hist_cpu[i]);
       xdraw_printf(gui->xcontext, gui->settings->display.fgcolor, "% 3.0f%%", CPUS.cpus[i].percentages[CP_IDLE]);
+      if (i != cpus->ncpu - 1) xdraw_printf(gui->xcontext, "000000", " ");
    }
 
    xdraw_hline(gui->xinfo, gui->settings->cpus.hdcolor, gui->xinfo->padding, startx, gui->xcontext->xoffset);
@@ -340,12 +338,9 @@ widget_net_draw(
 
    xdraw_printf(gui->xcontext, gui->settings->display.fgcolor, "Network: ");
    xdraw_series(gui->xcontext, colors_in, bytes_in);
-   gui->xcontext->xoffset += gui->space_width;
-   xdraw_printf(gui->xcontext, "268bd2", "%s", fmt_memory("% 4.0f", net->new_bytes_in / 1000));
-   gui->xcontext->xoffset += gui->space_width;
+   xdraw_printf(gui->xcontext, "268bd2", " %s ", fmt_memory("% .0f", net->new_bytes_in / 1000));
    xdraw_series(gui->xcontext, colors_out, bytes_out);
-   gui->xcontext->xoffset += gui->space_width;
-   xdraw_printf(gui->xcontext, "dc322f", "%s", fmt_memory("% 4.0f", net->new_bytes_out / 1000));
+   xdraw_printf(gui->xcontext, "dc322f", " %s", fmt_memory("% .0f", net->new_bytes_out / 1000));
 
    xdraw_hline(gui->xinfo, gui->settings->network.hdcolor, gui->xinfo->padding, startx, gui->xcontext->xoffset);
    gui->xcontext->xoffset += gui->settings->display.widget_padding;
