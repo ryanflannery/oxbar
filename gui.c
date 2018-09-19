@@ -170,11 +170,7 @@ widget_volume_draw(
          settings->display.fgcolor,
          "Volume: ");
 
-   /* TODO Should volume widget ever handle this case!?
-    * I used to render seperate bars & percentages for each. I don't think
-    * I've ever used that though in...10 years!?
-    * I'm going to skip doing it in oxbar and just warn here.
-    */
+   /* TODO Should volume widget ever handle this case!? I've never had it */
    if (volume->left_pct != volume->right_pct)
       warnx("%s: left & right volume aren't properly rendered if not equal", __FUNCTION__);
 

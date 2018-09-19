@@ -50,7 +50,7 @@ xdraw_printf(
       ...);
 
 void
-xdraw_text_right_aligned(
+xdraw_text_right_aligned( /* TODO this is a hack - support right-justification */
       xdraw_context_t *ctx,
       const char *color,
       const char *text);
