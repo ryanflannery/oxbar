@@ -9,7 +9,7 @@ LDFLAGS += -L/usr/X11R6/lib `pkg-config --libs pangocairo` -lxcb -lxcb-icccm
 # object sets (OBJS = this dir, SOBJS = stats/*, GOBJS = giu/*)
 OBJS  = gui.o oxbar.o settings.o
 SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o stats/volume.o stats/stats.o
-GOBJS = gui/chart.o gui/histogram.o gui/xcore.o gui/xdraw.o gui/tseries.o
+GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o
 
 # by default, recurse into stats/ and gui/ and then build oxbar
 .DEFAULT:

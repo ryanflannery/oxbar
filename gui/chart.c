@@ -70,10 +70,30 @@ chart_update(chart_t *c, double data[])
    size_t cur = (c->current + 1) % c->nsamples;
    size_t i;
 
-   for (i = 0; i < c->nseries; i++)
+   for (i = 0; i < c->nseries; i++) {
+      if (0 > data[i])
+         errx(1, "%s: charts don't support negative values\n", __FUNCTION__);
+
       c->values[cur][i] = data[i];
+   }
 
    c->current = cur;
+}
+
+void
+chart_get_minmax(chart_t *c, double *min, double *max)
+{
+   size_t i, j;
+   *min = *max = c->values[0][0];
+   for (i = 0; i < c->nsamples; i++) {
+      for (j = 0; j < c->nseries; j++) {
+         if (c->values[i][j] > *max)
+            *max = c->values[i][j];
+
+         if (c->values[i][j] < *min)
+            *min = c->values[i][j];
+      }
+   }
 }
 
 void

@@ -36,6 +36,7 @@ chart_t* chart_init(
 
 void chart_free(chart_t *c);
 void chart_update(chart_t *c, double data[]);
+void chart_get_minmax(chart_t *c, double *min, double *max);
 void chart_print(chart_t *c);
 
 #endif

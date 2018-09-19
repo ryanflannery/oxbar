@@ -5,7 +5,6 @@
 
 #include "gui.h"
 #include "gui/xdraw.h"
-#include "gui/histogram.h"
 
 void widget_battery_draw(xdraw_context_t*, settings_t*, battery_info_t*);
 void widget_volume_draw(xdraw_context_t*, settings_t*, volume_info_t*);
@@ -307,29 +306,28 @@ widget_net_draw(
       net_info_t        *net)
 {
    const char *colors_in[] = {
-      settings->network.inbound_chart_color_bgcolor,
       settings->network.inbound_chart_color_pgcolor
    };
    const char *colors_out[] = {
-      settings->network.outbound_chart_color_bgcolor,
       settings->network.outbound_chart_color_pgcolor
    };
+   char *bgcolor_in  = settings->network.inbound_chart_color_bgcolor;
+   char *bgcolor_out = settings->network.outbound_chart_color_bgcolor;
 
-   static tseries_t *bytes_in  = NULL;
-   static tseries_t *bytes_out = NULL;
-
-   if (NULL == bytes_in || NULL == bytes_out) {
-      bytes_in  = tseries_init(60);
-      bytes_out = tseries_init(60);
+   static chart_t *chart_in  = NULL;
+   static chart_t *chart_out = NULL;
+   if (NULL == chart_in || NULL == chart_out) {
+      chart_in  = chart_init(60, 1, false, bgcolor_in,  colors_in);
+      chart_out = chart_init(60, 1, false, bgcolor_out, colors_out);
    }
 
-   tseries_update(bytes_in,  net->new_bytes_in);
-   tseries_update(bytes_out, net->new_bytes_out);
+   chart_update(chart_in,  (double[]){ net->new_bytes_in });
+   chart_update(chart_out, (double[]){ net->new_bytes_out });
 
    xdraw_printf(context, settings->display.fgcolor, "Network: ");
-   xdraw_series(context, colors_in, bytes_in);
+   xdraw_chart(context, chart_in);
    xdraw_printf(context, "268bd2", " %s ", fmt_memory("% .0f", net->new_bytes_in / 1000));
-   xdraw_series(context, colors_out, bytes_out);
+   xdraw_chart(context, chart_out);
    xdraw_printf(context, "dc322f", " %s", fmt_memory("% .0f", net->new_bytes_out / 1000));
 }
 

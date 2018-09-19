@@ -151,37 +151,6 @@ xdraw_hline(
 }
 
 void
-xdraw_vertical_stack(
-      xdraw_context_t  *ctx,
-      double            x,
-      double            width,
-      size_t            nvalues,
-      const char      **colors,
-      double           *percents)
-{
-   double r, g, b, a;
-   size_t i;
-   double offset = 0;
-
-   for (i = 0; i < nvalues; i++) {
-      if (0.0 == percents[i])
-         continue;
-
-      hex2rgba(colors[i], &r, &g, &b, &a);
-      cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
-      double height = percents[i] / 100.0 * (ctx->xinfo->h - ctx->xinfo->padding);
-      cairo_rectangle(ctx->xinfo->cairo,
-            x,
-            ctx->xinfo->padding + offset,
-            width,
-            height);
-      offset += height;
-      cairo_fill(ctx->xinfo->cairo);
-   }
-   /* ctx->xoffset += width; */
-}
-
-void
 xdraw_progress_bar(
       xdraw_context_t  *ctx,
       const char       *bgcolor,
@@ -234,6 +203,9 @@ xdraw_chart(
          chart_height);
    cairo_fill(ctx->xinfo->cairo);
 
+   double min, max;
+   chart_get_minmax(c, &min, &max);
+
    size_t i, j, count;
    for (count = 0, i = c->current + 1; count < c->nsamples; count++, i++) {
       if (i >= c->nsamples)
@@ -245,7 +217,12 @@ xdraw_chart(
          if (!c->values[i][j])
             continue;
 
-         double height = c->values[i][j] / 100.0 * chart_height;
+         double height;
+         if (c->percents)
+            height = c->values[i][j] / 100.0 * chart_height;
+         else
+            height = c->values[i][j] / max * chart_height;
+
          double y_top = y_bottom - height;
 
          /* don't go past the top (can happen w/ double rounding */
@@ -265,47 +242,4 @@ xdraw_chart(
       }
    }
    ctx->xoffset += c->nsamples;
-}
-
-void
-xdraw_series(
-      xdraw_context_t  *ctx,
-      const char      **colors,
-      tseries_t        *t)
-{
-   double r, g, b, a;
-   size_t width = t->size;
-
-   /* paint grey background to start */
-   hex2rgba("535353", &r, &g, &b, &a);
-   cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
-   cairo_rectangle(ctx->xinfo->cairo,
-         ctx->xoffset,
-         ctx->xinfo->padding,
-         width,
-         (ctx->xinfo->h - ctx->xinfo->padding));
-   cairo_fill(ctx->xinfo->cairo);
-
-   size_t count, i;
-   double max = t->values[0];
-   for (i = 1; i < t->size; i++)
-      if (t->values[i] > max)
-         max = t->values[i];
-
-   for (count = 0, i = t->current + 1; count < t->size; count++, i++) {
-      if (i >= t->size)
-         i = 0;
-
-      xdraw_vertical_stack(
-            ctx,
-            ctx->xoffset + count,
-            1,
-            2,
-            colors,
-            (double[]) {
-               (max - t->values[i]) / max * 100,
-               t->values[i] / max * 100
-            });
-   }
-   ctx->xoffset += width;
 }

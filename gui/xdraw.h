@@ -3,8 +3,6 @@
 
 #include "chart.h"
 #include "xcore.h"
-#include "tseries.h"
-#include "histogram.h"
 
 /*
  * xdraw_context_t: A stateful context for rendering widgets sequentially
@@ -77,11 +75,5 @@ xdraw_chart(
       xdraw_context_t  *ctx,
       chart_t          *chart
       );
-
-void
-xdraw_series(
-      xdraw_context_t  *ctx,
-      const char      **colors,
-      tseries_t        *t);
 
 #endif
