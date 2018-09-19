@@ -49,28 +49,59 @@ gui_free(gui_t *gui)
    free(gui);
 }
 
+static void
+draw_headerline(
+      gui_t       *gui,
+      const char  *color,
+      double       start)
+{
+   xdraw_hline(gui->xinfo, color, gui->xinfo->padding,
+         start, gui->xcontext->xoffset);
+   gui->xcontext->xoffset += gui->settings->display.widget_padding;
+}
+
 void
 gui_draw(gui_t *gui)
 {
+   double startx;
+
    xdraw_clear(gui->xcontext);
 
-   if (BATTERY.is_setup)
+   if (BATTERY.is_setup) {
+      startx = gui->xcontext->xoffset;
       widget_battery_draw(gui->xcontext, gui->settings, &BATTERY);
+      draw_headerline(gui, gui->settings->battery.hdcolor, startx);
+   }
 
-   if (VOLUME.is_setup)
+   if (VOLUME.is_setup) {
+      startx = gui->xcontext->xoffset;
       widget_volume_draw(gui->xcontext, gui->settings, &VOLUME);
+      draw_headerline(gui, gui->settings->volume.hdcolor, startx);
+   }
 
-   if (NPROCS.is_setup)
+   if (NPROCS.is_setup) {
+      startx = gui->xcontext->xoffset;
       widget_nprocs_draw(gui->xcontext, gui->settings, &NPROCS);
+      draw_headerline(gui, gui->settings->nprocs.hdcolor, startx);
+   }
 
-   if (MEMORY.is_setup)
+   if (MEMORY.is_setup) {
+      startx = gui->xcontext->xoffset;
       widget_memory_draw(gui->xcontext, gui->settings, &MEMORY);
+      draw_headerline(gui, gui->settings->memory.hdcolor, startx);
+   }
 
-   if (CPUS.is_setup)
+   if (CPUS.is_setup) {
+      startx = gui->xcontext->xoffset;
       widget_cpus_draw(gui->xcontext, gui->settings, &CPUS);
+      draw_headerline(gui, gui->settings->cpus.hdcolor, startx);
+   }
 
-   if (NET.is_setup)
+   if (NET.is_setup) {
+      startx = gui->xcontext->xoffset;
       widget_net_draw(gui->xcontext, gui->settings, &NET);
+      draw_headerline(gui, gui->settings->network.hdcolor, startx);
+   }
 
    widget_time_draw(gui->xcontext, gui->settings);
 
@@ -93,34 +124,12 @@ gui_draw(gui_t *gui)
  *    3. Some other yet-to-be-determined, and hopefully elegant, solution.
  */
 
-/* TODO Reduce widget boilerplate
- * Currently, every widget needs to follow the below pattern to render
- * properly:
-      void
-      ui_widget_FOO_draw(
-            gui_t      *ui,
-            FOO_info_t  *nprocs)
-      {
-         double startx = ui->xcontext->xoffset;
-
-         ... xdraw_stuff() ...
-
-         xdraw_hline(ui->xinfo, ui->settings->FOO.hdcolor, ui->xinfo->padding, startx, ui->xcontext->xoffset);
-         ui->xcontext->xoffset += ui->settings->display.widget_padding;
-      }
- * This is cumbersome and error prone. If I move widgets to their own section,
- * I could enforce the boilerplate elsewhere (in gui.*, while widgets live
- * elsewhere).
- */
-
 void
 widget_battery_draw(
       xdraw_context_t   *context,
       settings_t        *settings,
       battery_info_t    *battery)
 {
-   double startx = context->xoffset;
-
    xdraw_printf(
          context,
          battery->plugged_in ?
@@ -148,9 +157,6 @@ widget_battery_draw(
                battery->minutes_remaining / 60,
                battery->minutes_remaining % 60);
    }
-
-   xdraw_hline(context->xinfo, settings->battery.hdcolor, context->xinfo->padding, startx, context->xoffset);
-   context->xoffset += settings->display.widget_padding;
 }
 
 void
@@ -159,8 +165,6 @@ widget_volume_draw(
       settings_t        *settings,
       volume_info_t     *volume)
 {
-   double startx = context->xoffset;
-
    xdraw_printf(
          context,
          settings->display.fgcolor,
@@ -185,9 +189,6 @@ widget_volume_draw(
          context,
          settings->display.fgcolor,
          "% 3.0f%%", volume->left_pct);
-
-   xdraw_hline(context->xinfo, settings->volume.hdcolor, context->xinfo->padding, startx, context->xoffset);
-   context->xoffset += settings->display.widget_padding;
 }
 
 void
@@ -196,15 +197,10 @@ widget_nprocs_draw(
       settings_t        *settings,
       nprocs_info_t     *nprocs)
 {
-   double startx = context->xoffset;
-
    xdraw_printf(
          context,
          settings->display.fgcolor,
          "#Procs: %d", nprocs->nprocs);
-
-   xdraw_hline(context->xinfo, settings->nprocs.hdcolor, context->xinfo->padding, startx, context->xoffset);
-   context->xoffset += settings->display.widget_padding;
 }
 
 const char *
@@ -245,7 +241,6 @@ widget_memory_draw(
       settings->memory.chart_color_total,
       settings->memory.chart_color_active
    };
-   double startx = context->xoffset;
 
    static histogram_t *histogram = NULL;
    if (NULL == histogram)
@@ -265,9 +260,6 @@ widget_memory_draw(
    xdraw_printf(context, settings->display.fgcolor, " total ");
    xdraw_printf(context, "859900", fmt_memory("%.1lf", memory->free));
    xdraw_printf(context, settings->display.fgcolor, " free");
-
-   xdraw_hline(context->xinfo, settings->memory.hdcolor, context->xinfo->padding, startx, context->xoffset);
-   context->xoffset += settings->display.widget_padding;
 }
 
 void
@@ -283,7 +275,6 @@ widget_cpus_draw(
       settings->cpus.chart_color_nice,
       settings->cpus.chart_color_interrupt
    };
-   double startx = context->xoffset;
    int i;
 
    static histogram_t **hist_cpu = NULL;
@@ -309,9 +300,6 @@ widget_cpus_draw(
       xdraw_printf(context, settings->display.fgcolor, "% 3.0f%%", CPUS.cpus[i].percentages[CP_IDLE]);
       if (i != cpus->ncpu - 1) xdraw_printf(context, "000000", " ");
    }
-
-   xdraw_hline(context->xinfo, settings->cpus.hdcolor, context->xinfo->padding, startx, context->xoffset);
-   context->xoffset += settings->display.widget_padding;
 }
 
 void
@@ -340,16 +328,11 @@ widget_net_draw(
    tseries_update(bytes_in,  net->new_bytes_in);
    tseries_update(bytes_out, net->new_bytes_out);
 
-   double startx = context->xoffset;
-
    xdraw_printf(context, settings->display.fgcolor, "Network: ");
    xdraw_series(context, colors_in, bytes_in);
    xdraw_printf(context, "268bd2", " %s ", fmt_memory("% .0f", net->new_bytes_in / 1000));
    xdraw_series(context, colors_out, bytes_out);
    xdraw_printf(context, "dc322f", " %s", fmt_memory("% .0f", net->new_bytes_out / 1000));
-
-   xdraw_hline(context->xinfo, settings->network.hdcolor, context->xinfo->padding, startx, context->xoffset);
-   context->xoffset += settings->display.widget_padding;
 }
 
 void
