@@ -11,7 +11,10 @@ pthread_t  pthread_stats_updater;   /* update stats & redraw every 1 second   */
 pthread_t  pthread_sig_handler;     /* listen & respond to signals (SIGKILL)  */
 pthread_t  pthread_gui;             /* handle x events and redraw             */
 pthread_mutex_t mutex_gui;          /* guard all calls to x11/pango/cairo     */
-volatile sig_atomic_t SIG_QUIT = 0; /* "should i exit?" flag (set by signals) */
+
+volatile sig_atomic_t SIG_QUIT  = 0;   /* SIGKILL/SIGQUIT/exit flag           */
+volatile sig_atomic_t SIG_PAUSE = 0;   /* suspend/sleep flag                  */
+volatile sig_atomic_t SIG_CONT = 0;    /* continue/wakeup flag                */
 
 void*
 thread_stats_updater()
@@ -25,12 +28,14 @@ thread_stats_updater()
    /* every 1 second, update stats and re-draw the gui */
    while (1) {
       usleep(1000000);  /* 1 second */
-      pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
-      stats_update();
-      pthread_mutex_lock(&mutex_gui);
-      gui_draw(gui);
-      pthread_mutex_unlock(&mutex_gui);
-      pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+      if (!SIG_PAUSE) {
+         pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
+         stats_update();
+         pthread_mutex_lock(&mutex_gui);
+         gui_draw(gui);
+         pthread_mutex_unlock(&mutex_gui);
+         pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+      }
    }
    return NULL;
 }
@@ -45,6 +50,12 @@ signal_handler(int sig)
    case SIGTERM:
       SIG_QUIT = 1;
       break;
+   case SIGTSTP:
+      SIG_PAUSE = 1;
+      break;
+   case SIGCONT:
+      SIG_CONT = 1;
+      break;
    }
 }
 
@@ -58,6 +69,8 @@ thread_sig_handler()
    sigaddset(&set, SIGINT);
    sigaddset(&set, SIGQUIT);
    sigaddset(&set, SIGTERM);
+   sigaddset(&set, SIGTSTP);
+   sigaddset(&set, SIGCONT);
    if (pthread_sigmask(SIG_SETMASK, &set, NULL))
       errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
 
@@ -68,12 +81,18 @@ thread_sig_handler()
    if (sigaction(SIGHUP,  &sig_act, NULL)
    ||  sigaction(SIGINT,  &sig_act, NULL)
    ||  sigaction(SIGQUIT, &sig_act, NULL)
-   ||  sigaction(SIGTERM, &sig_act, NULL))
+   ||  sigaction(SIGTERM, &sig_act, NULL)
+   ||  sigaction(SIGTSTP, &sig_act, NULL)
+   ||  sigaction(SIGCONT, &sig_act, NULL))
       err(1, "%s: sigaction failed", __FUNCTION__);
 
    /* every 1/10th of a second, check the status of that signal handler */
    while (1) {
       usleep(100000);   /* 1/10 second */
+      if (SIG_CONT) {
+         SIG_PAUSE = 0;
+         SIG_CONT = 0;
+      }
       if (SIG_QUIT) {
          if (pthread_cancel(pthread_gui)
          ||  pthread_cancel(pthread_stats_updater)
