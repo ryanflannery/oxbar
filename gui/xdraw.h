@@ -32,6 +32,13 @@ typedef struct xdraw_context {
 
 xdraw_context_t *xdraw_context_init(xinfo_t *xinfo); /* TODO add direction HERE! */
 void xdraw_context_free(xdraw_context_t *ctx);
+
+/*
+ * These form the rendering pipeline w/ double buffering.
+ * Start a full draw with xdraw_clear() to clear the display in a new buffer.
+ * End with xdraw_flush() to flush all draw commands to the buffer and swap to
+ * show that one.
+ */
 void xdraw_clear(xdraw_context_t *ctx);
 void xdraw_flush(xdraw_context_t *ctx);
 

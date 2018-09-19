@@ -6,7 +6,7 @@
 #include "settings.h"
 #include "stats/stats.h"
 
-oxbarui_t *gui;                     /* global gui object                      */
+gui_t     *gui;                     /* global gui object                      */
 pthread_t  pthread_stats_updater;   /* update stats & redraw every 1 second   */
 pthread_t  pthread_sig_handler;     /* listen & respond to signals (SIGKILL)  */
 pthread_t  pthread_gui;             /* handle x events and redraw             */
@@ -22,13 +22,13 @@ thread_stats_updater()
    if (pthread_sigmask(SIG_SETMASK, &set, NULL))
       errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
 
-   /* every 1 second, update stats and re-draw the ui */
+   /* every 1 second, update stats and re-draw the gui */
    while (1) {
       usleep(1000000);  /* 1 second */
       pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
       stats_update();
       pthread_mutex_lock(&mutex_gui);
-      ui_draw(gui);
+      gui_draw(gui);
       pthread_mutex_unlock(&mutex_gui);
       pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
    }
@@ -38,7 +38,6 @@ thread_stats_updater()
 void
 signal_handler(int sig)
 {
-   /* just set global flags (all that's safe in a signal handler) */
    switch (sig) {
    case SIGHUP:      /* TODO: reload config file here (once supported) */
    case SIGINT:
@@ -101,7 +100,7 @@ thread_gui()
       case XCB_EXPOSE:
          pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
          pthread_mutex_lock(&mutex_gui);
-         ui_draw(gui);
+         gui_draw(gui);
          pthread_mutex_unlock(&mutex_gui);
          pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
          break;
@@ -123,8 +122,8 @@ main(int argc, char *argv[])
    /* setup gui and stats, then do initial stats update and paint */
    stats_init();
    stats_update();
-   gui = ui_init(&settings);
-   ui_draw(gui);
+   gui = gui_init(&settings);
+   gui_draw(gui);
 
    /* and we're running! start all threads */
    if (pthread_create(&pthread_stats_updater, NULL, thread_stats_updater, NULL)
@@ -140,6 +139,6 @@ main(int argc, char *argv[])
 
    /* cleanup */
    stats_close();
-   ui_free(gui);
+   gui_free(gui);
    return 0;
 }
