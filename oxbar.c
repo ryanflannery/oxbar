@@ -145,8 +145,8 @@ main(int argc, char *argv[])
    gui_draw(gui);
 
    /* and we're running! start all threads */
-   if (pthread_create(&pthread_stats_updater, NULL, thread_stats_updater, NULL)
-   ||  pthread_create(&pthread_sig_handler, NULL, thread_sig_handler, NULL)
+   if (pthread_create(&pthread_sig_handler, NULL, thread_sig_handler, NULL)
+   ||  pthread_create(&pthread_stats_updater, NULL, thread_stats_updater, NULL)
    ||  pthread_create(&pthread_gui, NULL, thread_gui, NULL))
       errx(1, "pthread_creates failed");
 
