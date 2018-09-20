@@ -35,7 +35,7 @@ gui_init(settings_t *s)
    gui->settings->display.w = gui->xinfo->w;
 
    /* initial context */
-   gui->xcontext = xdraw_context_init(gui->xinfo);
+   gui->xcontext = xdraw_context_init(gui->xinfo, L2R);
 
    return gui;
 }
@@ -50,61 +50,77 @@ gui_free(gui_t *gui)
 
 static void
 draw_headerline(
-      gui_t       *gui,
-      const char  *color,
-      double       start)
+      xdraw_context_t *ctx,
+      const char      *color,
+      double           start)
 {
-   xdraw_hline(gui->xcontext, color, gui->xinfo->padding,
-         start, gui->xcontext->xoffset);
-   gui->xcontext->xoffset += gui->settings->display.widget_spacing;
+   xdraw_hline(ctx, color, ctx->xinfo->padding, start, ctx->xoffset);
+   xdraw_advance_offsets(ctx, BEFORE_RENDER, 15, 0); /* TODO should be widget_spacing */
+   xdraw_advance_offsets(ctx, AFTER_RENDER, 15, 0); /* TODO should be widget_spacing */
 }
 
 void
 gui_draw(gui_t *gui)
 {
+   /* TODO remove this state */
+   static xdraw_context_t *l2r = NULL;
+   static xdraw_context_t *r2l = NULL;
+
+   if (NULL == r2l)
+      r2l = xdraw_context_init(gui->xinfo, R2L);
+
+   if (NULL == l2r)
+      l2r = xdraw_context_init(gui->xinfo, L2R);
+
    double startx;
 
-   xdraw_clear(gui->xcontext);
+   xcore_clear(gui->xinfo);
+   xdraw_context_reset_offsets(l2r);
+   xdraw_context_reset_offsets(r2l);
 
    if (BATTERY.is_setup) {
-      startx = gui->xcontext->xoffset;
-      widget_battery_draw(gui->xcontext, gui->settings, &BATTERY);
-      draw_headerline(gui, gui->settings->battery.hdcolor, startx);
+      startx = l2r->xoffset;
+      widget_battery_draw(l2r, gui->settings, &BATTERY);
+      draw_headerline(l2r, gui->settings->battery.hdcolor, startx);
    }
 
    if (VOLUME.is_setup) {
-      startx = gui->xcontext->xoffset;
-      widget_volume_draw(gui->xcontext, gui->settings, &VOLUME);
-      draw_headerline(gui, gui->settings->volume.hdcolor, startx);
+      startx = l2r->xoffset;
+      widget_volume_draw(l2r, gui->settings, &VOLUME);
+      draw_headerline(l2r, gui->settings->volume.hdcolor, startx);
    }
 
    if (NPROCS.is_setup) {
-      startx = gui->xcontext->xoffset;
-      widget_nprocs_draw(gui->xcontext, gui->settings, &NPROCS);
-      draw_headerline(gui, gui->settings->nprocs.hdcolor, startx);
+      startx = l2r->xoffset;
+      widget_nprocs_draw(l2r, gui->settings, &NPROCS);
+      draw_headerline(l2r, gui->settings->nprocs.hdcolor, startx);
    }
 
    if (MEMORY.is_setup) {
-      startx = gui->xcontext->xoffset;
-      widget_memory_draw(gui->xcontext, gui->settings, &MEMORY);
-      draw_headerline(gui, gui->settings->memory.hdcolor, startx);
+      startx = l2r->xoffset;
+      widget_memory_draw(l2r, gui->settings, &MEMORY);
+      draw_headerline(l2r, gui->settings->memory.hdcolor, startx);
    }
 
    if (CPUS.is_setup) {
-      startx = gui->xcontext->xoffset;
-      widget_cpus_draw(gui->xcontext, gui->settings, &CPUS);
-      draw_headerline(gui, gui->settings->cpus.hdcolor, startx);
+      startx = l2r->xoffset;
+      widget_cpus_draw(l2r, gui->settings, &CPUS);
+      draw_headerline(l2r, gui->settings->cpus.hdcolor, startx);
    }
 
    if (NET.is_setup) {
-      startx = gui->xcontext->xoffset;
-      widget_net_draw(gui->xcontext, gui->settings, &NET);
-      draw_headerline(gui, gui->settings->network.hdcolor, startx);
+      startx = l2r->xoffset;
+      widget_net_draw(l2r, gui->settings, &NET);
+      draw_headerline(l2r, gui->settings->network.hdcolor, startx);
    }
 
-   widget_time_draw(gui->xcontext, gui->settings);
+   startx = r2l->xoffset;
+   widget_time_draw(r2l, gui->settings);
+   draw_headerline(r2l, gui->settings->time.hdcolor, startx);
 
-   xdraw_flush(gui->xcontext);
+
+   xcore_flush(gui->xinfo);
+
 }
 
 /* TODO Remove state From ui_widget_*_draw(...) components
@@ -346,15 +362,8 @@ widget_time_draw(
    time_t now = time(NULL);
    strftime(buffer, GUI_TIME_MAXLEN, "%a %d %b %Y  %I:%M:%S %p", localtime(&now));
 
-   xdraw_context_t newctx;
-   newctx.xinfo = context->xinfo;
-   newctx.xoffset = context->xinfo->w;
-   newctx.yoffset = context->yoffset;
-
-   double startx = newctx.xoffset;
-   xdraw_text_right_aligned(
-         &newctx,
+   xdraw_printf(
+         context,
          settings->display.fgcolor,
          buffer);
-   xdraw_hline(context, settings->time.hdcolor, context->xinfo->padding, newctx.xoffset, startx);
 }

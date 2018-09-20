@@ -23,23 +23,37 @@
  * xdraw_* method is called on a context, it should update that context's
  * x/y offset to where the next object should be drawn.
  */
+
+typedef enum {
+   L2R,
+   R2L
+} xdirection_t;
+
+typedef enum {
+   BEFORE_RENDER,
+   AFTER_RENDER
+} xrenderstate_t;
+
 typedef struct xdraw_context {
-   xinfo_t *xinfo;
-   double   xoffset;
-   double   yoffset;
+   xdirection_t   direction;  /* const after init */
+   xinfo_t       *xinfo;      /* const after init */
+   double         xoffset;
+   double         yoffset;
 } xdraw_context_t;
 
-xdraw_context_t *xdraw_context_init(xinfo_t *xinfo); /* TODO add direction HERE! */
+xdraw_context_t *xdraw_context_init(xinfo_t *xinfo, xdirection_t direction);
 void xdraw_context_free(xdraw_context_t *ctx);
 
-/*
- * These form the rendering pipeline w/ double buffering.
- * Start a full draw with xdraw_clear() to clear the display in a new buffer.
- * End with xdraw_flush() to flush all draw commands to the buffer and swap to
- * show that one.
- */
-void xdraw_clear(xdraw_context_t *ctx);
-void xdraw_flush(xdraw_context_t *ctx);
+void
+xdraw_context_reset_offsets(
+      xdraw_context_t *ctx);
+
+void
+xdraw_advance_offsets(
+      xdraw_context_t  *ctx,
+      xrenderstate_t    state,
+      double            xadvance,
+      double            yadvance);
 
 void
 xdraw_printf(
@@ -47,12 +61,6 @@ xdraw_printf(
       const char *color,
       const char *fmt,
       ...);
-
-void
-xdraw_text_right_aligned( /* TODO this is a hack - support right-justification */
-      xdraw_context_t *ctx,
-      const char *color,
-      const char *text);
 
 void
 xdraw_hline(

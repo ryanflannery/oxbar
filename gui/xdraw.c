@@ -8,51 +8,17 @@
 
 #include "xdraw.h"
 
-void
-hex2rgba(const char *s, double *r, double *g, double *b, double *a)
-{
-   unsigned int ir, ig, ib, ia;
-
-   if (NULL == s || '\0' == s[0]) {
-      *r = *g = *b = *a = 1.0;
-      return;
-   }
-
-   if ('#' == s[0])
-      s++;
-
-   switch (strlen(s)) {
-      case 6:
-         if (3 != sscanf(s, "%02x%02x%02x", &ir, &ig, &ib))
-            errx(1, "%s: malformed rgb color '%s'", __FUNCTION__, s);
-
-         ia = 255;
-         break;
-      case 8:
-         if (4 != sscanf(s, "%02x%02x%02x%02x", &ir, &ig, &ib, &ia))
-            errx(1, "%s: malformed rgba color '%s'", __FUNCTION__, s);
-
-         break;
-      default:
-         errx(1, "%s: malformed color '%s'", __FUNCTION__, s);
-   }
-
-   *r = (double)ir / 255.0;
-   *g = (double)ig / 255.0;
-   *b = (double)ib / 255.0;
-   *a = (double)ia / 255.0;
-}
-
 xdraw_context_t*
-xdraw_context_init(xinfo_t *xinfo)
+xdraw_context_init(xinfo_t *xinfo, xdirection_t direction)
 {
    xdraw_context_t *ctx = malloc(sizeof(xdraw_context_t));
    if (NULL == ctx)
       err(1, "%s: malloc failed", __FUNCTION__);
 
    ctx->xinfo = xinfo;
-   ctx->xoffset = xinfo->padding;
-   ctx->yoffset = xinfo->padding;
+   ctx->direction = direction;
+   xdraw_context_reset_offsets(ctx);
+
    return ctx;
 }
 
@@ -63,25 +29,46 @@ xdraw_context_free(xdraw_context_t *ctx)
 }
 
 void
-xdraw_clear(xdraw_context_t *ctx)
+xdraw_context_reset_offsets(xdraw_context_t *ctx)
 {
-   double r, g, b, a;
-   hex2rgba(ctx->xinfo->bgcolor, &r, &g, &b, &a);
-   cairo_push_group(ctx->xinfo->cairo);
-   cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
-   cairo_paint(ctx->xinfo->cairo);
-
-   ctx->xoffset = ctx->xinfo->padding;
-   ctx->yoffset = ctx->xinfo->padding;
+   switch (ctx->direction) {
+   case L2R:
+      ctx->xoffset = ctx->xinfo->padding;
+      ctx->yoffset = ctx->xinfo->padding;
+      break;
+   case R2L:
+      ctx->xoffset = ctx->xinfo->w - ctx->xinfo->padding;
+      ctx->yoffset = ctx->xinfo->padding;
+      break;
+   }
 }
 
 void
-xdraw_flush(xdraw_context_t *ctx)
+xdraw_advance_offsets(
+      xdraw_context_t  *ctx,
+      xrenderstate_t    state,
+      double            xadvance,
+      double            yadvance)
 {
-   cairo_pop_group_to_source(ctx->xinfo->cairo);
-   cairo_paint(ctx->xinfo->cairo);
-   cairo_surface_flush(ctx->xinfo->surface);
-   xcb_flush(ctx->xinfo->xcon);
+   switch (state) {
+   case BEFORE_RENDER:
+      if (L2R == ctx->direction) return;
+      break;
+   case AFTER_RENDER:
+      if (R2L == ctx->direction) return;
+      break;
+   }
+
+   switch (ctx->direction) {
+   case L2R:
+      ctx->xoffset += xadvance;
+      break;
+   case R2L:
+      ctx->xoffset -= xadvance;
+      break;
+   }
+
+   yadvance += 0; /* TODO supporess -Wall error (remove once vertical rendering done) */
 }
 
 void
@@ -106,31 +93,13 @@ xdraw_printf(
    pango_layout_set_text(ctx->xinfo->playout, buffer, -1);
    pango_layout_get_pixel_size(ctx->xinfo->playout, &width, &height);
 
+   xdraw_advance_offsets(ctx, BEFORE_RENDER, width, height);
+
    cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
    cairo_move_to(ctx->xinfo->cairo, ctx->xoffset, ctx->yoffset);
    pango_cairo_show_layout(ctx->xinfo->cairo, ctx->xinfo->playout);
 
-   ctx->xoffset += width;
-}
-
-void
-xdraw_text_right_aligned(
-      xdraw_context_t  *ctx,
-      const char       *color,
-      const char       *text)
-{
-   double r, g, b, a;
-   int width, height;
-   hex2rgba(color, &r, &g, &b, &a);
-
-   pango_layout_set_text(ctx->xinfo->playout, text, -1);
-   pango_layout_get_pixel_size(ctx->xinfo->playout, &width, &height);
-
-   cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
-   cairo_move_to(ctx->xinfo->cairo, ctx->xoffset - width, ctx->yoffset);
-   pango_cairo_show_layout(ctx->xinfo->cairo, ctx->xinfo->playout);
-
-   ctx->xoffset -= width;
+   xdraw_advance_offsets(ctx, AFTER_RENDER, width, height);
 }
 
 void
@@ -148,6 +117,7 @@ xdraw_hline(
    cairo_move_to(ctx->xinfo->cairo, x1, 0);
    cairo_line_to(ctx->xinfo->cairo, x2, 0);
    cairo_stroke(ctx->xinfo->cairo);
+   /* TODO advance */
 }
 
 void
@@ -160,6 +130,8 @@ xdraw_progress_bar(
 {
    double r, g, b, a;
    double height = ctx->xinfo->h - ctx->xinfo->padding;
+
+   xdraw_advance_offsets(ctx, BEFORE_RENDER, width, height);
 
    hex2rgba(bgcolor, &r, &g, &b, &a);
    cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
@@ -181,7 +153,7 @@ xdraw_progress_bar(
          (pct/100.0) * height);
    cairo_fill(ctx->xinfo->cairo);
 
-   ctx->xoffset += width;
+   xdraw_advance_offsets(ctx, AFTER_RENDER, width, height);
 }
 
 void
@@ -190,8 +162,11 @@ xdraw_chart(
       chart_t          *c
       )
 {
-   const double chart_height = ctx->xinfo->h - ctx->xinfo->padding;
+   double chart_height = ctx->xinfo->h - ctx->xinfo->padding;
+   double width = c->nsamples;
    double r, g, b, a;
+
+   xdraw_advance_offsets(ctx, BEFORE_RENDER, width, chart_height);
 
    hex2rgba(c->bgcolor, &r, &g, &b, &a);
    cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
@@ -199,7 +174,7 @@ xdraw_chart(
          ctx->xinfo->cairo,
          ctx->xoffset,
          ctx->xinfo->padding,
-         c->nsamples,
+         width,
          chart_height);
    cairo_fill(ctx->xinfo->cairo);
 
@@ -241,5 +216,5 @@ xdraw_chart(
          y_bottom = y_top;
       }
    }
-   ctx->xoffset += c->nsamples;
+   xdraw_advance_offsets(ctx, AFTER_RENDER, width, chart_height);
 }

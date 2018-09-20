@@ -287,3 +287,57 @@ xcore_free(xinfo_t *x)
    xcb_disconnect(x->xcon);
    free(x);
 }
+
+void
+xcore_clear(xinfo_t *xinfo)
+{
+   double r, g, b, a;
+   hex2rgba(xinfo->bgcolor, &r, &g, &b, &a);
+   cairo_push_group(xinfo->cairo);
+   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
+   cairo_paint(xinfo->cairo);
+}
+
+void
+xcore_flush(xinfo_t *xinfo)
+{
+   cairo_pop_group_to_source(xinfo->cairo);
+   cairo_paint(xinfo->cairo);
+   cairo_surface_flush(xinfo->surface);
+   xcb_flush(xinfo->xcon);
+}
+
+void
+hex2rgba(const char *s, double *r, double *g, double *b, double *a)
+{
+   unsigned int ir, ig, ib, ia;
+
+   if (NULL == s || '\0' == s[0]) {
+      *r = *g = *b = *a = 1.0;
+      return;
+   }
+
+   if ('#' == s[0])
+      s++;
+
+   switch (strlen(s)) {
+      case 6:
+         if (3 != sscanf(s, "%02x%02x%02x", &ir, &ig, &ib))
+            errx(1, "%s: malformed rgb color '%s'", __FUNCTION__, s);
+
+         ia = 255;
+         break;
+      case 8:
+         if (4 != sscanf(s, "%02x%02x%02x%02x", &ir, &ig, &ib, &ia))
+            errx(1, "%s: malformed rgba color '%s'", __FUNCTION__, s);
+
+         break;
+      default:
+         errx(1, "%s: malformed color '%s'", __FUNCTION__, s);
+   }
+
+   *r = (double)ir / 255.0;
+   *g = (double)ig / 255.0;
+   *b = (double)ib / 255.0;
+   *a = (double)ia / 255.0;
+}
