@@ -14,16 +14,15 @@
  */
 /* not packed */
 typedef struct gui {
-   xinfo_t           *xinfo;
-   xdraw_context_t   *xcontext;
-   settings_t        *settings;
+   xinfo_t     *xinfo;     /* WHERE to draw     */
+   settings_t  *settings;  /* WHAT/HOW to draw  */
 
 } gui_t;
 
 gui_t* gui_init(settings_t *s);
 void gui_free(gui_t *gui);
 
-/* the main draw method - renders the whole display */
+/* main draw method - renders the whole display (as specified in settings) */
 void gui_draw(gui_t *gui);
 
 #endif

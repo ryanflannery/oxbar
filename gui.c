@@ -22,16 +22,12 @@ gui_init(settings_t *s)
          gui->settings->display.bgcolor,
          gui->settings->display.font);
 
-   /* initial context */
-   gui->xcontext = xdraw_context_init(gui->xinfo, L2R);
-
    return gui;
 }
 
 void
 gui_free(gui_t *gui)
 {
-   xdraw_context_free(gui->xcontext);
    xcore_free(gui->xinfo);
    free(gui);
 }
