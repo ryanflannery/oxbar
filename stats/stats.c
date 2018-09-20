@@ -1,5 +1,7 @@
 #include "stats.h"
 
+oxstats_t OXSTATS;
+
 void
 stats_init()
 {
@@ -9,6 +11,13 @@ stats_init()
    net_init();
    nprocs_init();
    volume_init();
+
+   OXSTATS.battery   = &BATTERY;
+   OXSTATS.cpus      = &CPUS;
+   OXSTATS.memory    = &MEMORY;
+   OXSTATS.network   = &NET;
+   OXSTATS.nprocs    = &NPROCS;
+   OXSTATS.volume    = &VOLUME;
 }
 
 void
