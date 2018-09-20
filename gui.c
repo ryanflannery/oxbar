@@ -26,7 +26,7 @@ gui_init(settings_t *s)
          gui->settings->display.wmname,
          gui->settings->display.x, gui->settings->display.y,
          gui->settings->display.w, gui->settings->display.h,
-         gui->settings->display.top_padding,
+         gui->settings->display.padding_top,
          gui->settings->display.bgcolor,
          gui->settings->display.font);
 
@@ -56,7 +56,7 @@ draw_headerline(
 {
    xdraw_hline(gui->xinfo, color, gui->xinfo->padding,
          start, gui->xcontext->xoffset);
-   gui->xcontext->xoffset += gui->settings->display.widget_padding;
+   gui->xcontext->xoffset += gui->settings->display.widget_spacing;
 }
 
 void

@@ -14,8 +14,8 @@ settings_load_defaults(settings_t *s)
    s->display.y = -1;
    s->display.w = -1;
    s->display.h = 30;
-   s->display.top_padding = 10;
-   s->display.widget_padding = 15;
+   s->display.padding_top = 10;
+   s->display.widget_spacing = 15;
    s->display.wmname  = strdup(getprogname());
    s->display.font    = strdup("DejaVu Sans 18px");
    s->display.bgcolor = strdup("1c1c1c");
@@ -54,7 +54,9 @@ settings_load_defaults(settings_t *s)
 }
 
 /* TODO Create a settings_free() (or refactor to make easier)
- * I should have this - but this is cumbersome given the above setup
+ * I should have this - but this is cumbersome given the above setup.
+ * Go to array based? Then every settings retrieval in the draw loop is an
+ * array lookup. Bleh. I had a version of this started, but seemed silly.
 void
 settings_free(settings_t *s)
 {
@@ -192,12 +194,12 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
             errx(1, "illegal h value '%s': %s", optarg, errstr);
          break;
       case 'p':
-         s->display.top_padding = strtonum(optarg, 0, INT_MAX, &errstr);
+         s->display.padding_top = strtonum(optarg, 0, INT_MAX, &errstr);
          if (errstr)
             errx(1, "illegal p value '%s': %s", optarg, errstr);
          break;
       case 's':
-         s->display.widget_padding = strtonum(optarg, 0, INT_MAX, &errstr);
+         s->display.widget_spacing = strtonum(optarg, 0, INT_MAX, &errstr);
          if (errstr)
             errx(1, "illegal s value '%s': %s", optarg, errstr);
          break;

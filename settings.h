@@ -8,8 +8,8 @@ typedef struct settings {
    struct display_t {
       int   x, y;
       int   w, h;
-      int   top_padding;
-      int   widget_padding;
+      int   padding_top;
+      int   widget_spacing;
       char *wmname;
       char *font;
       char *bgcolor;
