@@ -30,10 +30,6 @@ gui_init(settings_t *s)
          gui->settings->display.bgcolor,
          gui->settings->display.font);
 
-   /* xcore_init can mutate some settings */
-   gui->settings->display.y = gui->xinfo->y;
-   gui->settings->display.w = gui->xinfo->w;
-
    /* initial context */
    gui->xcontext = xdraw_context_init(gui->xinfo, L2R);
 
