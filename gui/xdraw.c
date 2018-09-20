@@ -135,19 +135,19 @@ xdraw_text_right_aligned(
 
 void
 xdraw_hline(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      width,
-      double      x1,
-      double      x2)
+      xdraw_context_t  *ctx,
+      const char       *color,
+      double            width,
+      double            x1,
+      double            x2)
 {
    double r, g, b, a;
    hex2rgba(color, &r, &g, &b, &a);
-   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
-   cairo_set_line_width(xinfo->cairo, width);
-   cairo_move_to(xinfo->cairo, x1, 0);
-   cairo_line_to(xinfo->cairo, x2, 0);
-   cairo_stroke(xinfo->cairo);
+   cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
+   cairo_set_line_width(ctx->xinfo->cairo, width);
+   cairo_move_to(ctx->xinfo->cairo, x1, 0);
+   cairo_line_to(ctx->xinfo->cairo, x2, 0);
+   cairo_stroke(ctx->xinfo->cairo);
 }
 
 void

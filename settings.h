@@ -62,6 +62,10 @@ typedef struct settings {
       char *outbound_chart_color_pgcolor;
    } network;
 
+   struct widget_time {
+      char *hdcolor;
+   } time;
+
 } settings_t;
 
 void settings_load_defaults(settings_t *s);

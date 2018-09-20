@@ -54,6 +54,8 @@ settings_load_defaults(settings_t *s)
    s->network.inbound_chart_color_pgcolor    = strdup("157ad2");
    s->network.outbound_chart_color_bgcolor   = strdup("859900");
    s->network.outbound_chart_color_pgcolor   = strdup("dc322f");
+
+   s->time.hdcolor = strdup("859900");
 }
 
 /* TODO Create a settings_free() (or refactor to make easier)

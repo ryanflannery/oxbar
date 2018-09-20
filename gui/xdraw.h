@@ -56,11 +56,11 @@ xdraw_text_right_aligned( /* TODO this is a hack - support right-justification *
 
 void
 xdraw_hline(
-      xinfo_t    *xinfo,
-      const char *color,
-      double      width,
-      double      x1,
-      double      x2);
+      xdraw_context_t  *ctx,
+      const char       *color,
+      double            width,
+      double            x1,
+      double            x2);
 
 void
 xdraw_progress_bar(

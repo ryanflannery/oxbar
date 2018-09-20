@@ -54,7 +54,7 @@ draw_headerline(
       const char  *color,
       double       start)
 {
-   xdraw_hline(gui->xinfo, color, gui->xinfo->padding,
+   xdraw_hline(gui->xcontext, color, gui->xinfo->padding,
          start, gui->xcontext->xoffset);
    gui->xcontext->xoffset += gui->settings->display.widget_spacing;
 }
@@ -356,6 +356,5 @@ widget_time_draw(
          &newctx,
          settings->display.fgcolor,
          buffer);
-
-   xdraw_hline(context->xinfo, "859900", context->xinfo->padding, newctx.xoffset, startx);
+   xdraw_hline(context, settings->time.hdcolor, context->xinfo->padding, newctx.xoffset, startx);
 }
