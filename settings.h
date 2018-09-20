@@ -37,6 +37,7 @@ typedef struct settings {
 
    struct widget_memory {
       char *hdcolor;
+      char *chart_bgcolor;
       char *chart_color_free;
       char *chart_color_total;
       char *chart_color_active;
@@ -44,6 +45,7 @@ typedef struct settings {
 
    struct widget_cpus {
       char *hdcolor;
+      char *chart_bgcolor;
       char *chart_color_idle;
       char *chart_color_user;
       char *chart_color_sys;
@@ -53,6 +55,7 @@ typedef struct settings {
 
    struct widget_network {
       char *hdcolor;
+      char *chart_bgcolor;
       char *inbound_chart_color_bgcolor;
       char *inbound_chart_color_pgcolor;
       char *outbound_chart_color_bgcolor;

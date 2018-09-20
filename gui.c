@@ -239,7 +239,7 @@ widget_memory_draw(
 
    static chart_t *chart = NULL;
    if (NULL == chart)
-      chart = chart_init(60, 3, true, "555555", colors);
+      chart = chart_init(60, 3, true, settings->memory.chart_bgcolor, colors);
 
    chart_update(chart, (double[]) {
          memory->active_pct,
@@ -249,11 +249,14 @@ widget_memory_draw(
 
    xdraw_printf(context, settings->display.fgcolor, "Memory: ");
    xdraw_chart(context, chart);
-   xdraw_printf(context, "dc322f", " %s", fmt_memory("%.1lf", memory->active));
+   xdraw_printf(context, settings->memory.chart_color_active, " %s",
+         fmt_memory("%.1lf", memory->active));
    xdraw_printf(context, settings->display.fgcolor, " active ");
-   xdraw_printf(context, "b58900", "%s", fmt_memory("%.1lf", memory->total));
+   xdraw_printf(context, settings->memory.chart_color_total, "%s",
+         fmt_memory("%.1lf", memory->total));
    xdraw_printf(context, settings->display.fgcolor, " total ");
-   xdraw_printf(context, "859900", fmt_memory("%.1lf", memory->free));
+   xdraw_printf(context, settings->memory.chart_color_free,
+         fmt_memory("%.1lf", memory->free));
    xdraw_printf(context, settings->display.fgcolor, " free");
 }
 
@@ -280,7 +283,8 @@ widget_cpus_draw(
          err(1, "%s: calloc charts failed", __FUNCTION__);
 
       for (i = 0; i < cpus->ncpu; i++)
-         charts[i] = chart_init(60, CPUSTATES, true, "555555", colors);
+         charts[i] = chart_init(60, CPUSTATES, true,
+               settings->cpus.chart_bgcolor, colors);
    }
 
 

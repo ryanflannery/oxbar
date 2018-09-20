@@ -35,11 +35,13 @@ settings_load_defaults(settings_t *s)
    s->nprocs.hdcolor = strdup("dc322f");
 
    s->memory.hdcolor             = strdup("d33682");
+   s->memory.chart_bgcolor       = strdup("555555");
    s->memory.chart_color_free    = strdup("859900");
    s->memory.chart_color_total   = strdup("bbbb00");
    s->memory.chart_color_active  = strdup("dc322f");
 
    s->cpus.hdcolor               = strdup("6c71c4");
+   s->cpus.chart_bgcolor         = strdup("555555");
    s->cpus.chart_color_idle      = strdup("859900");
    s->cpus.chart_color_user      = strdup("ff0000");
    s->cpus.chart_color_sys       = strdup("ffff00");
@@ -47,6 +49,7 @@ settings_load_defaults(settings_t *s)
    s->cpus.chart_color_interrupt = strdup("ff00ff");
 
    s->network.hdcolor                        = strdup("268bd2");
+   s->network.chart_bgcolor                  = strdup("555555");
    s->network.inbound_chart_color_bgcolor    = strdup("859900");
    s->network.inbound_chart_color_pgcolor    = strdup("157ad2");
    s->network.outbound_chart_color_bgcolor   = strdup("859900");

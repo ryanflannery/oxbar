@@ -151,9 +151,9 @@ main(int argc, char *argv[])
       errx(1, "pthread_creates failed");
 
    /* wait for done (only from signal handler) */
-   if (pthread_join(pthread_stats_updater, NULL)
-   ||  pthread_join(pthread_sig_handler, NULL)
-   ||  pthread_join(pthread_gui, NULL))
+   if (pthread_join(pthread_gui, NULL)
+   ||  pthread_join(pthread_stats_updater, NULL)
+   ||  pthread_join(pthread_sig_handler, NULL))
       errx(1, "pthread_joins failed");
 
    /* cleanup */
