@@ -47,13 +47,13 @@ draw_headerline(
    xdraw_advance_offsets(ctx, AFTER_RENDER, 15, 0); /* TODO => widget_spacing */
 }
 
-void widget_battery_draw(xdraw_context_t*, settings_t*, oxstats_t*);
-void widget_volume_draw(xdraw_context_t*, settings_t*, oxstats_t*);
-void widget_nprocs_draw(xdraw_context_t*, settings_t*, oxstats_t*);
-void widget_memory_draw(xdraw_context_t*, settings_t*, oxstats_t*);
-void widget_cpus_draw(xdraw_context_t*, settings_t*, oxstats_t*);
-void widget_net_draw(xdraw_context_t*, settings_t*, oxstats_t*);
-void widget_time_draw(xdraw_context_t*, settings_t*, oxstats_t*);
+void widget_battery_draw(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+void widget_volume_draw(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+void widget_nprocs_draw(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+void widget_memory_draw(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+void widget_cpus_draw(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+void widget_net_draw(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+void widget_time_draw(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
 
 void
 gui_draw(gui_t *gui)
@@ -119,11 +119,11 @@ gui_draw(gui_t *gui)
 
 }
 
-/* TODO Remove state From ui_widget_*_draw(...) components
- * So currently, *most* ui_widget_*_draw() routines are stateless: they take
+/* TODO Remove state From widget_*_draw(...) components
+ * So currently, *most* widget_*_draw() routines are stateless: they take
  * in the ui object and the relevant stat\/.* component(s) and render them.
  * The ones that need to draw history (say for histograms or timeseries),
- * however, store a static local histogram initialized on the first call.
+ * however, store a static local chart initialized on the first call.
  * I've debated moving each of these into their own object.
  *    1. Making proper widget objects has an appeal - there are properties and
  *       logic seperate to each, likely with a common (enough) interface to
@@ -138,8 +138,8 @@ gui_draw(gui_t *gui)
 void
 widget_battery_draw(
       xdraw_context_t   *context,
-      settings_t        *settings,
-      oxstats_t         *stats)
+      const settings_t  *const settings,
+      const oxstats_t   *const stats)
 {
    xdraw_printf(
          context,
@@ -173,8 +173,8 @@ widget_battery_draw(
 void
 widget_volume_draw(
       xdraw_context_t   *context,
-      settings_t        *settings,
-      oxstats_t         *stats)
+      const settings_t  *const settings,
+      const oxstats_t   *const stats)
 {
    xdraw_printf(
          context,
@@ -202,8 +202,8 @@ widget_volume_draw(
 void
 widget_nprocs_draw(
       xdraw_context_t   *context,
-      settings_t        *settings,
-      oxstats_t         *stats)
+      const settings_t  *const settings,
+      const oxstats_t   *const stats)
 {
    xdraw_printf(
          context,
@@ -242,8 +242,8 @@ fmt_memory(const char *fmt, int kbytes)
 void
 widget_memory_draw(
       xdraw_context_t   *context,
-      settings_t        *settings,
-      oxstats_t         *stats)
+      const settings_t  *const settings,
+      const oxstats_t   *const stats)
 {
    const char *colors[] = {
       settings->memory.chart_color_active,
@@ -277,8 +277,8 @@ widget_memory_draw(
 void
 widget_cpus_draw(
       xdraw_context_t   *context,
-      settings_t        *settings,
-      oxstats_t         *stats)
+      const settings_t  *const settings,
+      const oxstats_t   *const stats)
 {
    const char *colors[] = {
       settings->cpus.chart_color_interrupt,
@@ -321,8 +321,8 @@ widget_cpus_draw(
 void
 widget_net_draw(
       xdraw_context_t   *context,
-      settings_t        *settings,
-      oxstats_t         *stats)
+      const settings_t  *const settings,
+      const oxstats_t   *const stats)
 {
    const char *colors_in[] = {
       settings->network.inbound_chart_color_pgcolor
@@ -355,9 +355,9 @@ widget_net_draw(
 void
 widget_time_draw(
       xdraw_context_t   *context,
-      settings_t        *settings,
+      const settings_t  *const settings,
       __attribute__((unused))
-      oxstats_t         *stats)
+      const oxstats_t   *const stats)
 {
 #define GUI_TIME_MAXLEN 100
    static char buffer[GUI_TIME_MAXLEN];
