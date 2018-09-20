@@ -36,7 +36,7 @@ get_xvisual(xcb_screen_t *screen)
 /*
  * Creates core XCB/X11 connection
  */
-void
+static void
 xcore_setup_x_connection_screen_visual(xinfo_t *x)
 {
    int   default_screen;
@@ -57,7 +57,7 @@ xcore_setup_x_connection_screen_visual(xinfo_t *x)
       errx(1, "Failed to retrieve X visual context");
 }
 
-void
+static void
 xcore_setup_x_window(
       xinfo_t *xinfo,
       const char *name,
@@ -126,7 +126,7 @@ xcore_setup_x_window(
  * pitcher of "Beer of Thou's Chosing" from me.
  *                                                                   -ryan
  */
-void
+static void
 xcore_setup_x_wm_hints(xinfo_t *x)
 {
    enum {
@@ -203,7 +203,7 @@ xcore_setup_x_wm_hints(xinfo_t *x)
          XCB_CW_OVERRIDE_REDIRECT, val);
 }
 
-void
+static void
 xcore_setup_cairo(xinfo_t *x)
 {
    x->surface = cairo_xcb_surface_create(
@@ -216,7 +216,7 @@ xcore_setup_cairo(xinfo_t *x)
    /* TODO Should I be checking the surface & cairo objects here? */
 }
 
-void
+static void
 xcore_setup_xfont(
       xinfo_t *x,
       const char *font_description)
