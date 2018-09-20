@@ -42,15 +42,15 @@ draw_headerline(
 }
 
 /* define widgets */
-typedef bool (*widget_t)(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+typedef void (*widget_t)(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
 
-static bool widget_battery(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
-static bool widget_volume(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
-static bool widget_nprocs(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
-static bool widget_memory(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
-static bool widget_cpus(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
-static bool widget_net(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
-static bool widget_time(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+static void widget_battery(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+static void widget_volume(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+static void widget_nprocs(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+static void widget_memory(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+static void widget_cpus(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+static void widget_net(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+static void widget_time(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
 
 /* TODO Make list of left & right aligned widgets configurale later */
 static
@@ -127,7 +127,7 @@ gui_draw(gui_t *gui)
  *    3. Some other yet-to-be-determined, and hopefully elegant, solution.
  */
 
-bool
+void
 widget_battery(
       xdraw_context_t   *context,
       const settings_t  *const settings,
@@ -135,40 +135,36 @@ widget_battery(
 {
    double startx = context->xoffset;
    if (!stats->battery->is_setup)
-      return false;
+      return;
 
-   xdraw_printf(
-         context,
+   xdraw_printf(context,
          stats->battery->plugged_in ?
             settings->display.fgcolor :
             settings->battery.fgcolor_unplugged ,
          stats->battery->plugged_in ? "AC " : "BAT ");
 
-   xdraw_progress_bar(
-         context,
+   xdraw_progress_bar(context,
          settings->battery.chart_bgcolor,
          settings->battery.chart_pgcolor,
          settings->battery.chart_width,
          stats->battery->charge_pct);
 
-   xdraw_printf(
-         context,
+   xdraw_printf(context,
          settings->display.fgcolor,
          "% 3.0f%%", stats->battery->charge_pct);
 
    if (-1 != stats->battery->minutes_remaining) {
-      xdraw_printf(
-            context,
+      xdraw_printf(context,
             settings->display.fgcolor,
             " %dh %dm",
-               stats->battery->minutes_remaining / 60,
-               stats->battery->minutes_remaining % 60);
+            stats->battery->minutes_remaining / 60,
+            stats->battery->minutes_remaining % 60);
    }
+
    draw_headerline(context, settings->battery.hdcolor, startx);
-   return true;
 }
 
-bool
+void
 widget_volume(
       xdraw_context_t   *context,
       const settings_t  *const settings,
@@ -176,10 +172,9 @@ widget_volume(
 {
    double startx = context->xoffset;
    if (!stats->volume->is_setup)
-      return false;
+      return;
 
-   xdraw_printf(
-         context,
+   xdraw_printf(context,
          settings->display.fgcolor,
          "Volume: ");
 
@@ -188,23 +183,20 @@ widget_volume(
       warnx("%s: left & right volume aren't properly rendered if not equal",
             __FUNCTION__);
 
-   xdraw_progress_bar(
-         context,
+   xdraw_progress_bar(context,
          settings->volume.chart_bgcolor,
          settings->volume.chart_pgcolor,
          settings->volume.chart_width,
          stats->volume->left_pct);
 
-   xdraw_printf(
-         context,
+   xdraw_printf(context,
          settings->display.fgcolor,
          "% 3.0f%%", stats->volume->left_pct);
 
    draw_headerline(context, settings->volume.hdcolor, startx);
-   return true;
 }
 
-bool
+void
 widget_nprocs(
       xdraw_context_t   *context,
       const settings_t  *const settings,
@@ -212,14 +204,13 @@ widget_nprocs(
 {
    double startx = context->xoffset;
    if (!stats->nprocs->is_setup)
-      return false;
+      return;
 
-   xdraw_printf(
-         context,
+   xdraw_printf(context,
          settings->display.fgcolor,
          "#Procs: %d", stats->nprocs->nprocs);
+
    draw_headerline(context, settings->nprocs.hdcolor, startx);
-   return true;
 }
 
 const char *
@@ -250,7 +241,7 @@ fmt_memory(const char *fmt, int kbytes)
    return buffer;
 }
 
-bool
+void
 widget_memory(
       xdraw_context_t   *context,
       const settings_t  *const settings,
@@ -258,7 +249,7 @@ widget_memory(
 {
    double startx = context->xoffset;
    if (!stats->memory->is_setup)
-      return false;
+      return;
 
    const char *colors[] = {
       settings->memory.chart_color_active,
@@ -288,10 +279,9 @@ widget_memory(
          fmt_memory("%.1lf", stats->memory->free));
    xdraw_printf(context, settings->display.fgcolor, " free");
    draw_headerline(context, settings->memory.hdcolor, startx);
-   return true;
 }
 
-bool
+void
 widget_cpus(
       xdraw_context_t   *context,
       const settings_t  *const settings,
@@ -299,7 +289,7 @@ widget_cpus(
 {
    double startx = context->xoffset;
    if (!stats->cpus->is_setup)
-      return false;
+      return;
 
    const char *colors[] = {
       settings->cpus.chart_color_interrupt,
@@ -338,10 +328,9 @@ widget_cpus(
       if (i != stats->cpus->ncpu - 1) xdraw_printf(context, "000000", " ");
    }
    draw_headerline(context, settings->cpus.hdcolor, startx);
-   return true;
 }
 
-bool
+void
 widget_net(
       xdraw_context_t   *context,
       const settings_t  *const settings,
@@ -349,7 +338,7 @@ widget_net(
 {
    double startx = context->xoffset;
    if (!stats->network->is_setup)
-      return false;
+      return;
 
    const char *colors_in[] = {
       settings->network.inbound_chart_color_pgcolor
@@ -378,10 +367,9 @@ widget_net(
    xdraw_printf(context, "dc322f", " %s",
          fmt_memory("% .0f", stats->network->new_bytes_out / 1000));
    draw_headerline(context, settings->network.hdcolor, startx);
-   return true;
 }
 
-bool
+void
 widget_time(
       xdraw_context_t   *context,
       const settings_t  *const settings,
@@ -396,10 +384,8 @@ widget_time(
    strftime(buffer, GUI_TIME_MAXLEN, "%a %d %b %Y  %I:%M:%S %p",
          localtime(&now));
 
-   xdraw_printf(
-         context,
+   xdraw_printf(context,
          settings->display.fgcolor,
          buffer);
    draw_headerline(context, settings->time.hdcolor, startx);
-   return true;
 }
