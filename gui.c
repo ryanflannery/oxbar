@@ -51,8 +51,8 @@ draw_headerline(
       double           start)
 {
    xdraw_hline(ctx, color, ctx->xinfo->padding, start, ctx->xoffset);
-   xdraw_advance_offsets(ctx, BEFORE_RENDER, 15, 0); /* TODO should be widget_spacing */
-   xdraw_advance_offsets(ctx, AFTER_RENDER, 15, 0); /* TODO should be widget_spacing */
+   xdraw_advance_offsets(ctx, BEFORE_RENDER, 15, 0);/* TODO => widget_spacing */
+   xdraw_advance_offsets(ctx, AFTER_RENDER, 15, 0); /* TODO => widget_spacing */
 }
 
 void
@@ -183,7 +183,8 @@ widget_volume_draw(
 
    /* TODO Should volume widget ever handle this case!? I've never had it */
    if (volume->left_pct != volume->right_pct)
-      warnx("%s: left & right volume aren't properly rendered if not equal", __FUNCTION__);
+      warnx("%s: left & right volume aren't properly rendered if not equal",
+            __FUNCTION__);
 
    xdraw_progress_bar(
          context,
@@ -230,7 +231,8 @@ fmt_memory(const char *fmt, int kbytes)
    if (0 > ret)
       err(1, "%s: snprintf failed for %d", __FUNCTION__, kbytes);
 
-   ret = snprintf(buffer + ret, GUI_FMT_MEMORY_BUFFER_MAXLEN- ret, "%s", suffixes[step]);
+   ret = snprintf(buffer + ret, GUI_FMT_MEMORY_BUFFER_MAXLEN- ret, "%s",
+         suffixes[step]);
    if (0 > ret)
       err(1, "%s: snprintf failed for %s", __FUNCTION__, suffixes[step]);
 
@@ -310,7 +312,8 @@ widget_cpus_draw(
             cpus->cpus[i].percentages[CP_IDLE]
             });
       xdraw_chart(context, charts[i]);
-      xdraw_printf(context, settings->display.fgcolor, "% 3.0f%%", CPUS.cpus[i].percentages[CP_IDLE]);
+      xdraw_printf(context, settings->display.fgcolor, "% 3.0f%%",
+            cpus->cpus[i].percentages[CP_IDLE]);
       if (i != cpus->ncpu - 1) xdraw_printf(context, "000000", " ");
    }
 }
@@ -342,9 +345,11 @@ widget_net_draw(
 
    xdraw_printf(context, settings->display.fgcolor, "Network: ");
    xdraw_chart(context, chart_in);
-   xdraw_printf(context, "268bd2", " %s ", fmt_memory("% .0f", net->new_bytes_in / 1000));
+   xdraw_printf(context, "268bd2", " %s ",
+         fmt_memory("% .0f", net->new_bytes_in / 1000));
    xdraw_chart(context, chart_out);
-   xdraw_printf(context, "dc322f", " %s", fmt_memory("% .0f", net->new_bytes_out / 1000));
+   xdraw_printf(context, "dc322f", " %s",
+         fmt_memory("% .0f", net->new_bytes_out / 1000));
 }
 
 void
@@ -356,7 +361,8 @@ widget_time_draw(
    static char buffer[GUI_TIME_MAXLEN];
 
    time_t now = time(NULL);
-   strftime(buffer, GUI_TIME_MAXLEN, "%a %d %b %Y  %I:%M:%S %p", localtime(&now));
+   strftime(buffer, GUI_TIME_MAXLEN, "%a %d %b %Y  %I:%M:%S %p",
+         localtime(&now));
 
    xdraw_printf(
          context,
