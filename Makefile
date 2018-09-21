@@ -47,6 +47,6 @@ scan-build: clean
 
 # TODO Can't seem to get gprof working !?@)*!
 profile: clean
-	CC=clang CFLAGS="-g -pg -fno-pie -fPIC" LDFLAGS="-g -pg -fno-pie -lc" $(MAKE)
+	CC=gcc CFLAGS="-g -pg -fno-pie -fPIC" LDFLAGS="-g -pg -fno-pie -lc" $(MAKE)
 	./oxbar
 	gprof oxbar gmon.out > gprof.analysis
