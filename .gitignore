@@ -3,3 +3,6 @@ oxbar.core
 *.t
 *.o
 *.swp
+gmon.out
+gprof.analysis
+gprof.png

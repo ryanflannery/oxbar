@@ -50,3 +50,4 @@ profile: clean
 	CC=gcc CFLAGS="-g -pg -fno-pie -fPIC" LDFLAGS="-g -pg -fno-pie -lc" $(MAKE)
 	./oxbar
 	gprof oxbar gmon.out > gprof.analysis
+	gprof2dot gprof.analysis | dot -Tpng -o gprof.png
