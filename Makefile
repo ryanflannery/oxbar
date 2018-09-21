@@ -40,7 +40,7 @@ TODO:
 		| grep -v '^Makefile' > $@
 
 cppcheck:
-	cppcheck --std=c89 --enable=all . > /dev/null
+	cppcheck --quiet --std=c89 -I/usr/include --enable=all --force .
 
 scan-build: clean
 	scan-build make

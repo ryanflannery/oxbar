@@ -38,7 +38,7 @@ void
 cpu_update()
 {
    static int  mib[] = { CTL_KERN, 0, 0 };
-   int         cpu, state;
+   int         state;
 
    /* TODO Remove duplicate logic in CPU update logic
     * The below logic splits based on # of cpus: one path for 1cpu and another
@@ -54,7 +54,7 @@ cpu_update()
    /* get RAW cpu ticks & update percentages */
    if (CPUS.ncpu > 1) {
       mib[1] = KERN_CPTIME2;
-      for (cpu = 0; cpu < CPUS.ncpu; cpu++) {
+      for (int cpu = 0; cpu < CPUS.ncpu; cpu++) {
          /* update raw */
          mib[2] = cpu;
          u_int64_t current_ticks[CPUSTATES];

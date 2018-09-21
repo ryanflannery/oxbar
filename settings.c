@@ -77,12 +77,14 @@ settings_free(settings_t *s)
 }
 */
 
+/* TODO Support a config file
 void
 settings_parse_config(settings_t *s, const char *file)
 {
    if (s != NULL)
       errx(1, "%s: not supported yet (%s)", __FUNCTION__, file);
 }
+*/
 
 #define SET_STRING_VALUE(name) \
    if (0 == strncasecmp( #name , key, strlen( #name ))) { \

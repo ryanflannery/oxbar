@@ -69,7 +69,7 @@ typedef struct settings {
 } settings_t;
 
 void settings_load_defaults(settings_t *s);
-void settings_parse_config(settings_t *s, const char *file);
 void settings_parse_cmdline(settings_t *s, int argc, char *argv[]);
+/* void settings_parse_config(settings_t *s, const char *file); TODO */
 
 #endif

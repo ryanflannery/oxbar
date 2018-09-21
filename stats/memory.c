@@ -45,7 +45,7 @@ memory_update()
    struct swapent *swapdev;
    static int mib[] = { CTL_VM, VM_METER };
    size_t size;
-   int    nswaps, isize, total_mem;
+   int    nswaps, total_mem;
 
    /* update mem usage */
    size = sizeof(vminfo);
@@ -69,7 +69,7 @@ memory_update()
       if (swapctl(SWAP_STATS, swapdev, nswaps) == -1)
          err(1, "sysinfo update: swapctl(SWAP_STATS) failed");
 
-      for (isize = 0; isize < nswaps; isize++) {
+      for (int isize = 0; isize < nswaps; isize++) {
          if (swapdev[isize].se_flags & SWF_ENABLE) {
             MEMORY.swap_used  = swapdev[isize].se_inuse / (1024 / DEV_BSIZE);
             MEMORY.swap_total = swapdev[isize].se_nblks / (1024 / DEV_BSIZE);

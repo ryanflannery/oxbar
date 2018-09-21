@@ -251,15 +251,15 @@ widget_memory(
    if (!stats->memory->is_setup)
       return;
 
-   const char *colors[] = {
-      settings->memory.chart_color_active,
-      settings->memory.chart_color_total,
-      settings->memory.chart_color_free
-   };
-
    static chart_t *chart = NULL;
-   if (NULL == chart)
+   if (NULL == chart) {             /* FIRST time setup (only on first call) */
+      const char *colors[] = {
+         settings->memory.chart_color_active,
+         settings->memory.chart_color_total,
+         settings->memory.chart_color_free
+      };
       chart = chart_init(60, 3, true, settings->memory.chart_bgcolor, colors);
+   }
 
    chart_update(chart, (double[]) {
          stats->memory->active_pct,
@@ -291,18 +291,17 @@ widget_cpus(
    if (!stats->cpus->is_setup)
       return;
 
-   const char *colors[] = {
-      settings->cpus.chart_color_interrupt,
-      settings->cpus.chart_color_nice,
-      settings->cpus.chart_color_sys,
-      settings->cpus.chart_color_user,
-      settings->cpus.chart_color_idle
-   };
-
    int i;
-
    static chart_t **charts = NULL;
-   if (NULL == charts) {
+   if (NULL == charts) {            /* FIRST time setup (only on first call) */
+      const char *colors[] = {
+         settings->cpus.chart_color_interrupt,
+         settings->cpus.chart_color_nice,
+         settings->cpus.chart_color_sys,
+         settings->cpus.chart_color_user,
+         settings->cpus.chart_color_idle
+      };
+
       charts = calloc(stats->cpus->ncpu, sizeof(chart_t*));
       if (NULL == charts)
          err(1, "%s: calloc charts failed", __FUNCTION__);
@@ -340,18 +339,18 @@ widget_net(
    if (!stats->network->is_setup)
       return;
 
-   const char *colors_in[] = {
-      settings->network.inbound_chart_color_pgcolor
-   };
-   const char *colors_out[] = {
-      settings->network.outbound_chart_color_pgcolor
-   };
-   char *bgcolor_in  = settings->network.inbound_chart_color_bgcolor;
-   char *bgcolor_out = settings->network.outbound_chart_color_bgcolor;
-
    static chart_t *chart_in  = NULL;
    static chart_t *chart_out = NULL;
-   if (NULL == chart_in || NULL == chart_out) {
+   if (NULL == chart_in || NULL == chart_out) {          /* FIRST time setup */
+      const char *colors_in[] = {
+         settings->network.inbound_chart_color_pgcolor
+      };
+      const char *colors_out[] = {
+         settings->network.outbound_chart_color_pgcolor
+      };
+      char *bgcolor_in  = settings->network.inbound_chart_color_bgcolor;
+      char *bgcolor_out = settings->network.outbound_chart_color_bgcolor;
+
       chart_in  = chart_init(60, 1, false, bgcolor_in,  colors_in);
       chart_out = chart_init(60, 1, false, bgcolor_out, colors_out);
    }
