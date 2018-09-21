@@ -48,6 +48,7 @@ xdraw_advance_offsets(
       xdraw_context_t  *ctx,
       xrenderstate_t    state,
       double            xadvance,
+      __attribute__((unused))
       double            yadvance)
 {
    switch (state) {
@@ -67,8 +68,6 @@ xdraw_advance_offsets(
       ctx->xoffset -= xadvance;
       break;
    }
-
-   yadvance += 0; /* TODO supporess -Wall error (remove once vertical rendering done) */
 }
 
 void
