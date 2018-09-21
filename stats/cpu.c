@@ -54,7 +54,8 @@ cpu_update()
    /* get RAW cpu ticks & update percentages */
    if (CPUS.ncpu > 1) {
       mib[1] = KERN_CPTIME2;
-      for (int cpu = 0; cpu < CPUS.ncpu; cpu++) {
+      int cpu = 0;
+      for (cpu = 0; cpu < CPUS.ncpu; cpu++) {
          /* update raw */
          mib[2] = cpu;
          u_int64_t current_ticks[CPUSTATES];

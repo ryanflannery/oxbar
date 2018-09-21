@@ -12,17 +12,18 @@ SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o st
 GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o
 
 # by default, recurse into stats/ and gui/ and then build oxbar
-.PHONY: clean cppcheck profile scan-build
-.DEFAULT:
-	$(MAKE) -C stats $(MFLAGS) $@
-	$(MAKE) -C gui   $(MFLAGS) $@
+.PHONY: clean cppcheck odeps profile scan-build
 
-all: .DEFAULT oxbar
+all: oxbar
+
+odeps:
+	$(MAKE) -C stats $(MFLAGS) objects
+	$(MAKE) -C gui   $(MFLAGS) objects
 
 .c.o:
 	$(CC) $(CFLAGS) $<
 
-oxbar: $(OBJS) $(SOBS) $(GOBJS)
+oxbar: odeps $(OBJS) $(SOBS) $(GOBJS)
 	$(CC) -o $@ $(LDFLAGS) $(OBJS) $(SOBJS) $(GOBJS)
 
 clean:

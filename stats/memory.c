@@ -69,7 +69,8 @@ memory_update()
       if (swapctl(SWAP_STATS, swapdev, nswaps) == -1)
          err(1, "sysinfo update: swapctl(SWAP_STATS) failed");
 
-      for (int isize = 0; isize < nswaps; isize++) {
+      int isize = 0;
+      for (isize = 0; isize < nswaps; isize++) {
          if (swapdev[isize].se_flags & SWF_ENABLE) {
             MEMORY.swap_used  = swapdev[isize].se_inuse / (1024 / DEV_BSIZE);
             MEMORY.swap_total = swapdev[isize].se_nblks / (1024 / DEV_BSIZE);
