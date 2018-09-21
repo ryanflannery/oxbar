@@ -5,32 +5,20 @@ LDFLAGS += -lm
 OBJS  = battery.o cpu.o memory.o net.o nprocs.o volume.o stats.o
 TESTS = battery.t cpu.t memory.t net.t nprocs.t volume.t
 
-
-.PHONY: all clean
+.PHONY: all clean objects tests
 .DEFAULT: all
 
 all: $(OBJS) $(TESTS)
+objects: $(OBJS)
+tests: $(TESTS)
 
 .c.o:
 	$(CC) $(CFLAGS) $<
 
-battery.t: battery.t.o battery.o
-	$(CC) -o $@ $(LDFLAGS) battery.t.o battery.o
-
-cpu.t: cpu.t.o cpu.o
-	$(CC) -o $@ $(LDFLAGS) cpu.t.o cpu.o
-
-memory.t: memory.t.o memory.o
-	$(CC) -o $@ $(LDFLAGS) memory.t.o memory.o
-
-net.t: net.t.o net.o
-	$(CC) -o $@ $(LDFLAGS) net.t.o net.o
-
-nprocs.t: nprocs.t.o nprocs.o
-	$(CC) -o $@ $(LDFLAGS) nprocs.t.o nprocs.o
-
-volume.t: volume.t.o volume.o
-	$(CC) -o $@ $(LDFLAGS) volume.t.o volume.o
+.for st in $(TESTS)
+${st}: ${st}.o ${st:R}.o
+	$(CC) -o $@ $(LDFLAGS) ${st}.o ${st:R}.o
+.endfor
 
 clean:
 	rm -f $(OBJS)

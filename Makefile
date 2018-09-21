@@ -12,20 +12,18 @@ SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o st
 GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o
 
 # by default, recurse into stats/ and gui/ and then build oxbar
+.PHONY: clean cppcheck profile scan-build
 .DEFAULT:
 	$(MAKE) -C stats $(MFLAGS) $@
 	$(MAKE) -C gui   $(MFLAGS) $@
 
 all: .DEFAULT oxbar
 
-# boilerplate
 .c.o:
 	$(CC) $(CFLAGS) $<
 
 oxbar: $(OBJS) $(SOBS) $(GOBJS)
 	$(CC) -o $@ $(LDFLAGS) $(OBJS) $(SOBJS) $(GOBJS)
-
-.PHONY: clean TODO
 
 clean:
 	$(MAKE) -C stats $(MFLAGS) $@
@@ -44,12 +42,11 @@ TODO:
 cppcheck:
 	cppcheck --std=c89 --enable=all . > /dev/null
 
-scan-build:
-	make clean
+scan-build: clean
 	scan-build make
 
-# TODO Get gprof Profiling Working
-# I'd really love to inspect and optimize my stats update and render loops
-# to try and make oxbar snappier!
+# TODO Can't seem to get gprof working !?@)*!
 profile: clean
-	CFLAGS="-fno-pie -g -pg" LDFLAGS="-g -pg -fno-pie -lc_p" $(MAKE)
+	CC=clang CFLAGS="-g -pg -fno-pie -fPIC" LDFLAGS="-g -pg -fno-pie -lc" $(MAKE)
+	./oxbar
+	gprof oxbar gmon.out > gprof.analysis

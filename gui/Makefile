@@ -2,12 +2,12 @@
 CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2 `pkg-config --cflags pangocairo`
 LDFLAGS += -lm `pkg-config --libs pangocairo`
 
-OBJS		= xcore.o xdraw.o chart.o
+OBJS = xcore.o xdraw.o chart.o
 
-all: $(OBJS)
+.PHONY: clean objects
+.DEFAULT: objects
 
-.PHONY: all clean
-.DEFAULT: all
+objects: $(OBJS)
 
 .c.o:
 	$(CC) $(CFLAGS) $<
