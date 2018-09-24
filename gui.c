@@ -390,8 +390,7 @@ widget_time(
 
    double startx = context->xoffset;
    time_t now = time(NULL);
-   strftime(buffer, GUI_TIME_MAXLEN, "%a %d %b %Y  %I:%M:%S %p",
-         localtime(&now));
+   strftime(buffer, GUI_TIME_MAXLEN, settings->time.format, localtime(&now));
 
    xdraw_printf(context,
          settings->display.fgcolor,

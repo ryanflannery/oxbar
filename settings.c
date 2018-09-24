@@ -57,6 +57,7 @@ settings_load_defaults(settings_t *s)
    s->network.outbound_chart_color_pgcolor   = strdup("dc322f");
 
    s->time.hdcolor = strdup("859900");
+   s->time.format  = strdup("%a %d %b %Y  %I:%M:%S %p");
 }
 
 /* TODO Create a settings_free() (or refactor to make easier)
@@ -168,7 +169,7 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
 void
 usage()
 {
-   printf("usage: to do!\n");
+   printf("usage: to do!\n"); /* TODO */
    exit(1);
 }
 
@@ -179,7 +180,7 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
    char *keyvalue;
    int ch;
 
-   while (-1 != (ch = getopt(argc, argv, "x:y:w:h:p:s:f:S:"))) {
+   while (-1 != (ch = getopt(argc, argv, "x:y:w:h:p:s:f:S:t:"))) {
       switch (ch) {
       case 'x':
          s->display.x = strtonum(optarg, 0, INT_MAX, &errstr);
@@ -223,6 +224,12 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
          s->display.font = strdup(optarg);
          if (NULL == s->display.font)
             err(1, "strdup failed for font");
+         break;
+      case 't':
+         free(s->time.format);
+         s->time.format = strdup(optarg);
+         if (NULL == s->time.format)
+            err(1, "strdup failed for time format");
          break;
       default:
          usage();

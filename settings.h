@@ -65,6 +65,7 @@ typedef struct settings {
 
    struct widget_time {
       char *hdcolor;
+      char *format;
    } time;
 
 } settings_t;
