@@ -42,12 +42,12 @@ settings_load_defaults(settings_t *s)
 
    s->cpus.hdcolor               = strdup("6c71c4");
    s->cpus.chart_bgcolor         = strdup("555555");
+   s->cpus.chart_color_sys       = strdup("ff0000");
+   s->cpus.chart_color_interrupt = strdup("ffff00");
+   s->cpus.chart_color_user      = strdup("0000ff");
+   s->cpus.chart_color_nice      = strdup("ff00ff");
+   s->cpus.chart_color_spin      = strdup("00ffff");
    s->cpus.chart_color_idle      = strdup("859900");
-   s->cpus.chart_color_user      = strdup("ff0000");
-   s->cpus.chart_color_sys       = strdup("ffff00");
-   s->cpus.chart_color_spin      = strdup("ffffff");
-   s->cpus.chart_color_nice      = strdup("0000ff");
-   s->cpus.chart_color_interrupt = strdup("ff00ff");
 
    s->network.hdcolor                        = strdup("268bd2");
    s->network.chart_bgcolor                  = strdup("555555");

@@ -295,11 +295,11 @@ widget_cpus(
    static chart_t **charts = NULL;
    if (NULL == charts) {            /* FIRST time setup (only on first call) */
       const char *colors[] = {
-         settings->cpus.chart_color_interrupt,
-         settings->cpus.chart_color_nice,
          settings->cpus.chart_color_sys,
-         settings->cpus.chart_color_spin,
+         settings->cpus.chart_color_interrupt,
          settings->cpus.chart_color_user,
+         settings->cpus.chart_color_nice,
+         settings->cpus.chart_color_spin,
          settings->cpus.chart_color_idle
       };
 
@@ -316,14 +316,22 @@ widget_cpus(
    xdraw_printf(context, settings->display.fgcolor, "CPUs: ");
    for (i = 0; i < stats->cpus->ncpu; i++) {
       chart_update(charts[i], (double[]) {
-            stats->cpus->cpus[i].percentages[CP_INTR],
-            stats->cpus->cpus[i].percentages[CP_NICE],
             stats->cpus->cpus[i].percentages[CP_SYS],
-            stats->cpus->cpus[i].percentages[CP_SPIN],
+            stats->cpus->cpus[i].percentages[CP_INTR],
             stats->cpus->cpus[i].percentages[CP_USER],
+            stats->cpus->cpus[i].percentages[CP_NICE],
+            stats->cpus->cpus[i].percentages[CP_SPIN],
             stats->cpus->cpus[i].percentages[CP_IDLE]
             });
+      /* TODO revisit "cpulong" widget printing individual states
       xdraw_chart(context, charts[i]);
+      xdraw_printf(context, settings->display.fgcolor, "% .0f%%", stats->cpus->cpus[i].percentages[CP_SYS]);
+      xdraw_printf(context, settings->display.fgcolor, "% .0f%%", stats->cpus->cpus[i].percentages[CP_INTR]);
+      xdraw_printf(context, settings->display.fgcolor, "% .0f%%", stats->cpus->cpus[i].percentages[CP_USER]);
+      xdraw_printf(context, settings->display.fgcolor, "% .0f%%", stats->cpus->cpus[i].percentages[CP_NICE]);
+      xdraw_printf(context, settings->display.fgcolor, "% .0f%%", stats->cpus->cpus[i].percentages[CP_SPIN]);
+      xdraw_printf(context, settings->display.fgcolor, "% .0f%%", stats->cpus->cpus[i].percentages[CP_IDLE]);
+      */
       xdraw_printf(context, settings->display.fgcolor, "% 3.0f%%",
             stats->cpus->cpus[i].percentages[CP_IDLE]);
       if (i != stats->cpus->ncpu - 1) xdraw_printf(context, "000000", " ");
