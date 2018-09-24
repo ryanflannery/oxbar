@@ -49,6 +49,7 @@ typedef struct settings {
       char *chart_color_idle;
       char *chart_color_user;
       char *chart_color_sys;
+      char *chart_color_spin;
       char *chart_color_nice;
       char *chart_color_interrupt;
    } cpus;

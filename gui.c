@@ -176,7 +176,7 @@ widget_volume(
 
    xdraw_printf(context,
          settings->display.fgcolor,
-         "Volume: ");
+         "Vol: ");
 
    /* TODO Should volume widget ever handle this case!? I've never had it */
    if (stats->volume->left_pct != stats->volume->right_pct)
@@ -267,7 +267,7 @@ widget_memory(
          stats->memory->free_pct
          });
 
-   xdraw_printf(context, settings->display.fgcolor, "Memory: ");
+   xdraw_printf(context, settings->display.fgcolor, "Mem: ");
    xdraw_chart(context, chart);
    xdraw_printf(context, settings->memory.chart_color_active, " %s",
          fmt_memory("%.1lf", stats->memory->active));
@@ -298,6 +298,7 @@ widget_cpus(
          settings->cpus.chart_color_interrupt,
          settings->cpus.chart_color_nice,
          settings->cpus.chart_color_sys,
+         settings->cpus.chart_color_spin,
          settings->cpus.chart_color_user,
          settings->cpus.chart_color_idle
       };
@@ -318,6 +319,7 @@ widget_cpus(
             stats->cpus->cpus[i].percentages[CP_INTR],
             stats->cpus->cpus[i].percentages[CP_NICE],
             stats->cpus->cpus[i].percentages[CP_SYS],
+            stats->cpus->cpus[i].percentages[CP_SPIN],
             stats->cpus->cpus[i].percentages[CP_USER],
             stats->cpus->cpus[i].percentages[CP_IDLE]
             });
@@ -358,7 +360,7 @@ widget_net(
    chart_update(chart_in,  (double[]){ stats->network->new_bytes_in });
    chart_update(chart_out, (double[]){ stats->network->new_bytes_out });
 
-   xdraw_printf(context, settings->display.fgcolor, "Network: ");
+   xdraw_printf(context, settings->display.fgcolor, "Net: ");
    xdraw_chart(context, chart_in);
    xdraw_printf(context, "268bd2", " %s ",
          fmt_memory("% .0f", stats->network->new_bytes_in / 1000));

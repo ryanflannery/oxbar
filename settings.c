@@ -45,6 +45,7 @@ settings_load_defaults(settings_t *s)
    s->cpus.chart_color_idle      = strdup("859900");
    s->cpus.chart_color_user      = strdup("ff0000");
    s->cpus.chart_color_sys       = strdup("ffff00");
+   s->cpus.chart_color_spin      = strdup("ffffff");
    s->cpus.chart_color_nice      = strdup("0000ff");
    s->cpus.chart_color_interrupt = strdup("ff00ff");
 
