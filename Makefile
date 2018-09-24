@@ -11,7 +11,6 @@ OBJS  = gui.o oxbar.o settings.o
 SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o stats/volume.o stats/stats.o
 GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o
 
-# by default, recurse into stats/ and gui/ and then build oxbar
 .PHONY: clean cppcheck odeps profile scan-build
 
 all: oxbar
@@ -40,14 +39,15 @@ TODO:
 		| sed 's/ *\# *TODO/TODO/' \
 		| grep -v '^Makefile' > $@
 
+# static analyzers
 cppcheck:
 	cppcheck --quiet --std=c89 -I/usr/include --enable=all --force .
 
 scan-build: clean
 	scan-build make
 
-# TODO Can't seem to get gprof working !?@)*!
-profile: clean
+# gprof / memory profiler
+gprof: clean
 	CC=gcc CFLAGS="-g -pg -fno-pie -fPIC" LDFLAGS="-g -pg -fno-pie -lc" $(MAKE)
 	./oxbar
 	gprof oxbar gmon.out > gprof.analysis
