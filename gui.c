@@ -323,8 +323,8 @@ widget_cpus(
             stats->cpus->cpus[i].percentages[CP_SPIN],
             stats->cpus->cpus[i].percentages[CP_IDLE]
             });
-      /* TODO revisit "cpulong" widget printing individual states
       xdraw_chart(context, charts[i]);
+      /* TODO revisit "cpulong" widget printing individual states
       xdraw_printf(context, settings->display.fgcolor, "% .0f%%", stats->cpus->cpus[i].percentages[CP_SYS]);
       xdraw_printf(context, settings->display.fgcolor, "% .0f%%", stats->cpus->cpus[i].percentages[CP_INTR]);
       xdraw_printf(context, settings->display.fgcolor, "% .0f%%", stats->cpus->cpus[i].percentages[CP_USER]);
