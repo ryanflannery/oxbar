@@ -34,23 +34,23 @@ gui_free(gui_t *gui)
 
 static void
 draw_headerline(
-      xdraw_context_t *ctx,
-      const char      *color,
-      double           start)
+      xctx_t     *ctx,
+      const char *color,
+      double      start)
 {
    xdraw_hline(ctx, color, ctx->xinfo->padding, start, ctx->xoffset);
 }
 
 /* define widgets */
-typedef void (*widget_t)(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+typedef void (*widget_t)(xctx_t*, const settings_t*const, const oxstats_t*const);
 
-static void widget_battery(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
-static void widget_volume(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
-static void widget_nprocs(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
-static void widget_memory(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
-static void widget_cpus(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
-static void widget_net(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
-static void widget_time(xdraw_context_t*, const settings_t*const, const oxstats_t*const);
+static void widget_battery(xctx_t*, const settings_t*const, const oxstats_t*const);
+static void widget_volume(xctx_t*, const settings_t*const, const oxstats_t*const);
+static void widget_nprocs(xctx_t*, const settings_t*const, const oxstats_t*const);
+static void widget_memory(xctx_t*, const settings_t*const, const oxstats_t*const);
+static void widget_cpus(xctx_t*, const settings_t*const, const oxstats_t*const);
+static void widget_net(xctx_t*, const settings_t*const, const oxstats_t*const);
+static void widget_time(xctx_t*, const settings_t*const, const oxstats_t*const);
 
 /* TODO Make list of left & right aligned widgets configurale later */
 static
@@ -74,13 +74,13 @@ static const size_t nRightAlignedWidgets = sizeof(RightAlignedWidgets) / sizeof(
 static void
 widget_render(
       widget_t          w,
-      xdraw_context_t  *ctx,
+      xctx_t           *ctx,
       const settings_t *const settings,
       const oxstats_t  *const stats)
 {
    (w)(ctx, settings, stats);
-   xdraw_advance_offsets(ctx, BEFORE_RENDER, 15, 0);/* TODO => widget_spacing */
-   xdraw_advance_offsets(ctx, AFTER_RENDER, 15, 0); /* TODO => widget_spacing */
+   xctx_advance(ctx, BEFORE_RENDER, 15, 0);/* TODO => widget_spacing */
+   xctx_advance(ctx, AFTER_RENDER, 15, 0); /* TODO => widget_spacing */
 }
 
 /* draws all widgets */
@@ -88,18 +88,18 @@ void
 gui_draw(gui_t *gui)
 {
    /* TODO gui_draw: remove local state of each context */
-   static xdraw_context_t *l2r = NULL;
-   static xdraw_context_t *r2l = NULL;
+   static xctx_t *l2r = NULL;
+   static xctx_t *r2l = NULL;
 
    if (NULL == r2l)
-      r2l = xdraw_context_init(gui->xinfo, R2L);
+      r2l = xctx_init(gui->xinfo, R2L);
 
    if (NULL == l2r)
-      l2r = xdraw_context_init(gui->xinfo, L2R);
+      l2r = xctx_init(gui->xinfo, L2R);
 
    xcore_clear(gui->xinfo);
-   xdraw_context_reset_offsets(l2r);
-   xdraw_context_reset_offsets(r2l);
+   xctx_reset(l2r);
+   xctx_reset(r2l);
 
    size_t i;
    for (i = 0; i < nLeftAlignedWidgets; i++)
@@ -129,9 +129,9 @@ gui_draw(gui_t *gui)
 
 void
 widget_battery(
-      xdraw_context_t   *context,
-      const settings_t  *const settings,
-      const oxstats_t   *const stats)
+      xctx_t           *context,
+      const settings_t *const settings,
+      const oxstats_t  *const stats)
 {
    double startx = context->xoffset;
    if (!stats->battery->is_setup)
@@ -166,9 +166,9 @@ widget_battery(
 
 void
 widget_volume(
-      xdraw_context_t   *context,
-      const settings_t  *const settings,
-      const oxstats_t   *const stats)
+      xctx_t           *context,
+      const settings_t *const settings,
+      const oxstats_t  *const stats)
 {
    double startx = context->xoffset;
    if (!stats->volume->is_setup)
@@ -198,9 +198,9 @@ widget_volume(
 
 void
 widget_nprocs(
-      xdraw_context_t   *context,
-      const settings_t  *const settings,
-      const oxstats_t   *const stats)
+      xctx_t           *context,
+      const settings_t *const settings,
+      const oxstats_t  *const stats)
 {
    double startx = context->xoffset;
    if (!stats->nprocs->is_setup)
@@ -243,9 +243,9 @@ fmt_memory(const char *fmt, int kbytes)
 
 void
 widget_memory(
-      xdraw_context_t   *context,
-      const settings_t  *const settings,
-      const oxstats_t   *const stats)
+      xctx_t           *context,
+      const settings_t *const settings,
+      const oxstats_t  *const stats)
 {
    double startx = context->xoffset;
    if (!stats->memory->is_setup)
@@ -283,9 +283,9 @@ widget_memory(
 
 void
 widget_cpus(
-      xdraw_context_t   *context,
-      const settings_t  *const settings,
-      const oxstats_t   *const stats)
+      xctx_t           *context,
+      const settings_t *const settings,
+      const oxstats_t  *const stats)
 {
    double startx = context->xoffset;
    if (!stats->cpus->is_setup)
@@ -341,9 +341,9 @@ widget_cpus(
 
 void
 widget_net(
-      xdraw_context_t   *context,
-      const settings_t  *const settings,
-      const oxstats_t   *const stats)
+      xctx_t           *context,
+      const settings_t *const settings,
+      const oxstats_t  *const stats)
 {
    double startx = context->xoffset;
    if (!stats->network->is_setup)
@@ -380,10 +380,10 @@ widget_net(
 
 void
 widget_time(
-      xdraw_context_t   *context,
-      const settings_t  *const settings,
+      xctx_t           *context,
+      const settings_t *const settings,
       __attribute__((unused))
-      const oxstats_t   *const stats)
+      const oxstats_t  *const stats)
 {
 #define GUI_TIME_MAXLEN 100
    static char buffer[GUI_TIME_MAXLEN];

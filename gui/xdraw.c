@@ -8,28 +8,28 @@
 
 #include "xdraw.h"
 
-xdraw_context_t*
-xdraw_context_init(xinfo_t *xinfo, xdirection_t direction)
+xctx_t*
+xctx_init(xinfo_t *xinfo, xctx_direction_t direction)
 {
-   xdraw_context_t *ctx = malloc(sizeof(xdraw_context_t));
+   xctx_t *ctx = malloc(sizeof(xctx_t));
    if (NULL == ctx)
       err(1, "%s: malloc failed", __FUNCTION__);
 
    ctx->xinfo = xinfo;
    ctx->direction = direction;
-   xdraw_context_reset_offsets(ctx);
+   xctx_reset(ctx);
 
    return ctx;
 }
 
 void
-xdraw_context_free(xdraw_context_t *ctx)
+xctx_free(xctx_t *ctx)
 {
    free(ctx);
 }
 
 void
-xdraw_context_reset_offsets(xdraw_context_t *ctx)
+xctx_reset(xctx_t *ctx)
 {
    switch (ctx->direction) {
    case L2R:
@@ -44,12 +44,12 @@ xdraw_context_reset_offsets(xdraw_context_t *ctx)
 }
 
 void
-xdraw_advance_offsets(
-      xdraw_context_t  *ctx,
-      xrenderstate_t    state,
-      double            xadvance,
+xctx_advance(
+      xctx_t      *ctx,
+      xctx_state_t state,
+      double       xplus,
       __attribute__((unused))
-      double            yadvance)
+      double       yplus)
 {
    switch (state) {
    case BEFORE_RENDER:
@@ -62,19 +62,19 @@ xdraw_advance_offsets(
 
    switch (ctx->direction) {
    case L2R:
-      ctx->xoffset += xadvance;
+      ctx->xoffset += xplus;
       break;
    case R2L:
-      ctx->xoffset -= xadvance;
+      ctx->xoffset -= xplus;
       break;
    }
 }
 
 void
 xdraw_printf(
-      xdraw_context_t   *ctx,
-      const char        *color,
-      const char        *fmt,
+      xctx_t     *ctx,
+      const char *color,
+      const char *fmt,
       ...)
 {
 #define XDRAW_PRINTF_BUFF_MAXLEN 1000
@@ -92,22 +92,22 @@ xdraw_printf(
    pango_layout_set_text(ctx->xinfo->playout, buffer, -1);
    pango_layout_get_pixel_size(ctx->xinfo->playout, &width, &height);
 
-   xdraw_advance_offsets(ctx, BEFORE_RENDER, width, height);
+   xctx_advance(ctx, BEFORE_RENDER, width, height);
 
    cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
    cairo_move_to(ctx->xinfo->cairo, ctx->xoffset, ctx->yoffset);
    pango_cairo_show_layout(ctx->xinfo->cairo, ctx->xinfo->playout);
 
-   xdraw_advance_offsets(ctx, AFTER_RENDER, width, height);
+   xctx_advance(ctx, AFTER_RENDER, width, height);
 }
 
 void
 xdraw_hline(
-      xdraw_context_t  *ctx,
-      const char       *color,
-      double            width,
-      double            x1,
-      double            x2)
+      xctx_t     *ctx,
+      const char *color,
+      double      width,
+      double      x1,
+      double      x2)
 {
    double r, g, b, a;
    hex2rgba(color, &r, &g, &b, &a);
@@ -121,16 +121,16 @@ xdraw_hline(
 
 void
 xdraw_progress_bar(
-      xdraw_context_t  *ctx,
-      const char       *bgcolor,
-      const char       *pgcolor,
-      double            width,
-      double            pct)
+      xctx_t     *ctx,
+      const char *bgcolor,
+      const char *pgcolor,
+      double      width,
+      double      pct)
 {
    double r, g, b, a;
    double height = ctx->xinfo->h - ctx->xinfo->padding;
 
-   xdraw_advance_offsets(ctx, BEFORE_RENDER, width, height);
+   xctx_advance(ctx, BEFORE_RENDER, width, height);
 
    hex2rgba(bgcolor, &r, &g, &b, &a);
    cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
@@ -152,20 +152,20 @@ xdraw_progress_bar(
          (pct/100.0) * height);
    cairo_fill(ctx->xinfo->cairo);
 
-   xdraw_advance_offsets(ctx, AFTER_RENDER, width, height);
+   xctx_advance(ctx, AFTER_RENDER, width, height);
 }
 
 void
 xdraw_chart(
-      xdraw_context_t  *ctx,
-      chart_t          *c
+      xctx_t  *ctx,
+      chart_t *c
       )
 {
    double chart_height = ctx->xinfo->h - ctx->xinfo->padding;
    double width = c->nsamples;
    double r, g, b, a;
 
-   xdraw_advance_offsets(ctx, BEFORE_RENDER, width, chart_height);
+   xctx_advance(ctx, BEFORE_RENDER, width, chart_height);
 
    hex2rgba(c->bgcolor, &r, &g, &b, &a);
    cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
@@ -215,5 +215,5 @@ xdraw_chart(
          y_bottom = y_top;
       }
    }
-   xdraw_advance_offsets(ctx, AFTER_RENDER, width, chart_height);
+   xctx_advance(ctx, AFTER_RENDER, width, chart_height);
 }

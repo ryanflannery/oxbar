@@ -5,7 +5,7 @@
 #include "xcore.h"
 
 /*
- * xdraw_context_t: A stateful context for rendering widgets sequentially
+ * xctx_t: A stateful context for rendering widgets sequentially
  * In our rendering pipeline, widgest and pieces of widgets are rendered
  * sequentially. This is the context passed from rendering to rendering to
  * record 1) WHAT to render to (the xinfo object) and 2) WHERE we're currently
@@ -27,44 +27,35 @@
 typedef enum {
    L2R,
    R2L
-} xdirection_t;
+} xctx_direction_t;
 
 typedef enum {
    BEFORE_RENDER,
    AFTER_RENDER
-} xrenderstate_t;
+} xctx_state_t;
 
-typedef struct xdraw_context {
-   xdirection_t   direction;  /* const after init */
-   xinfo_t       *xinfo;      /* const after init */
-   double         xoffset;
-   double         yoffset;
-} xdraw_context_t;
+typedef struct xctx {
+   xctx_direction_t direction;   /* const after init */
+   xinfo_t         *xinfo;       /* const after init */
+   double           xoffset;
+   double           yoffset;
+} xctx_t;
 
-xdraw_context_t *xdraw_context_init(xinfo_t *xinfo, xdirection_t direction);
-void xdraw_context_free(xdraw_context_t *ctx);
-
-void
-xdraw_context_reset_offsets(
-      xdraw_context_t *ctx);
-
-void
-xdraw_advance_offsets(
-      xdraw_context_t  *ctx,
-      xrenderstate_t    state,
-      double            xadvance,
-      double            yadvance);
+xctx_t *xctx_init(xinfo_t *xinfo, xctx_direction_t direction);
+void xctx_free(xctx_t *ctx);
+void xctx_reset(xctx_t *ctx);
+void xctx_advance(xctx_t *ctx, xctx_state_t state, double xplus, double yplus);
 
 void
 xdraw_printf(
-      xdraw_context_t *ctx,
+      xctx_t *ctx,
       const char *color,
       const char *fmt,
       ...);
 
 void
 xdraw_hline(
-      xdraw_context_t  *ctx,
+      xctx_t  *ctx,
       const char       *color,
       double            width,
       double            x1,
@@ -72,7 +63,7 @@ xdraw_hline(
 
 void
 xdraw_progress_bar(
-      xdraw_context_t  *ctx,
+      xctx_t  *ctx,
       const char       *bgcolor,
       const char       *pgcolor,
       double            width,
@@ -80,7 +71,7 @@ xdraw_progress_bar(
 
 void
 xdraw_chart(
-      xdraw_context_t  *ctx,
+      xctx_t  *ctx,
       chart_t          *chart
       );
 
