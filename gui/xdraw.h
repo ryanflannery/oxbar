@@ -55,24 +55,23 @@ xdraw_printf(
 
 void
 xdraw_hline(
-      xctx_t  *ctx,
-      const char       *color,
-      double            width,
-      double            x1,
-      double            x2);
+      xctx_t     *ctx,
+      const char *color,
+      double      width,
+      double      x1,
+      double      x2);
 
 void
 xdraw_progress_bar(
-      xctx_t  *ctx,
-      const char       *bgcolor,
-      const char       *pgcolor,
-      double            width,
-      double            pct);
+      xctx_t     *ctx,
+      const char *bgcolor,
+      const char *pgcolor,
+      double      width,
+      double      pct);
 
 void
 xdraw_chart(
       xctx_t  *ctx,
-      chart_t          *chart
-      );
+      chart_t *chart);
 
 #endif
