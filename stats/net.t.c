@@ -20,7 +20,7 @@ main()
    while (1)
    {
       net_update();
-      printf("%10ld %10ld %10ld %10ld %10llu %10llu %10llu %10llu\n",
+      printf("%10lu %10lu %10lu %10lu %10llu %10llu %10llu %10llu\n",
             NET.raw_ip_packets_in, NET.raw_ip_packets_out,
             NET.new_ip_packets_in, NET.new_ip_packets_out,
             NET.raw_bytes_in, NET.raw_bytes_out,
