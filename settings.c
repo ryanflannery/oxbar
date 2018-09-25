@@ -112,11 +112,11 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
    const char *errstr;
    char *key   = keyvalue;
    char *eq    = strstr(keyvalue, "=");
-   char *value = eq + 1;
 
    if (NULL == eq)
       errx(1, "bad -S");
 
+   char *value = eq + 1;
    *eq = '\0';
 
    /* display */
