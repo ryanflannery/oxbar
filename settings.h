@@ -1,8 +1,6 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <stdlib.h>
-
 typedef struct settings {
 
    struct display_t {
