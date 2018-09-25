@@ -22,6 +22,9 @@ gui_init(settings_t *s)
          gui->settings->display.bgcolor,
          gui->settings->display.font);
 
+   gui->r2l = xctx_init(gui->xinfo, R2L);
+   gui->l2r = xctx_init(gui->xinfo, L2R);
+
    return gui;
 }
 
@@ -29,6 +32,8 @@ void
 gui_free(gui_t *gui)
 {
    xcore_free(gui->xinfo);
+   xctx_free(gui->l2r);
+   xctx_free(gui->r2l);
    free(gui);
 }
 
@@ -87,26 +92,16 @@ widget_render(
 void
 gui_draw(gui_t *gui)
 {
-   /* TODO gui_draw: remove local state of each context */
-   static xctx_t *l2r = NULL;
-   static xctx_t *r2l = NULL;
-
-   if (NULL == r2l)
-      r2l = xctx_init(gui->xinfo, R2L);
-
-   if (NULL == l2r)
-      l2r = xctx_init(gui->xinfo, L2R);
-
    xcore_clear(gui->xinfo);
-   xctx_reset(l2r);
-   xctx_reset(r2l);
+   xctx_reset(gui->l2r);
+   xctx_reset(gui->r2l);
 
    size_t i;
    for (i = 0; i < nLeftAlignedWidgets; i++)
-      widget_render(LeftAlignedWidgets[i], l2r, gui->settings, &OXSTATS);
+      widget_render(LeftAlignedWidgets[i], gui->l2r, gui->settings, &OXSTATS);
 
    for (i = 0; i < nRightAlignedWidgets; i++)
-      widget_render(RightAlignedWidgets[i], r2l, gui->settings, &OXSTATS);
+      widget_render(RightAlignedWidgets[i], gui->r2l, gui->settings, &OXSTATS);
 
    xcore_flush(gui->xinfo);
 }

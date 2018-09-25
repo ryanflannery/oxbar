@@ -17,6 +17,10 @@ typedef struct gui {
    xinfo_t     *xinfo;     /* WHERE to draw     */
    settings_t  *settings;  /* WHAT/HOW to draw  */
 
+   /* the various drawing contexts */
+   xctx_t      *l2r;       /* left to right (left aligned)  */
+   xctx_t      *r2l;       /* right to left (right aligned) */
+
 } gui_t;
 
 gui_t* gui_init(settings_t *s);
