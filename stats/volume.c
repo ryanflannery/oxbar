@@ -147,7 +147,6 @@ volume_init()
  * query all devices and extract such stats. What I need to do is dedicate
  * an evening to just dive-into and figure this.
  * See: https://marc.info/?l=openbsd-ports&m=125177906413076&w=2
- */
 void
 volume_update_mute()
 {
@@ -156,7 +155,6 @@ volume_update_mute()
    if (!VOLUME.is_setup)
       return;
 
-   /* query info */
    vinfo.index = volume_master_idx;
    vinfo.type  = AUDIO_MIXER_ENUM;
    if (ioctl(volume_dev_fd, AUDIO_MIXER_DEVINFO, &vinfo) < 0)
@@ -173,9 +171,10 @@ volume_update_mute()
    }
 
    printf("%s\n", vinfo.label.name);
-   /*printf("%s\n", vinfo.un.e.member.label.name);*/
+   printf("%s\n", vinfo.un.e.member.label.name);
    VOLUME.muted = false;
 }
+ */
 
 void
 volume_update()
