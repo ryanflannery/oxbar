@@ -21,7 +21,7 @@ Note there's no `man` page yet, or `-h` flag to provide usefule help
 information. That said, this is quite customizable. It supports all the
 command line flags `xstatbar` did and much more... most aspects of the widgets
 can be configured through `-S widget.name=value`. If you take a look at
-`[settings.c](blob/master/settings.c)` you'll see what they all are.
+[settings.c](blob/master/settings.c) you'll see what they all are.
 
 Once development settles I'll focus on adding documentation and cleaning that
 interface up.
