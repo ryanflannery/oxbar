@@ -29,8 +29,6 @@ interface up.
 
 # current features
 
-Stats currently supported are:
-
    * Some transparency support (i have the basics, need to tweak, see below)
    * FreeType fonts rendered beutifully & easily w/ pango
    * Configurable display (all colors, text, spacing, etc)
