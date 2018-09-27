@@ -303,8 +303,12 @@ xcore_flush(xinfo_t *xinfo)
 {
    cairo_pop_group_to_source(xinfo->cairo);
    cairo_paint(xinfo->cairo);
-   cairo_surface_flush(xinfo->surface);
    xcb_flush(xinfo->xcon);
+   /*
+   cairo_set_operator(xinfo->cairo, CAIRO_OPERATOR_SOURCE);
+   cairo_set_operator(xinfo->cairo, CAIRO_OPERATOR_OVER);
+   cairo_pattern_destroy(tpat);
+   */
 }
 
 void

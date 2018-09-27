@@ -25,12 +25,15 @@ a solution specifically for OpenBSD.
 
 Stats currently supported are:
 
-   * Battery/AC status 
-   * Volume level (mute status forthcoming - need to dive into mixerctl(2))
-   * Number of processes (current total # processes only as of now)
-   * CPUs usage & breakdown (ONLY idle/cpu supported now, have other stats but
-     not plotted yet)
-   * Memory usage & breakdown (current only as of now)
+   * Full transparency support
+   * FreeType fonts rendered beutifully & easily w/ pango
+   * Configurable display (all colors, text, spacing, etc)
+   * Status supported:
+      * Battery/AC status, simple progress bar, time remaining
+      * Volume level w/ progress bar (mute status forthcoming )
+      * Number of processes (current total # processes only as of now)
+      * CPUs usage & breakdown w/ charts
+      * Memory usage & breakdown (current only as of now)
 
 # Usage
 

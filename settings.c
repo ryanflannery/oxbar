@@ -13,11 +13,11 @@ settings_load_defaults(settings_t *s)
    s->display.x = 0;
    s->display.y = -1;
    s->display.w = -1;
-   s->display.h = 30;
+   s->display.h = 25;
    s->display.padding_top = 10;
    s->display.widget_spacing = 15;
    s->display.wmname  = strdup(getprogname());
-   s->display.font    = strdup("DejaVu Sans 18px");
+   s->display.font    = strdup("DejaVu Sans 16px");
    s->display.bgcolor = strdup("1c1c1c");
    s->display.fgcolor = strdup("93a1a1");
 
