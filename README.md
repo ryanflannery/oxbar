@@ -29,15 +29,16 @@ interface up.
 
 # current features
 
-   * Some transparency support (i have the basics, need to tweak, see below)
+   * True transparency support with a compositing window manager
+     (I recommend compton in ports over xcompmgr in base)
    * FreeType fonts rendered beutifully & easily w/ pango
    * Configurable display (all colors, text, spacing, etc)
    * Types of stats supported:
       * Battery/AC status, simple progress bar, time remaining
       * Volume level w/ progress bar (mute status forthcoming )
       * Number of processes (current total # processes only as of now)
-      * CPUs usage & breakdown w/ charts
       * Memory usage & breakdown (current only as of now)
+      * CPUs usage & breakdown w/ charts
       * Current date/time (is that a status?)
 
 # usage
