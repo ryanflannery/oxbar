@@ -21,12 +21,13 @@ get_xvisual(xcb_screen_t *screen)
 {
    xcb_depth_iterator_t i = xcb_screen_allowed_depths_iterator(screen);
    for (; i.rem; xcb_depth_next(&i)) {
+      if (i.data->depth != 32)
+         continue;
+
       xcb_visualtype_iterator_t vi;
       vi = xcb_depth_visuals_iterator(i.data);
       for (; vi.rem; xcb_visualtype_next(&vi)) {
-         if (screen->root_visual == vi.data->visual_id) {
-            return vi.data;
-         }
+         return vi.data;
       }
    }
 
@@ -39,7 +40,7 @@ get_xvisual(xcb_screen_t *screen)
 static void
 xcore_setup_x_connection_screen_visual(xinfo_t *x)
 {
-   int   default_screen;
+   int default_screen;
 
    x->xcon = xcb_connect(NULL, &default_screen);
    if (xcb_connection_has_error(x->xcon)) {
@@ -65,9 +66,16 @@ xcore_setup_x_window(
       uint32_t w, uint32_t h,
       const char *bgcolor)
 {
-   static uint32_t valwin[2] = {
+   xcb_colormap_t colormap = xcb_generate_id(xinfo->xcon);
+   xcb_create_colormap(xinfo->xcon, XCB_COLORMAP_ALLOC_NONE, colormap,
+         xinfo->xscreen->root, xinfo->xvisual->visual_id);
+
+   uint32_t valwin[5] = {
       XCB_NONE,
-      XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_BUTTON_PRESS
+      0,
+      1,
+      XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_BUTTON_PRESS,
+      colormap
    };
 
    xinfo->x = x;
@@ -78,7 +86,7 @@ xcore_setup_x_window(
    xinfo->xwindow = xcb_generate_id(xinfo->xcon);
    xcb_create_window(
          xinfo->xcon,
-         XCB_COPY_FROM_PARENT,
+         32, /*XCB_COPY_FROM_PARENT,*/
          xinfo->xwindow,
          xinfo->xscreen->root,
          xinfo->x,
@@ -87,8 +95,9 @@ xcore_setup_x_window(
          xinfo->h,
          0, /* border width */
          XCB_WINDOW_CLASS_INPUT_OUTPUT,
-         xinfo->xscreen->root_visual,
-         XCB_CW_EVENT_MASK | XCB_CW_BACK_PIXMAP,
+         xinfo->xvisual->visual_id,
+         XCB_CW_BACK_PIXMAP | XCB_CW_BORDER_PIXEL | XCB_CW_OVERRIDE_REDIRECT
+         | XCB_CW_EVENT_MASK | XCB_CW_COLORMAP,
          valwin);
 
    xcb_icccm_set_wm_name(
@@ -196,11 +205,6 @@ xcore_setup_x_wm_hints(xinfo_t *x)
          xatoms[NET_WM_STRUT_PARTIAL], XCB_ATOM_CARDINAL, 32, 12, struts);
 	xcb_change_property(x->xcon, XCB_PROP_MODE_REPLACE, x->xwindow,
          xatoms[NET_WM_STRUT], XCB_ATOM_CARDINAL, 32, 4, struts);
-
-   /* remove window from window manager tabbing */
-   const uint32_t val[] = { 1 };
-   xcb_change_window_attributes(x->xcon, x->xwindow,
-         XCB_CW_OVERRIDE_REDIRECT, val);
 }
 
 static void
@@ -217,17 +221,25 @@ xcore_setup_cairo(xinfo_t *x)
 }
 
 static void
-xcore_setup_xfont(
+xcore_setup_pango(
       xinfo_t *x,
       const char *font_description)
 {
    if (NULL == (x->font = strdup(font_description)))
       err(1, "%s: strdup failed", __FUNCTION__);
 
-   x->playout = pango_cairo_create_layout(x->cairo);
    x->pfont = pango_font_description_from_string(x->font);
-   pango_layout_set_font_description(x->playout, x->pfont);
-   /* TODO Are there any error checking methods to call after pango? */
+   if (!x->pfont)
+      errx(1, "pango failed to load font '%s'", x->font);
+
+   x->font_size = pango_font_description_get_size(x->pfont) / PANGO_SCALE;
+
+   /* XXX useful for debugging (still)
+   printf("font family: %s\n",
+         pango_font_description_get_family(x->pfont));
+   printf("font size: %d\n",
+         pango_font_description_get_size(x->pfont) / PANGO_SCALE);
+   */
 }
 
 xinfo_t *
@@ -246,34 +258,27 @@ xcore_init(
    /* These need to be done in a specific order */
    xcore_setup_x_connection_screen_visual(xinfo);
 
-   /* TODO Support display height based on font size
-    * I used to support this using the cairo font API where the font size was
-    * explicit, and I could use that to autoscale the display height as an
-    * option (display height = font size + 2 * padding).
-    * This would be great to support again, but after migrating to pango for
-    * font loading and rendering (a big improvement in appearance) I haven't
-    * yet figured out how to retrieve font height (not specific TEXT RENDERED
-    * IN A FONT but rather generic font height).
-    *
-   if (-1 == height)
-      height = (uint32_t)(ceil(fontpt + (2 * padding)));
-    */
-   if (-1 == y)
-      y = xinfo->display_height - h;
+   xinfo->padding = padding;
+   xcore_setup_pango(xinfo, font);
+
+   if (-1 == h)
+      h = xinfo->font_size + xinfo->padding;
 
    if (-1 == w)
       w = xinfo->display_width;
 
-   xinfo->padding = padding;
+   if (-1 == y)
+      y = xinfo->display_height - h;
+
    xcore_setup_x_window(
          xinfo,
          name,
          x, y,
          w, h,
          bgcolor);
+
    xcore_setup_x_wm_hints(xinfo);
    xcore_setup_cairo(xinfo);
-   xcore_setup_xfont(xinfo, font);
    xcb_map_window(xinfo->xcon, xinfo->xwindow);
    return xinfo;
 }
@@ -302,13 +307,10 @@ void
 xcore_flush(xinfo_t *xinfo)
 {
    cairo_pop_group_to_source(xinfo->cairo);
-   cairo_paint(xinfo->cairo);
-   xcb_flush(xinfo->xcon);
-   /*
    cairo_set_operator(xinfo->cairo, CAIRO_OPERATOR_SOURCE);
+   cairo_paint(xinfo->cairo);
    cairo_set_operator(xinfo->cairo, CAIRO_OPERATOR_OVER);
-   cairo_pattern_destroy(tpat);
-   */
+   xcb_flush(xinfo->xcon);
 }
 
 void

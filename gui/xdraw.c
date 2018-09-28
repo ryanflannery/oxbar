@@ -89,14 +89,19 @@ xdraw_printf(
    vsnprintf(buffer, XDRAW_PRINTF_BUFF_MAXLEN, fmt, ap);
    va_end(ap);
 
-   pango_layout_set_text(ctx->xinfo->playout, buffer, -1);
-   pango_layout_get_pixel_size(ctx->xinfo->playout, &width, &height);
+   PangoLayout *layout = pango_cairo_create_layout(ctx->xinfo->cairo);
+   pango_layout_set_font_description(layout, ctx->xinfo->pfont);
+
+   pango_layout_set_text(layout, buffer, -1);
+   pango_layout_get_pixel_size(layout, &width, &height);
 
    xctx_advance(ctx, BEFORE_RENDER, width, height);
 
    cairo_set_source_rgba(ctx->xinfo->cairo, r, g, b, a);
    cairo_move_to(ctx->xinfo->cairo, ctx->xoffset, ctx->yoffset);
-   pango_cairo_show_layout(ctx->xinfo->cairo, ctx->xinfo->playout);
+   pango_cairo_show_layout(ctx->xinfo->cairo, layout);
+
+   g_object_unref(layout);
 
    xctx_advance(ctx, AFTER_RENDER, width, height);
 }

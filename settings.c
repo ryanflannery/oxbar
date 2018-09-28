@@ -13,12 +13,12 @@ settings_load_defaults(settings_t *s)
    s->display.x = 0;
    s->display.y = -1;
    s->display.w = -1;
-   s->display.h = 25;
+   s->display.h = -1;
    s->display.padding_top = 10;
    s->display.widget_spacing = 15;
    s->display.wmname  = strdup(getprogname());
    s->display.font    = strdup("DejaVu Sans 16px");
-   s->display.bgcolor = strdup("1c1c1c");
+   s->display.bgcolor = strdup("1c1c1cdd");
    s->display.fgcolor = strdup("93a1a1");
 
    s->battery.hdcolor             = strdup("b58900");
@@ -198,7 +198,7 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
             errx(1, "illegal w value '%s': %s", optarg, errstr);
          break;
       case 'h':
-         s->display.h = strtonum(optarg, 0, INT_MAX, &errstr);
+         s->display.h = strtonum(optarg, -1, INT_MAX, &errstr);
          if (errstr)
             errx(1, "illegal h value '%s': %s", optarg, errstr);
          break;

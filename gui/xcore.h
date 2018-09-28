@@ -19,6 +19,7 @@ typedef struct xinfo {
    uint32_t    x, y;             /* (x,y) top-left pixel for oxbar      */
    uint32_t    w, h;             /* (w,h) pixel dimensions of oxbar     */
    uint32_t    padding;          /* internal padding of oxbar           */
+   uint8_t     font_size;        /* determined from font/pango          */
    const char *font;             /* font specified by user (natively)   */
    const char *bgcolor;          /* core display background             */
 
@@ -29,7 +30,6 @@ typedef struct xinfo {
    xcb_visualtype_t     *xvisual;   /* oxbar window's visual            */
    cairo_t              *cairo;     /* core ciaro object for rendering  */
    cairo_surface_t      *surface;   /* core ciaro surface mapped to X   */
-   PangoLayout          *playout;   /* pango layout context             */
    PangoFontDescription *pfont;     /* pango font structure             */
 } xinfo_t;
 
