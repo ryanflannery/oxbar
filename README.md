@@ -54,7 +54,6 @@ Roughly in order or my priority...
      them a proper component
    * fully support right-to-left rendering (properly)... if i do this right,
      i'll also get vertical rendering (so you could have a sidebar)
-   * get alpha transparency working properly
    * DETERMINE "MUTE" STATUS FOR VOLUME
    * add stats & widgets for temperature sensors and... weather?
    * images in the display could help condense it further

@@ -266,10 +266,10 @@ widget_memory(
    xdraw_chart(context, chart);
    xdraw_printf(context, settings->memory.chart_color_active, " %s",
          fmt_memory("%.1lf", stats->memory->active));
-   xdraw_printf(context, settings->display.fgcolor, " active ");
+   xdraw_printf(context, settings->display.fgcolor, " act ");
    xdraw_printf(context, settings->memory.chart_color_total, "%s",
          fmt_memory("%.1lf", stats->memory->total));
-   xdraw_printf(context, settings->display.fgcolor, " total ");
+   xdraw_printf(context, settings->display.fgcolor, " tot ");
    xdraw_printf(context, settings->memory.chart_color_free,
          fmt_memory("%.1lf", stats->memory->free));
    xdraw_printf(context, settings->display.fgcolor, " free");
