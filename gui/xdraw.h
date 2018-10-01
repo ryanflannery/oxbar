@@ -26,7 +26,8 @@
 
 typedef enum {
    L2R,
-   R2L
+   R2L,
+   CENTERED,
 } xctx_direction_t;
 
 typedef enum {
@@ -35,23 +36,25 @@ typedef enum {
 } xctx_state_t;
 
 typedef struct xctx {
-   xctx_direction_t direction;   /* const after init */
-   xinfo_t         *xinfo;       /* const after init */
-   double           xoffset;
-   double           yoffset;
+   bool                    is_root;
+   xctx_direction_t        direction;
+   cairo_t                *cairo;
+   cairo_surface_t        *surface;
+   PangoFontDescription   *pfont;
+   uint32_t                h, w, padding;
+   double                  xoffset;
+   double                  yoffset;
 } xctx_t;
 
-xctx_t *xctx_init(xinfo_t *xinfo, xctx_direction_t direction);
+xctx_t *xctx_init(xinfo_t *xinfo, xctx_direction_t direction, bool make_root);
 void xctx_free(xctx_t *ctx);
 void xctx_reset(xctx_t *ctx);
 void xctx_advance(xctx_t *ctx, xctx_state_t state, double xplus, double yplus);
 
 void
-xdraw_printf(
-      xctx_t *ctx,
-      const char *color,
-      const char *fmt,
-      ...);
+xdraw_context(
+      xctx_t     *dest,
+      xctx_t     *source);
 
 void
 xdraw_hline(
@@ -60,6 +63,13 @@ xdraw_hline(
       double      width,
       double      x1,
       double      x2);
+
+void
+xdraw_printf(
+      xctx_t *ctx,
+      const char *color,
+      const char *fmt,
+      ...);
 
 void
 xdraw_progress_bar(

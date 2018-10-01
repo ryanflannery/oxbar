@@ -33,6 +33,7 @@ interface up.
      (I recommend compton in ports over xcompmgr in base)
    * FreeType fonts rendered beautifully & easily w/ pango
    * Configurable display (all colors, text, spacing, etc)
+   * Left/Right/Center aligned widgets (and any combination of those)
    * Types of stats supported:
       * Battery/AC status, simple progress bar, time remaining
       * Volume level w/ progress bar (mute status forthcoming )
