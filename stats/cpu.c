@@ -19,7 +19,7 @@ void
 cpu_init()
 {
    size_t size;
-   int mib[] = { CTL_HW, HW_NCPU };
+   int mib[] = { CTL_HW, HW_NCPUONLINE };
 
    /* get number of cpu's */
    size = sizeof(CPUS.ncpu);
