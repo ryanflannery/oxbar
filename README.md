@@ -42,6 +42,10 @@ interface up.
       * CPUs usage & breakdown w/ charts
       * Current date/time (is that a status?)
 
+# screenshots
+
+![](images/default.png)
+
 # usage
 
 See 'ol `xstatbar` for the basics of height/width and placement (or see
