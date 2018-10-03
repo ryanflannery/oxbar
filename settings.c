@@ -11,7 +11,8 @@
 void
 widget_set_hdcolor(const char *widget_name, char *color)
 {
-   for (size_t i = 0; i < NWIDGETS; i++) {
+   size_t i = 0;
+   for (; i < NWIDGETS; i++) {
       if (0 == strncasecmp(widget_name, WIDGETS[i].name, strlen(widget_name))) {
          WIDGETS[i].hdcolor = color;
       }
