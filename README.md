@@ -44,7 +44,9 @@ interface up.
 
 # screenshots
 
-![](images/default.png)
+<a href="/images/default.png?raw=true">
+![Oxbar's Default Look](images/default.png "oxbar's default appearance")
+</a>
 
 # usage
 
