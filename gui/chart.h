@@ -17,6 +17,7 @@
  * If you sample the 3 memory stats (% active/total/free) for 60 seconds,
  * you would want a chart with nseries = 3, nsamples = 60, and percents = true.
  */
+
 typedef struct chart {
    size_t   nseries;    /* how many distinct series are in the chart    */
    size_t   nsamples;   /* how many samples of each series there are    */

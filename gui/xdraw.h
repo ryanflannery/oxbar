@@ -5,23 +5,21 @@
 #include "xcore.h"
 
 /*
- * xctx_t: A stateful context for rendering widgets sequentially
- * In our rendering pipeline, widgest and pieces of widgets are rendered
- * sequentially. This is the context passed from rendering to rendering to
- * record 1) WHAT to render to (the xinfo object) and 2) WHERE we're currently
- * rendering at. After a render is done, that WHERE part is *advanced*, so
- * that subsequent calls will know WHERE to render.
+ * xctx_t: A stateful context for rendering widgets sequentially.
+ * All drawing in the gui and widgets is done ONTO a xctx context.
+ * Specifically, all the drawing primitives below draw onto such a context,
+ * and the context tracts advancing the "pen" when drawing. E.g. when drawing
+ * left-to-right (L2R), it advances the x-offset after each drawing primitive
+ * below, so that the next primitive knows where to start. This encapsulation
+ * greatly simplifies the calling code, eliminating much boilerplate code.
  *
- * This abstraction removes a lot of boilerplate x/y offset advances from
- * rendering widgets (making those easier) and also makes things like
- * right-aligning widgets easier, as well as vertical rendering (once that's
- * done).
- * TODO Once xdraw_context is fully adopted, support vertical rendering!
+ * Note that a "root" context is one that's *actually* rendered to the screen.
+ * As such, a typical pipeline will create a temporary context, render a bunch
+ * of primitives to it, and then draw that context onto a "root" context
+ * using xdraw_context(root, source).
  *
- * The "WHERE" state tracked is an x/y offset pair, which always records the
- * upper-left corner of where the next object should be rendered. After any
- * xdraw_* method is called on a context, it should update that context's
- * x/y offset to where the next object should be drawn.
+ * TODO This abstraction should also permit vertical rendering (for a vertical
+ * bar) rather easily, but that hasn't been a priority yet.
  */
 
 typedef enum {
@@ -51,11 +49,18 @@ void xctx_free(xctx_t *ctx);
 void xctx_reset(xctx_t *ctx);
 void xctx_advance(xctx_t *ctx, xctx_state_t state, double xplus, double yplus);
 
+/*
+ * Drawing Primitives
+ * All widget rendering is done using these simple primitives (so far)
+ */
+
+/* draw one context onto another */
 void
 xdraw_context(
       xctx_t     *dest,
       xctx_t     *source);
 
+/* draw a horizontal line on a context */
 void
 xdraw_hline(
       xctx_t     *ctx,
@@ -64,6 +69,7 @@ xdraw_hline(
       double      x1,
       double      x2);
 
+/* draw some colored text (printf(3) style) */
 void
 xdraw_printf(
       xctx_t *ctx,
@@ -71,6 +77,7 @@ xdraw_printf(
       const char *fmt,
       ...);
 
+/* draw simple progress bar showing some % completion */
 void
 xdraw_progress_bar(
       xctx_t     *ctx,
@@ -79,6 +86,7 @@ xdraw_progress_bar(
       double      width,
       double      pct);
 
+/* draw a historical bar chart */
 void
 xdraw_chart(
       xctx_t  *ctx,

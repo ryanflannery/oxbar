@@ -1,22 +1,22 @@
-gui/xcore.c:216:TODO Should I be checking the surface & cairo objects here?
-gui/xcore.c:230:TODO Are there any error checking methods to call after pango?
-gui/xcore.c:249:TODO Support display height based on font size
-gui/xdraw.h:20: * TODO Once xdraw_context is fully adopted, support vertical rendering!
-gui/xdraw.h:33:xdraw_context_t *xdraw_context_init(xinfo_t *xinfo);TODO add direction HERE!
-gui.c:32:   xdraw_printf(ui->xcontext, NULL, " ");TODO this now actually draws
-gui.c:86:TODO Remove state From ui_widget_*_draw(...) components
-gui.c:102:TODO Reduce widget boilerplate
-gui.c:173:TODO Should volume widget ever handle this case!?
-oxbar.c:40:   case SIGHUP:TODO: reload config file here (once supported)
-oxbar.c:92:TODO WTF is "& ~0x80?" needed for in this xcb_event_t check?
-settings.c:56:TODO Create a settings_free() (or refactor to make easier)
-stats/brightness.h:1:TODO Build a working brightness widget
-stats/cpu.c:43:TODO Remove duplicate logic in CPU update logic
-stats/cpu.c:130:TODO CPU cleanup routine should free/cleanup shiz
-stats/memory.c:88:TODO MEMORY cleanup routine should free/cleanup shiz
-stats/volume.c:137:TODO GET VOLUME "IS MUTED?" WORKING
-stats/volume.h:9:TODO GET VOLUME "IS MUTED?" WORKING
-stats/net.h:10:TODO Raw # packets in/out isn't used anymore. Remove?
-stats/net.c:56:TODO Refactor network bytes logic
-stats/net.c:119:TODO Support configurable interface -or- just use egress
-stats/net.c:144:TODO NET cleanup routine should free/cleanup shiz
+gui/xcore.c:220:   /* TODO Should I be checking the surface & cairo objects here? */
+gui/xdraw.h:21: * TODO This abstraction should also permit vertical rendering (for a vertical
+gui.c:103:         xctx_advance(temp, AFTER_RENDER,  15, 0); /* TODO => widget_spacing */
+oxbar.c:47:   case SIGHUP:      /* TODO: reload config file here (once supported) */
+oxbar.c:118:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
+settings.c:82:/* TODO Create a settings_free() (or refactor to make easier)
+settings.c:194:   printf("usage: to do!\n"); /* TODO */
+settings.h:73:/* TODO void settings_parse_config(settings_t *s, const char *file); */
+stats/brightness.h:1:/* TODO Build a working brightness widget
+stats/cpu.c:43:   /* TODO Remove duplicate logic in CPU update logic
+stats/cpu.c:131:   /* TODO CPU cleanup routine should free/cleanup shiz */
+stats/memory.c:89:   /* TODO MEMORY cleanup routine should free/cleanup shiz */
+stats/volume.c:137:/* TODO GET VOLUME "IS MUTED?" WORKING
+stats/volume.h:9:   /* TODO GET VOLUME "IS MUTED?" WORKING */
+stats/net.h:10:   /* TODO Raw # packets in/out isn't used anymore. Remove? */
+stats/net.c:56:/* TODO Refactor network bytes logic
+stats/net.c:119:            /* TODO Support configurable interface -or- just use egress */
+stats/net.c:144:   /* TODO NET cleanup routine should free/cleanup shiz */
+widgets.c:113:   /* TODO Should volume widget ever handle this case!? I've never had it */
+widgets.c:285:      /* TODO revisit "cpulong" widget printing individual states
+widgets.h:22:   /* TODO i could make oxstats_t and settings_t members on init? cleaner? */
+widgets.h:28:extern widget_t WIDGETS[];       /* TODO should be const - fix settings! */

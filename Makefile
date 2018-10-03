@@ -11,7 +11,7 @@ OBJS  = settings.o gui.o widgets.o oxbar.o
 SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o stats/volume.o stats/stats.o
 GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o
 
-.PHONY: clean cppcheck odeps profile scan-build
+.PHONY: clean cppcheck odeps profile scan-build TODO
 
 all: oxbar
 
@@ -34,9 +34,7 @@ clean:
 
 TODO:
 	grep -nr TODO * \
-		| sed 's/ *\/\* *TODO/TODO/' \
-		| sed 's/ *\*\///' \
-		| sed 's/ *\# *TODO/TODO/' \
+		| grep -v '^TODO' \
 		| grep -v '^Makefile' > $@
 
 # static analyzers

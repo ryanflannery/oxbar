@@ -21,6 +21,7 @@ xctx_init(xinfo_t *xinfo, xctx_direction_t direction, bool make_root)
    ctx->padding   = xinfo->padding;
    ctx->pfont     = xinfo->pfont;
 
+   /* if root, use xcore's root window surface/cairo, otherwise a new one */
    ctx->is_root   = make_root;
    if (make_root) {
       ctx->surface = xinfo->surface;
@@ -29,7 +30,7 @@ xctx_init(xinfo_t *xinfo, xctx_direction_t direction, bool make_root)
       ctx->surface = cairo_surface_create_similar(
             xinfo->surface,
             CAIRO_CONTENT_COLOR_ALPHA,
-            xinfo->w, /* TODO what should widget pad width be? xinfo->w? */
+            xinfo->w,
             xinfo->h);
       ctx->cairo = cairo_create(ctx->surface);
    }
@@ -53,16 +54,16 @@ xctx_reset(xctx_t *ctx)
 {
    switch (ctx->direction) {
    case L2R:
-      ctx->xoffset = 0; /*TODO? ctx->xinfo->padding;*/
-      ctx->yoffset = ctx->padding; /*TODO? ctx->padding; */
+      ctx->xoffset = 0;
+      ctx->yoffset = ctx->padding;
       break;
    case R2L:
-      ctx->xoffset = ctx->w; /*TODO? - ctx->xinfo->padding;*/
-      ctx->yoffset = ctx->padding; /*TODO? ctx->xinfo->padding;*/
+      ctx->xoffset = ctx->w;
+      ctx->yoffset = ctx->padding;
       break;
    case CENTERED:
       ctx->xoffset = ctx->w / 2;
-      ctx->yoffset = 0; /*TODO? ctx->xinfo->padding;*/
+      ctx->yoffset = 0;
       break;
    }
 }
@@ -108,6 +109,19 @@ xctx_advance(
       break;
    }
 }
+
+/*
+ * Drawing Primitives - note they all follow the same pattern of
+ *
+ *    xctx_advance(dest, BEFORE_RENDER, width, height);
+ *    ...do drawing stuff...
+ *    xctx_advance(dest, AFTER_RENDER, width, height);
+ *
+ * This is to support right-to-left (RTL) rendering, in which we need to
+ * advance the "pen" when drawing *before* we actually begin drawing.
+ * The xctx_advance() api knows which of these actually advances the pen,
+ * based on the direction of the destination context.
+ */
 
 void
 xdraw_context(
@@ -170,21 +184,18 @@ xdraw_printf(
 
    PangoLayout *layout = pango_cairo_create_layout(ctx->cairo);
    pango_layout_set_font_description(layout, ctx->pfont);
-
    pango_layout_set_text(layout, buffer, -1);
    pango_layout_get_pixel_size(layout, &width, &height);
 
    xctx_advance(ctx, BEFORE_RENDER, width, height);
 
    cairo_set_source_rgba(ctx->cairo, r, g, b, a);
-   /*cairo_set_operator(ctx->cairo, CAIRO_OPERATOR_SOURCE); * TODO remove */
    cairo_move_to(ctx->cairo, ctx->xoffset, ctx->yoffset);
    pango_cairo_show_layout(ctx->cairo, layout);
-   /*cairo_set_operator(ctx->cairo, CAIRO_OPERATOR_OVER); * TODO remove */
-
-   g_object_unref(layout);
 
    xctx_advance(ctx, AFTER_RENDER, width, height);
+
+   g_object_unref(layout);
 }
 
 void
