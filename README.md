@@ -53,7 +53,7 @@ See 'ol `xstatbar` for the basics of height/width and placement (or see
 
 ## i liked xstatbar's look
 
-You can achieve that basically with:
+You can achieve that with:
 ```bash
 oxbar -y 0 -p 0 -f "fixed 16px" -S display.bgcolor=#000000
 ```
@@ -67,8 +67,8 @@ Roughly in order or my priority...
 
    * cleanup widget interface - remove state from the static methods and make
      them a proper component
-   * fully support right-to-left rendering (properly)... If i do this right,
-     i'll also get vertical rendering (so you could have a sidebar)
-   * DETERMINE "MUTE" STATUS FOR VOLUME
-   * add stats & widgets for temperature sensors and... weather
+   * SUPPORT "MUTE" STATUS IN THE VOLUME WIDGET!
+   * add stats & widgets for temperature sensors
    * icons in the display could help condense it further
+   * i like weather... would be nice to have a wttr widget
+   * support vertical rendering (a sidebar!)
