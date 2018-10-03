@@ -44,9 +44,7 @@ interface up.
 
 # screenshots
 
-<a href="/images/default.png?raw=true">
 ![](images/default.png)
-</a>
 
 # usage
 
