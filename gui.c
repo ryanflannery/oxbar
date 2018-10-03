@@ -78,13 +78,11 @@ draw_widget(gui_t *gui, xctx_t *dest, const widget_t *w, oxstats_t *stats, setti
    if (!w->enabled(stats))
       return;
 
-   xctx_t *widget_context = xctx_init(gui->xinfo, L2R, false);
-   w->draw(widget_context, w->data, settings, stats);
-   xdraw_hline(widget_context, w->hdcolor, widget_context->padding, 0, widget_context->xoffset);
-   xctx_advance(widget_context, BEFORE_RENDER, 15, 0); /* TODO => widget_spacing */
-   xctx_advance(widget_context, AFTER_RENDER,  15, 0); /* TODO => widget_spacing */
-   xdraw_context(dest, widget_context);
-   xctx_free(widget_context);
+   xctx_t *scratchpad = xctx_init(gui->xinfo, L2R, false);
+   w->draw(scratchpad, w->data, settings, stats);
+   xdraw_hline(scratchpad, w->hdcolor, scratchpad->padding, 0, scratchpad->xoffset);
+   xdraw_context(dest, scratchpad);
+   xctx_free(scratchpad);
 }
 
 static void
@@ -99,8 +97,11 @@ draw_widget_list(
    xctx_t *temp = xctx_init(gui->xinfo, L2R, false);
 
    size_t i = 0;
-   for (; i < list->size; i++)
+   for (; i < list->size; i++) {
       draw_widget(gui, temp, list->widgets[i], stats, settings);
+      if (i != list->size - 1)
+         xctx_advance(temp, AFTER_RENDER,  15, 0); /* TODO => widget_spacing */
+   }
 
    xdraw_context(root, temp);
    xctx_free(temp);
@@ -111,10 +112,8 @@ void
 gui_draw(gui_t *gui)
 {
    xcore_clear(gui->xinfo);
-
    draw_widget_list(gui, L2R,      &OXSTATS, gui->settings, &gui->LeftWidgets);
    draw_widget_list(gui, R2L,      &OXSTATS, gui->settings, &gui->RightWidgets);
    draw_widget_list(gui, CENTERED, &OXSTATS, gui->settings, &gui->CenterWidgets);
-
    xcore_flush(gui->xinfo);
 }
