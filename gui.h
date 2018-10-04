@@ -9,13 +9,12 @@
 #include "stats/stats.h"
 
 /* widget methods */
-typedef bool (*widget_enabled_t)(oxstats_t*);   /* does this widget work?     */
 typedef void (*widget_init_t)(settings_t*);     /* do widget init on startup  */
 
 /* the full widget type */
 typedef struct widget {
    const char       *name;
-   widget_enabled_t  enabled;
+   bool (*enabled)(struct widget*);       /* does this widget work?           */
    widget_init_t     init;
    void (*free)(struct widget*);          /* cleanup widget on shutdown       */
    void (*draw)(struct widget*, xctx_t*); /* draw it to a context!            */

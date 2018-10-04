@@ -64,31 +64,31 @@ widgets_init(gui_t *gui, settings_t *settings, oxstats_t *stats)
 /* individual widget stuff below */
 
 /* battery widget components */
-bool  wbattery_enabled(oxstats_t*);
+bool  wbattery_enabled(widget_t*);
 void  wbattery_draw(widget_t*, xctx_t *ctx);
 
 /* volume widget components */
-bool  wvolume_enabled(oxstats_t*);
+bool  wvolume_enabled(widget_t*);
 void  wvolume_draw(widget_t*, xctx_t *ctx);
 
 /* nprocs widget components */
-bool  wnprocs_enabled(oxstats_t*);
+bool  wnprocs_enabled(widget_t*);
 void  wnprocs_draw(widget_t*, xctx_t *ctx);
 
 /* memory widget components */
-bool wmemory_enabled(oxstats_t*);
+bool wmemory_enabled(widget_t*);
 void wmemory_draw(widget_t*, xctx_t *ctx);
 
 /* cpu widget components */
-bool wcpus_enabled(oxstats_t*);
+bool wcpus_enabled(widget_t*);
 void wcpus_draw(widget_t*, xctx_t *ctx);
 
 /* net widget components */
-bool wnet_enabled(oxstats_t*);
+bool wnet_enabled(widget_t*);
 void wnet_draw(widget_t*, xctx_t *ctx);
 
 /* time widget components */
-bool wtime_enabled(oxstats_t*);
+bool wtime_enabled(widget_t*);
 void wtime_draw(widget_t*, xctx_t *ctx);
 
 /* handy defaults for simple widgets (those that don't need init/free) */
@@ -112,9 +112,9 @@ const size_t NWIDGET_RECIPES = sizeof(WIDGET_RECIPES) / sizeof(widget_t);
 /* battery */
 
 bool
-wbattery_enabled(oxstats_t *stats)
+wbattery_enabled(widget_t *w)
 {
-   return stats->battery->is_setup;
+   return w->stats->battery->is_setup;
 }
 
 void
@@ -149,9 +149,9 @@ wbattery_draw(
 
 /* volume */
 bool
-wvolume_enabled(oxstats_t *stats)
+wvolume_enabled(widget_t *w)
 {
-   return stats->volume->is_setup;
+   return w->stats->volume->is_setup;
 }
 
 void
@@ -182,9 +182,9 @@ wvolume_draw(
 /* nprocs */
 
 bool
-wnprocs_enabled(oxstats_t *stats)
+wnprocs_enabled(widget_t *w)
 {
-   return stats->nprocs->is_setup;
+   return w->stats->nprocs->is_setup;
 }
 
 void
@@ -200,9 +200,9 @@ wnprocs_draw(
 /* memory */
 
 bool
-wmemory_enabled(oxstats_t *stats)
+wmemory_enabled(widget_t *w)
 {
-   return stats->memory->is_setup;
+   return w->stats->memory->is_setup;
 }
 
 static const char *
@@ -268,9 +268,9 @@ wmemory_draw(
 }
 
 bool
-wcpus_enabled(oxstats_t *stats)
+wcpus_enabled(widget_t *w)
 {
-   return stats->cpus->is_setup;
+   return w->stats->cpus->is_setup;
 }
 
 void
@@ -326,9 +326,9 @@ wcpus_draw(
 }
 
 bool
-wnet_enabled(oxstats_t *stats)
+wnet_enabled(widget_t *w)
 {
-   return stats->network->is_setup;
+   return w->stats->network->is_setup;
 }
 
 void
@@ -365,7 +365,7 @@ wnet_draw(
 }
 
 bool
-wtime_enabled(__attribute__((unused)) oxstats_t *stats)
+wtime_enabled(__attribute__((unused)) widget_t *w)
 {
    return true;
 }

@@ -62,9 +62,9 @@ gui_add_widget(gui_t *gui, xctx_direction_t direction, widget_t* w)
 }
 
 static void
-draw_widget(gui_t *gui, xctx_t *dest, widget_t *w, oxstats_t *stats)
+draw_widget(gui_t *gui, xctx_t *dest, widget_t *w)
 {
-   if (!w->enabled(stats))
+   if (!w->enabled(w))
       return;
 
    xctx_t *scratchpad = xctx_init(gui->xinfo, L2R, false);
@@ -78,7 +78,6 @@ static void
 draw_widget_list(
       gui_t            *gui,
       xctx_direction_t  direction,
-      oxstats_t        *stats,
       widget_list_t    *list)
 {
    xctx_t *root = xctx_init(gui->xinfo, direction, true);
@@ -86,7 +85,7 @@ draw_widget_list(
 
    size_t i = 0;
    for (; i < list->size; i++) {
-      draw_widget(gui, temp, list->widgets[i], stats);
+      draw_widget(gui, temp, list->widgets[i]);
       if (i != list->size - 1)
          xctx_advance(temp, AFTER_RENDER,  15, 0); /* TODO => widget_spacing */
    }
@@ -100,8 +99,8 @@ void
 gui_draw(gui_t *gui)
 {
    xcore_clear(gui->xinfo);
-   draw_widget_list(gui, L2R,      &OXSTATS, &gui->LeftWidgets);
-   draw_widget_list(gui, R2L,      &OXSTATS, &gui->RightWidgets);
-   draw_widget_list(gui, CENTERED, &OXSTATS, &gui->CenterWidgets);
+   draw_widget_list(gui, L2R,      &gui->LeftWidgets);
+   draw_widget_list(gui, R2L,      &gui->RightWidgets);
+   draw_widget_list(gui, CENTERED, &gui->CenterWidgets);
    xcore_flush(gui->xinfo);
 }
