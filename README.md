@@ -46,6 +46,8 @@ interface up.
 
 ![](images/default.png)
 
+[View Image](images/default.png?raw=true)
+
 # usage
 
 See 'ol `xstatbar` for the basics of height/width and placement (or see
