@@ -24,12 +24,12 @@ gui_init(settings_t *s)
 
    gui->settings = s;
    gui->xinfo = xcore_init(
-         gui->settings->display.wmname,
-         gui->settings->display.x, gui->settings->display.y,
-         gui->settings->display.w, gui->settings->display.h,
-         gui->settings->display.padding_top,
-         gui->settings->display.bgcolor,
-         gui->settings->display.font);
+         s->display.wmname,
+         s->display.x, s->display.y,
+         s->display.w, s->display.h,
+         s->display.padding_top,
+         s->display.bgcolor,
+         s->display.font);
 
    gui->LeftWidgets.size = 0;
    gui->RightWidgets.size = 0;
