@@ -11,16 +11,16 @@
 /* widget methods */
 typedef bool (*widget_enabled_t)(oxstats_t*);   /* does this widget work?     */
 typedef void (*widget_init_t)(settings_t*);     /* do widget init on startup  */
-typedef void (*widget_free_t)(void*);           /* cleanup widget on shutdown */
-typedef void (*widget_draw_t)(xctx_t*, void*, settings_t*, oxstats_t*); /* draw it! */
 
 /* the full widget type */
 typedef struct widget {
    const char       *name;
    widget_enabled_t  enabled;
    widget_init_t     init;
-   widget_free_t     free;
-   widget_draw_t     draw;
+   void (*free)(struct widget*);          /* cleanup widget on shutdown       */
+   void (*draw)(struct widget*, xctx_t*); /* draw it to a context!            */
+   settings_t       *settings;
+   oxstats_t        *stats;
 
    /* TODO i could make oxstats_t and settings_t members on init? cleaner? */
    char*             hdcolor;
@@ -46,7 +46,7 @@ typedef struct gui {
 
 gui_t* gui_init(settings_t *s);
 void gui_free(gui_t *gui);
-void gui_add_widget(gui_t *gui, widget_t *w, xctx_direction_t direction);
+void gui_add_widget(gui_t *gui, xctx_direction_t direction, widget_t *w);
 void gui_draw(gui_t *gui);
 
 #endif

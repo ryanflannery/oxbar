@@ -13,9 +13,11 @@
 extern widget_t WIDGET_RECIPES[];
 extern const size_t NWIDGET_RECIPES;
 
-widget_t* widget_create_from_recipe(const char *name);
-void widget_free(widget_t *w);
+widget_t* widget_create_from_recipe(
+      const char *name,
+      settings_t *settings,
+      oxstats_t  *stats);
 
-void widgets_init(gui_t *gui); /* TODO move to settings */
+void widgets_init(gui_t *gui, settings_t *settings, oxstats_t *stats);
 
 #endif

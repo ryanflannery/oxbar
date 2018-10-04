@@ -143,7 +143,7 @@ main(int argc, char *argv[])
    stats_init();
    stats_update();
    gui = gui_init(&settings);
-   widgets_init(gui);
+   widgets_init(gui, &settings, &OXSTATS);
    gui_draw(gui);
 
    /* and we're running! start all threads */
