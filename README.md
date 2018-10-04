@@ -46,7 +46,7 @@ interface up.
 
 ![](images/default.png)
 
-[View Image](images/default.png?raw=true)
+[View (raw) Image](images/default.png?raw=true)
 
 # usage
 
