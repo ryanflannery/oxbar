@@ -21,12 +21,11 @@ typedef struct widget {
    settings_t       *settings;
    oxstats_t        *stats;
 
-   /* TODO i could make oxstats_t and settings_t members on init? cleaner? */
    char*             hdcolor;
    void*             data; /* per-widget use (_init/_free's responsibility) */
 } widget_t;
-typedef struct widget_list {
 
+typedef struct widget_list {
 #define MAX_WIDGETS 100
    widget_t *widgets[MAX_WIDGETS];
    size_t    size;
