@@ -31,7 +31,6 @@ widget_create_from_recipe(
 
    w->name = recipe->name;
    w->enabled = recipe->enabled;
-   w->init = recipe->init;
    w->free = recipe->free;
    w->draw = recipe->draw;
    w->settings = settings;
@@ -93,20 +92,18 @@ bool wtime_enabled(widget_t*);
 void wtime_draw(widget_t*, xctx_t *ctx);
 
 /* handy defaults for simple widgets (those that don't need init/free) */
-void widget_init_empty(__attribute__((unused)) settings_t *s) { }
-#define NO_WIDGET_INIT widget_init_empty
 void widget_free_empty(__attribute__((unused)) widget_t *w) { }
 #define NO_WIDGET_FREE widget_free_empty
 
 /* build the global list of all available widgets */
 widget_t WIDGET_RECIPES[] = {
-   { "battery", wbattery_enabled, NO_WIDGET_INIT, NO_WIDGET_FREE, wbattery_draw, NULL, NULL, NULL, NULL },
-   { "volume",  wvolume_enabled,  NO_WIDGET_INIT, NO_WIDGET_FREE, wvolume_draw,  NULL, NULL, NULL, NULL },
-   { "nprocs",  wnprocs_enabled,  NO_WIDGET_INIT, NO_WIDGET_FREE, wnprocs_draw,  NULL, NULL, NULL, NULL },
-   { "memory",  wmemory_enabled,  NO_WIDGET_INIT, NO_WIDGET_FREE, wmemory_draw,  NULL, NULL, NULL, NULL },
-   { "cpus",    wcpus_enabled,    NO_WIDGET_INIT, NO_WIDGET_FREE, wcpus_draw,    NULL, NULL, NULL, NULL },
-   { "net",     wnet_enabled,     NO_WIDGET_INIT, NO_WIDGET_FREE, wnet_draw,     NULL, NULL, NULL, NULL },
-   { "time",    wtime_enabled,    NO_WIDGET_INIT, NO_WIDGET_FREE, wtime_draw,    NULL, NULL, NULL, NULL },
+   { "battery", wbattery_enabled, NO_WIDGET_FREE, wbattery_draw, NULL, NULL, NULL },
+   { "volume",  wvolume_enabled,  NO_WIDGET_FREE, wvolume_draw,  NULL, NULL, NULL },
+   { "nprocs",  wnprocs_enabled,  NO_WIDGET_FREE, wnprocs_draw,  NULL, NULL, NULL },
+   { "memory",  wmemory_enabled,  NO_WIDGET_FREE, wmemory_draw,  NULL, NULL, NULL },
+   { "cpus",    wcpus_enabled,    NO_WIDGET_FREE, wcpus_draw,    NULL, NULL, NULL },
+   { "net",     wnet_enabled,     NO_WIDGET_FREE, wnet_draw,     NULL, NULL, NULL },
+   { "time",    wtime_enabled,    NO_WIDGET_FREE, wtime_draw,    NULL, NULL, NULL },
 };
 const size_t NWIDGET_RECIPES = sizeof(WIDGET_RECIPES) / sizeof(widget_t);
 

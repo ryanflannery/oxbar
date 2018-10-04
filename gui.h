@@ -6,21 +6,15 @@
 #include "gui/xdraw.h"
 #include "stats/stats.h"
 
-/* widget methods */
-typedef void (*widget_init_t)(settings_t*);     /* do widget init on startup  */
-
 /* the full widget type */
 typedef struct widget {
    const char       *name;
    bool (*enabled)(struct widget*);       /* does this widget work?           */
-   widget_init_t     init;
    void (*free)(struct widget*);          /* cleanup widget on shutdown       */
    void (*draw)(struct widget*, xctx_t*); /* draw it to a context!            */
    settings_t       *settings;
    oxstats_t        *stats;
-
    char*             hdcolor;
-   void*             data; /* per-widget use (_init/_free's responsibility) */
 } widget_t;
 
 typedef struct widget_list {
