@@ -1,8 +1,8 @@
 gui/xcore.c:220:   /* TODO Should I be checking the surface & cairo objects here? */
 gui/xdraw.h:21: * TODO This abstraction should also permit vertical rendering (for a vertical
-gui.c:103:         xctx_advance(temp, AFTER_RENDER,  15, 0); /* TODO => widget_spacing */
-oxbar.c:47:   case SIGHUP:      /* TODO: reload config file here (once supported) */
-oxbar.c:118:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
+gui.c:99:         xctx_advance(temp, AFTER_RENDER,  15, 0); /* TODO => widget_spacing */
+oxbar.c:48:   case SIGHUP:      /* TODO: reload config file here (once supported) */
+oxbar.c:119:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
 settings.c:82:/* TODO Create a settings_free() (or refactor to make easier)
 settings.c:194:   printf("usage: to do!\n"); /* TODO */
 settings.h:73:/* TODO void settings_parse_config(settings_t *s, const char *file); */
@@ -16,7 +16,5 @@ stats/net.h:10:   /* TODO Raw # packets in/out isn't used anymore. Remove? */
 stats/net.c:56:/* TODO Refactor network bytes logic
 stats/net.c:119:            /* TODO Support configurable interface -or- just use egress */
 stats/net.c:144:   /* TODO NET cleanup routine should free/cleanup shiz */
-widgets.c:113:   /* TODO Should volume widget ever handle this case!? I've never had it */
-widgets.c:285:      /* TODO revisit "cpulong" widget printing individual states
-widgets.h:22:   /* TODO i could make oxstats_t and settings_t members on init? cleaner? */
-widgets.h:28:extern widget_t WIDGETS[];       /* TODO should be const - fix settings! */
+widgets.c:167:   /* TODO Should volume widget ever handle this case!? I've never had it */
+widgets.c:315:      /* TODO revisit "cpulong" widget printing individual states
