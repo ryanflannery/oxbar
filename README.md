@@ -1,26 +1,23 @@
 # oxbar
 
-Having a small, concise, visual indicator of numerous system stats is often
-useful on a workstation for developers. While there are many options for Linux,
-there are few that work well with OpenBSD naively. This project aims to offer
-a solution specifically for OpenBSD.
+oxbar is a small, concise system monitor that displays various stats on an X
+window that's immovable and outside tabbing in most window managers. It's built
+on and for OpenBSD, and is a replacement for my old
+[xstatbar](https://ryanflannery.net/hacking/xstatbar/). It supports FreeType
+font rendering, alpha transparency, and is highly configurable.
 
-Also it's a replacement for my old, very crappy
-[xstatbar](https://ryanflannery.net/hacking/xstatbar/).
+It's motivated mostly by the complaints I get about old xstatbar and its
+shortcomings. Shaming works yo.
 
 # status
 
-This is still pretty rough, but mostly stable and usable.
-I'm only publishing now to github to track my work work and share with a few
-other folk on irc who seem interested.
+oxbar is still under early development, but is now stable and usable. There's
+no documentation yet (`man` page or usable `-h` info). That's forthcoming, once
+development settles.
 
-There is much refactoring needed -- this is known. I'm still organizing key
-features and really building a PoC at this point.
-
-Note there's no `man` page yet, or `-h` flag to provide useful help
-information. That said, this is quite configurable. It supports all the
-command line flags `xstatbar` did and much more... Most aspects of the widgets
-can be configured through `-S widget.name=value`. If you take a look at
+It supports all the command line flags `xstatbar` did and much more... most
+aspects of the widgets can be configured through `-S widget.name=value` flags.
+If you take a look at
 [settings.c](https://github.com/ryanflannery/oxbar/blob/master/settings.c)
 you'll see what they all are.
 
