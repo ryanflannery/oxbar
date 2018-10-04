@@ -30,7 +30,6 @@ gui_init(settings_t *s)
    if (NULL == gui)
       err(1, "%s: couldn't malloc gui", __FUNCTION__);
 
-   gui->settings = s;
    gui->xinfo = xcore_init(
          s->display.wmname,
          s->display.x, s->display.y,
