@@ -3,18 +3,37 @@
 
 #include <sys/queue.h>
 
-#include "widgets.h"
 #include "settings.h"
 #include "gui/xcore.h"
 #include "gui/xdraw.h"
 #include "stats/stats.h"
 
+/* widget methods */
+typedef bool (*widget_enabled_t)(oxstats_t*);   /* does this widget work?     */
+typedef void (*widget_init_t)(settings_t*);     /* do widget init on startup  */
+typedef void (*widget_free_t)(void*);           /* cleanup widget on shutdown */
+typedef void (*widget_draw_t)(xctx_t*, void*, settings_t*, oxstats_t*); /* draw it! */
+
+/* the full widget type */
+typedef struct widget {
+   const char       *name;
+   widget_enabled_t  enabled;
+   widget_init_t     init;
+   widget_free_t     free;
+   widget_draw_t     draw;
+
+   /* TODO i could make oxstats_t and settings_t members on init? cleaner? */
+   char*             hdcolor;
+   void*             data; /* per-widget use (_init/_free's responsibility) */
+} widget_t;
 typedef struct widget_list {
+
 #define MAX_WIDGETS 100
    widget_t *widgets[MAX_WIDGETS];
    size_t    size;
 } widget_list_t;
 
+/* a gui just sets-up X stuff and orchestrates widgets */
 typedef struct gui {
    xinfo_t     *xinfo;     /* WHERE to draw     */
    settings_t  *settings;  /* HOW to draw       */

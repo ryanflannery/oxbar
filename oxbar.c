@@ -3,6 +3,7 @@
 #include <pthread.h>
 
 #include "gui.h"
+#include "widgets.h"
 #include "settings.h"
 #include "stats/stats.h"
 
@@ -142,6 +143,7 @@ main(int argc, char *argv[])
    stats_init();
    stats_update();
    gui = gui_init(&settings);
+   widgets_init(gui);
    gui_draw(gui);
 
    /* and we're running! start all threads */

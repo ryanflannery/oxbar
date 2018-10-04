@@ -2,6 +2,55 @@
 
 #include "widgets.h"
 
+static widget_t*
+find_recipe(const char *name)
+{
+   size_t i = 0;
+   for (; i < NWIDGET_RECIPES; i++) {
+      if (0 == strncmp(name, WIDGET_RECIPES[i].name, strlen(WIDGET_RECIPES[i].name)))
+         return &WIDGET_RECIPES[i];
+   }
+   return NULL;
+}
+
+widget_t*
+widget_create_from_recipe(const char *name)
+{
+   widget_t *w, *recipe;
+
+   if (NULL == (recipe = find_recipe(name)))
+      errx(1, "no widget recipe named '%s'", name);
+
+   w = malloc(sizeof(widget_t));
+   if (NULL == w)
+      err(1, "%s: malloc failed", __FUNCTION__);
+
+   w->name = recipe->name;
+   w->enabled = recipe->enabled;
+   w->init = recipe->init;
+   w->free = recipe->free;
+   w->draw = recipe->draw;
+   w->hdcolor = recipe->hdcolor;
+
+   return w;
+}
+
+void
+widgets_init(gui_t *gui)
+{
+   gui_add_widget(gui, widget_create_from_recipe("nprocs"), L2R);
+   gui_add_widget(gui, widget_create_from_recipe("cpus"), L2R);
+
+   gui_add_widget(gui, widget_create_from_recipe("net"), R2L);
+   gui_add_widget(gui, widget_create_from_recipe("memory"), R2L);
+
+   gui_add_widget(gui, widget_create_from_recipe("volume"), CENTERED);
+   gui_add_widget(gui, widget_create_from_recipe("time"), CENTERED);
+   gui_add_widget(gui, widget_create_from_recipe("battery"), CENTERED);
+}
+
+/* individual widget stuff below */
+
 /* battery widget components */
 bool  wbattery_enabled(oxstats_t*);
 void  wbattery_draw(xctx_t *ctx, void*, settings_t*, oxstats_t*);
@@ -39,7 +88,7 @@ void widget_free_empty(__attribute__((unused)) void *w) { }
 #define NO_WIDGET_FREE widget_free_empty
 
 /* build the global list of all available widgets */
-widget_t WIDGETS[] = {
+widget_t WIDGET_RECIPES[] = {
    { "battery", wbattery_enabled, NO_WIDGET_INIT, NO_WIDGET_FREE, wbattery_draw, NULL, NULL },
    { "volume",  wvolume_enabled,  NO_WIDGET_INIT, NO_WIDGET_FREE, wvolume_draw,  NULL, NULL },
    { "nprocs",  wnprocs_enabled,  NO_WIDGET_INIT, NO_WIDGET_FREE, wnprocs_draw,  NULL, NULL },
@@ -48,7 +97,7 @@ widget_t WIDGETS[] = {
    { "net",     wnet_enabled,     NO_WIDGET_INIT, NO_WIDGET_FREE, wnet_draw,     NULL, NULL },
    { "time",    wtime_enabled,    NO_WIDGET_INIT, NO_WIDGET_FREE, wtime_draw,    NULL, NULL },
 };
-const size_t NWIDGETS = sizeof(WIDGETS) / sizeof(widget_t);
+const size_t NWIDGET_RECIPES = sizeof(WIDGET_RECIPES) / sizeof(widget_t);
 
 /* battery */
 
@@ -154,26 +203,6 @@ wmemory_enabled(oxstats_t *stats)
 {
    return stats->memory->is_setup;
 }
-
-/*
-void
-wmemory_init(settings_t *settings)
-{
-   const char *colors[] = {
-      settings->memory.chart_color_active,
-      settings->memory.chart_color_total,
-      settings->memory.chart_color_free,
-   };
-
-   chart_init(60, 3, true, settings->memory.chart_bgcolor, colors);
-}
-
-void
-wmemory_free(void *data)
-{
-   chart_free(data);
-}
-*/
 
 static const char *
 fmt_memory(const char *fmt, int kbytes)

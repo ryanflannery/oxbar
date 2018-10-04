@@ -5,7 +5,6 @@
 
 #include "gui.h"
 #include "gui/xdraw.h"
-#include "widgets.h"
 
 void
 add_widget(widget_list_t *list, widget_t *w)
@@ -32,19 +31,9 @@ gui_init(settings_t *s)
          gui->settings->display.bgcolor,
          gui->settings->display.font);
 
-
    gui->LeftWidgets.size = 0;
-   gui_add_widget(gui, &WIDGETS[2], L2R); /* nprocs */
-   gui_add_widget(gui, &WIDGETS[4], L2R); /* cpus */
-
    gui->RightWidgets.size = 0;
-   gui_add_widget(gui, &WIDGETS[5], R2L); /* net */
-   gui_add_widget(gui, &WIDGETS[3], R2L); /* memory */
-
    gui->CenterWidgets.size = 0;
-   gui_add_widget(gui, &WIDGETS[1], CENTERED); /* volume */
-   gui_add_widget(gui, &WIDGETS[6], CENTERED); /* time */
-   gui_add_widget(gui, &WIDGETS[0], CENTERED); /* battery */
 
    return gui;
 }
