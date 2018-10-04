@@ -1,6 +1,7 @@
 #include <err.h>
 
 #include "widgets.h"
+#include "gui/xdraw.h"
 
 static widget_t*
 find_recipe(const char *name)

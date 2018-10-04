@@ -1,8 +1,6 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include <sys/queue.h>
-
 #include "settings.h"
 #include "gui/xcore.h"
 #include "gui/xdraw.h"

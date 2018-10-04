@@ -4,7 +4,6 @@
 #include "gui.h"
 #include "settings.h"
 #include "stats/stats.h"
-#include "gui/xdraw.h"
 
 /*
  * Global list of all known widget types and how to create them.
