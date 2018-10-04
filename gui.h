@@ -8,7 +8,7 @@
 
 /* the full widget type */
 typedef struct widget {
-   const char       *name;
+   const char       *name;                /* mostly for debugging             */
    bool (*enabled)(struct widget*);       /* does this widget work?           */
    void (*free)(struct widget*);          /* cleanup widget on shutdown       */
    void (*draw)(struct widget*, xctx_t*); /* draw it to a context!            */

@@ -92,7 +92,7 @@ bool wtime_enabled(widget_t*);
 void wtime_draw(widget_t*, xctx_t *ctx);
 
 /* handy defaults for simple widgets (those that don't need init/free) */
-void widget_free_empty(__attribute__((unused)) widget_t *w) { }
+void widget_free_empty(__attribute__((unused)) widget_t *w) { free(w); }
 #define NO_WIDGET_FREE widget_free_empty
 
 /* build the global list of all available widgets */
