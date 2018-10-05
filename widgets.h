@@ -1,8 +1,8 @@
 #ifndef WIDGETS_H
 #define WIDGETS_H
 
-#include "gui.h"
 #include "settings.h"
+#include "gui/gui.h"
 #include "stats/stats.h"
 
 /* this is state local to each widget */

@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "gui.h"
-#include "gui/xdraw.h"
+#include "xdraw.h"
 
 static void
 add_widget(widget_list_t *list, widget_t *w)
@@ -15,19 +15,20 @@ add_widget(widget_list_t *list, widget_t *w)
 }
 
 gui_t*
-gui_init(settings_t *s)
+gui_init(char *wmname, char *bgcolor, char *font,
+      int x, int y, int w, int h, int padding)
 {
    gui_t *gui = malloc(sizeof(gui_t));
    if (NULL == gui)
       err(1, "%s: couldn't malloc gui", __FUNCTION__);
 
    gui->xinfo = xcore_init(
-         s->display.wmname,
-         s->display.x, s->display.y,
-         s->display.w, s->display.h,
-         s->display.padding_top,
-         s->display.bgcolor,
-         s->display.font);
+         wmname,
+         x, y,
+         w, h,
+         padding,
+         bgcolor,
+         font);
 
    gui->LeftWidgets.size = 0;
    gui->RightWidgets.size = 0;
@@ -47,15 +48,9 @@ void
 gui_add_widget(gui_t *gui, xctx_direction_t direction, widget_t* w)
 {
    switch (direction) {
-   case L2R:
-      add_widget(&gui->LeftWidgets, w);
-      break;
-   case R2L:
-      add_widget(&gui->RightWidgets, w);
-      break;
-   case CENTERED:
-      add_widget(&gui->CenterWidgets, w);
-      break;
+   case L2R:      add_widget(&gui->LeftWidgets, w);   break;
+   case R2L:      add_widget(&gui->RightWidgets, w);  break;
+   case CENTERED: add_widget(&gui->CenterWidgets, w); break;
    }
 }
 

@@ -2,9 +2,9 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#include "gui.h"
 #include "widgets.h"
 #include "settings.h"
+#include "gui/gui.h"
 #include "stats/stats.h"
 
 gui_t     *gui;                     /* global gui object                      */
@@ -142,7 +142,12 @@ main(int argc, char *argv[])
    /* setup gui and stats, then do initial stats update and paint */
    stats_init();
    stats_update();
-   gui = gui_init(&settings);
+   gui = gui_init(settings.display.wmname,
+         settings.display.bgcolor,
+         settings.display.font,
+         settings.display.x, settings.display.y,
+         settings.display.w, settings.display.h,
+         settings.display.padding_top);
    widgets_init(gui, &settings, &OXSTATS);
    gui_draw(gui);
 

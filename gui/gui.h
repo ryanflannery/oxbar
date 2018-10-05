@@ -1,10 +1,8 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include "settings.h"
-#include "gui/xcore.h"
-#include "gui/xdraw.h"
-#include "stats/stats.h"
+#include "xcore.h"
+#include "xdraw.h"
 
 /* the full widget type */
 typedef struct widget {
@@ -31,7 +29,14 @@ typedef struct gui {
    widget_list_t RightWidgets;
 } gui_t;
 
-gui_t* gui_init(settings_t *s);
+gui_t* gui_init(
+      char *wmname,
+      char *bgcolor,
+      char *font,
+      int x, int y,
+      int w, int h,
+      int padding);
+
 void gui_free(gui_t *gui);
 void gui_add_widget(gui_t *gui, xctx_direction_t direction, widget_t *w);
 void gui_draw(gui_t *gui);
