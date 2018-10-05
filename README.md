@@ -1,6 +1,3 @@
-[![License: ISC](https://img.shields.io/badge/license-ISC-blue.svg "License: ISC")](LICENSE)
-[![Build Status](https://travis-ci.org/ryanflannery/oxbar.svg?branch=master)](https://travis-ci.org/ryanflannery/oxbar)
-
 # oxbar
 
 oxbar is a small, concise system monitor that displays various stats on an X
@@ -11,6 +8,9 @@ font rendering, alpha transparency, and is highly configurable.
 
 It's motivated mostly by the frequent complaints I get about old xstatbar and
 its shortcomings. Shaming works yo.
+
+oxbar is released under an
+[ISC License](https://github.com/ryanflannery/oxbar/blob/master/LICENSE)
 
 # status
 
