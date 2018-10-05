@@ -3,6 +3,29 @@
 #include "memory.h"
 #include "util.h"
 
+void
+wmemory_init(widget_t *w)
+{
+   settings_t *settings = w->context->settings;
+
+   const char *colors[] = {
+      settings->memory.chart_color_active,
+      settings->memory.chart_color_total,
+      settings->memory.chart_color_free
+   };
+
+   w->context->charts[0] = chart_init(60, 3, true,
+         settings->memory.chart_bgcolor, colors);
+}
+
+void
+wmemory_free(widget_t *w)
+{
+   chart_t *c = w->context->charts[0];
+   if (NULL != c)
+      chart_free(c);
+}
+
 bool
 wmemory_enabled(widget_t *w)
 {
@@ -16,16 +39,7 @@ wmemory_draw(
 {
    settings_t *settings = w->context->settings;
    oxstats_t  *stats    = w->context->stats;
-
-   static chart_t *chart = NULL;
-   if (NULL == chart) {             /* FIRST time setup (only on first call) */
-      const char *colors[] = {
-         settings->memory.chart_color_active,
-         settings->memory.chart_color_total,
-         settings->memory.chart_color_free
-      };
-      chart = chart_init(60, 3, true, settings->memory.chart_bgcolor, colors);
-   }
+   chart_t    *chart    = w->context->charts[0];
 
    chart_update(chart, (double[]) {
          stats->memory->active_pct,

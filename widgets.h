@@ -9,13 +9,21 @@
 typedef struct widget_context {
    settings_t *settings;
    oxstats_t  *stats;
+#  define MAX_CHARTS_PER_WIDGET 10
+   chart_t    *charts[MAX_CHARTS_PER_WIDGET];
 } widget_context_t;
 
 /*
  * Global list of all known widget types and how to create them.
  * When adding a widget, they must be added here.
  */
-extern widget_t WIDGET_RECIPES[];
+typedef struct widget_recipe {
+   widget_t widget;
+   void (*init)(struct widget*);
+   void (*free)(struct widget*);
+} widget_recipe_t;
+
+extern widget_recipe_t WIDGET_RECIPES[];
 extern const size_t NWIDGET_RECIPES;
 
 /* creates a new widget_t based on a named recipe (if found) */

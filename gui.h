@@ -11,9 +11,8 @@ typedef struct widget {
    const char       *name;             /* only used for debugging             */
    char             *hdcolor;          /* header color (set by settings.*)    */
    bool (*enabled)(struct widget*);    /* does the widget work? could change! */
-   void (*free)(struct widget*);          /* cleanup widget on shutdown       */
    void (*draw)(struct widget*, xctx_t*); /* draw it to a context!            */
-   struct widget_context *context;
+   struct widget_context *context;     /* local per-widget state              */
 } widget_t;
 
 typedef struct widget_list {

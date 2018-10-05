@@ -13,8 +13,8 @@ widget_set_hdcolor(const char *widget_name, char *color)
 {
    size_t i = 0;
    for (; i < NWIDGET_RECIPES; i++) {
-      if (0 == strncasecmp(widget_name, WIDGET_RECIPES[i].name, strlen(widget_name))) {
-         WIDGET_RECIPES[i].hdcolor = color;
+      if (0 == strncasecmp(widget_name, WIDGET_RECIPES[i].widget.name, strlen(widget_name))) {
+         WIDGET_RECIPES[i].widget.hdcolor = color;
       }
    }
 }
