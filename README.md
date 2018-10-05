@@ -6,8 +6,8 @@ on and for OpenBSD, and is a replacement for my old
 [xstatbar](https://ryanflannery.net/hacking/xstatbar/). It supports FreeType
 font rendering, alpha transparency, and is highly configurable.
 
-It's motivated mostly by the complaints I get about old xstatbar and its
-shortcomings. Shaming works yo.
+It's motivated mostly by the frequent complaints I get about old xstatbar and
+its shortcomings. Shaming works yo.
 
 # status
 
