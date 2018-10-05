@@ -160,6 +160,8 @@ main(int argc, char *argv[])
 
    /* cleanup */
    stats_close();
+   widgets_free();
    gui_free(gui);
+
    return 0;
 }

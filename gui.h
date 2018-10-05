@@ -8,13 +8,12 @@
 
 /* the full widget type */
 typedef struct widget {
-   const char       *name;                /* mostly for debugging             */
-   bool (*enabled)(struct widget*);       /* does this widget work?           */
+   const char       *name;             /* only used for debugging             */
+   char             *hdcolor;          /* header color (set by settings.*)    */
+   bool (*enabled)(struct widget*);    /* does the widget work? could change! */
    void (*free)(struct widget*);          /* cleanup widget on shutdown       */
    void (*draw)(struct widget*, xctx_t*); /* draw it to a context!            */
-   settings_t       *settings;
-   oxstats_t        *stats;
-   char*             hdcolor;
+   struct widget_context *context;
 } widget_t;
 
 typedef struct widget_list {

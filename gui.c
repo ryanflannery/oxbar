@@ -14,14 +14,6 @@ add_widget(widget_list_t *list, widget_t *w)
    list->widgets[ list->size++ ] = w;
 }
 
-static void
-free_widget_list(widget_list_t *list)
-{
-   size_t i = 0;
-   for (; i < list->size; i++)
-      list->widgets[i]->free(list->widgets[i]);
-}
-
 gui_t*
 gui_init(settings_t *s)
 {
@@ -47,9 +39,6 @@ gui_init(settings_t *s)
 void
 gui_free(gui_t *gui)
 {
-   free_widget_list(&gui->LeftWidgets);
-   free_widget_list(&gui->RightWidgets);
-   free_widget_list(&gui->CenterWidgets);
    xcore_free(gui->xinfo);
    free(gui);
 }
