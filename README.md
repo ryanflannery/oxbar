@@ -1,4 +1,5 @@
 [![License: ISC](https://img.shields.io/badge/license-ISC-blue.svg "License: ISC")](LICENSE)
+[![Build Status](https://travis-ci.org/ryanflannery/oxbar.svg?branch=master)](https://travis-ci.org/ryanflannery/oxbar)
 
 # oxbar
 
