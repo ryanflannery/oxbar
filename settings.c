@@ -30,7 +30,7 @@ settings_load_defaults(settings_t *s)
    s->display.widget_spacing = 15;
    s->display.wmname  = strdup(getprogname());
    s->display.font    = strdup("DejaVu Sans 16px");
-   s->display.bgcolor = strdup("1c1c1cdd");
+   s->display.bgcolor = strdup("1c1c1c99");
    s->display.fgcolor = strdup("93a1a1");
 
    s->battery.hdcolor             = strdup("b58900");
