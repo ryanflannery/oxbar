@@ -6,17 +6,17 @@ on and for OpenBSD, and is a replacement for my old
 [xstatbar](https://ryanflannery.net/hacking/xstatbar/). It supports FreeType
 font rendering, alpha transparency, and is highly configurable.
 
-It's motivated mostly by the frequent complaints I get about old xstatbar and
-its shortcomings. Shaming works yo.
+It's motivated mostly by the frequent complaints I get about my old xstatbar
+and its many shortcomings/hacks. Shaming works yo.
 
 oxbar is released under an
-[ISC License](https://github.com/ryanflannery/oxbar/blob/master/LICENSE)
+[ISC license](https://github.com/ryanflannery/oxbar/blob/master/LICENSE)
 
 # status
 
-oxbar is still under early development, but is now stable and usable. There's
+oxbar is still under active development, but is now stable and usable. There's
 no documentation yet (`man` page or usable `-h` info). That's forthcoming, once
-development settles.
+development settles, and likely soon.
 
 It supports all the command line flags `xstatbar` did and much more... most
 aspects of the widgets can be configured through `-S widget.name=value` flags.
@@ -67,10 +67,13 @@ forthcoming.
 
 Roughly in order or my priority...
 
-   * cleanup widget interface - remove state from the static methods and make
-     them a proper component
-   * SUPPORT "MUTE" STATUS IN THE VOLUME WIDGET!
-   * add stats & widgets for temperature sensors
-   * icons in the display could help condense it further
-   * i like weather... would be nice to have a wttr widget
-   * support vertical rendering (a sidebar!)
+   * settings: config widget placements here (left/right/center stacks)
+   * gui: settle `hdcolor` and `padding` mess
+   * document! man page and -h flags
+   * gui: add 'cpulong' widget, which mimics old xstatbar behavior
+   * gui: build test driver for gui/ components (for my sake)
+   * gui: icons in the display could help condense it further
+   * stats: support "mute" status in volume (this is non-trivial)
+   * stats: add tracker for hw.sensors
+   * stats: add a weather component...i like weather
+   * gui: support vertical rendering (a sidebar!)
