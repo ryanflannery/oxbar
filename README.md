@@ -1,3 +1,5 @@
+[![License: ISC](https://img.shields.io/badge/license-ISC-blue.svg "License: ISC")](LICENSE)
+
 # oxbar
 
 oxbar is a small, concise system monitor that displays various stats on an X
