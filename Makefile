@@ -17,20 +17,21 @@ WOBJS = widgets/battery.o widgets/volume.o widgets/nprocs.o widgets/memory.o wid
 all: oxbar
 
 odeps:
-	$(MAKE) -C stats 	 $(MFLAGS) objects
-	$(MAKE) -C gui   	 $(MFLAGS) objects
+	$(MAKE) -C stats   $(MFLAGS) objects
+	$(MAKE) -C gui     $(MFLAGS) objects
 	$(MAKE) -C widgets $(MFLAGS) objects
 
 .c.o:
 	$(CC) $(CFLAGS) $<
 
-oxbar: odeps $(OBJS) $(SOBS) $(GOBJS)
+oxbar: odeps $(OBJS) $(SOBS) $(GOBJS) $(WOBJS)
 	$(CC) -o $@ $(LDFLAGS) $(OBJS) $(SOBJS) $(GOBJS) $(WOBJS)
 
 clean:
 	$(MAKE) -C stats   $(MFLAGS) $@
 	$(MAKE) -C gui     $(MFLAGS) $@
 	$(MAKE) -C widgets $(MFLAGS) $@
+	@echo make clean \(local\)
 	rm -f $(OBJS)
 	rm -f oxbar
 	rm -f oxbar.core
