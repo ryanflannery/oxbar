@@ -21,10 +21,9 @@ settings_load_defaults(settings_t *s)
    s->display.font    = strdup("DejaVu Sans 16px");
    s->display.bgcolor = strdup("1c1c1c99");
    s->display.fgcolor = strdup("93a1a1");
-
-   s->display.LeftWidgets = "nprocs cpus memory net";
-   s->display.CenterWidgets = "time";
-   s->display.RightWidgets = "battery volume";
+   s->display.left = strdup("nprocs cpus memory net");
+   s->display.center = strdup("time");
+   s->display.right = strdup("battery volume");
 
    s->battery.hdcolor             = strdup("b58900");
    s->battery.fgcolor_unplugged   = strdup("dc322f");
@@ -118,10 +117,19 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
    *eq = '\0';
 
    /* display */
+   SET_INT_VALUE(display.x);
+   SET_INT_VALUE(display.y);
+   SET_INT_VALUE(display.w);
+   SET_INT_VALUE(display.h);
+   SET_INT_VALUE(display.padding_top);
+   SET_INT_VALUE(display.widget_spacing);
    SET_STRING_VALUE(display.wmname);
    SET_STRING_VALUE(display.font);
    SET_STRING_VALUE(display.bgcolor);
    SET_STRING_VALUE(display.fgcolor);
+   SET_STRING_VALUE(display.left);
+   SET_STRING_VALUE(display.right);
+   SET_STRING_VALUE(display.center);
 
    /* battery */
    SET_STRING_VALUE(battery.hdcolor);
@@ -141,20 +149,24 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
 
    /* memory */
    SET_STRING_VALUE(memory.hdcolor);
+   SET_STRING_VALUE(memory.chart_bgcolor);
    SET_STRING_VALUE(memory.chart_color_free);
    SET_STRING_VALUE(memory.chart_color_total);
    SET_STRING_VALUE(memory.chart_color_active);
 
    /* cpus */
    SET_STRING_VALUE(cpus.hdcolor);
-   SET_STRING_VALUE(cpus.chart_color_idle);
-   SET_STRING_VALUE(cpus.chart_color_user);
+   SET_STRING_VALUE(cpus.chart_bgcolor);
    SET_STRING_VALUE(cpus.chart_color_sys);
-   SET_STRING_VALUE(cpus.chart_color_nice);
    SET_STRING_VALUE(cpus.chart_color_interrupt);
+   SET_STRING_VALUE(cpus.chart_color_user);
+   SET_STRING_VALUE(cpus.chart_color_nice);
+   SET_STRING_VALUE(cpus.chart_color_spin);
+   SET_STRING_VALUE(cpus.chart_color_idle);
 
    /* network */
    SET_STRING_VALUE(network.hdcolor);
+   SET_STRING_VALUE(network.chart_bgcolor);
    SET_STRING_VALUE(network.inbound_chart_color_bgcolor);
    SET_STRING_VALUE(network.inbound_chart_color_pgcolor);
    SET_STRING_VALUE(network.outbound_chart_color_bgcolor);
@@ -162,6 +174,7 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
 
    /* time */
    SET_STRING_VALUE(time.hdcolor);
+   SET_STRING_VALUE(time.format);
 
    /* unknown key! */
    errx(1, "unknown key '%s''", keyvalue);

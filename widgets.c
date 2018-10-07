@@ -146,7 +146,7 @@ widgets_init(gui_t *gui, settings_t *settings, oxstats_t *stats)
    widgets_set_hdcolor("net",       settings->network.hdcolor);
    widgets_set_hdcolor("time",      settings->time.hdcolor);
 
-   widgets_create(settings->display.LeftWidgets,   L2R, gui, settings, stats);
-   widgets_create(settings->display.CenterWidgets, CENTERED, gui, settings, stats);
-   widgets_create(settings->display.RightWidgets,  R2L, gui, settings, stats);
+   widgets_create(settings->display.left,    L2R, gui, settings, stats);
+   widgets_create(settings->display.center,  CENTERED, gui, settings, stats);
+   widgets_create(settings->display.right,   R2L, gui, settings, stats);
 }

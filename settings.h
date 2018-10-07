@@ -13,9 +13,9 @@ typedef struct settings {
       char *bgcolor;
       char *fgcolor;
 
-      char *LeftWidgets;
-      char *RightWidgets;
-      char *CenterWidgets;
+      char *left;
+      char *right;
+      char *center;
    } display;
 
    struct widget_battery{
@@ -48,12 +48,12 @@ typedef struct settings {
    struct widget_cpus {
       char *hdcolor;
       char *chart_bgcolor;
-      char *chart_color_idle;
-      char *chart_color_user;
       char *chart_color_sys;
-      char *chart_color_spin;
-      char *chart_color_nice;
       char *chart_color_interrupt;
+      char *chart_color_user;
+      char *chart_color_nice;
+      char *chart_color_spin;
+      char *chart_color_idle;
    } cpus;
 
    struct widget_network {
