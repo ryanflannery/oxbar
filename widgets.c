@@ -1,4 +1,5 @@
 #include <err.h>
+#include <string.h>
 
 #include "gui/xdraw.h"
 #include "widgets.h"
@@ -72,7 +73,6 @@ widget_create_from_recipe(
       recipe->init(w);
 
    WIDGETS[NWIDGETS++] = w;   /* track to cleanup in widgets_free() */
-
    return w;
 }
 
@@ -92,22 +92,33 @@ widgets_free()
 }
 
 void
+widgets_create(
+      const char  *list,
+      xctx_direction_t direction,
+      gui_t      *gui,
+      settings_t *settings,
+      oxstats_t  *stats)
+{
+   char *token;
+   char *copy = strdup(list);
+
+   if (NULL == copy)
+      err(1, "%s strdup failed", __FUNCTION__);
+
+   while (NULL != (token = strsep(&copy, " ,"))) {
+      if (0 == strlen(token))
+            continue;
+
+      gui_add_widget(gui, direction,
+            widget_create_from_recipe(token, settings, stats));
+   }
+   free(copy);
+}
+
+void
 widgets_init(gui_t *gui, settings_t *settings, oxstats_t *stats)
 {
-   gui_add_widget(gui, L2R,
-         widget_create_from_recipe("nprocs", settings, stats));
-   gui_add_widget(gui, L2R,
-         widget_create_from_recipe("cpus", settings, stats));
-   gui_add_widget(gui, L2R,
-         widget_create_from_recipe("memory", settings, stats));
-   gui_add_widget(gui, L2R,
-         widget_create_from_recipe("net", settings, stats));
-
-   gui_add_widget(gui, CENTERED,
-         widget_create_from_recipe("time", settings, stats));
-
-   gui_add_widget(gui, R2L,
-         widget_create_from_recipe("battery", settings, stats));
-   gui_add_widget(gui, R2L,
-         widget_create_from_recipe("volume", settings, stats));
+   widgets_create("nprocs cpus memory net", L2R, gui, settings, stats);
+   widgets_create("time", CENTERED, gui, settings, stats);
+   widgets_create("battery volume", R2L, gui, settings, stats);
 }

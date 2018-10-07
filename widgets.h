@@ -32,8 +32,17 @@ widget_t* widget_create_from_recipe(
       settings_t *settings,
       oxstats_t  *stats);
 
-/* init all widgets / free all created widgets (tracked internally) */
+/* create actual widgets from "names" and then add them to the gui */
 void widgets_init(gui_t *gui, settings_t *settings, oxstats_t *stats);
+void
+widgets_create(
+      const char *list,
+      xctx_direction_t direction,
+      gui_t      *gui,
+      settings_t *settings,
+      oxstats_t  *stats);
+
+/* free() all created widgets (call on shutdown) */
 void widgets_free();
 
 #endif
