@@ -11,7 +11,16 @@
 #include "widgets/net.h"
 #include "widgets/time.h"
 
-/* build the global list of all available widgets */
+/*
+ * Global list of all known widget types and how to create them.
+ * When adding a widget, they must be added here.
+ */
+typedef struct widget_recipe {
+   widget_t widget;              /* the widget itself */
+   void (*init)(struct widget*); /* how to build it   */
+   void (*free)(struct widget*); /* how to destroy it */
+} widget_recipe_t;
+
 widget_recipe_t WIDGET_RECIPES[] = {
    {{"battery", NULL, wbattery_enabled, wbattery_draw, NULL}, NULL, NULL},
    {{"volume",  NULL, wvolume_enabled,  wvolume_draw,  NULL}, NULL, NULL},
@@ -23,7 +32,7 @@ widget_recipe_t WIDGET_RECIPES[] = {
 };
 const size_t NWIDGET_RECIPES = sizeof(WIDGET_RECIPES) / sizeof(widget_recipe_t);
 
-/* this tracks all widgets created */
+/* this tracks all widgets created, so they can be destroyed on shutdown */
 #define MAX_ALL_WIDGETS 1000
 static widget_t *WIDGETS[MAX_ALL_WIDGETS];
 static size_t    NWIDGETS = 0;
@@ -40,7 +49,7 @@ find_recipe(const char *name)
    return NULL;
 }
 
-widget_t*
+static widget_t*
 widget_create_from_recipe(
       const char *name,
       settings_t *settings,
@@ -91,7 +100,17 @@ widgets_free()
    }
 }
 
-void
+static void
+widgets_set_hdcolor(const char *widget_name, char *color)
+{
+   widget_recipe_t *recipe = find_recipe(widget_name);
+   if (NULL == recipe)
+      errx(1, "unknown widget '%s'", widget_name);
+
+   recipe->widget.hdcolor = color;
+}
+
+static void
 widgets_create(
       const char  *list,
       xctx_direction_t direction,
@@ -100,25 +119,34 @@ widgets_create(
       oxstats_t  *stats)
 {
    char *token;
-   char *copy = strdup(list);
+   char *copylist = strdup(list);   /* strsep(3) will change this */
+   char *memhandle = copylist;      /* need this for free() and clang */
 
-   if (NULL == copy)
+   if (NULL == copylist)
       err(1, "%s strdup failed", __FUNCTION__);
 
-   while (NULL != (token = strsep(&copy, " ,"))) {
+   while (NULL != (token = strsep(&copylist, " ,"))) {
       if (0 == strlen(token))
             continue;
 
       gui_add_widget(gui, direction,
             widget_create_from_recipe(token, settings, stats));
    }
-   free(copy);
+   free(memhandle);
 }
 
 void
 widgets_init(gui_t *gui, settings_t *settings, oxstats_t *stats)
 {
-   widgets_create("nprocs cpus memory net", L2R, gui, settings, stats);
-   widgets_create("time", CENTERED, gui, settings, stats);
-   widgets_create("battery volume", R2L, gui, settings, stats);
+   widgets_set_hdcolor("battery",   settings->battery.hdcolor);
+   widgets_set_hdcolor("volume",    settings->volume.hdcolor);
+   widgets_set_hdcolor("nprocs",    settings->nprocs.hdcolor);
+   widgets_set_hdcolor("memory",    settings->memory.hdcolor);
+   widgets_set_hdcolor("cpus",      settings->cpus.hdcolor);
+   widgets_set_hdcolor("net",       settings->network.hdcolor);
+   widgets_set_hdcolor("time",      settings->time.hdcolor);
+
+   widgets_create(settings->display.LeftWidgets,   L2R, gui, settings, stats);
+   widgets_create(settings->display.CenterWidgets, CENTERED, gui, settings, stats);
+   widgets_create(settings->display.RightWidgets,  R2L, gui, settings, stats);
 }
