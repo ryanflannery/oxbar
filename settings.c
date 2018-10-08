@@ -68,6 +68,7 @@ settings_load_defaults(settings_t *s)
  * I should have this - but this is cumbersome given the above setup.
  * Go to array based? Then every settings retrieval in the draw loop is an
  * array lookup. Bleh. I had a version of this started, but seemed silly.
+ * I'll chew more on how best to refactor but for now it's low priority.
 void
 settings_free(settings_t *s)
 {
@@ -96,7 +97,7 @@ settings_free(settings_t *s)
    if (0 == strncasecmp( #name , property , strlen( #name ))) { \
       s->name = strtonum(value, 0, INT_MAX, &errstr); \
       if (errstr) \
-         errx(1, "%s: bad value %s for key %s", __FUNCTION__, value, property); \
+         errx(1, "%s: bad value %s for key %s: %s", __FUNCTION__, value, property, errstr); \
       \
       return; \
    }
@@ -194,7 +195,7 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
    char *keyvalue;
    int ch;
 
-   while (-1 != (ch = getopt(argc, argv, "x:y:w:h:p:s:f:S:t:"))) {
+   while (-1 != (ch = getopt(argc, argv, "x:y:w:h:p:s:f:S:t:l:r:c:"))) {
       switch (ch) {
       case 'x':
          s->display.x = strtonum(optarg, 0, INT_MAX, &errstr);
@@ -226,13 +227,6 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
          if (errstr)
             errx(1, "illegal s value '%s': %s", optarg, errstr);
          break;
-      case 'S':
-         if (NULL == (keyvalue = strdup(optarg)))
-            err(1, "strdup failed for font");
-
-         settings_set_keyvalue(s, keyvalue);
-         free(keyvalue);
-         break;
       case 'f':
          free(s->display.font);
          s->display.font = strdup(optarg);
@@ -244,6 +238,31 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
          s->time.format = strdup(optarg);
          if (NULL == s->time.format)
             err(1, "strdup failed for time format");
+         break;
+      case 'l':
+         free(s->display.left);
+         s->display.left = strdup(optarg);
+         if (NULL == s->display.left)
+            err(1, "strdup failed for display.left");
+         break;
+      case 'r':
+         free(s->display.right);
+         s->display.right = strdup(optarg);
+         if (NULL == s->display.right)
+            err(1, "strdup failed for display.right");
+         break;
+      case 'c':
+         free(s->display.center);
+         s->display.center = strdup(optarg);
+         if (NULL == s->display.center)
+            err(1, "strdup failed for display.center");
+         break;
+      case 'S':
+         if (NULL == (keyvalue = strdup(optarg)))
+            err(1, "strdup failed for font");
+
+         settings_set_keyvalue(s, keyvalue);
+         free(keyvalue);
          break;
       default:
          usage();
