@@ -135,6 +135,7 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
    SET_STRING_VALUE(display.left);
    SET_STRING_VALUE(display.right);
    SET_STRING_VALUE(display.center);
+   SET_STRING_VALUE(display.widget_bgcolor);
 
    /* battery */
    SET_STRING_VALUE(battery.hdcolor);
