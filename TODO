@@ -1,11 +1,11 @@
 gui/xcore.c:220:   /* TODO Should I be checking the surface & cairo objects here? */
 gui/xdraw.h:21: * TODO This abstraction should also permit vertical rendering (for a vertical
-gui.c:88:         xctx_advance(temp, AFTER_RENDER,  15, 0); /* TODO => widget_spacing */
+gui/gui.c:83:         xctx_advance(temp, AFTER_RENDER,  15, 0); /* TODO => widget_spacing */
 oxbar.c:48:   case SIGHUP:      /* TODO: reload config file here (once supported) */
 oxbar.c:119:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
-settings.c:82:/* TODO Create a settings_free() (or refactor to make easier)
-settings.c:194:   printf("usage: to do!\n"); /* TODO */
-settings.h:73:/* TODO void settings_parse_config(settings_t *s, const char *file); */
+settings.c:67:/* TODO Create a settings_free() (or refactor to make easier)
+settings.c:187:   printf("usage: to do!\n"); /* TODO */
+settings.h:77:/* TODO void settings_parse_config(settings_t *s, const char *file); */
 stats/brightness.h:1:/* TODO Build a working brightness widget
 stats/cpu.c:43:   /* TODO Remove duplicate logic in CPU update logic
 stats/cpu.c:131:   /* TODO CPU cleanup routine should free/cleanup shiz */
