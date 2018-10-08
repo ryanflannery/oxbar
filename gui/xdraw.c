@@ -32,7 +32,12 @@ xctx_init(xinfo_t *xinfo, xctx_direction_t direction, bool make_root)
             CAIRO_CONTENT_COLOR_ALPHA,
             xinfo->w,
             xinfo->h);
+      if (CAIRO_STATUS_SUCCESS != cairo_surface_status(ctx->surface))
+         errx(1, "%s: failed to create cairo surface", __FUNCTION__);
+
       ctx->cairo = cairo_create(ctx->surface);
+      if (CAIRO_STATUS_SUCCESS != cairo_status(ctx->cairo))
+         errx(1, "%s: failed to create cairo object", __FUNCTION__);
    }
 
    xctx_reset(ctx);
