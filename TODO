@@ -1,4 +1,3 @@
-gui/xcore.c:220:   /* TODO Should I be checking the surface & cairo objects here? */
 gui/xdraw.h:21: * TODO This abstraction should also permit vertical rendering (for a vertical
 gui/gui.c:83:         xctx_advance(temp, AFTER_RENDER,  15, 0); /* TODO => widget_spacing */
 oxbar.c:48:   case SIGHUP:      /* TODO: reload config file here (once supported) */

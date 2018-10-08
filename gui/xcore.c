@@ -216,8 +216,12 @@ xcore_setup_cairo(xinfo_t *x)
          x->xvisual,
          x->w,
          x->h);
+   if (CAIRO_STATUS_SUCCESS != cairo_surface_status(x->surface))
+      errx(1, "%s: failed to create xcb cairo surface", __FUNCTION__);
+
    x->cairo = cairo_create(x->surface);
-   /* TODO Should I be checking the surface & cairo objects here? */
+   if (CAIRO_STATUS_SUCCESS != cairo_status(x->cairo))
+      errx(1, "%s: failed to create cairo object", __FUNCTION__);
 }
 
 static void
