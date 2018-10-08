@@ -16,7 +16,7 @@ add_widget(widget_list_t *list, widget_t *w)
 
 gui_t*
 gui_init(char *wmname, char *bgcolor, char *font,
-      int x, int y, int w, int h, int padding)
+      int x, int y, int w, int h, int padding, int widget_spacing)
 {
    gui_t *gui = malloc(sizeof(gui_t));
    if (NULL == gui)
@@ -30,6 +30,7 @@ gui_init(char *wmname, char *bgcolor, char *font,
          bgcolor,
          font);
 
+   gui->widget_spacing = widget_spacing;
    gui->LeftWidgets.size = 0;
    gui->RightWidgets.size = 0;
    gui->CenterWidgets.size = 0;
@@ -80,7 +81,7 @@ draw_widget_list(
    for (; i < list->size; i++) {
       draw_widget(gui, temp, list->widgets[i]);
       if (i != list->size - 1)
-         xctx_advance(temp, AFTER_RENDER,  15, 0); /* TODO => widget_spacing */
+         xctx_advance(temp, AFTER_RENDER, gui->widget_spacing, 0);
    }
 
    xdraw_context(root, temp);

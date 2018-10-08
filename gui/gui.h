@@ -21,7 +21,8 @@ typedef struct widget_list {
 
 /* a gui just sets-up X stuff and orchestrates widgets */
 typedef struct gui {
-   xinfo_t     *xinfo;     /* WHERE to draw     */
+   xinfo_t *xinfo;         /* WHERE to draw     */
+   int      widget_spacing;
 
    /* WHAT to draw, and in WHICH contexts */
    widget_list_t LeftWidgets;
@@ -35,7 +36,8 @@ gui_t* gui_init(
       char *font,
       int x, int y,
       int w, int h,
-      int padding);
+      int padding,
+      int widget_spacing);
 
 void gui_free(gui_t *gui);
 void gui_add_widget(gui_t *gui, xctx_direction_t direction, widget_t *w);

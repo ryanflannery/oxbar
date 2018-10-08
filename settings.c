@@ -85,7 +85,8 @@ settings_free(settings_t *s)
 */
 
 #define SET_STRING_VALUE(name) \
-   if (0 == strncasecmp( #name , property, strlen( #name ))) { \
+   if (strlen( property ) == strlen( #name ) \
+   &&  0 == strncasecmp( #name , property , strlen( #name ))) { \
       if (NULL == (s->name = strdup(value))) \
          err(1, "%s: strdup failed for key %s", __FUNCTION__, property); \
          \
@@ -94,8 +95,10 @@ settings_free(settings_t *s)
 
 
 #define SET_INT_VALUE(name) \
-   if (0 == strncasecmp( #name , property , strlen( #name ))) { \
+   if (strlen( property ) == strlen( #name ) \
+   &&  0 == strncasecmp( #name , property , strlen( #name ))) { \
       s->name = strtonum(value, 0, INT_MAX, &errstr); \
+      printf("%s to value %d\n", #name, s->name); \
       if (errstr) \
          errx(1, "%s: bad value %s for key %s: %s", __FUNCTION__, value, property, errstr); \
       \
