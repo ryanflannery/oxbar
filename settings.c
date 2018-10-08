@@ -17,13 +17,14 @@ settings_load_defaults(settings_t *s)
    s->display.h = -1;
    s->display.padding_top = 10;
    s->display.widget_spacing = 15;
-   s->display.wmname  = strdup(getprogname());
+   s->display.wmname  = strdup("oxbar");
    s->display.font    = strdup("DejaVu Sans 16px");
    s->display.bgcolor = strdup("1c1c1c99");
    s->display.fgcolor = strdup("93a1a1");
+   s->display.widget_bgcolor = strdup("1c1c1c");
    s->display.left = strdup("nprocs cpus memory net");
    s->display.center = strdup("time");
-   s->display.right = strdup("battery volume");
+   s->display.right = strdup("battery volume time");
 
    s->battery.hdcolor             = strdup("b58900");
    s->battery.fgcolor_unplugged   = strdup("dc322f");

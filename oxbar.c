@@ -148,7 +148,8 @@ main(int argc, char *argv[])
          settings.display.x, settings.display.y,
          settings.display.w, settings.display.h,
          settings.display.padding_top,
-         settings.display.widget_spacing);
+         settings.display.widget_spacing,
+         settings.display.widget_bgcolor);
    widgets_init(gui, &settings, &OXSTATS);
    gui_draw(gui);
 

@@ -12,6 +12,7 @@ typedef struct settings {
       char *font;
       char *bgcolor;
       char *fgcolor;
+      char *widget_bgcolor;
 
       char *left;
       char *right;
