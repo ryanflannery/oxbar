@@ -33,6 +33,7 @@ gui_init(char *wmname, char *bgcolor, char *font,
 
    gui->widget_spacing = widget_spacing;
    gui->widget_bgcolor = widget_bgcolor;
+   gui->widget_padding = padding;
    gui->bgcolor = bgcolor;
    gui->LeftWidgets.size = 0;
    gui->RightWidgets.size = 0;
@@ -64,7 +65,7 @@ draw_widget(gui_t *gui, xctx_t *dest, widget_t *w)
    if (!w->enabled(w))
       return;
 
-   xctx_t *scratchpad = xctx_init(gui->xinfo, L2R, gui->widget_bgcolor, false);
+   xctx_t *scratchpad = xctx_init(gui->xinfo, L2R, gui->widget_padding, gui->widget_bgcolor, false);
    w->draw(w, scratchpad);
    xdraw_hline(scratchpad, w->hdcolor, scratchpad->padding, 0, scratchpad->xoffset);
    xdraw_context(dest, scratchpad);
@@ -77,8 +78,8 @@ draw_widget_list(
       xctx_direction_t  direction,
       widget_list_t    *list)
 {
-   xctx_t *root = xctx_init(gui->xinfo, direction, NULL, true);
-   xctx_t *temp = xctx_init(gui->xinfo, L2R, NULL, false);
+   xctx_t *root = xctx_init(gui->xinfo, direction, gui->widget_padding, NULL, true);
+   xctx_t *temp = xctx_init(gui->xinfo, L2R, gui->widget_padding, NULL, false);
 
    size_t i = 0;
    for (; i < list->size; i++) {

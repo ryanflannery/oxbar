@@ -253,11 +253,10 @@ xcore_init(
    /* These need to be done in a specific order */
    xcore_setup_x_connection_screen_visual(xinfo);
 
-   xinfo->padding = padding;
    xcore_setup_pango(xinfo, font);
 
    if (-1 == h)
-      h = xinfo->font_size + xinfo->padding;
+      h = xinfo->font_size + padding;
 
    if (-1 == w)
       w = xinfo->display_width;

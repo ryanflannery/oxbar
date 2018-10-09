@@ -9,16 +9,16 @@
 #include "xdraw.h"
 
 xctx_t*
-xctx_init(xinfo_t *xinfo, xctx_direction_t direction, char *bg, bool make_root)
+xctx_init(xinfo_t *xinfo, xctx_direction_t direction, int padding, char *bg, bool make_root)
 {
    xctx_t *ctx = malloc(sizeof(xctx_t));
    if (NULL == ctx)
       err(1, "%s: malloc failed", __FUNCTION__);
 
    ctx->direction = direction;
+   ctx->padding   = padding;
    ctx->h         = xinfo->h;
    ctx->w         = xinfo->w;
-   ctx->padding   = xinfo->padding;
    ctx->pfont     = xinfo->pfont;
 
    /* if root, use xcore's root window surface/cairo, otherwise a new one */

@@ -17,7 +17,6 @@ typedef struct xinfo {
    const char *wname;
    uint32_t    x, y;             /* (x,y) top-left pixel for oxbar      */
    uint32_t    w, h;             /* (w,h) pixel dimensions of oxbar     */
-   uint32_t    padding;          /* internal padding of oxbar           */
    const char *font;             /* font specified by user (natively)   */
 
    /* dervied stats useful for saving + core xcb/cairo/pango components */
