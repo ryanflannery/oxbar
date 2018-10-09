@@ -13,17 +13,18 @@
 /* not packed */
 typedef struct xinfo {
 
-   /* "human readable" display / core x information */
+   /* settings passed to and stored by xinfo */
    const char *wname;
-   uint32_t    display_width, display_height;  /* display dimensions    */
    uint32_t    x, y;             /* (x,y) top-left pixel for oxbar      */
    uint32_t    w, h;             /* (w,h) pixel dimensions of oxbar     */
    uint32_t    padding;          /* internal padding of oxbar           */
-   uint8_t     font_size;        /* determined from font/pango          */
    const char *font;             /* font specified by user (natively)   */
    const char *bgcolor;          /* core display background             */
 
-   /* core xcb/cairo/pango components */
+   /* dervied stats useful for saving + core xcb/cairo/pango components */
+   uint32_t              display_width;   /* determiend from xcb        */
+   uint32_t              display_height;  /* " " "                      */
+   uint8_t               font_size; /* determined from font/pango       */
    xcb_connection_t     *xcon;      /* connection to x server           */
    xcb_screen_t         *xscreen;   /* screen we render to              */
    xcb_drawable_t       xwindow;    /* oxbar xwindow                    */

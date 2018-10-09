@@ -5,7 +5,7 @@
 
 #include "xcore.h"
 
-xcb_screen_t*
+static xcb_screen_t*
 get_xscreen(xcb_connection_t *c, int screen)
 {
    xcb_screen_iterator_t i = xcb_setup_roots_iterator(xcb_get_setup(c));;
@@ -16,7 +16,7 @@ get_xscreen(xcb_connection_t *c, int screen)
    return NULL;
 }
 
-xcb_visualtype_t*
+static xcb_visualtype_t*
 get_xvisual(xcb_screen_t *screen)
 {
    xcb_depth_iterator_t i = xcb_screen_allowed_depths_iterator(screen);
@@ -34,9 +34,6 @@ get_xvisual(xcb_screen_t *screen)
    return NULL;
 }
 
-/*
- * Creates core XCB/X11 connection
- */
 static void
 xcore_setup_x_connection_screen_visual(xinfo_t *x)
 {
@@ -86,7 +83,7 @@ xcore_setup_x_window(
    xinfo->xwindow = xcb_generate_id(xinfo->xcon);
    xcb_create_window(
          xinfo->xcon,
-         32, /*XCB_COPY_FROM_PARENT,*/
+         32, /* XCB_COPY_FROM_PARENT? no - force 32 bit */
          xinfo->xwindow,
          xinfo->xscreen->root,
          xinfo->x,
