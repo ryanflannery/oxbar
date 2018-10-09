@@ -29,11 +29,11 @@ gui_init(char *wmname, char *bgcolor, char *font,
          x, y,
          w, h,
          padding,
-         bgcolor,
          font);
 
    gui->widget_spacing = widget_spacing;
    gui->widget_bgcolor = widget_bgcolor;
+   gui->bgcolor = bgcolor;
    gui->LeftWidgets.size = 0;
    gui->RightWidgets.size = 0;
    gui->CenterWidgets.size = 0;
@@ -95,7 +95,7 @@ draw_widget_list(
 void
 gui_draw(gui_t *gui)
 {
-   xcore_clear(gui->xinfo);
+   xcore_clear(gui->xinfo, gui->bgcolor);
    draw_widget_list(gui, L2R,      &gui->LeftWidgets);
    draw_widget_list(gui, R2L,      &gui->RightWidgets);
    draw_widget_list(gui, CENTERED, &gui->CenterWidgets);

@@ -24,6 +24,7 @@ typedef struct gui {
    xinfo_t *xinfo;         /* WHERE to draw     */
    char    *widget_bgcolor;
    int      widget_spacing;
+   char    *bgcolor;
 
    /* WHAT to draw, and in WHICH contexts */
    widget_list_t LeftWidgets;

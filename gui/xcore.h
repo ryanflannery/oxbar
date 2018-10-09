@@ -13,13 +13,12 @@
 /* not packed */
 typedef struct xinfo {
 
-   /* settings passed to and stored by xinfo */
+   /* settings specified by user and stored locally here */
    const char *wname;
    uint32_t    x, y;             /* (x,y) top-left pixel for oxbar      */
    uint32_t    w, h;             /* (w,h) pixel dimensions of oxbar     */
    uint32_t    padding;          /* internal padding of oxbar           */
    const char *font;             /* font specified by user (natively)   */
-   const char *bgcolor;          /* core display background             */
 
    /* dervied stats useful for saving + core xcb/cairo/pango components */
    uint32_t              display_width;   /* determiend from xcb        */
@@ -40,7 +39,6 @@ xinfo_t *xcore_init(
    double x, double y,        /* (x,y) of top-left window pixel         */
    double w, double h,        /* width x height in window pixels        */
    double padding,            /* padding between top & left sides       */
-   const char *bgcolor,       /* core window background color           */
    const char *font);         /* PangoFontDescription spec              */
 
 void xcore_free(xinfo_t *x);
@@ -51,7 +49,7 @@ void xcore_free(xinfo_t *x);
  * End with xcore_flush() to flush all draw commands to the buffer and swap to
  * show that one.
  */
-void xcore_clear(xinfo_t *xinfo);
+void xcore_clear(xinfo_t *xinfo, const char * const bgcolor);
 void xcore_flush(xinfo_t *xinfo);
 
 void hex2rgba(const char *s, double *r, double *g, double *b, double *a);

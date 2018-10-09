@@ -60,8 +60,7 @@ xcore_setup_x_window(
       xinfo_t *xinfo,
       const char *name,
       uint32_t x, uint32_t y,
-      uint32_t w, uint32_t h,
-      const char *bgcolor)
+      uint32_t w, uint32_t h)
 {
    xcb_colormap_t colormap = xcb_generate_id(xinfo->xcon);
    xcb_create_colormap(xinfo->xcon, XCB_COLORMAP_ALLOC_NONE, colormap,
@@ -103,10 +102,6 @@ xcore_setup_x_window(
          XCB_ATOM_STRING, 8,
          strlen(name),
          name);
-
-   xinfo->bgcolor = strdup(bgcolor);
-   if (NULL == xinfo->bgcolor)
-      err(1, "%s: strdup failed", __FUNCTION__);
 }
 
 /*
@@ -249,7 +244,6 @@ xcore_init(
       double x, double y,
       double w, double h,
       double padding,
-      const char *bgcolor,
       const char *font)
 {
    xinfo_t *xinfo = malloc(sizeof(xinfo_t));
@@ -275,8 +269,7 @@ xcore_init(
          xinfo,
          name,
          x, y,
-         w, h,
-         bgcolor);
+         w, h);
 
    xcore_setup_x_wm_hints(xinfo);
    xcore_setup_cairo(xinfo);
@@ -295,10 +288,10 @@ xcore_free(xinfo_t *x)
 }
 
 void
-xcore_clear(xinfo_t *xinfo)
+xcore_clear(xinfo_t *xinfo, const char *const bgcolor)
 {
    double r, g, b, a;
-   hex2rgba(xinfo->bgcolor, &r, &g, &b, &a);
+   hex2rgba(bgcolor, &r, &g, &b, &a);
    cairo_push_group(xinfo->cairo);
    cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
    cairo_paint(xinfo->cairo);
