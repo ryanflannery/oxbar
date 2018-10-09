@@ -12,7 +12,7 @@ SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o st
 GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o gui/gui.o
 WOBJS = widgets/battery.o widgets/volume.o widgets/nprocs.o widgets/memory.o widgets/cpus.o widgets/net.o widgets/time.o widgets/util.o
 
-.PHONY: clean cppcheck odeps profile scan-build TODO
+.PHONY: clean cppcheck odeps profile scan-build TODO loc
 
 all: oxbar
 
@@ -40,6 +40,9 @@ TODO:
 	grep -nr TODO * \
 		| grep -v '^TODO' \
 		| grep -v '^Makefile' > $@
+
+loc:
+	find . -name "*.c" -exec wc -l {} \; | sort -r
 
 # static analyzers
 cppcheck:
