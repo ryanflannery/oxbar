@@ -12,7 +12,7 @@ SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o st
 GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o gui/gui.o
 WOBJS = widgets/battery.o widgets/volume.o widgets/nprocs.o widgets/memory.o widgets/cpus.o widgets/net.o widgets/time.o widgets/util.o
 
-.PHONY: clean cppcheck odeps profile scan-build TODO loc
+.PHONY: clean cppcheck odeps profile scan-build TODO loc gource
 
 all: oxbar
 
@@ -43,6 +43,9 @@ TODO:
 
 loc:
 	find . -name "*.c" -exec wc -l {} \; | sort -r
+
+gource:
+	gource -f -c 4 -a 1
 
 # static analyzers
 cppcheck:
