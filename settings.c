@@ -21,9 +21,7 @@ settings_load_defaults(settings_t *s)
    s->display.bgcolor = strdup("1c1c1c99");
    s->display.fgcolor = strdup("93a1a1");
    s->display.widget_bgcolor = strdup("1c1c1c");
-   s->display.left = strdup("nprocs cpus memory net");
-   s->display.center = strdup("time");
-   s->display.right = strdup("battery volume time");
+   s->display.widgets = strdup("nprocs cpus memory net | time | battery volume time");
 
    s->battery.hdcolor             = strdup("b58900");
    s->battery.fgcolor_unplugged   = strdup("dc322f");
@@ -131,10 +129,8 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
    SET_STRING_VALUE(display.font);
    SET_STRING_VALUE(display.bgcolor);
    SET_STRING_VALUE(display.fgcolor);
-   SET_STRING_VALUE(display.left);
-   SET_STRING_VALUE(display.right);
-   SET_STRING_VALUE(display.center);
    SET_STRING_VALUE(display.widget_bgcolor);
+   SET_STRING_VALUE(display.widgets);
 
    /* battery */
    SET_STRING_VALUE(battery.hdcolor);
@@ -199,7 +195,7 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
    char *keyvalue;
    int ch;
 
-   while (-1 != (ch = getopt(argc, argv, "x:y:w:h:p:s:f:S:t:l:r:c:"))) {
+   while (-1 != (ch = getopt(argc, argv, "x:y:w:h:p:s:f:S:t:W:"))) {
       switch (ch) {
       case 'x':
          s->display.x = strtonum(optarg, 0, INT_MAX, &errstr);
@@ -243,23 +239,11 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
          if (NULL == s->time.format)
             err(1, "strdup failed for time format");
          break;
-      case 'l':
-         free(s->display.left);
-         s->display.left = strdup(optarg);
-         if (NULL == s->display.left)
-            err(1, "strdup failed for display.left");
-         break;
-      case 'r':
-         free(s->display.right);
-         s->display.right = strdup(optarg);
-         if (NULL == s->display.right)
-            err(1, "strdup failed for display.right");
-         break;
-      case 'c':
-         free(s->display.center);
-         s->display.center = strdup(optarg);
-         if (NULL == s->display.center)
-            err(1, "strdup failed for display.center");
+      case 'W':
+         free(s->display.widgets);
+         s->display.widgets = strdup(optarg);
+         if (NULL == s->display.widgets)
+            err(1, "strdup failed for display.widgets");
          break;
       case 'S':
          if (NULL == (keyvalue = strdup(optarg)))

@@ -34,6 +34,7 @@ interface up.
    * FreeType fonts rendered beautifully & easily w/ pango
    * Configurable display (all colors, text, spacing, etc)
    * Left/Right/Center aligned widgets (and any combination of those)
+   * Widgets can be configured on the command line
    * Types of stats supported:
       * Battery/AC status, simple progress bar, time remaining
       * Volume level w/ progress bar (mute status forthcoming )

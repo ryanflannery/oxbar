@@ -113,11 +113,12 @@ widgets_set_hdcolor(const char *widget_name, char *color)
 static void
 widgets_create(
       const char  *list,
-      xctx_direction_t direction,
       gui_t      *gui,
       settings_t *settings,
       oxstats_t  *stats)
 {
+   xctx_direction_t directions[] = { L2R, CENTERED, R2L };
+   size_t cur_direction = 0;
    char *token;
    char *copylist = strdup(list);   /* strsep(3) will change this */
    char *memhandle = copylist;      /* need this for free() and clang */
@@ -129,7 +130,16 @@ widgets_create(
       if (0 == strlen(token))
             continue;
 
-      gui_add_widget(gui, direction,
+      if ('|' == *token) {
+         if (3 == cur_direction)
+            errx(1, "%s: error: too many '|' in widget spec", __FUNCTION__);
+         else
+            cur_direction++;
+
+         continue;
+      }
+
+      gui_add_widget(gui, directions[cur_direction],
             widget_create_from_recipe(token, settings, stats));
    }
    free(memhandle);
@@ -146,7 +156,5 @@ widgets_init(gui_t *gui, settings_t *settings, oxstats_t *stats)
    widgets_set_hdcolor("net",       settings->network.hdcolor);
    widgets_set_hdcolor("time",      settings->time.hdcolor);
 
-   widgets_create(settings->display.left,    L2R, gui, settings, stats);
-   widgets_create(settings->display.center,  CENTERED, gui, settings, stats);
-   widgets_create(settings->display.right,   R2L, gui, settings, stats);
+   widgets_create(settings->display.widgets, gui, settings, stats);
 }

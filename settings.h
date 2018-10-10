@@ -13,10 +13,7 @@ typedef struct settings {
       char *bgcolor;
       char *fgcolor;
       char *widget_bgcolor;
-
-      char *left;
-      char *right;
-      char *center;
+      char *widgets;
    } display;
 
    struct widget_battery{
