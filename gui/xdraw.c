@@ -157,17 +157,6 @@ xctx_root_pop(xctx_t *ctx)
  */
 
 void
-xdraw_color(
-      xctx_t     *ctx,
-      const char *const bgcolor)
-{
-   double r, g, b, a;
-   hex2rgba(bgcolor, &r, &g, &b, &a);
-   cairo_set_source_rgba(ctx->cairo, r, g, b, a);
-   cairo_paint(ctx->cairo);
-}
-
-void
 xdraw_context(
       xctx_t     *dest,
       xctx_t     *source)
@@ -188,6 +177,17 @@ xdraw_context(
    cairo_fill(dest->cairo);
 
    xctx_advance(dest, AFTER_RENDER, source->xoffset, source->yoffset);
+}
+
+void
+xdraw_color(
+      xctx_t     *ctx,
+      const char *const bgcolor)
+{
+   double r, g, b, a;
+   hex2rgba(bgcolor, &r, &g, &b, &a);
+   cairo_set_source_rgba(ctx->cairo, r, g, b, a);
+   cairo_paint(ctx->cairo);
 }
 
 void

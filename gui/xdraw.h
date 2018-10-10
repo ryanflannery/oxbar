@@ -58,17 +58,17 @@ void xctx_root_pop(xctx_t *ctx);
  * All widget rendering is done using these simple primitives (so far)
  */
 
-/* draw a color over an entire context */
-void
-xdraw_color(
-      xctx_t     *ctx,
-      const char *const bgcolor);
-
 /* draw one context onto another */
 void
 xdraw_context(
       xctx_t     *dest,
       xctx_t     *source);
+
+/* draw a color over an entire context */
+void
+xdraw_color(
+      xctx_t     *ctx,
+      const char *const bgcolor);
 
 /* draw a horizontal line on a context */
 void
