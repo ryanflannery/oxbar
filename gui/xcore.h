@@ -41,15 +41,7 @@ xinfo_t *xcore_init(
    const char *font);         /* PangoFontDescription spec              */
 
 void xcore_free(xinfo_t *x);
-
-/*
- * These form the rendering pipeline w/ double buffering.
- * Start a full draw with xcore_clear() to clear the display in a new buffer.
- * End with xcore_flush() to flush all draw commands to the buffer and swap to
- * show that one.
- */
-void xcore_clear(xinfo_t *xinfo, const char * const bgcolor);
-void xcore_flush(xinfo_t *xinfo);
+void xcore_flush(xinfo_t *x);
 
 void hex2rgba(const char *s, double *r, double *g, double *b, double *a);
 

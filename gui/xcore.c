@@ -287,23 +287,9 @@ xcore_free(xinfo_t *x)
 }
 
 void
-xcore_clear(xinfo_t *xinfo, const char *const bgcolor)
+xcore_flush(xinfo_t *x)
 {
-   double r, g, b, a;
-   hex2rgba(bgcolor, &r, &g, &b, &a);
-   cairo_push_group(xinfo->cairo);
-   cairo_set_source_rgba(xinfo->cairo, r, g, b, a);
-   cairo_paint(xinfo->cairo);
-}
-
-void
-xcore_flush(xinfo_t *xinfo)
-{
-   cairo_pop_group_to_source(xinfo->cairo);
-   cairo_set_operator(xinfo->cairo, CAIRO_OPERATOR_SOURCE);
-   cairo_paint(xinfo->cairo);
-   cairo_set_operator(xinfo->cairo, CAIRO_OPERATOR_OVER);
-   xcb_flush(xinfo->xcon);
+   xcb_flush(x->xcon);
 }
 
 void

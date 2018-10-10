@@ -122,6 +122,27 @@ xctx_advance(
    }
 }
 
+void
+xctx_root_push(xctx_t *ctx)
+{
+   if (!ctx->is_root)
+      errx(1, "%s: this doesn't make sense", __FUNCTION__);
+
+   cairo_push_group(ctx->cairo);
+}
+
+void
+xctx_root_pop(xctx_t *ctx)
+{
+   if (!ctx->is_root)
+      errx(1, "%s: this doesn't make sense", __FUNCTION__);
+
+   cairo_pop_group_to_source(ctx->cairo);
+   cairo_set_operator(ctx->cairo, CAIRO_OPERATOR_SOURCE);
+   cairo_paint(ctx->cairo);
+   cairo_set_operator(ctx->cairo, CAIRO_OPERATOR_OVER);
+}
+
 /*
  * Drawing Primitives - note they all follow the same pattern of
  *
@@ -134,6 +155,17 @@ xctx_advance(
  * The xctx_advance() api knows which of these actually advances the pen,
  * based on the direction of the destination context.
  */
+
+void
+xdraw_color(
+      xctx_t     *ctx,
+      const char *const bgcolor)
+{
+   double r, g, b, a;
+   hex2rgba(bgcolor, &r, &g, &b, &a);
+   cairo_set_source_rgba(ctx->cairo, r, g, b, a);
+   cairo_paint(ctx->cairo);
+}
 
 void
 xdraw_context(

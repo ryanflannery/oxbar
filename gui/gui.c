@@ -31,6 +31,8 @@ gui_init(char *wmname, char *bgcolor, char *font,
          padding,
          font);
 
+   gui->root = xctx_init(gui->xinfo, L2R, padding, bgcolor, true);
+
    gui->widget_spacing = widget_spacing;
    gui->widget_bgcolor = widget_bgcolor;
    gui->widget_padding = padding;
@@ -96,9 +98,11 @@ draw_widget_list(
 void
 gui_draw(gui_t *gui)
 {
-   xcore_clear(gui->xinfo, gui->bgcolor);
+   xctx_root_push(gui->root);
+   xdraw_color(gui->root, gui->bgcolor);
    draw_widget_list(gui, L2R,      &gui->LeftWidgets);
    draw_widget_list(gui, R2L,      &gui->RightWidgets);
    draw_widget_list(gui, CENTERED, &gui->CenterWidgets);
+   xctx_root_pop(gui->root);
    xcore_flush(gui->xinfo);
 }

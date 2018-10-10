@@ -21,7 +21,8 @@ typedef struct widget_list {
 
 /* a gui just sets-up X stuff and orchestrates widgets */
 typedef struct gui {
-   xinfo_t *xinfo;         /* WHERE to draw     */
+   xinfo_t *xinfo;
+   xctx_t  *root;
    char    *widget_bgcolor;
    int      widget_spacing;
    int      widget_padding;

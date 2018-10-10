@@ -49,10 +49,20 @@ void xctx_free(xctx_t *ctx);
 void xctx_reset(xctx_t *ctx);
 void xctx_advance(xctx_t *ctx, xctx_state_t state, double xplus, double yplus);
 
+/* double buffering wrappers */
+void xctx_root_push(xctx_t *ctx);
+void xctx_root_pop(xctx_t *ctx);
+
 /*
  * Drawing Primitives
  * All widget rendering is done using these simple primitives (so far)
  */
+
+/* draw a color over an entire context */
+void
+xdraw_color(
+      xctx_t     *ctx,
+      const char *const bgcolor);
 
 /* draw one context onto another */
 void
