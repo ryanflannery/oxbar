@@ -43,6 +43,4 @@ xinfo_t *xcore_init(
 void xcore_free(xinfo_t *x);
 void xcore_flush(xinfo_t *x);
 
-void hex2rgba(const char *s, double *r, double *g, double *b, double *a);
-
 #endif

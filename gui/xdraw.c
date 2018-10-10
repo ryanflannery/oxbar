@@ -8,6 +8,42 @@
 
 #include "xdraw.h"
 
+/* a useful local method to translate colors to into rgba pairs */
+static void
+hex2rgba(const char *s, double *r, double *g, double *b, double *a)
+{
+   unsigned int ir, ig, ib, ia;
+
+   if (NULL == s || '\0' == s[0]) {
+      *r = *g = *b = *a = 1.0;
+      return;
+   }
+
+   if ('#' == s[0])
+      s++;
+
+   switch (strlen(s)) {
+      case 6:
+         if (3 != sscanf(s, "%02x%02x%02x", &ir, &ig, &ib))
+            errx(1, "%s: malformed rgb color '%s'", __FUNCTION__, s);
+
+         ia = 255;
+         break;
+      case 8:
+         if (4 != sscanf(s, "%02x%02x%02x%02x", &ir, &ig, &ib, &ia))
+            errx(1, "%s: malformed rgba color '%s'", __FUNCTION__, s);
+
+         break;
+      default:
+         errx(1, "%s: malformed color '%s'", __FUNCTION__, s);
+   }
+
+   *r = (double)ir / 255.0;
+   *g = (double)ig / 255.0;
+   *b = (double)ib / 255.0;
+   *a = (double)ia / 255.0;
+}
+
 xctx_t*
 xctx_init(xinfo_t *xinfo, xctx_direction_t direction, int padding, bool make_root)
 {
