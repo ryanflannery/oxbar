@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <sys/limits.h>
 
-#include "widgets.h"
 #include "settings.h"
 
 void
