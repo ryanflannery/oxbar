@@ -12,7 +12,7 @@ SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o st
 GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o gui/gui.o
 WOBJS = widgets/battery.o widgets/volume.o widgets/nprocs.o widgets/memory.o widgets/cpus.o widgets/net.o widgets/time.o widgets/util.o
 
-.PHONY: clean cppcheck odeps profile scan-build TODO loc gource images/tree.png
+.PHONY: clean cppcheck odeps profile scan-build TODO loc gource images/tree.png testruns
 
 all: oxbar
 
@@ -35,6 +35,17 @@ clean:
 	rm -f $(OBJS)
 	rm -f oxbar
 	rm -f oxbar.core
+
+testruns:
+	@echo just sigint / ctrl-c these
+	-./oxbar -y 0 -S "display.widgets=time"
+	-./oxbar -y 0 -S "display.widgets=| time"
+	-./oxbar -y 0 -S "display.widgets=| | time"
+	-./oxbar -y 0 -S "display.widgets=time time"
+	-./oxbar -y 0 -S "display.widgets=| time time"
+	-./oxbar -y 0 -S "display.widgets=| | time time"
+	-./oxbar -y 0 -S "display.widgets=time time | time time | time time"
+	@echo all done
 
 TODO:
 	grep -nr TODO * \
