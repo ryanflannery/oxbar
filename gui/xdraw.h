@@ -44,7 +44,7 @@ typedef struct xctx {
    double                  yoffset;
 } xctx_t;
 
-xctx_t *xctx_init(xinfo_t *xinfo, xctx_direction_t direction, int padding, char *bg, bool make_root);
+xctx_t *xctx_init(xinfo_t *xinfo, xctx_direction_t direction, int padding, bool make_root);
 void xctx_free(xctx_t *ctx);
 void xctx_reset(xctx_t *ctx);
 void xctx_advance(xctx_t *ctx, xctx_state_t state, double xplus, double yplus);
