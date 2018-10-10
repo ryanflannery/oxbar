@@ -68,8 +68,7 @@ forthcoming.
 
 Roughly in order or my priority...
 
-   * settings: config widget placements here (left/right/center stacks)
-   * gui: settle `hdcolor` and `padding` mess
+   * gui: settle padding and margin mess
    * document! man page and -h flags
    * gui: add 'cpulong' widget, which mimics old xstatbar behavior
    * gui: build test driver for gui/ components (for my sake)
