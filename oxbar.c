@@ -5,6 +5,7 @@
 #include "widgets.h"
 #include "settings.h"
 #include "gui/gui.h"
+#include "gui/xcore.h"
 #include "stats/stats.h"
 
 gui_t     *gui;                     /* global gui object                      */
@@ -115,7 +116,7 @@ thread_gui()
 
    /* enter x event loop (blocking & infinite) - redraw on certain events */
    xcb_generic_event_t *xevent;
-   while ((xevent = xcb_wait_for_event(gui->xinfo->xcon))) {
+   while ((xevent = xcb_wait_for_event(gui->xinfo->con))) {
       switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
       case XCB_EXPOSE:
          pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
@@ -139,18 +140,38 @@ main(int argc, char *argv[])
    settings_load_defaults(&settings);
    settings_parse_cmdline(&settings, argc, argv);
 
+   /* init font & get x display handle */
+   xfont_t *font = xfont_init(settings.display.font);
+   xinfo_t xinfo;
+   xinfo_open(&xinfo);
+
+   /* create x window */
+   double x = settings.display.x;
+   double y = settings.display.y;
+   double w = settings.display.w;
+   double h = settings.display.h;
+
+   if (-1 == h)
+      h = font->height + settings.display.padding_top;
+
+   if (-1 == y)
+      y = xinfo.display_height - h;
+
+   if (-1 == w)
+      w = xinfo.display_width;
+
+   xwin_t *xwin = xwin_init(&xinfo, settings.display.wmname, x, y, w, h);
+
    /* setup gui and stats, then do initial stats update and paint */
-   stats_init();
-   stats_update();
-   gui = gui_init(settings.display.wmname,
+   gui = gui_init(
+         &xinfo, font, xwin,
          settings.display.bgcolor,
-         settings.display.font,
-         settings.display.x, settings.display.y,
-         settings.display.w, settings.display.h,
          settings.display.padding_top,
          settings.display.widget_spacing,
          settings.display.widget_bgcolor);
    widgets_init(gui, &settings, &OXSTATS);
+   stats_init();
+   stats_update();
    gui_draw(gui);
 
    /* and we're running! start all threads */
@@ -169,6 +190,7 @@ main(int argc, char *argv[])
    stats_close();
    widgets_free();
    gui_free(gui);
+   xinfo_close(&xinfo);
 
    return 0;
 }

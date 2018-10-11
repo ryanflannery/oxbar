@@ -22,6 +22,8 @@ typedef struct widget_list {
 /* a gui just sets-up X stuff and orchestrates widgets */
 typedef struct gui {
    xinfo_t *xinfo;
+   xfont_t *xfont;
+   xwin_t  *xwin;
    xctx_t  *root;
    char    *widget_bgcolor;
    int      widget_spacing;
@@ -34,12 +36,12 @@ typedef struct gui {
    widget_list_t RightWidgets;
 } gui_t;
 
-gui_t* gui_init(
-      char *wmname,
+gui_t*
+gui_init(
+      xinfo_t *xinfo,
+      xfont_t *xfont,
+      xwin_t  *xwin,
       char *bgcolor,
-      char *font,
-      int x, int y,
-      int w, int h,
       int padding,
       int widget_spacing,
       char *widget_bgcolor);

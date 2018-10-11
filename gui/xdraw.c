@@ -44,7 +44,7 @@ hex2rgba(const char *s, double *r, double *g, double *b, double *a)
 }
 
 xctx_t*
-xctx_init(xinfo_t *xinfo, xctx_direction_t direction, int padding, bool make_root)
+xctx_init(xfont_t *font, xwin_t *win, xctx_direction_t direction, int padding, bool make_root)
 {
    xctx_t *ctx = malloc(sizeof(xctx_t));
    if (NULL == ctx)
@@ -52,21 +52,21 @@ xctx_init(xinfo_t *xinfo, xctx_direction_t direction, int padding, bool make_roo
 
    ctx->direction = direction;
    ctx->padding   = padding;
-   ctx->h         = xinfo->h;
-   ctx->w         = xinfo->w;
-   ctx->pfont     = xinfo->pfont;
+   ctx->h         = win->h;
+   ctx->w         = win->w;
+   ctx->pfont     = font->pfont;
 
    /* if root, use xcore's root window surface/cairo, otherwise a new one */
    ctx->is_root   = make_root;
    if (make_root) {
-      ctx->surface = xinfo->surface;
-      ctx->cairo   = xinfo->cairo;
+      ctx->surface = win->surface;
+      ctx->cairo   = win->cairo;
    } else {
       ctx->surface = cairo_surface_create_similar(
-            xinfo->surface,
+            win->surface,
             CAIRO_CONTENT_COLOR_ALPHA,
-            xinfo->w,
-            xinfo->h);
+            win->w,
+            win->h);
       if (CAIRO_STATUS_SUCCESS != cairo_surface_status(ctx->surface))
          errx(1, "%s: failed to create cairo surface", __FUNCTION__);
 
