@@ -56,13 +56,13 @@ gprof: clean
 # some simple test runs that work the gui/widget logic
 testruns:
 	@echo just sigint / ctrl-c these
-	-./oxbar -y 0 -S "display.widgets=time"
-	-./oxbar -y 0 -S "display.widgets=| time"
-	-./oxbar -y 0 -S "display.widgets=| | time"
-	-./oxbar -y 0 -S "display.widgets=time time"
-	-./oxbar -y 0 -S "display.widgets=| time time"
-	-./oxbar -y 0 -S "display.widgets=| | time time"
-	-./oxbar -y 0 -S "display.widgets=time time | time time | time time"
+	-./oxbar -y 0 -W "time time"
+	-./oxbar -y 0 -W "< time time"
+	-./oxbar -y 0 -W "| time time"
+	-./oxbar -y 0 -W "> time time"
+	-./oxbar -y 0 -W "time | time > time"
+	-./oxbar -y 0 -W "< | > time"
+	-./oxbar -y 0 -W "< time time | time time > time time"
 	@echo all done
 
 # rebuild todo file based on all "TODO" comments in code

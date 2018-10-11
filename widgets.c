@@ -117,8 +117,7 @@ widgets_create(
       settings_t *settings,
       oxstats_t  *stats)
 {
-   xctx_direction_t directions[] = { L2R, CENTERED, R2L };
-   size_t cur_direction = 0;
+   xctx_direction_t direction = L2R;
    char *token;
    char *copylist = strdup(list);   /* strsep(3) will change this */
    char *memhandle = copylist;      /* need this for free() and clang */
@@ -127,20 +126,18 @@ widgets_create(
       err(1, "%s strdup failed", __FUNCTION__);
 
    while (NULL != (token = strsep(&copylist, " ,"))) {
-      if (0 == strlen(token))
-            continue;
-
-      if ('|' == *token) {
-         if (3 == cur_direction)
-            errx(1, "%s: error: too many '|' in widget spec", __FUNCTION__);
-         else
-            cur_direction++;
-
+      if ('\0' == *token)
          continue;
-      }
 
-      gui_add_widget(gui, directions[cur_direction],
-            widget_create_from_recipe(token, settings, stats));
+      if (0 == strcasecmp("<", token))
+         direction = L2R;
+      else if (0 == strcasecmp("|", token))
+         direction = CENTERED;
+      else if (0 == strcasecmp(">", token))
+         direction = R2L;
+      else
+         gui_add_widget(gui, direction,
+               widget_create_from_recipe(token, settings, stats));
    }
    free(memhandle);
 }
