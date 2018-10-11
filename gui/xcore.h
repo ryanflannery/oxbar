@@ -26,6 +26,7 @@ typedef struct xinfo {
    xcb_visualtype_t     *root_visual;
 } xinfo_t;
 
+/* note: there's no allocation here - just make xinfo_t's on the stack */
 void xinfo_open(xinfo_t *x);
 void xinfo_close(xinfo_t *x);
 
