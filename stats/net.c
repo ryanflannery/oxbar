@@ -1,10 +1,9 @@
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <string.h>
 #include <strings.h>
-#include <sys/errno.h>
-#include <sys/limits.h>
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -13,7 +12,6 @@
 #include <net/if_dl.h>
 #include <net/route.h>
 #include <netinet/in.h>
-#include <netinet/ip.h>
 #include <netinet/ip_var.h>
 
 #include "net.h"

@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <xcb/xcb_icccm.h>
+#include <cairo/cairo-xcb.h>
 
 #include "xcore.h"
 

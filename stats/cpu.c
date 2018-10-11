@@ -1,15 +1,9 @@
 #include <err.h>
-#include <sched.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <sys/param.h>
-#include <sys/sched.h>
-#include <sys/swap.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
-#include <sys/vmmeter.h>
 
 #include "cpu.h"
 

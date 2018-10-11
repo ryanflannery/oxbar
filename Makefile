@@ -12,7 +12,7 @@ SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o st
 GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o gui/gui.o
 WOBJS = widgets/battery.o widgets/volume.o widgets/nprocs.o widgets/memory.o widgets/cpus.o widgets/net.o widgets/time.o widgets/util.o
 
-.PHONY: clean cppcheck odeps profile scan-build TODO loc gource images/tree.png testruns
+.PHONY: clean cppcheck odeps profile scan-build TODO loc gource images/tree.png testruns iwyu
 
 all: oxbar
 
@@ -43,6 +43,10 @@ cppcheck:
 # cppcheck (should ALWAYS be clean)
 scan-build: clean
 	scan-build make
+
+# run include-what-you-use (identify includes that are missing/extra)
+iwyu:
+	make -k CC=include-what-you-use
 
 # gprof / memory profiler run and visualize output
 gprof: clean

@@ -4,11 +4,8 @@
 #include <sys/types.h>
 
 #include <xcb/xcb.h>
-#include <xcb/xcb_icccm.h>
 #include <cairo/cairo.h>
-#include <cairo/cairo-svg.h>
-#include <cairo/cairo-xcb.h>
-#include <pango/pangocairo.h>
+#include <pango/pango-font.h>
 
 /* not packed */
 typedef struct xinfo {

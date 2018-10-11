@@ -1,6 +1,9 @@
 #ifndef XDRAW_H
 #define XDRAW_H
 
+#include <cairo/cairo.h>
+#include <pango/pango-font.h>
+
 #include "chart.h"
 #include "xcore.h"
 
