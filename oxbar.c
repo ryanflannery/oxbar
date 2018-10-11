@@ -1,4 +1,5 @@
 #include <err.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <pthread.h>
 
@@ -163,6 +164,8 @@ main(int argc, char *argv[])
    xwin_t *xwin = xwin_init(&xinfo, settings.display.wmname, x, y, w, h);
 
    /* setup gui and stats, then do initial stats update and paint */
+   stats_init();
+   stats_update();
    gui = gui_init(
          &xinfo, font, xwin,
          settings.display.bgcolor,
@@ -170,8 +173,6 @@ main(int argc, char *argv[])
          settings.display.widget_spacing,
          settings.display.widget_bgcolor);
    widgets_init(gui, &settings, &OXSTATS);
-   stats_init();
-   stats_update();
    gui_draw(gui);
 
    /* and we're running! start all threads */
