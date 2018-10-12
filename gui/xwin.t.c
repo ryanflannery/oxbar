@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <unistd.h>
 
 #include "xcore.h"
 
@@ -8,14 +7,16 @@ main()
 {
    xinfo_t x;
    xinfo_open(&x);
+   printf("display: %d x %d (in pixels)\n", x.display_width, x.display_height);
+
    xwin_t *w = xwin_init(&x, "foobar", 500, 500, 500, 500);
 
-   printf("display: %d x %d (in pixels)\n", x.display_width, x.display_height);
+   /* start double buffer - NOTE you must do this w/ xcb backend + alpha */
+   cairo_push_group(w->cairo);
 
    /* draw background (light gray / alpha is 0.1) */
    cairo_set_source_rgba(w->cairo, 0, 0, 0, 0.1);
    cairo_paint(w->cairo);
-   xcb_flush(x.con);
 
    /* draw red square */
    cairo_set_source_rgba(w->cairo, 1, 0, 0, 0.5);
@@ -32,17 +33,22 @@ main()
    cairo_rectangle(w->cairo, 250, 250, 200, 200);
    cairo_fill(w->cairo);
 
+   /* copy buffer back to root (that's all of the next 4 lines) */
+   cairo_pop_group_to_source(w->cairo);
+   cairo_set_operator(w->cairo, CAIRO_OPERATOR_SOURCE);
    cairo_paint(w->cairo);
+   cairo_set_operator(w->cairo, CAIRO_OPERATOR_OVER);
+
    xcb_flush(x.con);
 
-   pause();
+   printf("You should now see a transparent gray box with 3 squares.\n");
+   printf("Move the windows behind the window to ensure the transparency is\n");
+   printf("true and working correctly.\n\n");
+   printf("Hit enter to continue");
+   getchar();
 
+   printf("bye\n");
    xwin_free(w);
    xinfo_close(&x);
    return 0;
 }
-/*
-   cairo_set_operator(ctx->cairo, CAIRO_OPERATOR_SOURCE);
-   cairo_paint(ctx->cairo);
-   cairo_set_operator(ctx->cairo, CAIRO_OPERATOR_OVER);
-*/
