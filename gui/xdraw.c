@@ -44,20 +44,22 @@ hex2rgba(const char *s, double *r, double *g, double *b, double *a)
 }
 
 xctx_t*
-xctx_init(xfont_t *font, xwin_t *win, xctx_direction_t direction, int padding, bool make_root)
+xctx_init(xinfo_t *info, xfont_t *font, xwin_t *win,
+      xctx_direction_t direction, int padding, bool make_root)
 {
    xctx_t *ctx = malloc(sizeof(xctx_t));
    if (NULL == ctx)
       err(1, "%s: malloc failed", __FUNCTION__);
 
+   ctx->is_root   = make_root;
    ctx->direction = direction;
+   ctx->xinfo     = info;
+   ctx->xfont     = font;
    ctx->padding   = padding;
    ctx->h         = win->h;
    ctx->w         = win->w;
-   ctx->pfont     = font->pfont;
 
    /* if root, use xcore's root window surface/cairo, otherwise a new one */
-   ctx->is_root   = make_root;
    if (make_root) {
       ctx->surface = win->surface;
       ctx->cairo   = win->cairo;
@@ -255,7 +257,7 @@ xdraw_printf(
    va_end(ap);
 
    PangoLayout *layout = pango_cairo_create_layout(ctx->cairo);
-   pango_layout_set_font_description(layout, ctx->pfont);
+   pango_layout_set_font_description(layout, ctx->xfont->pfont);
    pango_layout_set_text(layout, buffer, -1);
    pango_layout_get_pixel_size(layout, &width, &height);
 
