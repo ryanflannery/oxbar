@@ -1,19 +1,19 @@
-PLAN:17:   TODO: remove padding + bgcolor
-gui/xdraw.h:21: * TODO This abstraction should also permit vertical rendering (for a vertical
-oxbar.c:48:   case SIGHUP:      /* TODO: reload config file here (once supported) */
-oxbar.c:119:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
-settings.c:67:/* TODO Create a settings_free() (or refactor to make easier)
-settings.c:191:   printf("usage: to do!\n"); /* TODO */
-settings.h:78:/* TODO void settings_parse_config(settings_t *s, const char *file); */
+PLAN:41:   TODO: remove padding + bgcolor
+gui/xdraw.h:24: * TODO This abstraction should also permit vertical rendering (for a vertical
+oxbar.c:50:   case SIGHUP:      /* TODO: reload config file here (once supported) */
+oxbar.c:121:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
+settings.c:65:/* TODO Create a settings_free() (or refactor to make easier)
+settings.c:187:   printf("usage: to do!\n"); /* TODO */
+settings.h:75:/* TODO void settings_parse_config(settings_t *s, const char *file); */
 stats/brightness.h:1:/* TODO Build a working brightness widget
-stats/cpu.c:43:   /* TODO Remove duplicate logic in CPU update logic
-stats/cpu.c:131:   /* TODO CPU cleanup routine should free/cleanup shiz */
+stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
+stats/cpu.c:125:   /* TODO CPU cleanup routine should free/cleanup shiz */
 stats/memory.c:89:   /* TODO MEMORY cleanup routine should free/cleanup shiz */
-stats/volume.c:137:/* TODO GET VOLUME "IS MUTED?" WORKING
+stats/volume.c:135:/* TODO GET VOLUME "IS MUTED?" WORKING
 stats/volume.h:9:   /* TODO GET VOLUME "IS MUTED?" WORKING */
 stats/net.h:10:   /* TODO Raw # packets in/out isn't used anymore. Remove? */
-stats/net.c:56:/* TODO Refactor network bytes logic
-stats/net.c:119:            /* TODO Support configurable interface -or- just use egress */
-stats/net.c:144:   /* TODO NET cleanup routine should free/cleanup shiz */
+stats/net.c:54:/* TODO Refactor network bytes logic
+stats/net.c:117:            /* TODO Support configurable interface -or- just use egress */
+stats/net.c:142:   /* TODO NET cleanup routine should free/cleanup shiz */
 widgets/volume.c:21:   /* TODO Should volume widget ever handle this case!? I've never had it */
 widgets/cpus.c:69:      /* TODO revisit "cpulong" widget printing individual states

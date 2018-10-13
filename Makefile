@@ -1,31 +1,36 @@
 # install locations
-BINDIR = /usr/local/bin
-MANDIR = /usr/local/man/man1
+PREFIX ?= /usr/local
+BINDIR ?= $(PREFIX)/bin
+MANDIR ?= $(PREFIX)/man/man1
 
 # build flags
 CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2 `pkg-config --cflags pangocairo`
 LDFLAGS += -L/usr/X11R6/lib `pkg-config --libs pangocairo` -lxcb -lxcb-icccm
 
-# object sets (OBJS = this dir, SOBJS = stats/*, GOBJS = giu/*, WOBJS = widgets/*)
+# objects (OBJS = this dir, SOBJS = stats/*, GOBJS = giu/*, WOBJS = widgets/*)
 OBJS  = settings.o widgets.o oxbar.o
-SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o stats/volume.o stats/stats.o
+SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o \
+		  stats/volume.o stats/stats.o
 GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o gui/gui.o
-WOBJS = widgets/battery.o widgets/volume.o widgets/nprocs.o widgets/memory.o widgets/cpus.o widgets/net.o widgets/time.o widgets/util.o
+WOBJS = widgets/battery.o widgets/volume.o widgets/nprocs.o widgets/memory.o \
+		  widgets/cpus.o widgets/net.o widgets/time.o widgets/util.o
 
-.PHONY: clean install cppcheck odeps profile scan-build TODO loc gource images/tree.png testruns iwyu
+.PHONY: clean install testruns cppcheck scan-build iwyu gprof loc gource
 
-all: oxbar
+oxbar: $(OBJS) $(SOBJS) $(GOBJS) $(WOBJS)
+	$(CC) -o $@ $(LDFLAGS) $(OBJS) $(SOBJS) $(GOBJS) $(WOBJS)
 
-odeps:
-	$(MAKE) -C stats   $(MFLAGS) objects
-	$(MAKE) -C gui     $(MFLAGS) objects
+$(SOBJS):
+	$(MAKE) -C stats $(MFLAGS) objects
+
+$(GOBJS):
+	$(MAKE) -C gui $(MFLAGS) objects
+
+$(WOBJS):
 	$(MAKE) -C widgets $(MFLAGS) objects
 
 .c.o:
 	$(CC) $(CFLAGS) $<
-
-oxbar: odeps $(OBJS) $(SOBS) $(GOBJS) $(WOBJS)
-	$(CC) -o $@ $(LDFLAGS) $(OBJS) $(SOBJS) $(GOBJS) $(WOBJS)
 
 clean:
 	$(MAKE) -C stats   $(MFLAGS) $@
@@ -38,6 +43,18 @@ clean:
 
 install:
 	install oxbar $(BINDIR)
+
+# some simple test runs that work the gui/widget logic
+testruns:
+	@echo just sigint / ctrl-c these
+	-./oxbar -y 0 -W "time time"
+	-./oxbar -y 0 -W "< time time"
+	-./oxbar -y 0 -W "| time time"
+	-./oxbar -y 0 -W "> time time"
+	-./oxbar -y 0 -W "time | time > time"
+	-./oxbar -y 0 -W "< | > time"
+	-./oxbar -y 0 -W "< time time | time time > time time"
+	@echo all done
 
 # clang-analyzer (should ALWAYS be clean)
 cppcheck:
@@ -60,22 +77,11 @@ gprof: clean
 	gprof oxbar gmon.out > gprof.analysis
 	gprof2dot gprof.analysis | dot -Tpng -o gprof.png
 
-# some simple test runs that work the gui/widget logic
-testruns:
-	@echo just sigint / ctrl-c these
-	-./oxbar -y 0 -W "time time"
-	-./oxbar -y 0 -W "< time time"
-	-./oxbar -y 0 -W "| time time"
-	-./oxbar -y 0 -W "> time time"
-	-./oxbar -y 0 -W "time | time > time"
-	-./oxbar -y 0 -W "< | > time"
-	-./oxbar -y 0 -W "< time time | time time > time time"
-	@echo all done
-
 # rebuild todo file based on all "TODO" comments in code
-TODO:
+TODO::
 	grep -nr TODO * \
 		| grep -v '^TODO' \
+		| grep -v '^CONTRIBUTING.md' \
 		| grep -v '^Makefile' > $@
 
 # report # of lines per flie
@@ -83,7 +89,7 @@ loc:
 	find . -name "*.c" -exec wc -l {} \; | sort -r
 
 # rebuild the architecture image showing #include dependencies
-images/tree.png:
+tree.png:
 	cinclude2dot --paths --merge module --exclude '.t.c' > source.dot
 	dot -Tpng -Grankdir=LR -Gratio=fill source.dot > $@
 	rm source.dot
