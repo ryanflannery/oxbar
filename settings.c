@@ -363,7 +363,6 @@ settings_parse_config(settings_t *s, const char *file)
 
       settings_set_keyvalue(s, line);
 
-      printf("line = '%s'\n", line);
       free(line);
    }
 
