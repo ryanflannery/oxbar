@@ -16,7 +16,7 @@ main()
    xfont_t *f;
 
    xinfo_open(&x);
-   printf("display: %d x %d (in pixels)\n", x.display_width, x.display_height);
+   printf("display: %x x %x (in pixels)\n", x.display_width, x.display_height);
 
    f = xfont_init("serif italic 20");
 

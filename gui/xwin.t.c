@@ -7,7 +7,7 @@ main()
 {
    xinfo_t x;
    xinfo_open(&x);
-   printf("display: %d x %d (in pixels)\n", x.display_width, x.display_height);
+   printf("display: %x x %x (in pixels)\n", x.display_width, x.display_height);
 
    xwin_t *w = xwin_init(&x, "foobar", 500, 500, 500, 500);
 

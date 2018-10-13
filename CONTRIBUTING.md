@@ -4,14 +4,13 @@ Pull requests can be made to master.
 All code should follow the existing style:
 
 1. strict c89 that's `-Wall -Wextra -Werror` clean
-2. nothing found by clang analyzer (`make scan-build`)
-3. cppcheck (`make cppcheck`) shouldn't find anything new (there's one known
-   outstanding issue it finds related to `chart_print()` never being used)
-4. it's ok if it's not perfect -- works-in-progress welcome
-5. but it should be stable
-6. and any planned/known TODOs should be document (and update `make TODO`)
-7. if it introduces knobs, those should be documented
-8. HAH! just kidding on that last one - there is no usage documentation (yet)
+2. nothing found by clang analyzer (`make scan-build`) or cppcheck
+   (`make cppcheck`)
+3. it's ok if it's not perfect -- works-in-progress welcome
+4. but it should be stable
+5. and any planned/known TODOs should be document (and update `make TODO`)
+6. if it introduces knobs, those should be documented
+7. HAH! just kidding on that last one - there is no usage documentation (yet)
 
 # a note about overall architecture
 
