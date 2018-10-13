@@ -78,3 +78,5 @@ Roughly in order or my priority...
    * stats: add tracker for hw.sensors
    * stats: add a weather component...i like weather
    * gui: support vertical rendering (a sidebar!)
+   * when using compton, need '--shadow-exclude 'name = "oxbar"' to disable
+     shadow - how can i automate that?
