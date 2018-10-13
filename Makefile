@@ -12,7 +12,7 @@ SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o st
 GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o gui/gui.o
 WOBJS = widgets/battery.o widgets/volume.o widgets/nprocs.o widgets/memory.o widgets/cpus.o widgets/net.o widgets/time.o widgets/util.o
 
-.PHONY: clean cppcheck odeps profile scan-build TODO loc gource images/tree.png testruns iwyu
+.PHONY: clean install cppcheck odeps profile scan-build TODO loc gource images/tree.png testruns iwyu
 
 all: oxbar
 
@@ -35,6 +35,9 @@ clean:
 	rm -f $(OBJS)
 	rm -f oxbar
 	rm -f oxbar.core
+
+install:
+	install oxbar $(BINDIR)
 
 # clang-analyzer (should ALWAYS be clean)
 cppcheck:
