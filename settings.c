@@ -184,7 +184,51 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
 void
 usage()
 {
-   printf("usage: to do!\n"); /* TODO */
+   printf(
+"usage: oxbar [-H] [-x xloc] [-y yloc] [-w width] [-h height]\n"
+"             [-f font] [-p padding] [-s spacing] [-t time_format]\n"
+"             [-W widgets] [-S key=value]\n"
+"             [named-configuration]\n"
+"Each of the options is described briefly below. They are explained in full\n"
+"detail in the man page.\n"
+"   -H               Show this help text\n"
+"   -x xloc          The x coordinate in pixels of the upper-left corner\n"
+"   -y yloc          The y coordinate in pixels of the upper-left corner\n"
+"                    If -1, auto-align to the bottom of the display\n"
+"   -w width         The width of the display in pixels\n"
+"                    If -1, use the full width of the X display\n"
+"   -h height        The height of the display in pixels\n"
+"                    If -1, derive the height based on the font used\n"
+"   -f font          The font to use, and any styles/sizing\n"
+"                    See \"Specifying Fonts\" below for more details\n"
+"   -p padding       The padding in pixels between a widget's content and edge\n"
+"   -s spacing       The spacing in pixels between widgets\n"
+"   -t time_format   The format to display date/time in (see strftime(3))\n"
+"   -W widgets       The list of widgets to display\n"
+"                    See \"Specifying Widgets\" below for more details\n"
+"   -S key=value     Set any configurable value in oxba\n\n"
+"Specifying Fonts (and styles, sizes)\n"
+"   oxbar uses pango to load & render fonts, and passes the string specified\n"
+"   here to pango_font_description_from_string() - see that documentation for\n"
+"   full details on the format. Roughly, the format is \"Family (style) (size)\"\n"
+"   such as \"Helvetica italic 16\" or just \"Helvetica 16\". Note that when\n"
+"   specifying the size, it must be in pixels (not points or pt)\n\n"
+"Specifying Widgets\n"
+"   The list of widgets to show is specified as a space separate list of widget\n"
+"   names. A string such as \"cpus memory network time\" would show those four\n"
+"   widgets in that order. Some additional characters can be used to control\n"
+"   the alignment of widgets, as a common use case for oxbar is it render\n"
+"   widgets across the full width of the display, where some are aligned on\n"
+"   the left, others on the right, and others centered. The characters to\n"
+"   control such alignment are:\n"
+"      '<'     All widgets after this are in the left-aligned stack\n"
+"              (this is the default)\n"
+"      '|'     All widgets after this are in the center-aligned stack\n"
+"      '>'     All widgets after this are in the right-aligned stack\n"
+"   So the string \"cpus memory network | time > volume battery\" would show\n"
+"   cpus/memory/network widgets on the left, time in the center, and volume\n"
+"   and battery widgets on the right.\n"
+         );
    exit(1);
 }
 
@@ -195,8 +239,11 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
    char *keyvalue;
    int ch;
 
-   while (-1 != (ch = getopt(argc, argv, "x:y:w:h:p:s:f:S:t:W:"))) {
+   while (-1 != (ch = getopt(argc, argv, "Hx:y:w:h:f:p:s:t:W:S:"))) {
       switch (ch) {
+      case 'H':
+         usage();
+         break;
       case 'x':
          s->display.x = strtonum(optarg, 0, INT_MAX, &errstr);
          if (errstr)
@@ -217,6 +264,12 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
          if (errstr)
             errx(1, "illegal h value '%s': %s", optarg, errstr);
          break;
+      case 'f':
+         free(s->display.font);
+         s->display.font = strdup(optarg);
+         if (NULL == s->display.font)
+            err(1, "strdup failed for font");
+         break;
       case 'p':
          s->display.padding_top = strtonum(optarg, 0, INT_MAX, &errstr);
          if (errstr)
@@ -226,12 +279,6 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
          s->display.widget_spacing = strtonum(optarg, 0, INT_MAX, &errstr);
          if (errstr)
             errx(1, "illegal s value '%s': %s", optarg, errstr);
-         break;
-      case 'f':
-         free(s->display.font);
-         s->display.font = strdup(optarg);
-         if (NULL == s->display.font)
-            err(1, "strdup failed for font");
          break;
       case 't':
          free(s->time.format);
