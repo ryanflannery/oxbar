@@ -170,6 +170,7 @@ setup_x_wm_hints(const xinfo_t *x, xwin_t *w)
    enum {
       NET_WM_XINFO_TYPE,
       NET_WM_XINFO_TYPE_DOCK,
+      NET_WM_WINDOW_TYPE_DESKTOP,
       NET_WM_DESKTOP,
       NET_WM_STRUT_PARTIAL,
       NET_WM_STRUT,
@@ -181,6 +182,7 @@ setup_x_wm_hints(const xinfo_t *x, xwin_t *w)
    static const char *atoms[] = {
       "_NET_WM_XINFO_TYPE",
       "_NET_WM_XINFO_TYPE_DOCK",
+      "_NET_WM_WINDOW_TYPE_DESKTOP",
       "_NET_WM_DESKTOP",
       "_NET_WM_STRUT_PARTIAL",
       "_NET_WM_STRUT",
