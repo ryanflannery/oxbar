@@ -1,4 +1,6 @@
 #include <err.h>
+#include <pwd.h>
+#include <util.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,6 +12,19 @@
 void
 settings_load_defaults(settings_t *s)
 {
+   /* get the home directory needed to define the default config file */
+   struct passwd *pw;
+   char          *home;
+   if (NULL == (home = getenv("HOME")) || '\0' == *home) {
+      if (NULL == (pw = getpwuid(getuid())))
+         errx(1, "Couldn't determine home directory");
+      home = pw->pw_dir;
+   }
+   if (-1 == asprintf(&s->config_file, "%s/.oxbar.conf", home))
+      err(1, "%s: asprintf failed", __FUNCTION__);
+
+   /* the rest here are the default values for all settings */
+
    s->display.x = 0;
    s->display.y = -1;
    s->display.w = -1;
@@ -113,7 +128,7 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
    char       *eq       = strstr(keyvalue, "=");
 
    if (NULL == eq || NULL == dot)
-      errx(1, "bad -S");
+      errx(1, "invalid format in '%s'. Should be 'key=value'", keyvalue);
 
    char *value = eq + 1;
    *eq = '\0';
@@ -192,6 +207,7 @@ usage()
 "Each of the options is described briefly below. They are explained in full\n"
 "detail in the man page.\n"
 "   -H               Show this help text\n"
+"   -F file          Use file as the config file rather than ~/.oxbar.conf\n"
 "   -x xloc          The x coordinate in pixels of the upper-left corner\n"
 "   -y yloc          The y coordinate in pixels of the upper-left corner\n"
 "                    If -1, auto-align to the bottom of the display\n"
@@ -239,10 +255,16 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
    char *keyvalue;
    int ch;
 
-   while (-1 != (ch = getopt(argc, argv, "Hx:y:w:h:f:p:s:t:W:S:"))) {
+   while (-1 != (ch = getopt(argc, argv, "HF:x:y:w:h:f:p:s:t:W:S:"))) {
       switch (ch) {
       case 'H':
          usage();
+         break;
+      case 'F':
+         free(s->config_file);
+         s->config_file = strdup(optarg);
+         if (NULL == s->config_file)
+            err(1, "strdup failed for config_file");
          break;
       case 'x':
          s->display.x = strtonum(optarg, 0, INT_MAX, &errstr);
@@ -309,4 +331,41 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
 
    if (argc)
       usage();
+}
+
+void
+settings_parse_config(settings_t *s, const char *file)
+{
+   size_t length, linenum;
+   char  *line;
+   FILE  *fin;
+
+   if (NULL == (fin = fopen(file, "r")))
+      return;
+
+   while (!feof(fin)) {
+
+      /* read next line */
+      if (NULL == (line = fparseln(fin, &length, &linenum, NULL, 0))) {
+         if (ferror(fin))
+            err(1, "error reading config file '%s'", file);
+         else
+            break;
+      }
+
+      /* skip blanklines */
+      char *copy = line;
+      copy += strspn(copy, " \t\n");
+      if ('\0' == copy[0]) {
+         free(line);
+         continue;
+      }
+
+      settings_set_keyvalue(s, line);
+
+      printf("line = '%s'\n", line);
+      free(line);
+   }
+
+   fclose(fin);
 }

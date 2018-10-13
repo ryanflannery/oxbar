@@ -1,0 +1,32 @@
+.Dd $Mdocdate: October 12 2018$
+.Dt OXBAR 1
+.Os
+.Sh NAME
+.Nm oxbar
+.Nd OpenBSD X status bar showing various system stats
+.Sh SYNOPSIS
+.Nm oxbar
+.Bk -words
+.Op Fl H
+.Op Fl F Ar config-file
+.Op Fl x Ar xoff
+.Op Fl y Ar yoff
+.Op Fl w Ar width
+.Op Fl h Ar height
+.Op Fl f Ar font
+.Op Fl p Ar padding
+.Op Fl s Ar spacing
+.Op Fl t Ar time_format
+.Op Fl W Ar widgets
+.Op Fl S Ar key=value
+.Ek
+.Sh DESCRIPTION
+.Nm
+is a simple status bar for OpenBSD showing various system stats.
+.Nm
+is highly configurable and aims to work out-of-the-box in various window
+managers in an intuitive fashion.
+It supports a number of widgets and configuration optons described below.
+.Nm
+is also a replacement for my old
+.Xr xstatbar 1 .

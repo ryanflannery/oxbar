@@ -3,6 +3,8 @@
 
 typedef struct settings {
 
+   char *config_file;
+
    struct display_t {
       int   x, y;
       int   w, h;
@@ -72,6 +74,6 @@ typedef struct settings {
 
 void settings_load_defaults(settings_t *s);
 void settings_parse_cmdline(settings_t *s, int argc, char *argv[]);
-/* TODO void settings_parse_config(settings_t *s, const char *file); */
+void settings_parse_config(settings_t *s, const char *file);
 
 #endif
