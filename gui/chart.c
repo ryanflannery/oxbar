@@ -25,7 +25,7 @@ chart_init(
    c->nseries  = nseries;
    c->nsamples = nsamples;
    c->percents = is_percents;
-   c->current  = 0;
+   c->current  = nsamples - 1;    /* first update will be at 0 */
 
    if (NULL == (c->values = calloc(nsamples, sizeof(double*))))
       err(1, "%s: calloc failed", __FUNCTION__);

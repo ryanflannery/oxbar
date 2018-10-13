@@ -28,7 +28,8 @@ typedef struct chart {
    char   **colors;     /* array of nsamples - colors for each sample   */
 } chart_t;
 
-chart_t* chart_init(
+chart_t*
+chart_init(
       size_t   nsamples,
       size_t   nseries,
       bool     is_percents,
