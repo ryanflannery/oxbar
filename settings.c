@@ -5,9 +5,48 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include <sys/limits.h>
 
 #include "settings.h"
+
+static bool
+parse_keyvalue(char *keyvalue, char **key, char **value)
+{
+   char *copy = strdup(keyvalue);
+   char *memhandle = copy;
+   char *token;
+   char *mykey = NULL, *myvalue = NULL;
+
+   size_t count = 0;
+   while (count <= 2 && NULL != (token = strsep(&copy, " =\t\n"))) {
+      if ('\0' == *token)
+         continue;
+
+      switch (count++) {
+      case 0:
+         mykey = strdup(token);
+         break;
+      case 1:
+         myvalue = strdup(token);
+         break;
+      }
+   }
+
+   if (2 != count) {
+      if (NULL != mykey) free(mykey);
+      if (NULL != myvalue) free(myvalue);
+      *key = NULL;
+      *value = NULL;
+      free(memhandle);
+      return false;
+   }
+
+   *key = mykey;
+   *value = myvalue;
+   free(memhandle);
+   return true;
+}
 
 void
 settings_load_defaults(settings_t *s)
@@ -98,22 +137,20 @@ settings_free(settings_t *s)
 */
 
 #define SET_STRING_VALUE(name) \
-   if (strlen( property ) == strlen( #name ) \
-   &&  0 == strncasecmp( #name , property , strlen( #name ))) { \
-      if (NULL == (s->name = strdup(value))) \
-         err(1, "%s: strdup failed for key %s", __FUNCTION__, property); \
-         \
+   if (strlen( key ) == strlen( #name ) \
+   &&  0 == strncasecmp( #name , key , strlen( #name ))) { \
+      s->name = value; \
       return; \
    }
 
 
 #define SET_INT_VALUE(name) \
-   if (strlen( property ) == strlen( #name ) \
-   &&  0 == strncasecmp( #name , property , strlen( #name ))) { \
+   if (strlen( key ) == strlen( #name ) \
+   &&  0 == strncasecmp( #name , key , strlen( #name ))) { \
       s->name = strtonum(value, 0, INT_MAX, &errstr); \
       printf("%s to value %d\n", #name, s->name); \
       if (errstr) \
-         errx(1, "%s: bad value %s for key %s: %s", __FUNCTION__, value, property, errstr); \
+         errx(1, "%s: bad value %s for key %s: %s", __FUNCTION__, value, key, errstr); \
       \
       return; \
    }
@@ -123,15 +160,10 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
 {
    /* XXX contract: keyvalue is like "<widget>.<property>=<value>" */
    const char *errstr;
-   char       *property = keyvalue;
-   char       *dot      = strstr(keyvalue, ".");
-   char       *eq       = strstr(keyvalue, "=");
+   char *key, *value;
 
-   if (NULL == eq || NULL == dot)
-      errx(1, "invalid format in '%s'. Should be 'key=value'", keyvalue);
-
-   char *value = eq + 1;
-   *eq = '\0';
+   if (!parse_keyvalue(keyvalue, &key, &value))
+      errx(1, "Invalid format '%s' (should be 'key = value')", keyvalue);
 
    /* display */
    SET_INT_VALUE(display.x);
