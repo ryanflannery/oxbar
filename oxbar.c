@@ -137,10 +137,11 @@ int
 main(int argc, char *argv[])
 {
    /* init settings */
+   char *theme = NULL;
    settings_t settings;
    settings_load_defaults(&settings);
-   settings_parse_cmdline(&settings, argc, argv);
-   settings_parse_config(&settings, settings.config_file);
+   settings_parse_cmdline(&settings, argc, argv, &theme);
+   settings_parse_config(&settings, settings.config_file, theme);
 
    /* init font & get x display handle */
    xfont_t *font = xfont_init(settings.display.font);

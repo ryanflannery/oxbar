@@ -13,38 +13,15 @@
 static bool
 parse_keyvalue(char *keyvalue, char **key, char **value)
 {
-   char *copy = strdup(keyvalue);
-   char *memhandle = copy;
-   char *token;
-   char *mykey = NULL, *myvalue = NULL;
+   char tkey[100] = { 0 };
+   char tvalue[100] = { 0 };
 
-   size_t count = 0;
-   while (count <= 2 && NULL != (token = strsep(&copy, " =\t\n"))) {
-      if ('\0' == *token)
-         continue;
+   if (2 != sscanf(keyvalue,    " %[^= ] = \"%[ a-zA-Z0-9#-]\"", tkey, tvalue))
+      if (2 != sscanf(keyvalue, " %[^= ] = %[a-zA-Z0-9#-]", tkey, tvalue))
+         return false;
 
-      switch (count++) {
-      case 0:
-         mykey = strdup(token);
-         break;
-      case 1:
-         myvalue = strdup(token);
-         break;
-      }
-   }
-
-   if (2 != count) {
-      if (NULL != mykey) free(mykey);
-      if (NULL != myvalue) free(myvalue);
-      *key = NULL;
-      *value = NULL;
-      free(memhandle);
-      return false;
-   }
-
-   *key = mykey;
-   *value = myvalue;
-   free(memhandle);
+   *key = strdup(tkey);
+   *value = strdup(tvalue);
    return true;
 }
 
@@ -54,6 +31,7 @@ settings_load_defaults(settings_t *s)
    /* get the home directory needed to define the default config file */
    struct passwd *pw;
    char          *home;
+
    if (NULL == (home = getenv("HOME")) || '\0' == *home) {
       if (NULL == (pw = getpwuid(getuid())))
          errx(1, "Couldn't determine home directory");
@@ -147,8 +125,7 @@ settings_free(settings_t *s)
 #define SET_INT_VALUE(name) \
    if (strlen( key ) == strlen( #name ) \
    &&  0 == strncasecmp( #name , key , strlen( #name ))) { \
-      s->name = strtonum(value, 0, INT_MAX, &errstr); \
-      printf("%s to value %d\n", #name, s->name); \
+      s->name = strtonum(value, -1, INT_MAX, &errstr); \
       if (errstr) \
          errx(1, "%s: bad value %s for key %s: %s", __FUNCTION__, value, key, errstr); \
       \
@@ -158,7 +135,6 @@ settings_free(settings_t *s)
 void
 settings_set_keyvalue(settings_t *s, char *keyvalue)
 {
-   /* XXX contract: keyvalue is like "<widget>.<property>=<value>" */
    const char *errstr;
    char *key, *value;
 
@@ -259,7 +235,7 @@ usage()
 "   oxbar uses pango to load & render fonts, and passes the string specified\n"
 "   here to pango_font_description_from_string() - see that documentation for\n"
 "   full details on the format. Roughly, the format is \"Family (style) (size)\"\n"
-"   such as \"Helvetica italic 16\" or just \"Helvetica 16\". Note that when\n"
+"   such as \"Helvetica italic 16px\" or just \"Helvetica 16px\". Note that when\n"
 "   specifying the size, it must be in pixels (not points or pt)\n\n"
 "Specifying Widgets\n"
 "   The list of widgets to show is specified as a space separate list of widget\n"
@@ -281,7 +257,7 @@ usage()
 }
 
 void
-settings_parse_cmdline(settings_t *s, int argc, char *argv[])
+settings_parse_cmdline(settings_t *s, int argc, char *argv[], char **theme)
 {
    const char *errstr;
    char *keyvalue;
@@ -359,18 +335,23 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
    }
 
    argc -= optind;
-   /* argv += optind; uneeded */
+   argv += optind;
 
-   if (argc)
+   if (1 == argc)
+      *theme = strdup(argv[argc - 1]);
+   else if (argc)
       usage();
 }
 
 void
-settings_parse_config(settings_t *s, const char *file)
+settings_parse_config(settings_t *s, const char *file, const char *theme)
 {
-   size_t length, linenum;
+   char theme_name[100];
+   size_t length, linenum = 0;
    char  *line;
    FILE  *fin;
+   bool   parse_lines = true;
+   bool   found_theme = false;
 
    if (NULL == (fin = fopen(file, "r")))
       return;
@@ -393,10 +374,21 @@ settings_parse_config(settings_t *s, const char *file)
          continue;
       }
 
-      settings_set_keyvalue(s, line);
+      /* do we have a new 'theme' section starting? */
+      if (1 == sscanf(line, " [%[a-zA-Z0-9]] ", theme_name)) {
+         if (NULL != theme && 0 == strcmp(theme_name, theme)) {
+            found_theme = true;
+            parse_lines = true;
+         } else
+            parse_lines = false;
+      } else if (parse_lines)
+         settings_set_keyvalue(s, line);
 
       free(line);
    }
 
    fclose(fin);
+
+   if (NULL != theme && !found_theme)
+      errx(1, "didn't find a theme named '%s' in '%s'", theme, file);
 }
