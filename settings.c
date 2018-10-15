@@ -16,7 +16,7 @@ parse_keyvalue(char *keyvalue, char **key, char **value)
    char tkey[100] = { 0 };
    char tvalue[100] = { 0 };
 
-   if (2 != sscanf(keyvalue,    " %[^= ] = \"%[ a-zA-Z0-9#-]\"", tkey, tvalue))
+   if (2 != sscanf(keyvalue,    " %[^= ] = \"%[ a-zA-Z0-9<>|#-]\"", tkey, tvalue))
       if (2 != sscanf(keyvalue, " %[^= ] = %[a-zA-Z0-9#-]", tkey, tvalue))
          return false;
 
