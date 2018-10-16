@@ -3,7 +3,9 @@
 
 typedef struct settings {
 
-   char *config_file;
+   /* these aren't directly 'set-able' settings - more meta-settings */
+   char *config_file;   /* file to read settings from */
+   char *theme;         /* theme name specified on command line (if any) */
 
    struct display_t {
       int   x, y;
@@ -73,7 +75,7 @@ typedef struct settings {
 } settings_t;
 
 void settings_load_defaults(settings_t *s);
-void settings_parse_cmdline(settings_t *s, int argc, char *argv[], char **theme);
+void settings_parse_cmdline(settings_t *s, int argc, char *argv[]);
 void settings_parse_config(settings_t *s, const char *file, const char *theme);
 
 #endif

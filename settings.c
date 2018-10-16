@@ -40,6 +40,9 @@ settings_load_defaults(settings_t *s)
    if (-1 == asprintf(&s->config_file, "%s/.oxbar.conf", home))
       err(1, "%s: asprintf failed", __FUNCTION__);
 
+   /* default theme is no theme */
+   s->theme = NULL;
+
    /* the rest here are the default values for all settings */
 
    s->display.x = 0;
@@ -257,7 +260,7 @@ usage()
 }
 
 void
-settings_parse_cmdline(settings_t *s, int argc, char *argv[], char **theme)
+settings_parse_cmdline(settings_t *s, int argc, char *argv[])
 {
    const char *errstr;
    char *keyvalue;
@@ -337,9 +340,10 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[], char **theme)
    argc -= optind;
    argv += optind;
 
-   if (1 == argc)
-      *theme = strdup(argv[argc - 1]);
-   else if (argc)
+   if (1 == argc) {
+      if (NULL == (s->theme = strdup(argv[argc - 1])))
+         err(1, "%s: strdup failed", __FUNCTION__);
+   } else if (argc)
       usage();
 }
 
@@ -353,11 +357,16 @@ settings_parse_config(settings_t *s, const char *file, const char *theme)
    bool   parse_lines = true;
    bool   found_theme = false;
 
-   if (NULL == (fin = fopen(file, "r")))
-      return;
+   /* open file */
+   if (NULL == (fin = fopen(file, "r"))) {
+      if (NULL == theme)
+         return;
+      else
+         errx(1, "can't read '%s' and thus don't know about '%s'", file, theme);
+   }
 
+   /* start reading & parsing file */
    while (!feof(fin)) {
-
       /* read next line */
       if (NULL == (line = fparseln(fin, &length, &linenum, NULL, 0))) {
          if (ferror(fin))
@@ -381,8 +390,15 @@ settings_parse_config(settings_t *s, const char *file, const char *theme)
             parse_lines = true;
          } else
             parse_lines = false;
-      } else if (parse_lines)
-         settings_set_keyvalue(s, line);
+      } else {
+         /*
+          * not a theme line - go ahead and parse the line IF we're either at
+          * the start of the file or we've entered a theme section matching
+          * the theme specified on the command line
+          */
+         if (parse_lines)
+            settings_set_keyvalue(s, line);
+      }
 
       free(line);
    }
@@ -390,5 +406,5 @@ settings_parse_config(settings_t *s, const char *file, const char *theme)
    fclose(fin);
 
    if (NULL != theme && !found_theme)
-      errx(1, "didn't find a theme named '%s' in '%s'", theme, file);
+      errx(1, "did not find a theme named '%s' in '%s'", theme, file);
 }
