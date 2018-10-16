@@ -17,14 +17,15 @@ pthread_mutex_t mutex_gui;          /* guard all calls to x11/pango/cairo     */
 
 volatile sig_atomic_t SIG_QUIT  = 0;   /* SIGKILL/SIGQUIT/exit flag           */
 volatile sig_atomic_t SIG_PAUSE = 0;   /* suspend/sleep flag                  */
-volatile sig_atomic_t SIG_CONT = 0;    /* continue/wakeup flag                */
+volatile sig_atomic_t SIG_CONT  = 0;   /* continue/wakeup flag                */
 
 void*
 thread_stats_updater()
 {
    /* ignore all signals */
    sigset_t set;
-   sigfillset(&set);
+   if (sigfillset(&set))
+      err(1, "%s: sigfillset failed", __FUNCTION__);
    if (pthread_sigmask(SIG_SETMASK, &set, NULL))
       errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
 
@@ -67,13 +68,14 @@ thread_sig_handler()
 {
    /* this thread listens to these signals */
    sigset_t set;
-   sigemptyset(&set);
-   sigaddset(&set, SIGHUP);
-   sigaddset(&set, SIGINT);
-   sigaddset(&set, SIGQUIT);
-   sigaddset(&set, SIGTERM);
-   sigaddset(&set, SIGTSTP);
-   sigaddset(&set, SIGCONT);
+   if (sigemptyset(&set)
+   ||  sigaddset(&set, SIGHUP)
+   ||  sigaddset(&set, SIGINT)
+   ||  sigaddset(&set, SIGQUIT)
+   ||  sigaddset(&set, SIGTERM)
+   ||  sigaddset(&set, SIGTSTP)
+   ||  sigaddset(&set, SIGCONT))
+      err(1, "%s: sigaddset failed", __FUNCTION__);
    if (pthread_sigmask(SIG_SETMASK, &set, NULL))
       errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
 
@@ -111,7 +113,8 @@ thread_gui()
 {
    /* ignore all signals */
    sigset_t set;
-   sigfillset(&set);
+   if (sigfillset(&set))
+      err(1, "%s: sigfillset failed", __FUNCTION__);
    if (pthread_sigmask(SIG_SETMASK, &set, NULL))
       errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
 
