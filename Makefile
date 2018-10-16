@@ -54,6 +54,9 @@ testruns:
 	-./oxbar -y 0 -W "time | time > time"
 	-./oxbar -y 0 -W "< | > time"
 	-./oxbar -y 0 -W "< time time | time time > time time"
+	-./oxbar -y 0 -W "time time"
+	-./oxbar -y 0 -W "time time"
+	-./oxbar -y 0 -W "time time"
 	@echo all done
 
 # clang-analyzer (should ALWAYS be clean)
