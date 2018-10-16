@@ -45,6 +45,7 @@ install:
 	install oxbar $(BINDIR)
 
 # some simple test runs that work the gui/widget logic
+# XXX adding more targets here doesn't propagate signals correctly :(
 testruns:
 	@echo just sigint / ctrl-c these
 	-./oxbar -y 0 -W "time time"
@@ -54,9 +55,6 @@ testruns:
 	-./oxbar -y 0 -W "time | time > time"
 	-./oxbar -y 0 -W "< | > time"
 	-./oxbar -y 0 -W "< time time | time time > time time"
-	-./oxbar -y 0 -W "time time"
-	-./oxbar -y 0 -W "time time"
-	-./oxbar -y 0 -W "time time"
 	@echo all done
 
 # clang-analyzer (should ALWAYS be clean)
