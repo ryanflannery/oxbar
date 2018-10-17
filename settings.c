@@ -13,11 +13,11 @@
 static bool
 parse_keyvalue(char *keyvalue, char **key, char **value)
 {
-   char tkey[100] = { 0 };
-   char tvalue[100] = { 0 };
+   char tkey[101] = { 0 };
+   char tvalue[101] = { 0 };
 
-   if (2 != sscanf(keyvalue,    " %[^= ] = \"%[ a-zA-Z0-9<>|#-]\"", tkey, tvalue))
-      if (2 != sscanf(keyvalue, " %[^= ] = %[a-zA-Z0-9#-]", tkey, tvalue))
+   if (2 != sscanf(keyvalue, " %100[^= ] = \"%100[ a-zA-Z0-9<>|#%:-]\"", tkey, tvalue))
+      if (2 != sscanf(keyvalue, " %100[^= ] = %100[a-zA-Z0-9<>|#%:-]", tkey, tvalue))
          return false;
 
    *key = strdup(tkey);
@@ -131,6 +131,7 @@ settings_free(settings_t *s)
    if (strlen( key ) == strlen( #name ) \
    &&  0 == strncasecmp( #name , key , strlen( #name ))) { \
       s->name = value; \
+      free( key );\
       return; \
    }
 
@@ -142,6 +143,8 @@ settings_free(settings_t *s)
       if (errstr) \
          errx(1, "%s: bad value %s for key %s: %s", __FUNCTION__, value, key, errstr); \
       \
+      free( key );\
+      free( value ); \
       return; \
    }
 

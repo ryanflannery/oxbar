@@ -15,17 +15,15 @@ oxbar is released under an
 # status
 
 oxbar is still under active development, but is now stable and usable. There's
-no documentation yet (`man` page or usable `-h` info). That's forthcoming, once
-development settles, and likely soon.
+little documentation still (a minimal `man` page but a usable `-h` to get
+started, and a sample configuration that explains some options).
+Better documentation is forthcoming, once development settles. Likely soon.
 
 It supports all the command line flags `xstatbar` did and much more... most
 aspects of the widgets can be configured through `-S widget.name=value` flags.
 If you take a look at
 [settings.c](https://github.com/ryanflannery/oxbar/blob/master/settings.c)
 you'll see what they all are.
-
-Once development settles I'll focus on adding documentation and cleaning that
-interface up.
 
 # current features
 
@@ -35,6 +33,7 @@ interface up.
    * Configurable display (all colors, text, spacing, etc)
    * Left/Right/Center aligned widgets (and any combination of those)
    * Widgets can be configured on the command line
+   * Configuration file is concise & can support multiple different displays/themes
    * Types of stats supported:
       * Battery/AC status, simple progress bar, time remaining
       * Volume level w/ progress bar (mute status forthcoming )
@@ -51,14 +50,15 @@ interface up.
 
 # usage
 
-See 'ol `xstatbar` for the basics of height/width and placement (or see
-`settings.c`). Otherwise wait until I can document this.
+See `oxbar -h` for the basics and the sample configuration file included for
+more examples. Otherwise wait until I can complete the man page.
 
 ## i liked xstatbar's look
 
-You can achieve that with:
+You can achieve that using the included sample configuration file, saved as
+`~/.oxbar.conf`, and run oxbar via:
 ```bash
-oxbar -y 0 -p 0 -f "fixed 16px" -S display.bgcolor=#000000
+oxbar xstatbar
 ```
 
 The only thing lacking is each individual cpu's states being shown. That is

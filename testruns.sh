@@ -15,6 +15,7 @@ trap "" INT TERM
 
 # test config file & themes
 ./oxbar -F sample.oxbar.conf
-./oxbar -F sample.oxbar.conf Top                # should fail
-./oxbar -F sample.oxbar.conf TopVersion
-./oxbar -F sample.oxbar.conf BottomVersion
+./oxbar -F sample.oxbar.conf FooBar       # should fail
+./oxbar -F sample.oxbar.conf Top
+./oxbar -F sample.oxbar.conf Bottom
+./oxbar -F sample.oxbar.conf xstatbar
