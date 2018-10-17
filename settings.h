@@ -7,6 +7,7 @@ typedef struct settings {
    char *config_file;   /* file to read settings from */
    char *theme;         /* theme name specified on command line (if any) */
 
+   /* core display settings */
    struct display_t {
       int   x, y;
       int   w, h;
@@ -19,6 +20,8 @@ typedef struct settings {
       char *widget_bgcolor;
       char *widgets;
    } display;
+
+   /* per-widget settings */
 
    struct widget_battery{
       char *hdcolor;

@@ -25,22 +25,32 @@ parse_keyvalue(char *keyvalue, char **key, char **value)
    return true;
 }
 
-void
-settings_load_defaults(settings_t *s)
+static char*
+find_home_config()
 {
    /* get the home directory needed to define the default config file */
    struct passwd *pw;
    char          *home;
+   char          *config_file;
 
    if (NULL == (home = getenv("HOME")) || '\0' == *home) {
       if (NULL == (pw = getpwuid(getuid())))
-         errx(1, "Couldn't determine home directory");
+         errx(1, "couldn't determine home directory");
+
       home = pw->pw_dir;
    }
-   if (-1 == asprintf(&s->config_file, "%s/.oxbar.conf", home))
+
+   if (-1 == asprintf(&config_file, "%s/.oxbar.conf", home))
       err(1, "%s: asprintf failed", __FUNCTION__);
 
-   /* default theme is no theme */
+   return config_file;
+}
+
+void
+settings_load_defaults(settings_t *s)
+{
+   /* default config file is "~/.oxbar.conf" and default theme is null / none */
+   s->config_file = find_home_config();
    s->theme = NULL;
 
    /* the rest here are the default values for all settings */
@@ -142,7 +152,7 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
    char *key, *value;
 
    if (!parse_keyvalue(keyvalue, &key, &value))
-      errx(1, "Invalid format '%s' (should be 'key = value')", keyvalue);
+      errx(1, "invalid format '%s' (should be 'key = value')", keyvalue);
 
    /* display */
    SET_INT_VALUE(display.x);
@@ -384,7 +394,7 @@ settings_parse_config(settings_t *s, const char *file, const char *theme)
       }
 
       /* do we have a new 'theme' section starting? */
-      if (1 == sscanf(line, " [%[a-zA-Z0-9]] ", theme_name)) {
+      if (1 == sscanf(line, " [%100[a-zA-Z0-9]] ", theme_name)) {
          if (NULL != theme && 0 == strcmp(theme_name, theme)) {
             found_theme = true;
             parse_lines = true;
