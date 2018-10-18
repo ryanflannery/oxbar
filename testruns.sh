@@ -19,3 +19,4 @@ trap "" INT TERM
 ./oxbar -F sample.oxbar.conf Top
 ./oxbar -F sample.oxbar.conf Bottom
 ./oxbar -F sample.oxbar.conf xstatbar
+./oxbar -F sample.oxbar.conf islands

@@ -13,22 +13,26 @@ typedef struct widget {
    struct widget_context *context;     /* local per-widget state              */
 } widget_t;
 
+/* container for a list of widgets */
 typedef struct widget_list {
 #define MAX_WIDGETS 100
    widget_t *widgets[MAX_WIDGETS];
    size_t    size;
 } widget_list_t;
 
+/* definition for padding & margins (common for all widgets) */
+typedef padding_t margin_t;
+
 /* a gui just sets-up X stuff and orchestrates widgets */
 typedef struct gui {
-   xinfo_t *xinfo;
-   xfont_t *xfont;
-   xwin_t  *xwin;
-   xctx_t  *root;
-   char    *widget_bgcolor;
-   int      widget_spacing;
-   int      widget_padding;
-   char    *bgcolor;
+   xinfo_t  *xinfo;
+   xfont_t  *xfont;
+   xwin_t   *xwin;
+   xctx_t   *root;
+   char     *widget_bgcolor;
+   margin_t  margins;
+   padding_t paddings;
+   char     *bgcolor;
 
    /* WHAT to draw, and in WHICH contexts */
    widget_list_t LeftWidgets;
@@ -41,13 +45,13 @@ gui_init(
       xinfo_t *xinfo,
       xfont_t *xfont,
       xwin_t  *xwin,
-      char *bgcolor,
-      int padding,
-      int widget_spacing,
-      char *widget_bgcolor);
+      char    *bgcolor,
+      char    *widget_bgcolor,
+      unsigned int margin,
+      unsigned int padding);
 
 void gui_free(gui_t *gui);
-void gui_add_widget(gui_t *gui, xctx_direction_t direction, widget_t *w);
+void gui_add_widget(gui_t *gui, xctx_align_t align, widget_t *w);
 void gui_draw(gui_t *gui);
 
 #endif

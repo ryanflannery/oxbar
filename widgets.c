@@ -117,7 +117,7 @@ widgets_create(
       settings_t *settings,
       oxstats_t  *stats)
 {
-   xctx_direction_t direction = L2R;
+   xctx_align_t align = LEFT;
    char *token;
    char *copylist = strdup(list);   /* strsep(3) will change this */
    char *memhandle = copylist;      /* need this for free() and clang */
@@ -130,13 +130,13 @@ widgets_create(
          continue;
 
       if (0 == strcasecmp("<", token))
-         direction = L2R;
+         align = LEFT;
       else if (0 == strcasecmp("|", token))
-         direction = CENTERED;
+         align = CENTER;
       else if (0 == strcasecmp(">", token))
-         direction = R2L;
+         align = RIGHT;
       else
-         gui_add_widget(gui, direction,
+         gui_add_widget(gui, align,
                widget_create_from_recipe(token, settings, stats));
    }
    free(memhandle);

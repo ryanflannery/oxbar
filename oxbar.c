@@ -144,6 +144,7 @@ main(int argc, char *argv[])
    settings_load_defaults(&settings);
    settings_parse_cmdline(&settings, argc, argv);
    settings_parse_config(&settings, settings.config_file, settings.theme);
+   /* TODO cmd line flags should override config file! */
 
    /* init font & get x display handle */
    xfont_t *font = xfont_init(settings.display.font);
@@ -157,7 +158,7 @@ main(int argc, char *argv[])
    double h = settings.display.h;
 
    if (-1 == h)
-      h = font->height + settings.display.padding_top;
+      h = font->height + (2 * settings.display.padding) + (2 * settings.display.margin);
 
    if (-1 == y)
       y = xinfo.display_height - h;
@@ -173,9 +174,9 @@ main(int argc, char *argv[])
    gui = gui_init(
          &xinfo, font, xwin,
          settings.display.bgcolor,
-         settings.display.padding_top,
-         settings.display.widget_spacing,
-         settings.display.widget_bgcolor);
+         settings.display.widget_bgcolor,
+         settings.display.margin,
+         settings.display.padding);
    widgets_init(gui, &settings, &OXSTATS);
    gui_draw(gui);
 

@@ -59,8 +59,8 @@ settings_load_defaults(settings_t *s)
    s->display.y = -1;
    s->display.w = -1;
    s->display.h = -1;
-   s->display.padding_top = 10;
-   s->display.widget_spacing = 15;
+   s->display.padding = 10;
+   s->display.margin = 15;
    s->display.wmname  = strdup("oxbar");
    s->display.font    = strdup("DejaVu Sans 16px");
    s->display.bgcolor = strdup("1c1c1c99");
@@ -162,8 +162,8 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
    SET_INT_VALUE(display.y);
    SET_INT_VALUE(display.w);
    SET_INT_VALUE(display.h);
-   SET_INT_VALUE(display.padding_top);
-   SET_INT_VALUE(display.widget_spacing);
+   SET_INT_VALUE(display.margin);
+   SET_INT_VALUE(display.padding);
    SET_STRING_VALUE(display.wmname);
    SET_STRING_VALUE(display.font);
    SET_STRING_VALUE(display.bgcolor);
@@ -279,7 +279,7 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
    char *keyvalue;
    int ch;
 
-   while (-1 != (ch = getopt(argc, argv, "HF:x:y:w:h:f:p:s:t:W:S:"))) {
+   while (-1 != (ch = getopt(argc, argv, "HF:x:y:w:h:f:p:m:t:W:s:"))) {
       switch (ch) {
       case 'H':
          usage();
@@ -317,12 +317,12 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
             err(1, "strdup failed for font");
          break;
       case 'p':
-         s->display.padding_top = strtonum(optarg, 0, INT_MAX, &errstr);
+         s->display.padding = strtonum(optarg, 0, INT_MAX, &errstr);
          if (errstr)
             errx(1, "illegal p value '%s': %s", optarg, errstr);
          break;
-      case 's':
-         s->display.widget_spacing = strtonum(optarg, 0, INT_MAX, &errstr);
+      case 'm':
+         s->display.margin = strtonum(optarg, 0, INT_MAX, &errstr);
          if (errstr)
             errx(1, "illegal s value '%s': %s", optarg, errstr);
          break;
@@ -338,7 +338,7 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
          if (NULL == s->display.widgets)
             err(1, "strdup failed for display.widgets");
          break;
-      case 'S':
+      case 's':
          if (NULL == (keyvalue = strdup(optarg)))
             err(1, "strdup failed for font");
 

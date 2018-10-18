@@ -9,16 +9,16 @@ typedef struct settings {
 
    /* core display settings */
    struct display_t {
-      int   x, y;
-      int   w, h;
-      int   padding_top;
-      int   widget_spacing;
-      char *wmname;
-      char *font;
-      char *bgcolor;
-      char *fgcolor;
-      char *widget_bgcolor;
-      char *widgets;
+      int      x, y;
+      int      w, h;
+      double   margin;
+      double   padding;
+      char    *wmname;
+      char    *font;
+      char    *bgcolor;
+      char    *fgcolor;
+      char    *widget_bgcolor;
+      char    *widgets;
    } display;
 
    /* per-widget settings */

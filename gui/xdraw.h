@@ -20,16 +20,23 @@
  * As such, a typical pipeline will create a temporary context, render a bunch
  * of primitives to it, and then draw that context onto a "root" context
  * using xdraw_context(root, source).
- *
- * TODO This abstraction should also permit vertical rendering (for a vertical
- * bar) rather easily, but that hasn't been a priority yet.
  */
+
+typedef struct padding {
+   double top, bottom, left, right;
+} padding_t;
 
 typedef enum {
    L2R,
    R2L,
    CENTERED,
 } xctx_direction_t;
+
+typedef enum {
+   LEFT,
+   RIGHT,
+   CENTER,
+} xctx_align_t;
 
 typedef enum {
    BEFORE_RENDER,
@@ -39,17 +46,22 @@ typedef enum {
 typedef struct xctx {
    bool                    is_root;
    xctx_direction_t        direction;
-   xinfo_t                *xinfo;
    xfont_t                *xfont;
    cairo_t                *cairo;
    cairo_surface_t        *surface;
-   int                     h, w, padding;
+   int                     h, w;
+   padding_t               paddings;
    double                  xoffset;
    double                  yoffset;
 } xctx_t;
 
-xctx_t *xctx_init(xinfo_t *info, xfont_t *font, xwin_t *win,
-      xctx_direction_t direction, int padding, bool make_root);
+xctx_t *xctx_init(
+      xfont_t          *font,
+      xwin_t           *win,
+      xctx_direction_t  direction,
+      double            padding,
+      bool              make_root);
+
 void xctx_free(xctx_t *ctx);
 void xctx_reset(xctx_t *ctx);
 void xctx_advance(xctx_t *ctx, xctx_state_t state, double xplus, double yplus);
@@ -65,9 +77,20 @@ void xctx_root_pop(xctx_t *ctx);
 
 /* draw one context onto another */
 void
-xdraw_context(
-      xctx_t     *dest,
-      xctx_t     *source);
+xdraw_context( /* TODO REMOVE */
+      xctx_t      *dest,
+      xctx_t      *source);
+void
+xdraw_outline(
+      xctx_t *ctx,
+      double  x, double y,
+      double  w, double h);
+void
+xdraw_context_at(
+      xctx_t      *dest,
+      double       xdest,
+      double       ydest,
+      xctx_t      *source);
 
 /* draw a color over an entire context */
 void
