@@ -1,9 +1,11 @@
 #include <err.h>
 
-#include "cpus.h"
+#include "cpuslong.h"
+
+/* TODO: merge widgets "cpuslong" and "cpus" easily - code is 95% the same */
 
 void
-wcpus_init(widget_t *w)
+wcpuslong_init(widget_t *w)
 {
    settings_t *settings = w->context->settings;
    oxstats_t  *stats    = w->context->stats;
@@ -29,7 +31,7 @@ wcpus_init(widget_t *w)
 }
 
 void
-wcpus_free(widget_t *w)
+wcpuslong_free(widget_t *w)
 {
    chart_t **charts   = w->context->charts;
    size_t i = 0;
@@ -38,13 +40,13 @@ wcpus_free(widget_t *w)
 }
 
 bool
-wcpus_enabled(widget_t *w)
+wcpuslong_enabled(widget_t *w)
 {
    return w->context->stats->cpus->is_setup;
 }
 
 void
-wcpus_draw(
+wcpuslong_draw(
       widget_t *w,
       xctx_t   *ctx)
 {
@@ -66,8 +68,12 @@ wcpus_draw(
             });
 
       xdraw_chart(ctx, charts[i]);
-      xdraw_printf(ctx, settings->display.fgcolor, "% 3.0f%%",
-            stats->cpus->cpus[i].percentages[CP_IDLE]);
+      xdraw_printf(ctx, settings->cpus.chart_color_sys,        "% 3.0f%%", stats->cpus->cpus[i].percentages[CP_SYS]);
+      xdraw_printf(ctx, settings->cpus.chart_color_interrupt,  "% 3.0f%%", stats->cpus->cpus[i].percentages[CP_INTR]);
+      xdraw_printf(ctx, settings->cpus.chart_color_user,       "% 3.0f%%", stats->cpus->cpus[i].percentages[CP_USER]);
+      xdraw_printf(ctx, settings->cpus.chart_color_nice,       "% 3.0f%%", stats->cpus->cpus[i].percentages[CP_NICE]);
+      xdraw_printf(ctx, settings->cpus.chart_color_spin,       "% 3.0f%%", stats->cpus->cpus[i].percentages[CP_SPIN]);
+      xdraw_printf(ctx, settings->cpus.chart_color_idle,       "% 3.0f%%", stats->cpus->cpus[i].percentages[CP_IDLE]);
 
       if (i != stats->cpus->ncpu - 1) xdraw_printf(ctx, "000000", " ");
    }

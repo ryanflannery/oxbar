@@ -66,7 +66,7 @@ settings_load_defaults(settings_t *s)
    s->display.bgcolor = strdup("1c1c1c99");
    s->display.fgcolor = strdup("93a1a1");
    s->display.widget_bgcolor = strdup("1c1c1c");
-   s->display.widgets = strdup("nprocs cpus memory net > battery volume time");
+   s->display.widgets = strdup("nprocs cpuslong memory net > battery volume time");
 
    s->battery.hdcolor             = strdup("b58900");
    s->battery.fgcolor_unplugged   = strdup("dc322f");

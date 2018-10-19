@@ -13,7 +13,8 @@ SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o \
 		  stats/volume.o stats/stats.o
 GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o gui/gui.o
 WOBJS = widgets/battery.o widgets/volume.o widgets/nprocs.o widgets/memory.o \
-		  widgets/cpus.o widgets/net.o widgets/time.o widgets/util.o
+		  widgets/cpus.o widgets/cpuslong.o widgets/net.o widgets/time.o \
+		  widgets/util.o
 
 .PHONY: clean install testruns cppcheck scan-build iwyu gprof loc gource
 

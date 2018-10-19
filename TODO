@@ -1,10 +1,7 @@
-PLAN:41:   TODO: remove padding + bgcolor
 gui/xdraw.h:24: * TODO This abstraction should also permit vertical rendering (for a vertical
-oxbar.c:50:   case SIGHUP:      /* TODO: reload config file here (once supported) */
-oxbar.c:121:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
-settings.c:65:/* TODO Create a settings_free() (or refactor to make easier)
-settings.c:187:   printf("usage: to do!\n"); /* TODO */
-settings.h:75:/* TODO void settings_parse_config(settings_t *s, const char *file); */
+oxbar.c:51:   case SIGHUP:      /* TODO: reload config file here (once supported) */
+oxbar.c:124:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
+settings.c:110:/* TODO Create a settings_free() (or refactor to make easier)
 stats/brightness.h:1:/* TODO Build a working brightness widget
 stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
 stats/cpu.c:125:   /* TODO CPU cleanup routine should free/cleanup shiz */
@@ -16,4 +13,5 @@ stats/net.c:54:/* TODO Refactor network bytes logic
 stats/net.c:117:            /* TODO Support configurable interface -or- just use egress */
 stats/net.c:142:   /* TODO NET cleanup routine should free/cleanup shiz */
 widgets/volume.c:21:   /* TODO Should volume widget ever handle this case!? I've never had it */
-widgets/cpus.c:69:      /* TODO revisit "cpulong" widget printing individual states
+widgets/cpuslong.c:5:/* TODO: merge widgets "cpuslong" and "cpus" easily - code is 95% the same */
+Binary file widgets/.cpuslong.c.swp matches
