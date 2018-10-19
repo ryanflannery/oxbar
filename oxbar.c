@@ -99,7 +99,7 @@ thread_sig_handler()
    while (1) {
       usleep(100000);   /* 1/10 second */
       if (SIG_RELOAD) {
-         settings_parse_config(&settings, settings.config_file, settings.theme);
+         settings_reload_config(&settings);
          SIG_RELOAD = 0;
       }
       if (SIG_CONT) {
@@ -148,16 +148,14 @@ int
 main(int argc, char *argv[])
 {
    /* init settings */
-   settings_load_defaults(&settings);
-   settings_parse_cmdline(&settings, argc, argv);
-   settings_parse_config(&settings, settings.config_file, settings.theme);
+   settings_init(&settings, argc, argv);
 
    /* init font & get x display handle */
    xfont_t *font = xfont_init(settings.display.font);
    xinfo_t xinfo;
    xinfo_open(&xinfo);
 
-   /* create x window */
+   /* mutate a few settings based on display info and then create x window */
    double x = settings.display.x;
    double y = settings.display.y;
    double w = settings.display.w;

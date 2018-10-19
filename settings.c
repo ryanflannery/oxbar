@@ -16,25 +16,13 @@
  * that.
  */
 
-static bool
-parse_keyvalue(char *keyvalue, char **key, char **value)
-{
-   char tkey[101] = { 0 };
-   char tvalue[101] = { 0 };
+/* the set of allowed switches - getopt(3) style */
+static const char * const SWITCHES = "HF:x:y:w:h:f:p:s:t:W:S:";
 
-   if (2 != sscanf(keyvalue, " %100[^= ] = \"%100[ a-zA-Z0-9<>|#%:-]\"", tkey, tvalue))
-      if (2 != sscanf(keyvalue, " %100[^= ] = %100[a-zA-Z0-9<>|#%:-]", tkey, tvalue))
-         return false;
-
-   *key = strdup(tkey);
-   *value = strdup(tvalue);
-   return true;
-}
-
+/* retrieve the name of "~/.oxbar.conf" based on a user's home directory */
 static char*
-find_home_config()
+get_default_config()
 {
-   /* get the home directory needed to define the default config file */
    struct passwd *pw;
    char          *home;
    char          *config_file;
@@ -52,15 +40,58 @@ find_home_config()
    return config_file;
 }
 
-void
-settings_load_defaults(settings_t *s)
+/* parse argc/argv and extract any config file or theme specified */
+static void
+get_config_and_theme(int argc, char * const argv[], char **config_file, char **theme)
 {
-   /* default config file is "~/.oxbar.conf" and default theme is null / none */
-   s->config_file = find_home_config();
-   s->theme = NULL;
+   int ch;
 
+   opterr = 0; /* disable getopt(3) errors on unknown parameters */
+
+   /* get the config file (if specified) */
+   while (-1 != (ch = getopt(argc, argv, SWITCHES))) {
+      if ('F' == ch) {
+         if (NULL == (*config_file = strdup(optarg)))
+            err(1, "%s: strdup failed for config_file", __FUNCTION__);
+      }
+   }
+
+   /* get the theme (if specified) */
+   argc -= optind;
+   argv += optind;
+
+   if (1 == argc) {
+      if (NULL == (*theme = strdup(argv[argc - 1])))
+         err(1, "%s: strdup failed for theme", __FUNCTION__);
+   }
+
+   /* reest getopt(3) */
+   opterr = 1;
+   optreset = 1;
+   optind = 1;
+}
+
+/* parse a "key = value" string (supporting quotes, for our use case) */
+static bool
+parse_keyvalue(const char * const keyvalue, char **key, char **value)
+{
+   char tkey[101] = { 0 };
+   char tvalue[101] = { 0 };
+
+   if (2 != sscanf(keyvalue, " %100[^= ] = \"%100[ a-zA-Z0-9<>|#%:-]\"", tkey, tvalue))
+      if (2 != sscanf(keyvalue, " %100[^= ] = %100[a-zA-Z0-9<>|#%:-]", tkey, tvalue))
+         return false;
+
+   *key = strdup(tkey);
+   *value = strdup(tvalue);
+   return true;
+}
+
+/* initialize default values for everything in settings_t */
+static void
+settings_set_defaults(settings_t *s)
+{
    /* the rest here are the default values for all settings */
-
    s->display.x = 0;
    s->display.y = -1;
    s->display.w = -1;
@@ -154,8 +185,9 @@ settings_free(settings_t *s)
       return; \
    }
 
-void
-settings_set_keyvalue(settings_t *s, char *keyvalue)
+/* given a settings_t and a "key=value", set the appropriate settings member */
+static void
+settings_set_keyvalue(settings_t *s, const char * const keyvalue)
 {
    const char *errstr;
    char *key, *value;
@@ -226,8 +258,9 @@ settings_set_keyvalue(settings_t *s, char *keyvalue)
    errx(1, "unknown key '%s''", keyvalue);
 }
 
-void
-usage()
+/* print basic usage information */
+static void
+print_usage()
 {
    printf(
 "usage: oxbar [-H] [-x xloc] [-y yloc] [-w width] [-h height]\n"
@@ -278,23 +311,23 @@ usage()
    exit(1);
 }
 
-void
-settings_parse_cmdline(settings_t *s, int argc, char *argv[])
+/* update a settings_t with any argc/argv parameters appropriately */
+static void
+settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
 {
    const char *errstr;
    char *keyvalue;
    int ch;
 
-   while (-1 != (ch = getopt(argc, argv, "HF:x:y:w:h:f:p:s:t:W:S:"))) {
+   while (-1 != (ch = getopt(argc, argv, SWITCHES))) {
       switch (ch) {
       case 'H':
-         usage();
+         print_usage();
          break;
       case 'F':
-         free(s->config_file);
-         s->config_file = strdup(optarg);
-         if (NULL == s->config_file)
-            err(1, "strdup failed for config_file");
+         /* XXX We already handled this in settings_init! We just track it
+          * here so we can catch if any unknown flags are passed.
+          */
          break;
       case 'x':
          s->display.x = strtonum(optarg, 0, INT_MAX, &errstr);
@@ -352,24 +385,29 @@ settings_parse_cmdline(settings_t *s, int argc, char *argv[])
          free(keyvalue);
          break;
       default:
-         usage();
+         print_usage();
       }
    }
 
    argc -= optind;
    argv += optind;
 
-   if (1 == argc) {
-      if (NULL == (s->theme = strdup(argv[argc - 1])))
-         err(1, "%s: strdup failed", __FUNCTION__);
-   } else if (argc)
-      usage();
+   /* XXX We should have at most 1 - the theme (which is always at the end),
+    * and that theme is extracted below in the settings_init() method.
+    */
+   if (1 < argc)
+      print_usage();
 }
 
+/* (re)read the config file stored in a settings_t and update it accordingly */
 void
-settings_parse_config(settings_t *s, const char *file, const char *theme)
+settings_reload_config(settings_t *s)
 {
-   char theme_name[100];
+   /* XXX Be aware! This file can be called MORE THAN ONCE if the config file
+    * is reloaded at runtime via a SIGHUP (hence it is named 'reload' and not
+    * 'load')
+    */
+   char   theme_name[100];
    size_t length, linenum = 0;
    char  *line;
    FILE  *fin;
@@ -377,19 +415,21 @@ settings_parse_config(settings_t *s, const char *file, const char *theme)
    bool   found_theme = false;
 
    /* open file */
-   if (NULL == (fin = fopen(file, "r"))) {
-      if (NULL == theme)
+   if (NULL == (fin = fopen(s->config_file, "r"))) {
+      if (NULL == s->theme)
          return;
       else
-         errx(1, "can't read '%s' and thus don't know about '%s'", file, theme);
+         errx(1, "you specified theme '%s' but i can't read '%s'",
+               s->theme, s->config_file);
    }
 
    /* start reading & parsing file */
    while (!feof(fin)) {
+
       /* read next line */
       if (NULL == (line = fparseln(fin, &length, &linenum, NULL, 0))) {
          if (ferror(fin))
-            err(1, "error reading config file '%s'", file);
+            err(1, "error reading config file '%s'", s->config_file);
          else
             break;
       }
@@ -404,14 +444,14 @@ settings_parse_config(settings_t *s, const char *file, const char *theme)
 
       /* do we have a new 'theme' section starting? */
       if (1 == sscanf(line, " [%100[a-zA-Z0-9]] ", theme_name)) {
-         if (NULL != theme && 0 == strcmp(theme_name, theme)) {
+         /* yes - either read it (if it matches loaded theme) or skip it */
+         if (NULL != s->theme && 0 == strcmp(theme_name, s->theme)) {
             found_theme = true;
             parse_lines = true;
          } else
             parse_lines = false;
       } else {
-         /*
-          * not a theme line - go ahead and parse the line IF we're either at
+         /* not a theme line - go ahead and parse the line IF we're either at
           * the start of the file or we've entered a theme section matching
           * the theme specified on the command line
           */
@@ -424,6 +464,29 @@ settings_parse_config(settings_t *s, const char *file, const char *theme)
 
    fclose(fin);
 
-   if (NULL != theme && !found_theme)
-      errx(1, "did not find a theme named '%s' in '%s'", theme, file);
+   /* if we never found a theme, but had one specified, that's an error */
+   if (NULL != s->theme && !found_theme)
+      errx(1, "did not find a theme named '%s' in '%s'",
+            s->theme, s->config_file);
+}
+
+void
+settings_init(settings_t *settings, int argc, char *argv[])
+{
+   char *config_file = NULL;
+   char *theme = NULL;
+
+   /* first determine config file and theme */
+   get_config_and_theme(argc, argv, &config_file, &theme);
+   if (NULL == config_file)
+      config_file = get_default_config();
+
+   /* store the config file & theme in the settings object */
+   settings->config_file = config_file;
+   settings->theme = theme;
+
+   /* load defaults, then load config, and then parse command line */
+   settings_set_defaults(settings);
+   settings_reload_config(settings);
+   settings_parse_cmdline(settings, argc, argv);
 }
