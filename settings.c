@@ -469,6 +469,7 @@ settings_reload_config(settings_t *s)
             s->theme, s->config_file);
 }
 
+/* wrap-up all settings loading logic */
 void
 settings_init(settings_t *settings, int argc, char *argv[])
 {
