@@ -390,7 +390,6 @@ settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
    }
 
    argc -= optind;
-   argv += optind;
 
    /* XXX We should have at most 1 - the theme (which is always at the end),
     * and that theme is extracted below in the settings_init() method.
