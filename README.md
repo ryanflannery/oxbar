@@ -70,8 +70,7 @@ Roughly in order or my priority...
 
    * gui: settle padding and margin mess
    * document! man page and -h flags
-   * gui: add 'cpulong' widget, which mimics old xstatbar behavior
-   * gui: build test driver for gui/ components (for my sake)
+   * gui: improve test driver for gui/ components (for my sake)
    * stats/gui: support different update frequency per widget
    * gui: icons in the display could help condense it further
    * stats: support "mute" status in volume (this is non-trivial)

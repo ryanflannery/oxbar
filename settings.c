@@ -10,6 +10,12 @@
 
 #include "settings.h"
 
+/* TODO when reloading config, if widget setup changes, that's not reflected
+ * because that loading is done manually, outside settings, in the widgets.*
+ * component. That should ideally be all moved here -- settings.* orchestrates
+ * that.
+ */
+
 static bool
 parse_keyvalue(char *keyvalue, char **key, char **value)
 {

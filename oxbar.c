@@ -9,15 +9,17 @@
 #include "gui/xcore.h"
 #include "stats/stats.h"
 
-gui_t     *gui;                     /* global gui object                      */
-pthread_t  pthread_stats_updater;   /* update stats & redraw every 1 second   */
-pthread_t  pthread_sig_handler;     /* listen & respond to signals (SIGKILL)  */
-pthread_t  pthread_gui;             /* handle x events and redraw             */
-pthread_mutex_t mutex_gui;          /* guard all calls to x11/pango/cairo     */
+static gui_t     *gui;                    /* global gui object                */
+static settings_t settings;               /* global settings                  */
+static pthread_t  pthread_stats_updater;  /* update stats & draw every second */
+static pthread_t  pthread_sig_handler;    /* listen & respond to signals      */
+static pthread_t  pthread_gui;            /* handle x events and redraw       */
+static pthread_mutex_t mutex_gui;         /* guard all calls to gui           */
 
-volatile sig_atomic_t SIG_QUIT  = 0;   /* SIGKILL/SIGQUIT/exit flag           */
-volatile sig_atomic_t SIG_PAUSE = 0;   /* suspend/sleep flag                  */
-volatile sig_atomic_t SIG_CONT  = 0;   /* continue/wakeup flag                */
+volatile sig_atomic_t SIG_QUIT   = 0;  /* SIGKILL/SIGQUIT/exit flag           */
+volatile sig_atomic_t SIG_PAUSE  = 0;  /* suspend/sleep flag                  */
+volatile sig_atomic_t SIG_CONT   = 0;  /* continue/wakeup flag                */
+volatile sig_atomic_t SIG_RELOAD = 0;  /* SIGHUP/reload config flag           */
 
 void*
 thread_stats_updater()
@@ -48,7 +50,9 @@ void
 signal_handler(int sig)
 {
    switch (sig) {
-   case SIGHUP:      /* TODO: reload config file here (once supported) */
+   case SIGHUP:
+      SIG_RELOAD = 1;
+      break;
    case SIGINT:
    case SIGQUIT:
    case SIGTERM:
@@ -94,6 +98,10 @@ thread_sig_handler()
    /* every 1/10th of a second, check the status of that signal handler */
    while (1) {
       usleep(100000);   /* 1/10 second */
+      if (SIG_RELOAD) {
+         settings_parse_config(&settings, settings.config_file, settings.theme);
+         SIG_RELOAD = 0;
+      }
       if (SIG_CONT) {
          SIG_PAUSE = 0;
          SIG_CONT = 0;
@@ -140,7 +148,6 @@ int
 main(int argc, char *argv[])
 {
    /* init settings */
-   settings_t settings;
    settings_load_defaults(&settings);
    settings_parse_cmdline(&settings, argc, argv);
    settings_parse_config(&settings, settings.config_file, settings.theme);
