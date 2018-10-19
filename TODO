@@ -1,7 +1,7 @@
 gui/xdraw.h:24: * TODO This abstraction should also permit vertical rendering (for a vertical
-oxbar.c:51:   case SIGHUP:      /* TODO: reload config file here (once supported) */
-oxbar.c:124:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
-settings.c:110:/* TODO Create a settings_free() (or refactor to make easier)
+oxbar.c:132:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
+settings.c:13:/* TODO when reloading config, if widget setup changes, that's not reflected
+settings.c:116:/* TODO Create a settings_free() (or refactor to make easier)
 stats/brightness.h:1:/* TODO Build a working brightness widget
 stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
 stats/cpu.c:125:   /* TODO CPU cleanup routine should free/cleanup shiz */
@@ -14,4 +14,3 @@ stats/net.c:117:            /* TODO Support configurable interface -or- just use
 stats/net.c:142:   /* TODO NET cleanup routine should free/cleanup shiz */
 widgets/volume.c:21:   /* TODO Should volume widget ever handle this case!? I've never had it */
 widgets/cpuslong.c:5:/* TODO: merge widgets "cpuslong" and "cpus" easily - code is 95% the same */
-Binary file widgets/.cpuslong.c.swp matches
