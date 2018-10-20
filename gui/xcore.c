@@ -66,9 +66,13 @@ get_root_visual(xcb_screen_t *screen)
    return NULL;
 }
 
-void
-xinfo_open(xinfo_t *x)
+xinfo_t*
+xinfo_init()
 {
+   xinfo_t *x = malloc(sizeof(xinfo_t));
+   if (NULL == x)
+      err(1, "%s: malloc failed", __FUNCTION__);
+
    int default_screen;
    x->con = xcb_connect(NULL, &default_screen);
    if (xcb_connection_has_error(x->con)) {
@@ -84,12 +88,15 @@ xinfo_open(xinfo_t *x)
 
    if (NULL == (x->root_visual = get_root_visual(x->root_screen)))
       errx(1, "Failed to retrieve X root visual context");
+
+   return x;
 }
 
 void
-xinfo_close(xinfo_t *x)
+xinfo_free(xinfo_t *x)
 {
    xcb_disconnect(x->con);
+   free(x);
 }
 
 /* window wrapper */
