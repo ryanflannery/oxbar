@@ -20,7 +20,7 @@ main()
    f = xfont_init("serif italic 20");
 
    xwin_t *w = xwin_init(x, "foobar", 500, 500, 500, 500);
-   xctx_t *root = xctx_init(x, f, w, L2R, 10, true);
+   xctx_t *root = xctx_init(f, w, L2R, 10, true);
 
    xctx_root_push(root);
 
