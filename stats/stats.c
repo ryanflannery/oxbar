@@ -18,6 +18,9 @@ stats_init()
    OXSTATS.network   = &NET;
    OXSTATS.nprocs    = &NPROCS;
    OXSTATS.volume    = &VOLUME;
+
+   /* do first update to initialize everything */
+   stats_update();
 }
 
 void

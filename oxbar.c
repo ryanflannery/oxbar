@@ -9,8 +9,12 @@
 #include "gui/xcore.h"
 #include "stats/stats.h"
 
-static gui_t     *gui;                    /* global gui object                */
-static settings_t settings;               /* global settings                  */
+static xfont_t   *xfont = NULL;           /* pango font info                  */
+static xdisp_t   *xdisp = NULL;           /* x display info                   */
+static xwin_t    *xwin  = NULL;           /* x window info                    */
+static gui_t     *gui   = NULL;           /* oxbar gui                        */
+static settings_t settings;               /* settings                         */
+
 static pthread_t  pthread_stats_updater;  /* update stats & draw every second */
 static pthread_t  pthread_sig_handler;    /* listen & respond to signals      */
 static pthread_t  pthread_gui;            /* handle x events and redraw       */
@@ -29,6 +33,43 @@ ignore_all_signals()
       err(1, "%s: sigfillset failed", __FUNCTION__);
    if (pthread_sigmask(SIG_SETMASK, &set, NULL))
       errx(1, "%s: pthread_sigmask failed", __FUNCTION__);
+}
+
+void
+setup_gui()
+{
+   xfont = xfont_init(settings.display.font);
+
+   if (-1 == settings.display.h)
+      settings.display.h = xfont->height + settings.display.padding_top;
+
+   if (-1 == settings.display.y)
+      settings.display.y = xdisp->display_height - settings.display.h;
+
+   if (-1 == settings.display.w)
+      settings.display.w = xdisp->display_width;
+
+   xwin = xwin_init(xdisp, settings.display.wmname,
+         settings.display.x, settings.display.y,
+         settings.display.w, settings.display.h);
+
+   gui = gui_init(
+         xdisp, xfont, xwin,
+         settings.display.bgcolor,
+         settings.display.padding_top,
+         settings.display.widget_spacing,
+         settings.display.widget_bgcolor);
+   widgets_init(gui, &settings, &OXSTATS);
+   gui_draw(gui);
+}
+
+void
+cleanup_gui()
+{
+   widgets_free();
+   gui_free(gui);
+   xwin_free(xdisp, xwin);
+   xfont_free(xfont);
 }
 
 /* thread: every 1 second, update stats and re-draw the gui */
@@ -56,7 +97,7 @@ thread_gui()
 {
    ignore_all_signals();
    xcb_generic_event_t *xevent;
-   while ((xevent = xcb_wait_for_event(gui->xinfo->con))) {
+   while ((xevent = xcb_wait_for_event(xdisp->con))) {
       switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
       case XCB_EXPOSE:
          pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
@@ -125,7 +166,8 @@ thread_sig_handler()
       if (SIG_RELOAD) {
          pthread_mutex_lock(&mutex_gui);
          settings_reload_config(&settings);
-         gui_draw(gui);
+         cleanup_gui();
+         setup_gui();
          pthread_mutex_unlock(&mutex_gui);
          SIG_RELOAD = 0;
       }
@@ -146,24 +188,10 @@ thread_sig_handler()
 int
 main(int argc, char *argv[])
 {
-   /* init settings, font, get X display info, and create window */
-   settings_init(&settings, argc, argv);
-   xfont_t *font  = xfont_init(settings.display.font);
-   xinfo_t *xinfo = xinfo_init();
-   xwin_t *xwin = xwin_init(xinfo, settings.display.wmname, settings.display.x,
-         settings.display.y, settings.display.w, settings.display.h);
-
-   /* setup gui and stats, then do initial stats update and paint */
    stats_init();
-   stats_update();
-   gui = gui_init(
-         xinfo, font, xwin,
-         settings.display.bgcolor,
-         settings.display.padding_top,
-         settings.display.widget_spacing,
-         settings.display.widget_bgcolor);
-   widgets_init(gui, &settings, &OXSTATS);
-   gui_draw(gui);
+   settings_init(&settings, argc, argv);
+   xdisp = xdisp_init();
+   setup_gui();
 
    /* and we're running! start all threads */
    if (pthread_create(&pthread_sig_handler, NULL, thread_sig_handler, NULL)
@@ -178,10 +206,9 @@ main(int argc, char *argv[])
       errx(1, "pthread_joins failed");
 
    /* cleanup */
+   cleanup_gui();
+   xdisp_free(xdisp);
    stats_close();
-   widgets_free();
-   gui_free(gui);
-   xinfo_free(xinfo);
 
    return 0;
 }

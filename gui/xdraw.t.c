@@ -12,16 +12,15 @@ pause()
 int
 main()
 {
-   xinfo_t x;
+   xdisp_t *x = xdisp_init();
    xfont_t *f;
 
-   xinfo_open(&x);
-   printf("display: %x x %x (in pixels)\n", x.display_width, x.display_height);
+   printf("display: %x x %x (pixels)\n", x->display_width, x->display_height);
 
    f = xfont_init("serif italic 20");
 
-   xwin_t *w = xwin_init(&x, "foobar", 500, 500, 500, 500);
-   xctx_t *root = xctx_init(&x, f, w, L2R, 10, true);
+   xwin_t *w = xwin_init(x, "foobar", 500, 500, 500, 500);
+   xctx_t *root = xctx_init(x, f, w, L2R, 10, true);
 
    xctx_root_push(root);
 
@@ -29,7 +28,7 @@ main()
    xdraw_printf(root, "#ff0000", "Hello world!");
 
    xctx_root_pop(root);
-   xcb_flush(x.con);
+   xcb_flush(x->con);
 
    pause();
 
@@ -39,13 +38,13 @@ main()
    xdraw_printf(root, "#00ff00", "Hello world!");
 
    xctx_root_pop(root);
-   xcb_flush(x.con);
+   xcb_flush(x->con);
 
    pause();
 
    printf("bye\n");
    xctx_free(root);
-   xwin_free(w);
-   xinfo_close(&x);
+   xwin_free(x, w);
+   xdisp_free(x);
    return 0;
 }

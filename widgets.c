@@ -99,6 +99,7 @@ widgets_free()
       free(WIDGETS[i]->context);
       free(WIDGETS[i]);
    }
+   NWIDGETS = 0;
 }
 
 static void

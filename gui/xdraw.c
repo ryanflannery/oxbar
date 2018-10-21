@@ -44,7 +44,7 @@ hex2rgba(const char *s, double *r, double *g, double *b, double *a)
 }
 
 xctx_t*
-xctx_init(xinfo_t *info, xfont_t *font, xwin_t *win,
+xctx_init(xdisp_t *info, xfont_t *font, xwin_t *win,
       xctx_direction_t direction, int padding, bool make_root)
 {
    xctx_t *ctx = malloc(sizeof(xctx_t));
@@ -53,7 +53,7 @@ xctx_init(xinfo_t *info, xfont_t *font, xwin_t *win,
 
    ctx->is_root   = make_root;
    ctx->direction = direction;
-   ctx->xinfo     = info;
+   ctx->xdisp     = info;
    ctx->xfont     = font;
    ctx->padding   = padding;
    ctx->h         = win->h;

@@ -4,6 +4,15 @@
 
 trap "" INT TERM
 
+# test SIGHUP reloading config
+./oxbar -F sample.oxbar.conf Top &
+pid=$!
+/bin/sleep 1 && kill -HUP $pid
+/bin/sleep 1 && kill -HUP $pid
+/bin/sleep 1 && kill -HUP $pid
+/bin/sleep 1 && kill -HUP $pid
+kill $pid
+
 # test y/w/h morphing
 ./oxbar -S "display.bgcolor=ff0000" -y 0   -w 400 -h 50 -W "time"
 ./oxbar -S "display.bgcolor=ff0000" -y 0   -w 400 -h -1 -W "time"

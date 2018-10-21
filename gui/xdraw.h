@@ -39,7 +39,7 @@ typedef enum {
 typedef struct xctx {
    bool                    is_root;
    xctx_direction_t        direction;
-   xinfo_t                *xinfo;
+   xdisp_t                *xdisp;
    xfont_t                *xfont;
    cairo_t                *cairo;
    cairo_surface_t        *surface;
@@ -48,7 +48,7 @@ typedef struct xctx {
    double                  yoffset;
 } xctx_t;
 
-xctx_t *xctx_init(xinfo_t *info, xfont_t *font, xwin_t *win,
+xctx_t *xctx_init(xdisp_t *info, xfont_t *font, xwin_t *win,
       xctx_direction_t direction, int padding, bool make_root);
 void xctx_free(xctx_t *ctx);
 void xctx_reset(xctx_t *ctx);

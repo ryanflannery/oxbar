@@ -5,11 +5,10 @@
 int
 main()
 {
-   xinfo_t x;
-   xinfo_open(&x);
-   printf("display: %x x %x (in pixels)\n", x.display_width, x.display_height);
+   xdisp_t *x = xdisp_init();
+   printf("display: %x x %x (pixels)\n", x->display_width, x->display_height);
 
-   xwin_t *w = xwin_init(&x, "foobar", 500, 500, 500, 500);
+   xwin_t *w = xwin_init(x, "foobar", 500, 500, 500, 500);
 
    /* start double buffer - NOTE you must do this w/ xcb backend + alpha */
    cairo_push_group(w->cairo);
@@ -39,7 +38,7 @@ main()
    cairo_paint(w->cairo);
    cairo_set_operator(w->cairo, CAIRO_OPERATOR_OVER);
 
-   xcb_flush(x.con);
+   xcb_flush(x->con);
 
    printf("You should now see a transparent gray box with 3 squares.\n");
    printf("Move the windows behind the window to ensure the transparency is\n");
@@ -48,7 +47,7 @@ main()
    getchar();
 
    printf("bye\n");
-   xwin_free(w);
-   xinfo_close(&x);
+   xwin_free(x, w);
+   xdisp_free(x);
    return 0;
 }

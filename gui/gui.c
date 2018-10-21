@@ -16,7 +16,7 @@ add_widget(widget_list_t *list, widget_t *w)
 
 gui_t*
 gui_init(
-      xinfo_t *xinfo,
+      xdisp_t *xdisp,
       xfont_t *xfont,
       xwin_t *xwin,
       char *bgcolor,
@@ -28,11 +28,11 @@ gui_init(
    if (NULL == gui)
       err(1, "%s: couldn't malloc gui", __FUNCTION__);
 
-   gui->xinfo = xinfo;
+   gui->xdisp = xdisp;
    gui->xfont = xfont;
    gui->xwin  = xwin;
 
-   gui->root = xctx_init(xinfo, xfont, xwin, L2R, padding, true);
+   gui->root = xctx_init(xdisp, xfont, xwin, L2R, padding, true);
 
    gui->widget_spacing = widget_spacing;
    gui->widget_bgcolor = widget_bgcolor;
@@ -67,7 +67,7 @@ draw_widget(gui_t *gui, xctx_t *dest, widget_t *w)
    if (!w->enabled(w))
       return;
 
-   xctx_t *scratchpad = xctx_init(gui->xinfo, gui->xfont, gui->xwin, L2R, gui->widget_padding, false);
+   xctx_t *scratchpad = xctx_init(gui->xdisp, gui->xfont, gui->xwin, L2R, gui->widget_padding, false);
    xdraw_color(scratchpad, gui->widget_bgcolor);
    w->draw(w, scratchpad);
    xdraw_hline(scratchpad, w->hdcolor, scratchpad->padding, 0, scratchpad->xoffset);
@@ -81,8 +81,8 @@ draw_widget_list(
       xctx_direction_t  direction,
       widget_list_t    *list)
 {
-   xctx_t *root = xctx_init(gui->xinfo, gui->xfont, gui->xwin, direction, gui->widget_padding, true);
-   xctx_t *temp = xctx_init(gui->xinfo, gui->xfont, gui->xwin, L2R, gui->widget_padding, false);
+   xctx_t *root = xctx_init(gui->xdisp, gui->xfont, gui->xwin, direction, gui->widget_padding, true);
+   xctx_t *temp = xctx_init(gui->xdisp, gui->xfont, gui->xwin, L2R, gui->widget_padding, false);
 
    size_t i = 0;
    for (; i < list->size; i++) {
@@ -105,5 +105,5 @@ gui_draw(gui_t *gui)
    draw_widget_list(gui, R2L,      &gui->RightWidgets);
    draw_widget_list(gui, CENTERED, &gui->CenterWidgets);
    xctx_root_pop(gui->root);
-   xcb_flush(gui->xinfo->con);
+   xcb_flush(gui->xdisp->con);
 }

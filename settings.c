@@ -11,12 +11,6 @@
 #include "settings.h"
 #include "gui/xcore.h"
 
-/* TODO when reloading config, if widget setup changes, that's not reflected
- * because that loading is done manually, outside settings, in the widgets.*
- * component. That should ideally be all moved here -- settings.* orchestrates
- * that.
- */
-
 /* the set of allowed switches - getopt(3) style */
 static const char * const SWITCHES = "HF:x:y:w:h:f:p:s:t:W:S:";
 
@@ -399,29 +393,6 @@ settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
       print_usage();
 }
 
-/* some settings need interpretation or to morph outside data (widgets/gui) */
-static void
-settings_do_post_set_morphing(settings_t *s)
-{
-   /* first, morph the display dimensions. oxbar supports '-1' for x/y position
-    * and height of the display, which are reasonably interrupted
-    */
-   xfont_t *font  = xfont_init(s->display.font);
-   xinfo_t *xinfo = xinfo_init();
-
-   if (-1 == s->display.h)
-      s->display.h = font->height + s->display.padding_top;
-
-   if (-1 == s->display.y)
-      s->display.y = xinfo->display_height - s->display.h;
-
-   if (-1 == s->display.w)
-      s->display.w = xinfo->display_width;
-
-   xfont_free(font);
-   xinfo_free(xinfo);
-}
-
 /* (re)read the config file stored in a settings_t and update it accordingly */
 void
 settings_reload_config(settings_t *s)
@@ -438,7 +409,8 @@ settings_reload_config(settings_t *s)
    bool   found_theme = false;
 
    /* open file */
-   if (NULL == (fin = fopen(s->config_file, "r"))) {
+   fin = fopen(s->config_file, "r");
+   if (NULL == fin) {
       if (NULL == s->theme)
          return;
       else
@@ -491,8 +463,6 @@ settings_reload_config(settings_t *s)
    if (NULL != s->theme && !found_theme)
       errx(1, "did not find a theme named '%s' in '%s'",
             s->theme, s->config_file);
-
-   settings_do_post_set_morphing(s);
 }
 
 /* wrap-up all settings loading logic (defaults + command line + config file) */
@@ -515,5 +485,4 @@ settings_init(settings_t *settings, int argc, char *argv[])
    settings_set_defaults(settings);
    settings_reload_config(settings);
    settings_parse_cmdline(settings, argc, argv);
-   settings_do_post_set_morphing(settings);
 }

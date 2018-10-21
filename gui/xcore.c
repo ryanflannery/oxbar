@@ -66,10 +66,10 @@ get_root_visual(xcb_screen_t *screen)
    return NULL;
 }
 
-xinfo_t*
-xinfo_init()
+xdisp_t*
+xdisp_init()
 {
-   xinfo_t *x = malloc(sizeof(xinfo_t));
+   xdisp_t *x = malloc(sizeof(xdisp_t));
    if (NULL == x)
       err(1, "%s: malloc failed", __FUNCTION__);
 
@@ -93,7 +93,7 @@ xinfo_init()
 }
 
 void
-xinfo_free(xinfo_t *x)
+xdisp_free(xdisp_t *x)
 {
    xcb_disconnect(x->con);
    free(x);
@@ -104,14 +104,14 @@ xinfo_free(xinfo_t *x)
 static void
 create_x_window(
       xwin_t *xwin,
-      const xinfo_t *xinfo,
+      const xdisp_t *xdisp,
       const char *name,
       uint32_t x, uint32_t y,
       uint32_t w, uint32_t h)
 {
-   xcb_colormap_t colormap = xcb_generate_id(xinfo->con);
-   xcb_create_colormap(xinfo->con, XCB_COLORMAP_ALLOC_NONE, colormap,
-         xinfo->root_screen->root, xinfo->root_visual->visual_id);
+   xcb_colormap_t colormap = xcb_generate_id(xdisp->con);
+   xcb_create_colormap(xdisp->con, XCB_COLORMAP_ALLOC_NONE, colormap,
+         xdisp->root_screen->root, xdisp->root_visual->visual_id);
 
    uint32_t valwin[5] = {
       XCB_NONE,
@@ -126,22 +126,22 @@ create_x_window(
    xwin->w = w;
    xwin->h = h;
 
-   xwin->window = xcb_generate_id(xinfo->con);
+   xwin->window = xcb_generate_id(xdisp->con);
    xcb_create_window(
-         xinfo->con,
+         xdisp->con,
          32, /* XCB_COPY_FROM_PARENT? no - force 32 bit */
          xwin->window,
-         xinfo->root_screen->root,
+         xdisp->root_screen->root,
          x, y, w, h,
          0, /* border width */
          XCB_WINDOW_CLASS_INPUT_OUTPUT,
-         xinfo->root_visual->visual_id,
+         xdisp->root_visual->visual_id,
          XCB_CW_BACK_PIXMAP | XCB_CW_BORDER_PIXEL | XCB_CW_OVERRIDE_REDIRECT
          | XCB_CW_EVENT_MASK | XCB_CW_COLORMAP,
          valwin);
 
    xcb_icccm_set_wm_name(
-         xinfo->con,
+         xdisp->con,
          xwin->window,
          XCB_ATOM_STRING, 8,
          strlen(name),
@@ -172,7 +172,7 @@ create_x_window(
  *                                                                   -ryan
  */
 static void
-setup_x_wm_hints(const xinfo_t *x, xwin_t *w)
+setup_x_wm_hints(const xdisp_t *x, xwin_t *w)
 {
    enum {
       NET_WM_XINFO_TYPE,
@@ -246,7 +246,7 @@ setup_x_wm_hints(const xinfo_t *x, xwin_t *w)
 }
 
 static void
-setup_cairo(const xinfo_t *x, xwin_t *w)
+setup_cairo(const xdisp_t *x, xwin_t *w)
 {
    w->surface = cairo_xcb_surface_create(
          x->con,
@@ -264,32 +264,33 @@ setup_cairo(const xinfo_t *x, xwin_t *w)
 
 xwin_t *
 xwin_init(
-      const xinfo_t *xinfo,
+      const xdisp_t *xdisp,
       const char *name,
       double x, double y,
       double w, double h)
 {
    xwin_t *xwin = malloc(sizeof(xwin_t));
    if (NULL == xwin)
-      err(1, "%s: couldn't malloc xinfo", __FUNCTION__);
+      err(1, "%s: couldn't malloc xdisp", __FUNCTION__);
 
    create_x_window(
          xwin,
-         xinfo,
+         xdisp,
          name,
          x, y,
          w, h);
 
-   setup_x_wm_hints(xinfo, xwin);
-   setup_cairo(xinfo, xwin);
-   xcb_map_window(xinfo->con, xwin->window);
+   setup_x_wm_hints(xdisp, xwin);
+   setup_cairo(xdisp, xwin);
+   xcb_map_window(xdisp->con, xwin->window);
    return xwin;
 }
 
 void
-xwin_free(xwin_t *w)
+xwin_free(xdisp_t *xdisp, xwin_t *w)
 {
    cairo_surface_destroy(w->surface);
    cairo_destroy(w->cairo);
+   xcb_destroy_window(xdisp->con, w->window);
    free(w);
 }
