@@ -19,16 +19,23 @@ typedef struct widget_list {
    size_t    size;
 } widget_list_t;
 
+/* if and how to show headers (the colored lines above widgets) */
+typedef enum {
+   NONE,    /* don't show them at all */
+   TOP,     /* show the headers in the top widget padding */
+   BOTTOM   /* show the headers in the bottom widget padding */
+} header_style_t;
+
 /* a gui just sets-up X stuff and orchestrates widgets */
 typedef struct gui {
-   xdisp_t *xdisp;
-   xfont_t *xfont;
-   xwin_t  *xwin;
-   xctx_t  *root;
-   char    *widget_bgcolor;
-   int      widget_spacing;
-   int      widget_padding;
-   char    *bgcolor;
+   xfont_t       *xfont;
+   xwin_t        *xwin;
+   char          *bgcolor;
+   char          *widget_bgcolor;
+   int            widget_spacing;
+   padding_t      padding;
+   padding_t      margin;
+   header_style_t header_style;
 
    /* WHAT to draw, and in WHICH contexts */
    widget_list_t LeftWidgets;
@@ -38,13 +45,14 @@ typedef struct gui {
 
 gui_t*
 gui_init(
-      xdisp_t *xdisp,
-      xfont_t *xfont,
-      xwin_t  *xwin,
-      char *bgcolor,
-      int padding,
-      int widget_spacing,
-      char *widget_bgcolor);
+      xfont_t       *xfont,
+      xwin_t        *xwin,
+      char          *bgcolor,
+      char          *widget_bgcolor,
+      int            widget_spacing,
+      padding_t      padding,
+      padding_t      margin,
+      header_style_t header_style);
 
 void gui_free(gui_t *gui);
 void gui_add_widget(gui_t *gui, xctx_direction_t direction, widget_t *w);

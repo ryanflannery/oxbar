@@ -10,20 +10,23 @@
 /* pango wrapper */
 
 xfont_t*
-xfont_init(const char *font_description)
+xfont_init(const char *font)
 {
    xfont_t *xf = malloc(sizeof(xfont_t));
    if (NULL == xf)
       err(1, "%s: malloc failed", __FUNCTION__);
 
-   if (NULL == (xf->ufont = strdup(font_description)))
+   if (NULL == (xf->ufont = strdup(font)))
       err(1, "%s: strdup failed", __FUNCTION__);
 
-   xf->pfont = pango_font_description_from_string(font_description);
+   xf->pfont = pango_font_description_from_string(font);
    if (!xf->pfont)
-      errx(1, "pango failed to load font '%s'", font_description);
+      errx(1, "pango failed to load font '%s'", font);
 
    xf->height = pango_font_description_get_size(xf->pfont) / PANGO_SCALE;
+   if (0 == xf->height)
+      errx(1, "%s: failed to determine font height '%s'", __FUNCTION__, font);
+
    return xf;
 }
 
@@ -264,7 +267,8 @@ setup_cairo(const xdisp_t *x, xwin_t *w)
 
 xwin_t *
 xwin_init(
-      const xdisp_t *xdisp,
+      xdisp_t    *xdisp,
+      const char *bgcolor,
       const char *name,
       double x, double y,
       double w, double h)
@@ -280,17 +284,76 @@ xwin_init(
          x, y,
          w, h);
 
+   xwin->bgcolor = bgcolor;
    setup_x_wm_hints(xdisp, xwin);
    setup_cairo(xdisp, xwin);
    xcb_map_window(xdisp->con, xwin->window);
+   xwin->xdisp = xdisp;
    return xwin;
 }
 
 void
-xwin_free(xdisp_t *xdisp, xwin_t *w)
+xwin_free(xwin_t *w)
 {
    cairo_surface_destroy(w->surface);
    cairo_destroy(w->cairo);
-   xcb_destroy_window(xdisp->con, w->window);
+   xcb_destroy_window(w->xdisp->con, w->window);
    free(w);
 }
+
+void
+xwin_push(xwin_t *w)
+{
+   double r, g, b, a;
+   cairo_push_group(w->cairo);
+   hex2rgba(w->bgcolor, &r, &g, &b, &a);
+   cairo_set_source_rgba(w->cairo, r, g, b, a);
+   cairo_paint(w->cairo);
+}
+
+void
+xwin_pop(xwin_t *w)
+{
+   cairo_pop_group_to_source(w->cairo);
+   cairo_set_operator(w->cairo, CAIRO_OPERATOR_SOURCE);
+   cairo_paint(w->cairo);
+   cairo_set_operator(w->cairo, CAIRO_OPERATOR_OVER);
+   xcb_flush(w->xdisp->con);
+}
+
+/* a useful local method to translate colors to into rgba pairs */
+void
+hex2rgba(const char *s, double *r, double *g, double *b, double *a)
+{
+   unsigned int ir, ig, ib, ia;
+
+   if (NULL == s || '\0' == s[0]) {
+      *r = *g = *b = *a = 1.0;
+      return;
+   }
+
+   if ('#' == s[0])
+      s++;
+
+   switch (strlen(s)) {
+      case 6:
+         if (3 != sscanf(s, "%02x%02x%02x", &ir, &ig, &ib))
+            errx(1, "%s: malformed rgb color '%s'", __FUNCTION__, s);
+
+         ia = 255;
+         break;
+      case 8:
+         if (4 != sscanf(s, "%02x%02x%02x%02x", &ir, &ig, &ib, &ia))
+            errx(1, "%s: malformed rgba color '%s'", __FUNCTION__, s);
+
+         break;
+      default:
+         errx(1, "%s: malformed color '%s'", __FUNCTION__, s);
+   }
+
+   *r = (double)ir / 255.0;
+   *g = (double)ig / 255.0;
+   *b = (double)ib / 255.0;
+   *a = (double)ia / 255.0;
+}
+

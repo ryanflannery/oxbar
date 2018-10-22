@@ -36,26 +36,28 @@ typedef enum {
    AFTER_RENDER
 } xctx_state_t;
 
+typedef struct padding {
+   double top, bottom, left, right;
+} padding_t;
+
 typedef struct xctx {
-   bool                    is_root;
-   xctx_direction_t        direction;
-   xfont_t                *xfont;
-   cairo_t                *cairo;
-   cairo_surface_t        *surface;
-   int                     h, w, padding;
-   double                  xoffset;
-   double                  yoffset;
+   bool              is_root;
+   xctx_direction_t  direction;
+   xfont_t          *xfont;
+   cairo_t          *cairo;
+   cairo_surface_t  *surface;
+   int               h, w;
+   padding_t         padding;
+   double            xoffset;
+   double            yoffset;
 } xctx_t;
 
 xctx_t *xctx_init(xfont_t *font, xwin_t *win, xctx_direction_t direction,
-      int padding, bool make_root);
+      double height, padding_t padding, bool make_root);
 void xctx_free(xctx_t *ctx);
 void xctx_reset(xctx_t *ctx);
+void xctx_complete(xctx_t *ctx);
 void xctx_advance(xctx_t *ctx, xctx_state_t state, double xplus, double yplus);
-
-/* double buffering wrappers */
-void xctx_root_push(xctx_t *ctx);
-void xctx_root_pop(xctx_t *ctx);
 
 /*
  * Drawing Primitives
@@ -80,6 +82,7 @@ xdraw_hline(
       xctx_t     *ctx,
       const char *color,
       double      width,
+      double      y,
       double      x1,
       double      x2);
 

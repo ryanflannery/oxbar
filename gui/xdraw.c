@@ -7,45 +7,9 @@
 
 #include "xdraw.h"
 
-/* a useful local method to translate colors to into rgba pairs */
-static void
-hex2rgba(const char *s, double *r, double *g, double *b, double *a)
-{
-   unsigned int ir, ig, ib, ia;
-
-   if (NULL == s || '\0' == s[0]) {
-      *r = *g = *b = *a = 1.0;
-      return;
-   }
-
-   if ('#' == s[0])
-      s++;
-
-   switch (strlen(s)) {
-      case 6:
-         if (3 != sscanf(s, "%02x%02x%02x", &ir, &ig, &ib))
-            errx(1, "%s: malformed rgb color '%s'", __FUNCTION__, s);
-
-         ia = 255;
-         break;
-      case 8:
-         if (4 != sscanf(s, "%02x%02x%02x%02x", &ir, &ig, &ib, &ia))
-            errx(1, "%s: malformed rgba color '%s'", __FUNCTION__, s);
-
-         break;
-      default:
-         errx(1, "%s: malformed color '%s'", __FUNCTION__, s);
-   }
-
-   *r = (double)ir / 255.0;
-   *g = (double)ig / 255.0;
-   *b = (double)ib / 255.0;
-   *a = (double)ia / 255.0;
-}
-
 xctx_t*
 xctx_init(xfont_t *font, xwin_t *win, xctx_direction_t direction,
-      int padding, bool make_root)
+      double height, padding_t padding, bool make_root)
 {
    xctx_t *ctx = malloc(sizeof(xctx_t));
    if (NULL == ctx)
@@ -54,9 +18,10 @@ xctx_init(xfont_t *font, xwin_t *win, xctx_direction_t direction,
    ctx->is_root   = make_root;
    ctx->direction = direction;
    ctx->xfont     = font;
-   ctx->padding   = padding;
-   ctx->h         = win->h;
+   ctx->h         = height;
    ctx->w         = win->w;
+
+   ctx->padding = padding;
 
    /* if root, use xcore's root window surface/cairo, otherwise a new one */
    if (make_root) {
@@ -95,16 +60,32 @@ xctx_reset(xctx_t *ctx)
 {
    switch (ctx->direction) {
    case L2R:
-      ctx->xoffset = 0;
-      ctx->yoffset = ctx->padding;
+      ctx->xoffset = ctx->padding.left;
+      ctx->yoffset = ctx->padding.top;
       break;
    case R2L:
-      ctx->xoffset = ctx->w;
-      ctx->yoffset = ctx->padding;
+      ctx->xoffset = ctx->w - ctx->padding.right;
+      ctx->yoffset = ctx->padding.top;
       break;
    case CENTERED:
-      ctx->xoffset = ctx->w / 2;
-      ctx->yoffset = 0;
+      ctx->xoffset = ctx->w / 2 - ctx->padding.left;
+      ctx->yoffset = ctx->padding.top;
+      break;
+   }
+}
+
+void
+xctx_complete(xctx_t *ctx)
+{
+   switch (ctx->direction) {
+   case L2R:
+      ctx->xoffset += ctx->padding.right;
+      break;
+   case R2L:
+      ctx->xoffset -= ctx->padding.left;
+      break;
+   case CENTERED:
+      ctx->xoffset += ctx->padding.right;
       break;
    }
 }
@@ -151,27 +132,6 @@ xctx_advance(
    }
 }
 
-void
-xctx_root_push(xctx_t *ctx)
-{
-   if (!ctx->is_root)
-      errx(1, "%s: this doesn't make sense", __FUNCTION__);
-
-   cairo_push_group(ctx->cairo);
-}
-
-void
-xctx_root_pop(xctx_t *ctx)
-{
-   if (!ctx->is_root)
-      errx(1, "%s: this doesn't make sense", __FUNCTION__);
-
-   cairo_pop_group_to_source(ctx->cairo);
-   cairo_set_operator(ctx->cairo, CAIRO_OPERATOR_SOURCE);
-   cairo_paint(ctx->cairo);
-   cairo_set_operator(ctx->cairo, CAIRO_OPERATOR_OVER);
-}
-
 /*
  * Drawing Primitives - note they all follow the same pattern of
  *
@@ -196,11 +156,11 @@ xdraw_context(
          dest->cairo,
          source->surface,
          dest->xoffset,
-         0);
+         dest->padding.top);
    cairo_rectangle(
          dest->cairo,
          dest->xoffset,
-         0,
+         dest->padding.top,
          source->xoffset,
          source->h);
    cairo_fill(dest->cairo);
@@ -224,6 +184,7 @@ xdraw_hline(
       xctx_t     *ctx,
       const char *color,
       double      width,
+      double      y,
       double      x1,
       double      x2)
 {
@@ -231,8 +192,8 @@ xdraw_hline(
    hex2rgba(color, &r, &g, &b, &a);
    cairo_set_source_rgba(ctx->cairo, r, g, b, a);
    cairo_set_line_width(ctx->cairo, width);
-   cairo_move_to(ctx->cairo, x1, 0);
-   cairo_line_to(ctx->cairo, x2, 0);
+   cairo_move_to(ctx->cairo, x1, y);
+   cairo_line_to(ctx->cairo, x2, y);
    cairo_stroke(ctx->cairo);
 }
 
@@ -280,7 +241,7 @@ xdraw_progress_bar(
       double      pct)
 {
    double r, g, b, a;
-   double height = ctx->h - ctx->padding;
+   double height = ctx->h - ctx->padding.top - ctx->padding.bottom;
 
    xctx_advance(ctx, BEFORE_RENDER, width, height);
 
@@ -289,7 +250,7 @@ xdraw_progress_bar(
    cairo_rectangle(
          ctx->cairo,
          ctx->xoffset,
-         ctx->padding,
+         ctx->padding.top,
          width,
          height);
    cairo_fill(ctx->cairo);
@@ -299,7 +260,7 @@ xdraw_progress_bar(
    cairo_rectangle(
          ctx->cairo,
          ctx->xoffset,
-         ctx->padding + ((100.0 - pct)/100.0) * height,
+         ctx->padding.top + ((100.0 - pct)/100.0) * height,
          width,
          (pct/100.0) * height);
    cairo_fill(ctx->cairo);
@@ -313,7 +274,7 @@ xdraw_chart(
       chart_t *c
       )
 {
-   double chart_height = ctx->h - ctx->padding;
+   double chart_height = ctx->h - ctx->padding.top - ctx->padding.bottom;
    double width = c->nsamples;
    double r, g, b, a;
 
@@ -324,7 +285,7 @@ xdraw_chart(
    cairo_rectangle(
          ctx->cairo,
          ctx->xoffset,
-         ctx->padding,
+         ctx->padding.top,
          width,
          chart_height);
    cairo_fill(ctx->cairo);
@@ -338,7 +299,7 @@ xdraw_chart(
          i = 0;
 
       /* we draw the bars for this sample from the bottom UP */
-      double y_bottom = ctx->h;
+      double y_bottom = ctx->h - ctx->padding.bottom;
       for (j = 0; j < c->nseries; j++) {
          if (!c->values[i][j])
             continue;
@@ -352,8 +313,8 @@ xdraw_chart(
          double y_top = y_bottom - height;
 
          /* don't go past the top (can happen w/ double rounding */
-         if (y_top < ctx->padding)
-            y_top = ctx->padding;
+         if (y_top < ctx->padding.top)
+            y_top = ctx->padding.top;
 
          /* NOTE: using cairo lines appears fuzzy - stick w/ rectangle */
          hex2rgba(c->colors[j], &r, &g, &b, &a);

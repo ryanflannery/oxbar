@@ -12,7 +12,7 @@
 #include "gui/xcore.h"
 
 /* the set of allowed switches - getopt(3) style */
-static const char * const SWITCHES = "HF:x:y:w:h:f:p:s:t:W:S:";
+static const char * const SWITCHES = "HF:x:y:w:h:f:m:p:s:t:W:S:";
 
 /* retrieve the name of "~/.oxbar.conf" based on a user's home directory */
 static char*
@@ -91,8 +91,16 @@ settings_set_defaults(settings_t *s)
    s->display.y = -1;
    s->display.w = -1;
    s->display.h = -1;
-   s->display.padding_top = 10;
-   s->display.widget_spacing = 15;
+   s->display.widget_spacing = 10;
+   s->display.padding.top    = 10;
+   s->display.padding.bottom = 0;
+   s->display.padding.left   = 0;
+   s->display.padding.right  = 0;
+   s->display.margin.top    = 0;
+   s->display.margin.bottom = 0;
+   s->display.margin.left   = 0;
+   s->display.margin.right  = 0;
+   s->display.headers = TOP;
    s->display.wmname  = strdup("oxbar");
    s->display.font    = strdup("DejaVu Sans 16px");
    s->display.bgcolor = strdup("1c1c1c99");
@@ -160,8 +168,7 @@ settings_free(settings_t *s)
 */
 
 #define SET_STRING_VALUE(name) \
-   if (strlen( key ) == strlen( #name ) \
-   &&  0 == strncasecmp( #name , key , strlen( #name ))) { \
+   if (0 == strcmp( key, #name )) { \
       s->name = value; \
       free( key );\
       return; \
@@ -169,13 +176,42 @@ settings_free(settings_t *s)
 
 
 #define SET_INT_VALUE(name) \
-   if (strlen( key ) == strlen( #name ) \
-   &&  0 == strncasecmp( #name , key , strlen( #name ))) { \
+   if (0 == strcmp( key, #name )) { \
       s->name = strtonum(value, -1, INT_MAX, &errstr); \
       if (errstr) \
          errx(1, "%s: bad value %s for key %s: %s", __FUNCTION__, value, key, errstr); \
       \
       free( key );\
+      free( value ); \
+      return; \
+   }
+
+void
+set_padding(padding_t *padding, const char * const value)
+{
+   double top, right, bottom, left;
+   switch (sscanf(value, "%lf %lf %lf %lf", &top, &right, &bottom, &left)) {
+   case 1:
+      padding->top    = top;
+      padding->right  = top;
+      padding->bottom = top;
+      padding->left   = top;
+      break;
+   case 4:
+      padding->top    = top;
+      padding->right  = right;
+      padding->bottom = bottom;
+      padding->left   = left;
+      break;
+   default:
+      errx(1, "%s: bad padding string '%s'", __FUNCTION__, value);
+   }
+}
+
+#define SET_PADDING(name) \
+   if (0 == strcmp( key , #name )) { \
+      set_padding(&s->name, value); \
+      free( key ); \
       free( value ); \
       return; \
    }
@@ -190,13 +226,28 @@ settings_set_keyvalue(settings_t *s, const char * const keyvalue)
    if (!parse_keyvalue(keyvalue, &key, &value))
       errx(1, "invalid format '%s' (should be 'key = value')", keyvalue);
 
+   /* custom: headers */
+   if (0 == strcasecmp("display.headers", key)) {
+      if (0 == strcasecmp("none", value)) {
+         s->display.headers = NONE;
+         return;
+      } else if (0 == strcasecmp("top", value)) {
+         s->display.headers = TOP;
+         return;
+      } else if (0 == strcasecmp("bottom", value)) {
+         s->display.headers = BOTTOM;
+         return;
+      }
+      errx(1, "%s: invalid value for headers: '%s", __FUNCTION__, value);
+   }
+
    /* display */
    SET_INT_VALUE(display.x);
    SET_INT_VALUE(display.y);
    SET_INT_VALUE(display.w);
    SET_INT_VALUE(display.h);
-   SET_INT_VALUE(display.padding_top);
-   SET_INT_VALUE(display.widget_spacing);
+   SET_PADDING(display.padding);
+   SET_PADDING(display.margin);
    SET_STRING_VALUE(display.wmname);
    SET_STRING_VALUE(display.font);
    SET_STRING_VALUE(display.bgcolor);
@@ -276,6 +327,9 @@ print_usage()
 "   -f font          The font to use, and any styles/sizing\n"
 "                    See \"Specifying Fonts\" below for more details\n"
 "   -p padding       The padding in pixels between a widget's content and edge\n"
+"                    If a single number is provided, that sets the top, right,\n"
+"                    bottom, left padding values. Otherwise a string with\n"
+"                    those four values, in that order, can be passed.\n"
 "   -s spacing       The spacing in pixels between widgets\n"
 "   -t time_format   The format to display date/time in (see strftime(3))\n"
 "   -W widgets       The list of widgets to display\n"
@@ -350,10 +404,11 @@ settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
          if (NULL == s->display.font)
             err(1, "strdup failed for font");
          break;
+      case 'm':
+         set_padding(&s->display.margin, optarg);
+         break;
       case 'p':
-         s->display.padding_top = strtonum(optarg, 0, INT_MAX, &errstr);
-         if (errstr)
-            errx(1, "illegal p value '%s': %s", optarg, errstr);
+         set_padding(&s->display.padding, optarg);
          break;
       case 's':
          s->display.widget_spacing = strtonum(optarg, 0, INT_MAX, &errstr);

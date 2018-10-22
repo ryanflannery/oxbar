@@ -41,7 +41,9 @@ setup_gui()
    xfont = xfont_init(settings.display.font);
 
    if (-1 == settings.display.h)
-      settings.display.h = xfont->height + settings.display.padding_top;
+      settings.display.h = xfont->height
+         + settings.display.padding.top + settings.display.padding.bottom
+         + settings.display.margin.top + settings.display.margin.bottom;
 
    if (-1 == settings.display.y)
       settings.display.y = xdisp->display_height - settings.display.h;
@@ -49,16 +51,18 @@ setup_gui()
    if (-1 == settings.display.w)
       settings.display.w = xdisp->display_width;
 
-   xwin = xwin_init(xdisp, settings.display.wmname,
+   xwin = xwin_init(xdisp, settings.display.bgcolor, settings.display.wmname,
          settings.display.x, settings.display.y,
          settings.display.w, settings.display.h);
 
    gui = gui_init(
-         xdisp, xfont, xwin,
+         xfont, xwin,
          settings.display.bgcolor,
-         settings.display.padding_top,
+         settings.display.widget_bgcolor,
          settings.display.widget_spacing,
-         settings.display.widget_bgcolor);
+         settings.display.padding,
+         settings.display.margin,
+         settings.display.headers);
    widgets_init(gui, &settings, &OXSTATS);
    gui_draw(gui);
 }
@@ -68,7 +72,7 @@ cleanup_gui()
 {
    widgets_free();
    gui_free(gui);
-   xwin_free(xdisp, xwin);
+   xwin_free(xwin);
    xfont_free(xfont);
 }
 

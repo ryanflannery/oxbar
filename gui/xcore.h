@@ -32,21 +32,29 @@ void xdisp_free(xdisp_t *x);
 /* xcb window & cairo wrapper */
 typedef struct xwin {
    /* settings specified by user and stored locally here */
+   const char *bgcolor;          /* background color of window          */
    const char *wname;            /* name of window for window manager   */
    uint32_t    x, y;             /* (x,y) top-left pixel for oxbar      */
    uint32_t    w, h;             /* (w,h) pixel dimensions of oxbar     */
 
    /* dervied stats useful for saving + core xcb/cairo/pango components */
-   xcb_drawable_t    window;     /* oxbar xwindow                    */
-   cairo_surface_t  *surface;    /* core ciaro surface mapped to X   */
-   cairo_t          *cairo;      /* core ciaro object for rendering  */
+   xdisp_t          *xdisp;      /* x display server                    */
+   xcb_drawable_t    window;     /* oxbar xwindow                       */
+   cairo_surface_t  *surface;    /* core ciaro surface mapped to X      */
+   cairo_t          *cairo;      /* core ciaro object for rendering     */
 } xwin_t;
 
 xwin_t *xwin_init(
-   const xdisp_t *xdisp,
+   xdisp_t    *xdisp,
+   const char *bgcolor,       /* background color of window             */
    const char *name,          /* name of window (in x/WM world          */
    double x, double y,        /* (x,y) of top-left window pixel         */
    double w, double h);       /* width x height in window pixels        */
-void xwin_free(xdisp_t *xdisp, xwin_t *w);
+void xwin_free(xwin_t *w);
+void xwin_push(xwin_t *w);
+void xwin_pop(xwin_t *w);
+
+/* a universal method to translate colors to components */
+void hex2rgba(const char *s, double *r, double *g, double *b, double *a);
 
 #endif

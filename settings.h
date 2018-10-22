@@ -1,6 +1,9 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include "gui/gui.h"
+#include "gui/xdraw.h"
+
 typedef struct settings {
 
    /* these aren't directly 'set-able' settings - more meta-settings */
@@ -11,8 +14,10 @@ typedef struct settings {
    struct display_t {
       int   x, y;
       int   w, h;
-      int   padding_top;
       int   widget_spacing;
+      padding_t padding;
+      padding_t margin;
+      header_style_t headers;
       char *wmname;
       char *font;
       char *bgcolor;
