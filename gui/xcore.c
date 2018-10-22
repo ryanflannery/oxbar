@@ -318,6 +318,7 @@ void
 hex2rgba(const char *s, double *r, double *g, double *b, double *a)
 {
    unsigned int ir, ig, ib, ia;
+   double scale;
 
    if (NULL == s || '\0' == s[0]) {
       *r = *g = *b = *a = 1.0;
@@ -328,24 +329,39 @@ hex2rgba(const char *s, double *r, double *g, double *b, double *a)
       s++;
 
    switch (strlen(s)) {
-      case 6:
-         if (3 != sscanf(s, "%02x%02x%02x", &ir, &ig, &ib))
-            errx(1, "%s: malformed rgb color '%s'", __FUNCTION__, s);
+   case 3:
+      if (3 != sscanf(s, "%01x%01x%01x", &ir, &ig, &ib))
+         errx(1, "%s: malformed rgb(3) color '%s'", __FUNCTION__, s);
 
-         ia = 255;
-         break;
-      case 8:
-         if (4 != sscanf(s, "%02x%02x%02x%02x", &ir, &ig, &ib, &ia))
-            errx(1, "%s: malformed rgba color '%s'", __FUNCTION__, s);
+      ia = 16;
+      scale = 16.0;
+      break;
+   case 4:
+      if (4 != sscanf(s, "%01x%01x%01x%01x", &ir, &ig, &ib, &ia))
+         errx(1, "%s: malformed rgb(4) color '%s'", __FUNCTION__, s);
 
-         break;
-      default:
-         errx(1, "%s: malformed color '%s'", __FUNCTION__, s);
+      scale = 16.0;
+      break;
+   case 6:
+      if (3 != sscanf(s, "%02x%02x%02x", &ir, &ig, &ib))
+         errx(1, "%s: malformed rgb(6) color '%s'", __FUNCTION__, s);
+
+      ia = 256;
+      scale = 256.0;
+      break;
+   case 8:
+      if (4 != sscanf(s, "%02x%02x%02x%02x", &ir, &ig, &ib, &ia))
+         errx(1, "%s: malformed rgba(8) color '%s'", __FUNCTION__, s);
+
+      scale = 256.0;
+      break;
+   default:
+      errx(1, "%s: malformed color '%s'", __FUNCTION__, s);
    }
 
-   *r = (double)ir / 255.0;
-   *g = (double)ig / 255.0;
-   *b = (double)ib / 255.0;
-   *a = (double)ia / 255.0;
+   *r = (double)ir / scale;
+   *g = (double)ig / scale;
+   *b = (double)ib / scale;
+   *a = (double)ia / scale;
 }
 

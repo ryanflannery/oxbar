@@ -61,6 +61,9 @@ widget_create_from_recipe(
    widget_recipe_t *recipe;
    widget_t *w;
 
+   if (NWIDGETS == MAX_ALL_WIDGETS)
+      errx(1, "%s: reached max widget count %d", __FUNCTION__, MAX_ALL_WIDGETS);
+
    if (NULL == (recipe = find_recipe(name)))
       errx(1, "no widget recipe named '%s'", name);
 
