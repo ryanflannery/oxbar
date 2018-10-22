@@ -8,6 +8,7 @@
 #include "widgets/nprocs.h"
 #include "widgets/memory.h"
 #include "widgets/cpus.h"
+#include "widgets/cpushort.h"
 #include "widgets/cpuslong.h"
 #include "widgets/net.h"
 #include "widgets/time.h"
@@ -28,6 +29,7 @@ widget_recipe_t WIDGET_RECIPES[] = {
    {{"nprocs",  NULL, wnprocs_enabled,  wnprocs_draw,  NULL}, NULL, NULL},
    {{"memory",  NULL, wmemory_enabled,  wmemory_draw,  NULL}, wmemory_init,  wmemory_free },
    {{"cpus",    NULL, wcpus_enabled,    wcpus_draw,    NULL}, wcpus_init,    wcpus_free },
+   {{"cpushort",NULL, wcpushort_enabled,wcpushort_draw,NULL}, NULL, NULL},
    {{"cpuslong",NULL, wcpuslong_enabled,wcpuslong_draw,NULL}, wcpuslong_init,wcpuslong_free },
    {{"net",     NULL, wnet_enabled,     wnet_draw,     NULL}, wnet_init,     wnet_free },
    {{"time",    NULL, wtime_enabled,    wtime_draw,    NULL}, NULL, NULL},
@@ -152,6 +154,7 @@ widgets_init(gui_t *gui, settings_t *settings, oxstats_t *stats)
    widgets_set_hdcolor("nprocs",    settings->nprocs.hdcolor);
    widgets_set_hdcolor("memory",    settings->memory.hdcolor);
    widgets_set_hdcolor("cpus",      settings->cpus.hdcolor);
+   widgets_set_hdcolor("cpushort",  settings->cpus.hdcolor);
    widgets_set_hdcolor("cpuslong",  settings->cpus.hdcolor);
    widgets_set_hdcolor("net",       settings->network.hdcolor);
    widgets_set_hdcolor("time",      settings->time.hdcolor);
