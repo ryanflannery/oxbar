@@ -1,6 +1,6 @@
 gui/xdraw.h:24: * TODO This abstraction should also permit vertical rendering (for a vertical
-oxbar.c:101:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
-settings.c:142:/* TODO Create a settings_free() (or refactor to make easier)
+oxbar.c:96:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
+settings.c:151:/* TODO Create a settings_free() (or refactor to make easier)
 stats/brightness.h:1:/* TODO Build a working brightness widget
 stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
 stats/cpu.c:125:   /* TODO CPU cleanup routine should free/cleanup shiz */
