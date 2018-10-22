@@ -5,7 +5,7 @@
 trap "" INT TERM
 
 # easy bg colors for testing layouts
-GOPTIONS="-S display.bgcolor=ff0000 -S display.widget_bgcolor=ffffff"
+GOPTIONS="-S window.bgcolor=ff0000 -S gui.widget_bgcolor=ffffff"
 
 # test SIGHUP reloading config
 ./oxbar -F sample.oxbar.conf Top &
@@ -31,14 +31,14 @@ kill $pid
 ./oxbar $GOPTIONS -y 100 -p 20 -m 20 -c below
 
 # test y/w/h morphing
-./oxbar -S "display.bgcolor=ff0000" -y 0   -w 400 -h 50 -W "time"
-./oxbar -S "display.bgcolor=ff0000" -y 0   -w 400 -h -1 -W "time"
-./oxbar -S "display.bgcolor=ff0000" -y 0   -w -1  -h 50 -W "time"
-./oxbar -S "display.bgcolor=ff0000" -y 0   -w -1  -h -1 -W "time"
-./oxbar -S "display.bgcolor=ff0000" -y -1  -w 400 -h 50 -W "time"
-./oxbar -S "display.bgcolor=ff0000" -y -1  -w 400 -h -1 -W "time"
-./oxbar -S "display.bgcolor=ff0000" -y -1  -w -1  -h 50 -W "time"
-./oxbar -S "display.bgcolor=ff0000" -y -1  -w -1  -h -1 -W "time"
+./oxbar -S "window.bgcolor=ff0000" -y 0   -w 400 -h 50 -W "time"
+./oxbar -S "window.bgcolor=ff0000" -y 0   -w 400 -h -1 -W "time"
+./oxbar -S "window.bgcolor=ff0000" -y 0   -w -1  -h 50 -W "time"
+./oxbar -S "window.bgcolor=ff0000" -y 0   -w -1  -h -1 -W "time"
+./oxbar -S "window.bgcolor=ff0000" -y -1  -w 400 -h 50 -W "time"
+./oxbar -S "window.bgcolor=ff0000" -y -1  -w 400 -h -1 -W "time"
+./oxbar -S "window.bgcolor=ff0000" -y -1  -w -1  -h 50 -W "time"
+./oxbar -S "window.bgcolor=ff0000" -y -1  -w -1  -h -1 -W "time"
 
 # test display ordering
 ./oxbar -y 0 -W "time time"

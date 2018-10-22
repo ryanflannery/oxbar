@@ -15,29 +15,16 @@ add_widget(widget_list_t *list, widget_t *w)
 }
 
 gui_t*
-gui_init(
-      xfont_t *xfont,
-      xwin_t *xwin,
-      char *bgcolor,
-      char *widget_bgcolor,
-      int   widget_spacing,
-      padding_t padding,
-      padding_t margin,
-      header_style_t header_style)
+gui_init(xfont_t *xfont, xwin_t *xwin, gui_settings_t *settings)
 {
    gui_t *gui = malloc(sizeof(gui_t));
    if (NULL == gui)
       err(1, "%s: couldn't malloc gui", __FUNCTION__);
 
-   gui->xfont = xfont;
-   gui->xwin  = xwin;
+   gui->xfont  = xfont;
+   gui->xwin   = xwin;
+   gui->s      = settings;
 
-   gui->margin = margin;
-   gui->padding = padding;
-   gui->bgcolor = bgcolor;
-   gui->widget_bgcolor = widget_bgcolor;
-   gui->widget_spacing = widget_spacing;
-   gui->header_style = header_style;
    gui->LeftWidgets.size = 0;
    gui->RightWidgets.size = 0;
    gui->CenterWidgets.size = 0;
@@ -67,14 +54,14 @@ draw_widget(gui_t *gui, xctx_t *dest, widget_t *w)
       return;
 
    xctx_t *scratchpad = xctx_init(gui->xfont, gui->xwin, L2R,
-         gui->xfont->height + (gui->padding.top + gui->padding.bottom), gui->padding, false);
-   xdraw_color(scratchpad, gui->widget_bgcolor);
+         gui->xfont->height + (gui->s->padding.top + gui->s->padding.bottom), gui->s->padding, false);
+   xdraw_color(scratchpad, gui->s->widget_bgcolor);
    w->draw(w, scratchpad);
    xctx_complete(scratchpad);
 
-   if (ABOVE == gui->header_style)
+   if (ABOVE == gui->s->header_style)
       xdraw_hline(scratchpad, w->hdcolor, scratchpad->padding.top, 0, 0, scratchpad->xoffset);
-   else if (BELOW == gui->header_style)
+   else if (BELOW == gui->s->header_style)
       xdraw_hline(scratchpad, w->hdcolor, scratchpad->padding.bottom, scratchpad->h, 0, scratchpad->xoffset);
 
    xdraw_context(dest, scratchpad);
@@ -88,15 +75,15 @@ draw_widget_list(
       xctx_direction_t  direction)
 {
    static const padding_t ZEROPAD = { .top = 0, .bottom = 0, .left = 0, .right = 0 };
-   xctx_t *root = xctx_init(gui->xfont, gui->xwin, direction, gui->xwin->h, gui->margin, true);
+   xctx_t *root = xctx_init(gui->xfont, gui->xwin, direction, gui->xwin->settings.h, gui->s->margin, true);
    xctx_t *temp = xctx_init(gui->xfont, gui->xwin, L2R,
-         gui->xfont->height + (gui->padding.top + gui->padding.bottom), ZEROPAD, false);
+         gui->xfont->height + (gui->s->padding.top + gui->s->padding.bottom), ZEROPAD, false);
 
    size_t i = 0;
    for (; i < list->size; i++) {
       draw_widget(gui, temp, list->widgets[i]);
       if (i != list->size - 1)
-         xctx_advance(temp, AFTER_RENDER, gui->widget_spacing, 0);
+         xctx_advance(temp, AFTER_RENDER, gui->s->widget_spacing, 0);
    }
 
    xctx_complete(temp);

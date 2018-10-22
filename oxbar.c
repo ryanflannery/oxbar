@@ -38,31 +38,22 @@ ignore_all_signals()
 void
 setup_gui()
 {
-   xfont = xfont_init(settings.display.font);
+   xfont = xfont_init(settings.font);
 
-   if (-1 == settings.display.h)
-      settings.display.h = xfont->height
-         + settings.display.padding.top + settings.display.padding.bottom
-         + settings.display.margin.top + settings.display.margin.bottom;
+   if (-1 == settings.window.h)
+      settings.window.h = xfont->height
+         + settings.gui.padding.top + settings.gui.padding.bottom
+         + settings.gui.margin.top  + settings.gui.margin.bottom;
 
-   if (-1 == settings.display.y)
-      settings.display.y = xdisp->display_height - settings.display.h;
+   if (-1 == settings.window.y)
+      settings.window.y = xdisp->display_height - settings.window.h;
 
-   if (-1 == settings.display.w)
-      settings.display.w = xdisp->display_width;
+   if (-1 == settings.window.w)
+      settings.window.w = xdisp->display_width;
 
-   xwin = xwin_init(xdisp, settings.display.bgcolor, settings.display.wmname,
-         settings.display.x, settings.display.y,
-         settings.display.w, settings.display.h);
+   xwin = xwin_init(xdisp, &settings.window);
 
-   gui = gui_init(
-         xfont, xwin,
-         settings.display.bgcolor,
-         settings.display.widget_bgcolor,
-         settings.display.widget_spacing,
-         settings.display.padding,
-         settings.display.margin,
-         settings.display.headers);
+   gui = gui_init(xfont, xwin, &settings.gui);
    widgets_init(gui, &settings, &OXSTATS);
    gui_draw(gui);
 }

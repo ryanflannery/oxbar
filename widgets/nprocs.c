@@ -12,6 +12,6 @@ wnprocs_draw(
       xctx_t   *ctx)
 {
    xdraw_printf(ctx,
-      w->context->settings->display.fgcolor,
+      w->context->settings->fgcolor,
       "#Procs: %d", w->context->stats->nprocs->nprocs);
 }

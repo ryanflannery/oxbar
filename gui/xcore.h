@@ -30,14 +30,19 @@ xdisp_t *xdisp_init();
 void xdisp_free(xdisp_t *x);
 
 /* xcb window & cairo wrapper */
-typedef struct xwin {
-   /* settings specified by user and stored locally here */
-   const char *bgcolor;          /* background color of window          */
-   const char *wname;            /* name of window for window manager   */
-   uint32_t    x, y;             /* (x,y) top-left pixel for oxbar      */
-   uint32_t    w, h;             /* (w,h) pixel dimensions of oxbar     */
+typedef struct xwin_settings {
+   char *bgcolor;    /* background color of window                   */
+   char *wname;      /* name of window for window manager            */
+   int   x, y;       /* (x,y) pixel coordinates of top-left corner   */
+   int   w, h;       /* (width,height) pixel dimensions of window    */
+} xwin_settings_t;
 
-   /* dervied stats useful for saving + core xcb/cairo/pango components */
+void xwin_settings_copy(
+      xwin_settings_t *dest,
+      xwin_settings_t *source);
+
+typedef struct xwin {
+   xwin_settings_t   settings;
    xdisp_t          *xdisp;      /* x display server                    */
    xcb_drawable_t    window;     /* oxbar xwindow                       */
    cairo_surface_t  *surface;    /* core ciaro surface mapped to X      */
@@ -46,10 +51,7 @@ typedef struct xwin {
 
 xwin_t *xwin_init(
    xdisp_t    *xdisp,
-   const char *bgcolor,       /* background color of window             */
-   const char *name,          /* name of window (in x/WM world          */
-   double x, double y,        /* (x,y) of top-left window pixel         */
-   double w, double h);       /* width x height in window pixels        */
+   xwin_settings_t *settings);
 void xwin_free(xwin_t *w);
 void xwin_push(xwin_t *w);
 void xwin_pop(xwin_t *w);

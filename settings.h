@@ -3,6 +3,7 @@
 
 #include "gui/gui.h"
 #include "gui/xdraw.h"
+#include "gui/xcore.h"
 
 typedef struct settings {
 
@@ -10,21 +11,14 @@ typedef struct settings {
    char *config_file;   /* file to read settings from */
    char *theme;         /* theme name specified on command line (if any) */
 
+   /* these are setable but don't below to any proper component below */
+   char *widgets;       /* parsed into gui objects when changed */
+   char *font;          /* parsed into an 'xfont' struct on load */
+   char *fgcolor;
+
    /* core display settings */
-   struct display_t {
-      int   x, y;
-      int   w, h;
-      int   widget_spacing;
-      padding_t padding;
-      padding_t margin;
-      header_style_t headers;
-      char *wmname;
-      char *font;
-      char *bgcolor;
-      char *fgcolor;
-      char *widget_bgcolor;
-      char *widgets;
-   } display;
+   xwin_settings_t window;
+   gui_settings_t  gui;
 
    /* per-widget settings */
 

@@ -86,27 +86,28 @@ parse_keyvalue(const char * const keyvalue, char **key, char **value)
 static void
 settings_set_defaults(settings_t *s)
 {
-   /* the rest here are the default values for all settings */
-   s->display.x = 0;
-   s->display.y = -1;
-   s->display.w = -1;
-   s->display.h = -1;
-   s->display.widget_spacing = 10;
-   s->display.padding.top    = 10;
-   s->display.padding.bottom = 0;
-   s->display.padding.left   = 0;
-   s->display.padding.right  = 0;
-   s->display.margin.top    = 0;
-   s->display.margin.bottom = 0;
-   s->display.margin.left   = 0;
-   s->display.margin.right  = 0;
-   s->display.headers = ABOVE;
-   s->display.wmname  = strdup("oxbar");
-   s->display.font    = strdup("DejaVu Sans 16px");
-   s->display.bgcolor = strdup("1c1c1c99");
-   s->display.fgcolor = strdup("93a1a1");
-   s->display.widget_bgcolor = strdup("1c1c1c");
-   s->display.widgets = strdup("nprocs cpuslong memory net > battery volume time");
+   s->font    = strdup("DejaVu Sans 16px");
+   s->fgcolor = strdup("93a1a1");
+   s->widgets = strdup("nprocs cpuslong memory net > battery volume time");
+
+   s->window.x = 0;
+   s->window.y = -1;
+   s->window.w = -1;
+   s->window.h = -1;
+   s->window.wname = strdup("oxbar");
+   s->window.bgcolor = strdup("1c1c1c99");
+
+   s->gui.widget_bgcolor = strdup("1c1c1c");
+   s->gui.widget_spacing = 10;
+   s->gui.padding.top    = 10;
+   s->gui.padding.bottom = 0;
+   s->gui.padding.left   = 0;
+   s->gui.padding.right  = 0;
+   s->gui.margin.top    = 0;
+   s->gui.margin.bottom = 0;
+   s->gui.margin.left   = 0;
+   s->gui.margin.right  = 0;
+   s->gui.header_style = ABOVE;
 
    s->battery.hdcolor             = strdup("b58900");
    s->battery.fgcolor_unplugged   = strdup("dc322f");
@@ -247,19 +248,25 @@ settings_set_keyvalue(settings_t *s, const char * const keyvalue)
    if (!parse_keyvalue(keyvalue, &key, &value))
       errx(1, "invalid format '%s' (should be 'key = value')", keyvalue);
 
-   /* display */
-   SET_INT_VALUE(display.x);
-   SET_INT_VALUE(display.y);
-   SET_INT_VALUE(display.w);
-   SET_INT_VALUE(display.h);
-   SET_PADDING(display.padding);
-   SET_PADDING(display.margin);
-   SET_SHOW_HEADERS(display.headers);
-   SET_STRING_VALUE(display.font);
-   SET_STRING_VALUE(display.bgcolor);
-   SET_STRING_VALUE(display.fgcolor);
-   SET_STRING_VALUE(display.widget_bgcolor);
-   SET_STRING_VALUE(display.widgets);
+   /* globals */
+   SET_STRING_VALUE(widgets);
+   SET_STRING_VALUE(font);
+   SET_STRING_VALUE(fgcolor);
+
+   /* window */
+   SET_INT_VALUE(window.x);
+   SET_INT_VALUE(window.y);
+   SET_INT_VALUE(window.w);
+   SET_INT_VALUE(window.h);
+   SET_STRING_VALUE(window.wname);
+   SET_STRING_VALUE(window.bgcolor);
+
+   /* gui */
+   SET_STRING_VALUE(gui.widget_bgcolor);
+   SET_INT_VALUE(gui.widget_spacing);
+   SET_PADDING(gui.padding);
+   SET_PADDING(gui.margin);
+   SET_SHOW_HEADERS(gui.header_style);
 
    /* battery */
    SET_STRING_VALUE(battery.hdcolor);
@@ -385,39 +392,39 @@ settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
           */
          break;
       case 'x':
-         s->display.x = strtonum(optarg, 0, INT_MAX, &errstr);
+         s->window.x = strtonum(optarg, 0, INT_MAX, &errstr);
          if (errstr)
             errx(1, "illegal x value '%s': %s", optarg, errstr);
          break;
       case 'y':
-         s->display.y = strtonum(optarg, -1, INT_MAX, &errstr);
+         s->window.y = strtonum(optarg, -1, INT_MAX, &errstr);
          if (errstr)
             errx(1, "illegal y value '%s': %s", optarg, errstr);
          break;
       case 'w':
-         s->display.w = strtonum(optarg, -1, INT_MAX, &errstr);
+         s->window.w = strtonum(optarg, -1, INT_MAX, &errstr);
          if (errstr)
             errx(1, "illegal w value '%s': %s", optarg, errstr);
          break;
       case 'h':
-         s->display.h = strtonum(optarg, -1, INT_MAX, &errstr);
+         s->window.h = strtonum(optarg, -1, INT_MAX, &errstr);
          if (errstr)
             errx(1, "illegal h value '%s': %s", optarg, errstr);
          break;
       case 'f':
-         free(s->display.font);
-         s->display.font = strdup(optarg);
-         if (NULL == s->display.font)
+         free(s->font);
+         s->font = strdup(optarg);
+         if (NULL == s->font)
             err(1, "strdup failed for font");
          break;
       case 'm':
-         set_padding(&s->display.margin, optarg);
+         set_padding(&s->gui.margin, optarg);
          break;
       case 'p':
-         set_padding(&s->display.padding, optarg);
+         set_padding(&s->gui.padding, optarg);
          break;
       case 's':
-         s->display.widget_spacing = strtonum(optarg, 0, INT_MAX, &errstr);
+         s->gui.widget_spacing = strtonum(optarg, 0, INT_MAX, &errstr);
          if (errstr)
             errx(1, "illegal s value '%s': %s", optarg, errstr);
          break;
@@ -428,13 +435,13 @@ settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
             err(1, "strdup failed for time format");
          break;
       case 'c':
-         set_show_headers(&s->display.headers, optarg);
+         set_show_headers(&s->gui.header_style, optarg);
          break;
       case 'W':
-         free(s->display.widgets);
-         s->display.widgets = strdup(optarg);
-         if (NULL == s->display.widgets)
-            err(1, "strdup failed for display.widgets");
+         free(s->widgets);
+         s->widgets = strdup(optarg);
+         if (NULL == s->widgets)
+            err(1, "strdup failed for widgets");
          break;
       case 'S':
          if (NULL == (keyvalue = strdup(optarg)))

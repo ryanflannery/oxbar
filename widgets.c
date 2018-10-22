@@ -156,5 +156,5 @@ widgets_init(gui_t *gui, settings_t *settings, oxstats_t *stats)
    widgets_set_hdcolor("net",       settings->network.hdcolor);
    widgets_set_hdcolor("time",      settings->time.hdcolor);
 
-   widgets_create(settings->display.widgets, gui, settings, stats);
+   widgets_create(settings->widgets, gui, settings, stats);
 }
