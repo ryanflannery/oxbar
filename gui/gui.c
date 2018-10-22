@@ -75,7 +75,7 @@ draw_widget_list(
       xctx_direction_t  direction)
 {
    static const padding_t ZEROPAD = { .top = 0, .bottom = 0, .left = 0, .right = 0 };
-   xctx_t *root = xctx_init(gui->xfont, gui->xwin, direction, gui->xwin->settings.h, gui->s->margin, true);
+   xctx_t *root = xctx_init(gui->xfont, gui->xwin, direction, gui->xwin->settings->h, gui->s->margin, true);
    xctx_t *temp = xctx_init(gui->xfont, gui->xwin, L2R,
          gui->xfont->height + (gui->s->padding.top + gui->s->padding.bottom), ZEROPAD, false);
 

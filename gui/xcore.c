@@ -224,9 +224,9 @@ setup_x_wm_hints(const xdisp_t *x, xwin_t *w)
    };
    unsigned long struts[12] = { 0 };
 
-   struts[top] = w->settings.y + w->settings.h;
-   struts[top_start_x] = w->settings.x;
-   struts[top_end_x] = w->settings.x + w->settings.w;
+   struts[top] = w->settings->y + w->settings->h;
+   struts[top_start_x] = w->settings->x;
+   struts[top_end_x] = w->settings->x + w->settings->w;
 
 	xcb_change_property(x->con, XCB_PROP_MODE_REPLACE, w->window,
          xatoms[NET_WM_XINFO_TYPE], XCB_ATOM_ATOM, 32, 1,
@@ -250,26 +250,14 @@ setup_cairo(const xdisp_t *x, xwin_t *w)
          x->con,
          w->window,
          x->root_visual,
-         w->settings.w,
-         w->settings.h);
+         w->settings->w,
+         w->settings->h);
    if (CAIRO_STATUS_SUCCESS != cairo_surface_status(w->surface))
       errx(1, "%s: failed to create xcb cairo surface", __FUNCTION__);
 
    w->cairo = cairo_create(w->surface);
    if (CAIRO_STATUS_SUCCESS != cairo_status(w->cairo))
       errx(1, "%s: failed to create cairo object", __FUNCTION__);
-}
-
-void xwin_settings_copy(
-      xwin_settings_t *dest,
-      xwin_settings_t *source)
-{
-   dest->bgcolor  = source->bgcolor;
-   dest->wname    = source->wname;
-   dest->x        = source->x;
-   dest->y        = source->y;
-   dest->w        = source->w;
-   dest->h        = source->h;
 }
 
 xwin_t *
@@ -281,8 +269,7 @@ xwin_init(
    if (NULL == xwin)
       err(1, "%s: couldn't malloc xdisp", __FUNCTION__);
 
-   xwin_settings_copy(&xwin->settings, settings);
-
+   xwin->settings = settings;
    create_x_window(
          xwin,
          xdisp,
@@ -311,7 +298,7 @@ xwin_push(xwin_t *w)
 {
    double r, g, b, a;
    cairo_push_group(w->cairo);
-   hex2rgba(w->settings.bgcolor, &r, &g, &b, &a);
+   hex2rgba(w->settings->bgcolor, &r, &g, &b, &a);
    cairo_set_source_rgba(w->cairo, r, g, b, a);
    cairo_paint(w->cairo);
 }

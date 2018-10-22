@@ -37,12 +37,8 @@ typedef struct xwin_settings {
    int   w, h;       /* (width,height) pixel dimensions of window    */
 } xwin_settings_t;
 
-void xwin_settings_copy(
-      xwin_settings_t *dest,
-      xwin_settings_t *source);
-
 typedef struct xwin {
-   xwin_settings_t   settings;
+   xwin_settings_t  *settings;
    xdisp_t          *xdisp;      /* x display server                    */
    xcb_drawable_t    window;     /* oxbar xwindow                       */
    cairo_surface_t  *surface;    /* core ciaro surface mapped to X      */

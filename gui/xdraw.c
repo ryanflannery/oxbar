@@ -19,7 +19,7 @@ xctx_init(xfont_t *font, xwin_t *win, xctx_direction_t direction,
    ctx->direction = direction;
    ctx->xfont     = font;
    ctx->h         = height;
-   ctx->w         = win->settings.w;
+   ctx->w         = win->settings->w;
 
    ctx->padding = padding;
 
@@ -31,8 +31,8 @@ xctx_init(xfont_t *font, xwin_t *win, xctx_direction_t direction,
       ctx->surface = cairo_surface_create_similar(
             win->surface,
             CAIRO_CONTENT_COLOR_ALPHA,
-            win->settings.w,
-            win->settings.h);
+            win->settings->w,
+            win->settings->h);
       if (CAIRO_STATUS_SUCCESS != cairo_surface_status(ctx->surface))
          errx(1, "%s: failed to create cairo surface", __FUNCTION__);
 
