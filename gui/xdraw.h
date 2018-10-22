@@ -47,13 +47,15 @@ typedef struct xctx {
    cairo_t          *cairo;
    cairo_surface_t  *surface;
    int               h, w;
-   padding_t         padding;
+   padding_t        *padding;
    double            xoffset;
    double            yoffset;
 } xctx_t;
 
-xctx_t *xctx_init(xfont_t *font, xwin_t *win, xctx_direction_t direction,
-      double height, padding_t padding, bool make_root);
+xctx_t *xctx_init_root(xfont_t *font, xwin_t *win, xctx_direction_t direction,
+      padding_t *padding);
+xctx_t *xctx_init_scratchpad(xfont_t *font, xwin_t *win,
+      xctx_direction_t direction, padding_t *padding);
 void xctx_free(xctx_t *ctx);
 void xctx_reset(xctx_t *ctx);
 void xctx_complete(xctx_t *ctx);
@@ -76,15 +78,19 @@ xdraw_color(
       xctx_t     *ctx,
       const char *const bgcolor);
 
-/* draw a horizontal line on a context */
+/* draw a colored headerline on a widget */
+
+typedef enum {
+   NONE,    /* don't show them at all */
+   ABOVE,   /* show the headers above the widget in the padding region */
+   BELOW    /* show the headers below the widget in the padding region */
+} header_style_t;
+
 void
-xdraw_hline(
-      xctx_t     *ctx,
-      const char *color,
-      double      width,
-      double      y,
-      double      x1,
-      double      x2);
+xdraw_headerline(
+      xctx_t         *ctx,
+      header_style_t  style,
+      const char     *color);
 
 /* draw some colored text (printf(3) style) */
 void

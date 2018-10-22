@@ -53,17 +53,11 @@ draw_widget(gui_t *gui, xctx_t *dest, widget_t *w)
    if (!w->enabled(w))
       return;
 
-   xctx_t *scratchpad = xctx_init(gui->xfont, gui->xwin, L2R,
-         gui->xfont->height + (gui->s->padding.top + gui->s->padding.bottom), gui->s->padding, false);
+   xctx_t *scratchpad = xctx_init_scratchpad(gui->xfont, gui->xwin, L2R, &gui->s->padding);
    xdraw_color(scratchpad, gui->s->widget_bgcolor);
    w->draw(w, scratchpad);
    xctx_complete(scratchpad);
-
-   if (ABOVE == gui->s->header_style)
-      xdraw_hline(scratchpad, w->hdcolor, scratchpad->padding.top, 0, 0, scratchpad->xoffset);
-   else if (BELOW == gui->s->header_style)
-      xdraw_hline(scratchpad, w->hdcolor, scratchpad->padding.bottom, scratchpad->h, 0, scratchpad->xoffset);
-
+   xdraw_headerline(scratchpad, gui->s->header_style, w->hdcolor);
    xdraw_context(dest, scratchpad);
    xctx_free(scratchpad);
 }
@@ -74,10 +68,8 @@ draw_widget_list(
       widget_list_t    *list,
       xctx_direction_t  direction)
 {
-   static const padding_t ZEROPAD = { .top = 0, .bottom = 0, .left = 0, .right = 0 };
-   xctx_t *root = xctx_init(gui->xfont, gui->xwin, direction, gui->xwin->settings->h, gui->s->margin, true);
-   xctx_t *temp = xctx_init(gui->xfont, gui->xwin, L2R,
-         gui->xfont->height + (gui->s->padding.top + gui->s->padding.bottom), ZEROPAD, false);
+   xctx_t *root = xctx_init_root(gui->xfont, gui->xwin, direction, &gui->s->margin);
+   xctx_t *temp = xctx_init_scratchpad(gui->xfont, gui->xwin, L2R, NULL);
 
    size_t i = 0;
    for (; i < list->size; i++) {

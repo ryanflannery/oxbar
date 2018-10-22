@@ -19,13 +19,6 @@ typedef struct widget_list {
    size_t    size;
 } widget_list_t;
 
-/* if and how to show headers (the colored lines above widgets) */
-typedef enum {
-   NONE,    /* don't show them at all */
-   ABOVE,   /* show the headers above the widget in the padding region */
-   BELOW    /* show the headers below the widget in the padding region */
-} header_style_t;
-
 /* pad that wraps all user-customizable settings for a gui */
 typedef struct gui_settings {
    char          *widget_bgcolor;
