@@ -265,7 +265,15 @@ settings_set_keyvalue(settings_t *s, const char * const keyvalue)
    SET_STRING_VALUE(gui.widget_bgcolor);
    SET_INT_VALUE(gui.widget_spacing);
    SET_PADDING(gui.padding);
+   SET_INT_VALUE(gui.padding.top);
+   SET_INT_VALUE(gui.padding.right);
+   SET_INT_VALUE(gui.padding.bottom);
+   SET_INT_VALUE(gui.padding.left);
    SET_PADDING(gui.margin);
+   SET_INT_VALUE(gui.margin.top);
+   SET_INT_VALUE(gui.margin.right);
+   SET_INT_VALUE(gui.margin.bottom);
+   SET_INT_VALUE(gui.margin.left);
    SET_SHOW_HEADERS(gui.header_style);
 
    /* battery */
