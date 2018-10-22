@@ -25,6 +25,11 @@ kill $pid
 ./oxbar $GOPTIONS -y 100 -p "0 0 0 0" -m 10
 ./oxbar $GOPTIONS -y 100 -p "40 0 20 5" -m 10
 
+# test setting colored headers
+./oxbar $GOPTIONS -y 100 -p 20 -m 20 -c none
+./oxbar $GOPTIONS -y 100 -p 20 -m 20 -c above
+./oxbar $GOPTIONS -y 100 -p 20 -m 20 -c below
+
 # test y/w/h morphing
 ./oxbar -S "display.bgcolor=ff0000" -y 0   -w 400 -h 50 -W "time"
 ./oxbar -S "display.bgcolor=ff0000" -y 0   -w 400 -h -1 -W "time"

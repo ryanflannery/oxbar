@@ -22,8 +22,8 @@ typedef struct widget_list {
 /* if and how to show headers (the colored lines above widgets) */
 typedef enum {
    NONE,    /* don't show them at all */
-   TOP,     /* show the headers in the top widget padding */
-   BOTTOM   /* show the headers in the bottom widget padding */
+   ABOVE,   /* show the headers above the widget in the padding region */
+   BELOW    /* show the headers below the widget in the padding region */
 } header_style_t;
 
 /* a gui just sets-up X stuff and orchestrates widgets */

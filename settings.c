@@ -12,7 +12,7 @@
 #include "gui/xcore.h"
 
 /* the set of allowed switches - getopt(3) style */
-static const char * const SWITCHES = "HF:x:y:w:h:f:m:p:s:t:W:S:";
+static const char * const SWITCHES = "HF:x:y:w:h:f:m:p:s:t:c:W:S:";
 
 /* retrieve the name of "~/.oxbar.conf" based on a user's home directory */
 static char*
@@ -100,7 +100,7 @@ settings_set_defaults(settings_t *s)
    s->display.margin.bottom = 0;
    s->display.margin.left   = 0;
    s->display.margin.right  = 0;
-   s->display.headers = TOP;
+   s->display.headers = ABOVE;
    s->display.wmname  = strdup("oxbar");
    s->display.font    = strdup("DejaVu Sans 16px");
    s->display.bgcolor = strdup("1c1c1c99");
@@ -167,25 +167,6 @@ settings_free(settings_t *s)
 }
 */
 
-#define SET_STRING_VALUE(name) \
-   if (0 == strcmp( key, #name )) { \
-      s->name = value; \
-      free( key );\
-      return; \
-   }
-
-
-#define SET_INT_VALUE(name) \
-   if (0 == strcmp( key, #name )) { \
-      s->name = strtonum(value, -1, INT_MAX, &errstr); \
-      if (errstr) \
-         errx(1, "%s: bad value %s for key %s: %s", __FUNCTION__, value, key, errstr); \
-      \
-      free( key );\
-      free( value ); \
-      return; \
-   }
-
 void
 set_padding(padding_t *padding, const char * const value)
 {
@@ -208,9 +189,49 @@ set_padding(padding_t *padding, const char * const value)
    }
 }
 
+void
+set_show_headers(header_style_t *style, const char * const value)
+{
+   if (0 == strcasecmp("none", value))
+      *style = NONE;
+   else if (0 == strcasecmp("above", value))
+      *style = ABOVE;
+   else if (0 == strcasecmp("below", value))
+      *style = BELOW;
+   else
+      errx(1, "%s: bad header style string '%s'", __FUNCTION__, value);
+}
+
+#define SET_STRING_VALUE(name) \
+   if (0 == strcmp( key, #name )) { \
+      s->name = value; \
+      free( key );\
+      return; \
+   }
+
+
+#define SET_INT_VALUE(name) \
+   if (0 == strcmp( key, #name )) { \
+      s->name = strtonum(value, -1, INT_MAX, &errstr); \
+      if (errstr) \
+         errx(1, "%s: bad value %s for key %s: %s", __FUNCTION__, value, key, errstr); \
+      \
+      free( key );\
+      free( value ); \
+      return; \
+   }
+
 #define SET_PADDING(name) \
    if (0 == strcmp( key , #name )) { \
       set_padding(&s->name, value); \
+      free( key ); \
+      free( value ); \
+      return; \
+   }
+
+#define SET_SHOW_HEADERS(name) \
+   if (0 == strcmp( key , #name )) { \
+      set_show_headers(&s->name, value); \
       free( key ); \
       free( value ); \
       return; \
@@ -226,21 +247,6 @@ settings_set_keyvalue(settings_t *s, const char * const keyvalue)
    if (!parse_keyvalue(keyvalue, &key, &value))
       errx(1, "invalid format '%s' (should be 'key = value')", keyvalue);
 
-   /* custom: headers */
-   if (0 == strcasecmp("display.headers", key)) {
-      if (0 == strcasecmp("none", value)) {
-         s->display.headers = NONE;
-         return;
-      } else if (0 == strcasecmp("top", value)) {
-         s->display.headers = TOP;
-         return;
-      } else if (0 == strcasecmp("bottom", value)) {
-         s->display.headers = BOTTOM;
-         return;
-      }
-      errx(1, "%s: invalid value for headers: '%s", __FUNCTION__, value);
-   }
-
    /* display */
    SET_INT_VALUE(display.x);
    SET_INT_VALUE(display.y);
@@ -248,7 +254,7 @@ settings_set_keyvalue(settings_t *s, const char * const keyvalue)
    SET_INT_VALUE(display.h);
    SET_PADDING(display.padding);
    SET_PADDING(display.margin);
-   SET_STRING_VALUE(display.wmname);
+   SET_SHOW_HEADERS(display.headers);
    SET_STRING_VALUE(display.font);
    SET_STRING_VALUE(display.bgcolor);
    SET_STRING_VALUE(display.fgcolor);
@@ -325,15 +331,15 @@ print_usage()
 "   -h height        The height of the display in pixels\n"
 "                    If -1, derive the height based on the font used\n"
 "   -f font          The font to use, and any styles/sizing\n"
-"                    See \"Specifying Fonts\" below for more details\n"
-"   -p padding       The padding in pixels between a widget's content and edge\n"
-"                    If a single number is provided, that sets the top, right,\n"
-"                    bottom, left padding values. Otherwise a string with\n"
-"                    those four values, in that order, can be passed.\n"
+"   -p margin        The margins in pixels between a all widget's edge & display\n"
+"   -p padding       The paddings in pixels between a widget's content and edge\n"
+"                    For magin & padding you can specify all 4 components at\n"
+"                    once, eg `-p \"top right bottom left\"`\n"
 "   -s spacing       The spacing in pixels between widgets\n"
+"   -c header-style  If and where to show the colored headlines above/below\n"
+"                    widgets. Can be \'none\', \'above\', or \'below\'.\n"
 "   -t time_format   The format to display date/time in (see strftime(3))\n"
 "   -W widgets       The list of widgets to display\n"
-"                    See \"Specifying Widgets\" below for more details\n"
 "   -S key=value     Set any configurable value in oxba\n\n"
 "Specifying Fonts (and styles, sizes)\n"
 "   oxbar uses pango to load & render fonts, and passes the string specified\n"
@@ -420,6 +426,9 @@ settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
          s->time.format = strdup(optarg);
          if (NULL == s->time.format)
             err(1, "strdup failed for time format");
+         break;
+      case 'c':
+         set_show_headers(&s->display.headers, optarg);
          break;
       case 'W':
          free(s->display.widgets);

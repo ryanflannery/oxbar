@@ -72,9 +72,9 @@ draw_widget(gui_t *gui, xctx_t *dest, widget_t *w)
    w->draw(w, scratchpad);
    xctx_complete(scratchpad);
 
-   if (TOP == gui->header_style)
+   if (ABOVE == gui->header_style)
       xdraw_hline(scratchpad, w->hdcolor, scratchpad->padding.top, 0, 0, scratchpad->xoffset);
-   else if (BOTTOM == gui->header_style)
+   else if (BELOW == gui->header_style)
       xdraw_hline(scratchpad, w->hdcolor, scratchpad->padding.bottom, scratchpad->h, 0, scratchpad->xoffset);
 
    xdraw_context(dest, scratchpad);
