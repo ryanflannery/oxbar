@@ -334,26 +334,26 @@ hex2rgba(const char *s, double *r, double *g, double *b, double *a)
          errx(1, "%s: malformed rgb(3) color '%s'", __FUNCTION__, s);
 
       ia = 16;
-      scale = 16.0;
+      scale = 15.0;
       break;
    case 4:
       if (4 != sscanf(s, "%01x%01x%01x%01x", &ir, &ig, &ib, &ia))
          errx(1, "%s: malformed rgb(4) color '%s'", __FUNCTION__, s);
 
-      scale = 16.0;
+      scale = 15.0;
       break;
    case 6:
       if (3 != sscanf(s, "%02x%02x%02x", &ir, &ig, &ib))
          errx(1, "%s: malformed rgb(6) color '%s'", __FUNCTION__, s);
 
       ia = 256;
-      scale = 256.0;
+      scale = 255.0;
       break;
    case 8:
       if (4 != sscanf(s, "%02x%02x%02x%02x", &ir, &ig, &ib, &ia))
          errx(1, "%s: malformed rgba(8) color '%s'", __FUNCTION__, s);
 
-      scale = 256.0;
+      scale = 255.0;
       break;
    default:
       errx(1, "%s: malformed color '%s'", __FUNCTION__, s);
