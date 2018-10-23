@@ -9,11 +9,11 @@
 #include "gui/xcore.h"
 #include "stats/stats.h"
 
-static xfont_t   *xfont = NULL;           /* pango font info                  */
-static xdisp_t   *xdisp = NULL;           /* x display info                   */
-static xwin_t    *xwin  = NULL;           /* x window info                    */
-static gui_t     *gui   = NULL;           /* oxbar gui                        */
-static settings_t settings;               /* settings                         */
+static xfont_t   *xfont = NULL;           /* loaded pango font info           */
+static xdisp_t   *xdisp = NULL;           /* core x display (via xcb) info    */
+static xwin_t    *xwin  = NULL;           /* oxbar's x window (xcb) info      */
+static gui_t     *gui   = NULL;           /* oxbar's gui                      */
+static settings_t settings;               /* global settings for oxbar        */
 
 static pthread_t  pthread_stats_updater;  /* update stats & draw every second */
 static pthread_t  pthread_sig_handler;    /* listen & respond to signals      */
@@ -52,7 +52,6 @@ setup_gui()
       settings.window.w = xdisp->display_width;
 
    xwin = xwin_init(xdisp, &settings.window);
-
    gui = gui_init(xfont, xwin, &settings.gui);
    widgets_init(gui, &settings, &OXSTATS);
    gui_draw(gui);

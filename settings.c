@@ -11,10 +11,87 @@
 #include "settings.h"
 #include "gui/xcore.h"
 
-/* the set of allowed switches - getopt(3) style */
+static void print_usage();
+static char* get_default_config();
+static void get_config_and_theme(int argc, char * const argv[],
+      char **config_file, char **theme);
+static bool parse_keyvalue(const char * const keyvalue,
+      char **key, char **value);
+
+static void parse_padding(padding_t *padding, const char * const value);
+static void parse_header_style(header_style_t *style, const char * const value);
+
+static void settings_set_defaults(settings_t *s);
+static bool setting_set_one_keyvalue(settings_t *s, const char *key, const char *value);
+static void settings_set_keyvalue(settings_t *s, const char * const keyvalue);
+static void settings_parse_cmdline(settings_t *s, int argc, char * const argv[]);
+void settings_reload_config(settings_t *s);
+void settings_init(settings_t *settings, int argc, char *argv[]);
+
+/* This is the set of allowed switches to oxbar, getopt(3) style. */
 static const char * const SWITCHES = "HF:x:y:w:h:f:m:p:s:t:c:W:S:";
 
-/* retrieve the name of "~/.oxbar.conf" based on a user's home directory */
+/* Print basic usage information (TODO I think I went overboard at the end) */
+static void
+print_usage()
+{
+   printf(
+"usage: oxbar [-H] [-x xloc] [-y yloc] [-w width] [-h height]\n"
+"             [-f font] [-p padding] [-s spacing] [-t time_format]\n"
+"             [-W widgets] [-S key=value]\n"
+"             [named-configuration]\n"
+"Each of the options is described briefly below. They are explained in full\n"
+"detail in the man page.\n"
+"   -H               Show this help text\n"
+"   -F file          Use file as the config file rather than ~/.oxbar.conf\n"
+"   -x xloc          The x coordinate in pixels of the upper-left corner\n"
+"   -y yloc          The y coordinate in pixels of the upper-left corner\n"
+"                    If -1, auto-align to the bottom of the display\n"
+"   -w width         The width of the display in pixels\n"
+"                    If -1, use the full width of the X display\n"
+"   -h height        The height of the display in pixels\n"
+"                    If -1, derive the height based on the font used\n"
+"   -f font          The font to use, and any styles/sizing\n"
+"   -p margin        The margins in pixels between a all widget's edge & display\n"
+"   -p padding       The paddings in pixels between a widget's content and edge\n"
+"                    For magin & padding you can specify all 4 components at\n"
+"                    once, eg `-p \"top right bottom left\"`\n"
+"   -s spacing       The spacing in pixels between widgets\n"
+"   -c header-style  If and where to show the colored headlines above/below\n"
+"                    widgets. Can be \'none\', \'above\', or \'below\'.\n"
+"   -t time_format   The format to display date/time in (see strftime(3))\n"
+"   -W widgets       The list of widgets to display\n"
+"   -S key=value     Set any configurable value in oxba\n\n"
+"Specifying Fonts (and styles, sizes)\n"
+"   oxbar uses pango to load & render fonts, and passes the string specified\n"
+"   here to pango_font_description_from_string() - see that documentation for\n"
+"   full details on the format. Roughly, the format is \"Family (style) (size)\"\n"
+"   such as \"Helvetica italic 16px\" or just \"Helvetica 16px\". Note that when\n"
+"   specifying the size, it must be in pixels (not points or pt)\n\n"
+"Specifying Widgets\n"
+"   The list of widgets to show is specified as a space separate list of widget\n"
+"   names. A string such as \"cpus memory network time\" would show those four\n"
+"   widgets in that order. Some additional characters can be used to control\n"
+"   the alignment of widgets, as a common use case for oxbar is it render\n"
+"   widgets across the full width of the display, where some are aligned on\n"
+"   the left, others on the right, and others centered. The characters to\n"
+"   control such alignment are:\n"
+"      '<'     All widgets after this are in the left-aligned stack\n"
+"              (this is the default)\n"
+"      '|'     All widgets after this are in the center-aligned stack\n"
+"      '>'     All widgets after this are in the right-aligned stack\n"
+"   So the string \"cpus memory network | time > volume battery\" would show\n"
+"   cpus/memory/network widgets on the left, time in the center, and volume\n"
+"   and battery widgets on the right.\n"
+         );
+   exit(1);
+}
+
+/*
+ * This constructs the string for the default config file, effectively just
+ * replacing the "~/.oxbar.conf" with the appropriate value of "~".
+ * XXX It is the callers responsibility to free() the result.
+ */
 static char*
 get_default_config()
 {
@@ -35,12 +112,21 @@ get_default_config()
    return config_file;
 }
 
-/* parse argc/argv and extract any config file or theme specified */
+/*
+ * This parses argc/argv and extracts JUST the config file and theme, if either
+ * are specified. The format for config file and them are:
+ *    $ oxbar ... -F /path/to/config ... theme
+ * That is, config file is specified via [-F file] and theme is just a string
+ * after all options. Both are optional.
+ * If either are specified in the passed argc/argv pair, the corresponding
+ * parameters will be set to those. Otherwise they remain unset.
+ * XXX It is the callers responsibility to free() the result.
+ */
 static void
-get_config_and_theme(int argc, char * const argv[], char **config_file, char **theme)
+get_config_and_theme(int argc, char * const argv[],
+      char **config_file, char **theme)
 {
    int ch;
-
    opterr = 0; /* disable getopt(3) errors on unknown parameters */
 
    /* get the config file (if specified) */
@@ -56,6 +142,7 @@ get_config_and_theme(int argc, char * const argv[], char **config_file, char **t
    argv += optind;
 
    if (1 == argc) {
+      /* we have a theme - set it */
       if (NULL == (*theme = strdup(argv[argc - 1])))
          err(1, "%s: strdup failed for theme", __FUNCTION__);
    }
@@ -66,7 +153,11 @@ get_config_and_theme(int argc, char * const argv[], char **config_file, char **t
    optind = 1;
 }
 
-/* parse a "key = value" string (supporting quotes, for our use case) */
+/*
+ * Parse a "key = value" string (value may be quoted) into its components.
+ * XXX Note the component vlues (for key and value) are allocated - it's the
+ * callers responsibility to free() them.
+ */
 static bool
 parse_keyvalue(const char * const keyvalue, char **key, char **value)
 {
@@ -82,7 +173,57 @@ parse_keyvalue(const char * const keyvalue, char **key, char **value)
    return true;
 }
 
-/* initialize default values for everything in settings_t */
+/*
+ * This parses a a string into a padding_t. The string can either be a single
+ * number ("%lf") in which case all 4 components of the padding_t are set
+ * to the extracted number, or a string with all four components listed.
+ * No allocations done here.
+ */
+static void
+parse_padding(padding_t *padding, const char * const value)
+{
+   double top, right, bottom, left;
+   switch (sscanf(value, "%lf %lf %lf %lf", &top, &right, &bottom, &left)) {
+   case 1:
+      padding->top    = top;
+      padding->right  = top;
+      padding->bottom = top;
+      padding->left   = top;
+      break;
+   case 4:
+      padding->top    = top;
+      padding->right  = right;
+      padding->bottom = bottom;
+      padding->left   = left;
+      break;
+   default:
+      errx(1, "%s: bad padding string '%s'", __FUNCTION__, value);
+   }
+}
+
+/* This parses a string into a header_style_t. No allocations done here. */
+static void
+parse_header_style(header_style_t *style, const char * const value)
+{
+   if (0 == strcasecmp("none", value))
+      *style = NONE;
+   else if (0 == strcasecmp("above", value))
+      *style = ABOVE;
+   else if (0 == strcasecmp("below", value))
+      *style = BELOW;
+   else
+      errx(1, "%s: bad header style string '%s'", __FUNCTION__, value);
+}
+
+/*
+ * Initialize default values for EVERYTHING in settings_t. Note this is always
+ * called first - so all values of settings_t are set to a reasonable default.
+ * XXX This assumptions also means that whenever we change any value that's
+ * dynamically allocated (strings), those need to be free()'d before
+ * resetting.
+ *
+ * ALL settings_t values should be set here, to a sane default.
+ */
 static void
 settings_set_defaults(settings_t *s)
 {
@@ -148,10 +289,13 @@ settings_set_defaults(settings_t *s)
    s->time.format  = strdup("%a %d %b %Y  %I:%M:%S %p");
 }
 
-/* TODO Create a settings_free() (or refactor to make easier)
+/*
+ * TODO Create a settings_free() (or refactor to make easier)
  * I should have this - but this is cumbersome given the above setup.
- * Go to array based? Then every settings retrieval in the draw loop is an
- * array lookup. Bleh. I had a version of this started, but seemed silly.
+ * Note the way I've setup ALL settings tracked by the settings_t construct,
+ * the initial allocations for all dynamic stuff is managed here -- it's
+ * initialized here (in settings_set_defaults() above) and then free()'d and
+ * realloc'd on every change, managed below.
  * I'll chew more on how best to refactor but for now it's low priority.
 void
 settings_free(settings_t *s)
@@ -168,220 +312,156 @@ settings_free(settings_t *s)
 }
 */
 
-void
-set_padding(padding_t *padding, const char * const value)
-{
-   double top, right, bottom, left;
-   switch (sscanf(value, "%lf %lf %lf %lf", &top, &right, &bottom, &left)) {
-   case 1:
-      padding->top    = top;
-      padding->right  = top;
-      padding->bottom = top;
-      padding->left   = top;
-      break;
-   case 4:
-      padding->top    = top;
-      padding->right  = right;
-      padding->bottom = bottom;
-      padding->left   = left;
-      break;
-   default:
-      errx(1, "%s: bad padding string '%s'", __FUNCTION__, value);
-   }
-}
-
-void
-set_show_headers(header_style_t *style, const char * const value)
-{
-   if (0 == strcasecmp("none", value))
-      *style = NONE;
-   else if (0 == strcasecmp("above", value))
-      *style = ABOVE;
-   else if (0 == strcasecmp("below", value))
-      *style = BELOW;
-   else
-      errx(1, "%s: bad header style string '%s'", __FUNCTION__, value);
-}
-
-#define SET_STRING_VALUE(name) \
+/*
+ * Key Match(?) then Set (KMS) macros used below (macro-fu or macro-goo?)
+ * These macros help matching against the names of the settings and their
+ * struct names, and rely on variables 'key' and 'value' outside their scope,
+ * as well as a settings pointser 's'.
+ *
+ * They check if "s->#name" matches key, and if so set s->name = value, for
+ * different types of values (strings, ints, then other complex types).
+ */
+#define KMS_STRING(name) \
    if (0 == strcmp( key, #name )) { \
-      s->name = value; \
-      free( key );\
-      return; \
+      if (NULL == (s->name = strdup(value))) \
+         err(1, "%s: strdup failed for key %s", __FUNCTION__, key); \
+      return true; \
    }
 
-
-#define SET_INT_VALUE(name) \
+#define KMS_INT(name) \
    if (0 == strcmp( key, #name )) { \
       s->name = strtonum(value, -1, INT_MAX, &errstr); \
       if (errstr) \
          errx(1, "%s: bad value %s for key %s: %s", __FUNCTION__, value, key, errstr); \
-      \
-      free( key );\
-      free( value ); \
-      return; \
+      return true; \
    }
 
-#define SET_PADDING(name) \
+#define KMS_PADDING(name) \
    if (0 == strcmp( key , #name )) { \
-      set_padding(&s->name, value); \
-      free( key ); \
-      free( value ); \
-      return; \
+      parse_padding(&s->name, value); \
+      return true; \
    }
 
-#define SET_SHOW_HEADERS(name) \
+#define KMS_HEADER_STYLE(name) \
    if (0 == strcmp( key , #name )) { \
-      set_show_headers(&s->name, value); \
-      free( key ); \
-      free( value ); \
-      return; \
+      parse_header_style(&s->name, value); \
+      return true; \
    }
 
-/* given a settings_t and a "key=value", set the appropriate settings member */
+/*
+ * This method takes a settings_t and a key + value pair (as strings) and
+ * will attempt to set the appropriate member of the settings_t object
+ * accordingly. The assumption is:
+ *    key   => is a string that's the actual name of the struct memeber
+ *    value => a string appropriate for that value
+ *
+ * Note that key here is the string representation of the actual struct member.
+ * So "s->window.bgcolor", the key is "window.bgcolor".
+ * The macros above are meant to help this parsing logic and cut-down on the
+ * boilerplate logic around it.
+ *
+ * Every member of the settings_t object should have a corresponding line
+ * here. Each line checks if the passed name matches key. If so, it sets that
+ * member to value and returns true. Otherwise it just continues. If no
+ * matching key is found, it returns false.
+ */
+static bool
+setting_set_one_keyvalue(settings_t *s, const char *key, const char *value)
+{
+   const char *errstr;
+
+   /* globals */
+   KMS_STRING(widgets);
+   KMS_STRING(font);
+   KMS_STRING(fgcolor);
+
+   /* window */
+   KMS_INT(window.x);
+   KMS_INT(window.y);
+   KMS_INT(window.w);
+   KMS_INT(window.h);
+   KMS_STRING(window.wname);
+   KMS_STRING(window.bgcolor);
+
+   /* gui */
+   KMS_STRING(gui.widget_bgcolor);
+   KMS_INT(gui.widget_spacing);
+   KMS_PADDING(gui.padding);
+   KMS_INT(gui.padding.top);
+   KMS_INT(gui.padding.right);
+   KMS_INT(gui.padding.bottom);
+   KMS_INT(gui.padding.left);
+   KMS_PADDING(gui.margin);
+   KMS_INT(gui.margin.top);
+   KMS_INT(gui.margin.right);
+   KMS_INT(gui.margin.bottom);
+   KMS_INT(gui.margin.left);
+   KMS_HEADER_STYLE(gui.header_style);
+
+   /* battery */
+   KMS_STRING(battery.hdcolor);
+   KMS_STRING(battery.fgcolor_unplugged);
+   KMS_INT(battery.chart_width);
+   KMS_STRING(battery.chart_bgcolor);
+   KMS_STRING(battery.chart_pgcolor);
+
+   /* volume */
+   KMS_STRING(volume.hdcolor);
+   KMS_INT(volume.chart_width);
+   KMS_STRING(volume.chart_bgcolor);
+   KMS_STRING(volume.chart_pgcolor);
+
+   /* nprocs */
+   KMS_STRING(nprocs.hdcolor);
+
+   /* memory */
+   KMS_STRING(memory.hdcolor);
+   KMS_STRING(memory.chart_bgcolor);
+   KMS_STRING(memory.chart_color_free);
+   KMS_STRING(memory.chart_color_total);
+   KMS_STRING(memory.chart_color_active);
+
+   /* cpus */
+   KMS_STRING(cpus.hdcolor);
+   KMS_STRING(cpus.chart_bgcolor);
+   KMS_STRING(cpus.chart_color_sys);
+   KMS_STRING(cpus.chart_color_interrupt);
+   KMS_STRING(cpus.chart_color_user);
+   KMS_STRING(cpus.chart_color_nice);
+   KMS_STRING(cpus.chart_color_spin);
+   KMS_STRING(cpus.chart_color_idle);
+
+   /* network */
+   KMS_STRING(network.hdcolor);
+   KMS_STRING(network.chart_bgcolor);
+   KMS_STRING(network.inbound_chart_color_bgcolor);
+   KMS_STRING(network.inbound_chart_color_pgcolor);
+   KMS_STRING(network.outbound_chart_color_bgcolor);
+   KMS_STRING(network.outbound_chart_color_pgcolor);
+
+   /* time */
+   KMS_STRING(time.hdcolor);
+   KMS_STRING(time.format);
+
+   return false;
+}
+
+/* Given a settings_t and a "key=value", set the appropriate settings member */
 static void
 settings_set_keyvalue(settings_t *s, const char * const keyvalue)
 {
-   const char *errstr;
    char *key, *value;
-
    if (!parse_keyvalue(keyvalue, &key, &value))
       errx(1, "invalid format '%s' (should be 'key = value')", keyvalue);
 
-   /* globals */
-   SET_STRING_VALUE(widgets);
-   SET_STRING_VALUE(font);
-   SET_STRING_VALUE(fgcolor);
+   if (!setting_set_one_keyvalue(s, key, value))
+      errx(1, "unkown key '%s' in '%s'", key, keyvalue);
 
-   /* window */
-   SET_INT_VALUE(window.x);
-   SET_INT_VALUE(window.y);
-   SET_INT_VALUE(window.w);
-   SET_INT_VALUE(window.h);
-   SET_STRING_VALUE(window.wname);
-   SET_STRING_VALUE(window.bgcolor);
-
-   /* gui */
-   SET_STRING_VALUE(gui.widget_bgcolor);
-   SET_INT_VALUE(gui.widget_spacing);
-   SET_PADDING(gui.padding);
-   SET_INT_VALUE(gui.padding.top);
-   SET_INT_VALUE(gui.padding.right);
-   SET_INT_VALUE(gui.padding.bottom);
-   SET_INT_VALUE(gui.padding.left);
-   SET_PADDING(gui.margin);
-   SET_INT_VALUE(gui.margin.top);
-   SET_INT_VALUE(gui.margin.right);
-   SET_INT_VALUE(gui.margin.bottom);
-   SET_INT_VALUE(gui.margin.left);
-   SET_SHOW_HEADERS(gui.header_style);
-
-   /* battery */
-   SET_STRING_VALUE(battery.hdcolor);
-   SET_STRING_VALUE(battery.fgcolor_unplugged);
-   SET_INT_VALUE(battery.chart_width);
-   SET_STRING_VALUE(battery.chart_bgcolor);
-   SET_STRING_VALUE(battery.chart_pgcolor);
-
-   /* volume */
-   SET_STRING_VALUE(volume.hdcolor);
-   SET_INT_VALUE(volume.chart_width);
-   SET_STRING_VALUE(volume.chart_bgcolor);
-   SET_STRING_VALUE(volume.chart_pgcolor);
-
-   /* nprocs */
-   SET_STRING_VALUE(nprocs.hdcolor);
-
-   /* memory */
-   SET_STRING_VALUE(memory.hdcolor);
-   SET_STRING_VALUE(memory.chart_bgcolor);
-   SET_STRING_VALUE(memory.chart_color_free);
-   SET_STRING_VALUE(memory.chart_color_total);
-   SET_STRING_VALUE(memory.chart_color_active);
-
-   /* cpus */
-   SET_STRING_VALUE(cpus.hdcolor);
-   SET_STRING_VALUE(cpus.chart_bgcolor);
-   SET_STRING_VALUE(cpus.chart_color_sys);
-   SET_STRING_VALUE(cpus.chart_color_interrupt);
-   SET_STRING_VALUE(cpus.chart_color_user);
-   SET_STRING_VALUE(cpus.chart_color_nice);
-   SET_STRING_VALUE(cpus.chart_color_spin);
-   SET_STRING_VALUE(cpus.chart_color_idle);
-
-   /* network */
-   SET_STRING_VALUE(network.hdcolor);
-   SET_STRING_VALUE(network.chart_bgcolor);
-   SET_STRING_VALUE(network.inbound_chart_color_bgcolor);
-   SET_STRING_VALUE(network.inbound_chart_color_pgcolor);
-   SET_STRING_VALUE(network.outbound_chart_color_bgcolor);
-   SET_STRING_VALUE(network.outbound_chart_color_pgcolor);
-
-   /* time */
-   SET_STRING_VALUE(time.hdcolor);
-   SET_STRING_VALUE(time.format);
-
-   /* unknown key! */
-   errx(1, "unknown key '%s''", keyvalue);
+   free(key);
+   free(value);
 }
 
-/* print basic usage information */
-static void
-print_usage()
-{
-   printf(
-"usage: oxbar [-H] [-x xloc] [-y yloc] [-w width] [-h height]\n"
-"             [-f font] [-p padding] [-s spacing] [-t time_format]\n"
-"             [-W widgets] [-S key=value]\n"
-"             [named-configuration]\n"
-"Each of the options is described briefly below. They are explained in full\n"
-"detail in the man page.\n"
-"   -H               Show this help text\n"
-"   -F file          Use file as the config file rather than ~/.oxbar.conf\n"
-"   -x xloc          The x coordinate in pixels of the upper-left corner\n"
-"   -y yloc          The y coordinate in pixels of the upper-left corner\n"
-"                    If -1, auto-align to the bottom of the display\n"
-"   -w width         The width of the display in pixels\n"
-"                    If -1, use the full width of the X display\n"
-"   -h height        The height of the display in pixels\n"
-"                    If -1, derive the height based on the font used\n"
-"   -f font          The font to use, and any styles/sizing\n"
-"   -p margin        The margins in pixels between a all widget's edge & display\n"
-"   -p padding       The paddings in pixels between a widget's content and edge\n"
-"                    For magin & padding you can specify all 4 components at\n"
-"                    once, eg `-p \"top right bottom left\"`\n"
-"   -s spacing       The spacing in pixels between widgets\n"
-"   -c header-style  If and where to show the colored headlines above/below\n"
-"                    widgets. Can be \'none\', \'above\', or \'below\'.\n"
-"   -t time_format   The format to display date/time in (see strftime(3))\n"
-"   -W widgets       The list of widgets to display\n"
-"   -S key=value     Set any configurable value in oxba\n\n"
-"Specifying Fonts (and styles, sizes)\n"
-"   oxbar uses pango to load & render fonts, and passes the string specified\n"
-"   here to pango_font_description_from_string() - see that documentation for\n"
-"   full details on the format. Roughly, the format is \"Family (style) (size)\"\n"
-"   such as \"Helvetica italic 16px\" or just \"Helvetica 16px\". Note that when\n"
-"   specifying the size, it must be in pixels (not points or pt)\n\n"
-"Specifying Widgets\n"
-"   The list of widgets to show is specified as a space separate list of widget\n"
-"   names. A string such as \"cpus memory network time\" would show those four\n"
-"   widgets in that order. Some additional characters can be used to control\n"
-"   the alignment of widgets, as a common use case for oxbar is it render\n"
-"   widgets across the full width of the display, where some are aligned on\n"
-"   the left, others on the right, and others centered. The characters to\n"
-"   control such alignment are:\n"
-"      '<'     All widgets after this are in the left-aligned stack\n"
-"              (this is the default)\n"
-"      '|'     All widgets after this are in the center-aligned stack\n"
-"      '>'     All widgets after this are in the right-aligned stack\n"
-"   So the string \"cpus memory network | time > volume battery\" would show\n"
-"   cpus/memory/network widgets on the left, time in the center, and volume\n"
-"   and battery widgets on the right.\n"
-         );
-   exit(1);
-}
-
-/* update a settings_t with any argc/argv parameters appropriately */
+/* Parses an argc/argv pair and updates a settings_t appropriately */
 static void
 settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
 {
@@ -395,9 +475,7 @@ settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
          print_usage();
          break;
       case 'F':
-         /* XXX We already handled this in settings_init! We just track it
-          * here so we can catch if any unknown flags are passed.
-          */
+         /* We already handled this in settings_init() - skip here */
          break;
       case 'x':
          s->window.x = strtonum(optarg, 0, INT_MAX, &errstr);
@@ -426,10 +504,10 @@ settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
             err(1, "strdup failed for font");
          break;
       case 'm':
-         set_padding(&s->gui.margin, optarg);
+         parse_padding(&s->gui.margin, optarg);
          break;
       case 'p':
-         set_padding(&s->gui.padding, optarg);
+         parse_padding(&s->gui.padding, optarg);
          break;
       case 's':
          s->gui.widget_spacing = strtonum(optarg, 0, INT_MAX, &errstr);
@@ -443,7 +521,7 @@ settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
             err(1, "strdup failed for time format");
          break;
       case 'c':
-         set_show_headers(&s->gui.header_style, optarg);
+         parse_header_style(&s->gui.header_style, optarg);
          break;
       case 'W':
          free(s->widgets);
@@ -472,14 +550,18 @@ settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
       print_usage();
 }
 
-/* (re)read the config file stored in a settings_t and update it accordingly */
+/*
+ * (Re)read the config file and update the passed settings_t accordingly.
+ * Note this respects if oxbar was run with a theme, and will reload that
+ * additional part (and no other themes).
+ * The config file and theme are loaded in the settings_t object at startup,
+ * and this retrieves them from there.
+ * XXX Be aware! This file can be called MORE THAN ONCE via a SIGHUP at
+ * runtime (hence the name).
+ */
 void
 settings_reload_config(settings_t *s)
 {
-   /* XXX Be aware! This file can be called MORE THAN ONCE if the config file
-    * is reloaded at runtime via a SIGHUP (hence it is named 'reload' and not
-    * 'load')
-    */
    char   theme_name[100];
    size_t length, linenum = 0;
    char  *line;
@@ -487,7 +569,6 @@ settings_reload_config(settings_t *s)
    bool   parse_lines = true;
    bool   found_theme = false;
 
-   /* open file */
    fin = fopen(s->config_file, "r");
    if (NULL == fin) {
       if (NULL == s->theme)
@@ -508,7 +589,7 @@ settings_reload_config(settings_t *s)
             break;
       }
 
-      /* skip blanklines */
+      /* skip blank lines */
       char *copy = line;
       copy += strspn(copy, " \t\n");
       if ('\0' == copy[0]) {
@@ -544,7 +625,11 @@ settings_reload_config(settings_t *s)
             s->theme, s->config_file);
 }
 
-/* wrap-up all settings loading logic (defaults + command line + config file) */
+/*
+ * This wraps-up all the above logic and is meant as the main entry point to
+ * loading an initial settings_t. After this, only settings_reload_config()
+ * would be expected to be called.
+ */
 void
 settings_init(settings_t *settings, int argc, char *argv[])
 {
