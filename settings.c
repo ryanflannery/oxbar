@@ -11,6 +11,7 @@
 #include "settings.h"
 #include "gui/xcore.h"
 
+/* useful utilities */
 static void print_usage();
 static char* get_default_config();
 static void get_config_and_theme(int argc, char * const argv[],
@@ -18,9 +19,11 @@ static void get_config_and_theme(int argc, char * const argv[],
 static bool parse_keyvalue(const char * const keyvalue,
       char **key, char **value);
 
+/* parsers for struct's that are settings */
 static void parse_padding(padding_t *padding, const char * const value);
 static void parse_header_style(header_style_t *style, const char * const value);
 
+/* core settings api */
 static void settings_set_defaults(settings_t *s);
 static bool settings_set_one_keyvalue(settings_t *s, const char *key, const char *value);
 static void settings_set_keyvalue(settings_t *s, const char * const keyvalue);
