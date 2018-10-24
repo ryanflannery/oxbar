@@ -22,7 +22,7 @@ static void parse_padding(padding_t *padding, const char * const value);
 static void parse_header_style(header_style_t *style, const char * const value);
 
 static void settings_set_defaults(settings_t *s);
-static bool setting_set_one_keyvalue(settings_t *s, const char *key, const char *value);
+static bool settings_set_one_keyvalue(settings_t *s, const char *key, const char *value);
 static void settings_set_keyvalue(settings_t *s, const char * const keyvalue);
 static void settings_parse_cmdline(settings_t *s, int argc, char * const argv[]);
 void settings_reload_config(settings_t *s);
@@ -366,7 +366,7 @@ settings_free(settings_t *s)
  * matching key is found, it returns false.
  */
 static bool
-setting_set_one_keyvalue(settings_t *s, const char *key, const char *value)
+settings_set_one_keyvalue(settings_t *s, const char *key, const char *value)
 {
    const char *errstr;
 
@@ -454,7 +454,7 @@ settings_set_keyvalue(settings_t *s, const char * const keyvalue)
    if (!parse_keyvalue(keyvalue, &key, &value))
       errx(1, "invalid format '%s' (should be 'key = value')", keyvalue);
 
-   if (!setting_set_one_keyvalue(s, key, value))
+   if (!settings_set_one_keyvalue(s, key, value))
       errx(1, "unkown key '%s' in '%s'", key, keyvalue);
 
    free(key);
