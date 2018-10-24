@@ -19,32 +19,42 @@ main()
 
    f = xfont_init("serif italic 20");
 
-   xwin_t *w = xwin_init(x, "foobar", 500, 500, 500, 500);
-   xctx_t *root = xctx_init(f, w, L2R, 10, true);
+   xwin_settings_t s = {
+      .bgcolor = "#ff0000",
+      .wname = "xcore.d :: xwin test",
+      .x = 500, .y = 500,
+      .w = 500, .h = 500
+   };
+   padding_t padding = {
+      .top = 10,
+      .right = 10,
+      .bottom = 10,
+      .left = 10
+   };
+   xwin_t *w = xwin_init(x, &s);
+   xctx_t *root = xctx_init_root(f, w, L2R, &padding);
 
-   xctx_root_push(root);
+   xwin_push(w);
 
    xdraw_color(root, "#ffffff");
    xdraw_printf(root, "#ff0000", "Hello world!");
 
-   xctx_root_pop(root);
-   xcb_flush(x->con);
+   xwin_pop(w);
 
    pause();
 
-   xctx_root_push(root);
+   xwin_push(w);
 
    xdraw_color(root, "#ffffff");
    xdraw_printf(root, "#00ff00", "Hello world!");
 
-   xctx_root_pop(root);
-   xcb_flush(x->con);
+   xwin_pop(w);
 
    pause();
 
    printf("bye\n");
    xctx_free(root);
-   xwin_free(x, w);
+   xwin_free(w);
    xdisp_free(x);
    return 0;
 }

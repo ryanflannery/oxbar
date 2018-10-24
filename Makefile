@@ -33,6 +33,11 @@ $(WOBJS):
 .c.o:
 	$(CC) $(CFLAGS) $<
 
+all:
+	$(MAKE) -C stats   $(MFLAGS) $@
+	$(MAKE) -C gui     $(MFLAGS) $@
+	$(MAKE) -C widgets $(MFLAGS) $@
+
 clean:
 	$(MAKE) -C stats   $(MFLAGS) $@
 	$(MAKE) -C gui     $(MFLAGS) $@

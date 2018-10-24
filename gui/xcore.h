@@ -19,8 +19,8 @@ void xfont_free(xfont_t *xf);
 
 /* xcb / display-info struct & setup/teardown methods */
 typedef struct xdisp {
-   uint32_t              display_width;
-   uint32_t              display_height;
+   uint16_t              display_width;
+   uint16_t              display_height;
    xcb_connection_t     *con;
    xcb_screen_t         *root_screen;
    xcb_visualtype_t     *root_visual;

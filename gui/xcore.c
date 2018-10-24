@@ -109,8 +109,8 @@ create_xcb_window(
       xwin_t *xwin,
       const xdisp_t *xdisp,
       const char *name,
-      uint32_t x, uint32_t y,
-      uint32_t w, uint32_t h)
+      int16_t x,  int16_t y,
+      uint16_t w, uint16_t h)
 {
    xcb_colormap_t colormap = xcb_generate_id(xdisp->con);
    xcb_create_colormap(xdisp->con, XCB_COLORMAP_ALLOC_NONE, colormap,

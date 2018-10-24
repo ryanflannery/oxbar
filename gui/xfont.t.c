@@ -17,12 +17,14 @@ test_font(const char *description)
 int
 main()
 {
-   test_font("");             /* fails! */
-   test_font("fixed");        /* fails! need height spec */
-   test_font("fixed 16pt");   /* fails! 'pt' should be 'px' or empty */
+   /*
+   test_font("");             // fails!
+   test_font("fixed");        // fails! need height spec
+   test_font("fixed 16pt");   // fails! 'pt' should be 'px' or empty
    test_font("fixed 16px");
    test_font("times 16px");
    test_font("DejaVu Sans Mono 16px");
+   */
 
    size_t lsize = 100;
    char *line = malloc(lsize);

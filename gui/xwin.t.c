@@ -6,9 +6,15 @@ int
 main()
 {
    xdisp_t *x = xdisp_init();
-   printf("display: %x x %x (pixels)\n", x->display_width, x->display_height);
+   printf("display: %d x %d (pixels)\n", x->display_width, x->display_height);
 
-   xwin_t *w = xwin_init(x, "foobar", 500, 500, 500, 500);
+   xwin_settings_t s = {
+      .bgcolor = "#ff0000",
+      .wname = "xcore.d :: xwin test",
+      .x = 500, .y = 500,
+      .w = 500, .h = 500
+   };
+   xwin_t *w = xwin_init(x, &s);
 
    /* start double buffer - NOTE you must do this w/ xcb backend + alpha */
    cairo_push_group(w->cairo);
@@ -47,7 +53,7 @@ main()
    getchar();
 
    printf("bye\n");
-   xwin_free(x, w);
+   xwin_free(w);
    xdisp_free(x);
    return 0;
 }
