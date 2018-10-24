@@ -102,10 +102,10 @@ xdisp_free(xdisp_t *x)
    free(x);
 }
 
-/* window wrapper */
+/* xcb window wrapper */
 
 static void
-create_x_window(
+create_xcb_window(
       xwin_t *xwin,
       const xdisp_t *xdisp,
       const char *name,
@@ -167,10 +167,14 @@ create_x_window(
  * I'm sure this could be done better, and I welcome the brave knight who
  * succeeds in doing so. Their righteous pull request would earn an instant
  * pitcher of "Beer of Thou's Chosing" from me.
+ *
+ * Ideally each end-goal-feature would be independently set-able, such as
+ * "immovable", "un-tab-able", "always-in-front", etc.
  *                                                                   -ryan
+ * TODO cleanup & separate wm hints ... and dragons
  */
 static void
-setup_x_wm_hints(const xdisp_t *x, xwin_t *w)
+setup_wm_hints(const xdisp_t *x, xwin_t *w)
 {
    enum {
       NET_WM_XINFO_TYPE,
@@ -270,14 +274,14 @@ xwin_init(
       err(1, "%s: couldn't malloc xdisp", __FUNCTION__);
 
    xwin->settings = settings;
-   create_x_window(
+   create_xcb_window(
          xwin,
          xdisp,
          settings->wname,
          settings->x, settings->y,
          settings->w, settings->h);
 
-   setup_x_wm_hints(xdisp, xwin);
+   setup_wm_hints(xdisp, xwin);
    setup_cairo(xdisp, xwin);
    xcb_map_window(xdisp->con, xwin->window);
    xwin->xdisp = xdisp;
@@ -313,7 +317,7 @@ xwin_pop(xwin_t *w)
    xcb_flush(w->xdisp->con);
 }
 
-/* a useful local method to translate colors to into rgba pairs */
+/* color util: translate a color string to r/g/b/a components */
 void
 hex2rgba(const char *s, double *r, double *g, double *b, double *a)
 {
@@ -330,30 +334,26 @@ hex2rgba(const char *s, double *r, double *g, double *b, double *a)
 
    switch (strlen(s)) {
    case 3:
-      if (3 != sscanf(s, "%01x%01x%01x", &ir, &ig, &ib))
-         errx(1, "%s: malformed rgb(3) color '%s'", __FUNCTION__, s);
-
       ia = 16;
       scale = 15.0;
+      if (3 != sscanf(s, "%01x%01x%01x", &ir, &ig, &ib))
+         errx(1, "%s: malformed rgb(3) color '%s'", __FUNCTION__, s);
       break;
    case 4:
+      scale = 15.0;
       if (4 != sscanf(s, "%01x%01x%01x%01x", &ir, &ig, &ib, &ia))
          errx(1, "%s: malformed rgb(4) color '%s'", __FUNCTION__, s);
-
-      scale = 15.0;
       break;
    case 6:
-      if (3 != sscanf(s, "%02x%02x%02x", &ir, &ig, &ib))
-         errx(1, "%s: malformed rgb(6) color '%s'", __FUNCTION__, s);
-
       ia = 256;
       scale = 255.0;
+      if (3 != sscanf(s, "%02x%02x%02x", &ir, &ig, &ib))
+         errx(1, "%s: malformed rgb(6) color '%s'", __FUNCTION__, s);
       break;
    case 8:
+      scale = 255.0;
       if (4 != sscanf(s, "%02x%02x%02x%02x", &ir, &ig, &ib, &ia))
          errx(1, "%s: malformed rgba(8) color '%s'", __FUNCTION__, s);
-
-      scale = 255.0;
       break;
    default:
       errx(1, "%s: malformed color '%s'", __FUNCTION__, s);
