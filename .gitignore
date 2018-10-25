@@ -1,5 +1,6 @@
 oxbar
 oxbar.core
+*.d
 *.t
 *.o
 *.swp

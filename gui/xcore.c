@@ -324,17 +324,15 @@ hex2rgba(const char *s, double *r, double *g, double *b, double *a)
    unsigned int ir, ig, ib, ia;
    double scale;
 
-   if (NULL == s || '\0' == s[0]) {
-      *r = *g = *b = *a = 1.0;
-      return;
-   }
+   if (NULL == s || '\0' == s[0])
+      errx(1, "%s: empty color!", __FUNCTION__);
 
    if ('#' == s[0])
       s++;
 
    switch (strlen(s)) {
    case 3:
-      ia = 16;
+      ia = 15;
       scale = 15.0;
       if (3 != sscanf(s, "%01x%01x%01x", &ir, &ig, &ib))
          errx(1, "%s: malformed rgb(3) color '%s'", __FUNCTION__, s);
@@ -345,7 +343,7 @@ hex2rgba(const char *s, double *r, double *g, double *b, double *a)
          errx(1, "%s: malformed rgb(4) color '%s'", __FUNCTION__, s);
       break;
    case 6:
-      ia = 256;
+      ia = 255;
       scale = 255.0;
       if (3 != sscanf(s, "%02x%02x%02x", &ir, &ig, &ib))
          errx(1, "%s: malformed rgb(6) color '%s'", __FUNCTION__, s);

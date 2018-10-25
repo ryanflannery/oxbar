@@ -1,16 +1,17 @@
-# build flags
+# build flags (XXX remember to tweak CXX versions below)
 CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2 `pkg-config --cflags pangocairo`
 LDFLAGS += -lm -L/usr/X11R6/lib `pkg-config --libs pangocairo` -lxcb -lxcb-icccm
 
 OBJS = xcore.o xdraw.o chart.o gui.o
-TESTS = xfont.t xdisp.t xwin.t xdraw.t chart.t
+TESTS = xfont.t xdisp.t xwin.t xdraw.t chart.t xcore.t
+DRIVERS = xcore.d
 
-.PHONY: clean objects tests
-.DEFAULT: objects
+.PHONY: clean objects tests drivers
 
-all: $(OBJS) $(TESTS)
+all: $(OBJS) $(TESTS) $(DRIVERS)
 objects: $(OBJS)
 tests: $(TESTS)
+drivers: $(DRIVERS)
 
 .c.o:
 	$(CC) $(CFLAGS) $<
@@ -29,6 +30,21 @@ xdraw.t: xcore.o xdraw.o chart.o xdraw.t.o
 
 chart.t: chart.o chart.t.o
 	$(CC) -o $@ $(LDFLAGS) chart.o chart.t.o
+
+xcore.d: xcore.o xcore.d.o
+	$(CC) -o $@ $(LDFLAGS) xcore.o xcore.d.o
+
+CXXFLAGS  += -c -Wall -Wextra -Werror -O2 `pkg-config --cflags pangocairo`
+LXXDFLAGS += -lm -L/usr/X11R6/lib `pkg-config --libs pangocairo` -lxcb -lxcb-icccm
+LXXDFLAGS += -L/usr/lib -L/usr/local/lib -lgtest -lgtest_main -lpthread
+CXX ?= clang++
+
+xcore.t: xcore.t.o
+	$(CXX) -o $@ $(LXXDFLAGS) xcore.o xcore.t.o
+
+xcore.t.o: xcore.t.cc
+	$(CXX) $(CXXFLAGS) xcore.t.cc
+
 
 clean:
 	rm -f $(OBJS)

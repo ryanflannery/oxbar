@@ -33,7 +33,7 @@ $(WOBJS):
 .c.o:
 	$(CC) $(CFLAGS) $<
 
-all:
+all: oxbar
 	$(MAKE) -C stats   $(MFLAGS) $@
 	$(MAKE) -C gui     $(MFLAGS) $@
 	$(MAKE) -C widgets $(MFLAGS) $@
