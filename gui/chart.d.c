@@ -1,3 +1,8 @@
+/*
+ * Test driver (system test) for chart.* component
+ * Run by just:
+ *  ./chart.d
+ */
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
