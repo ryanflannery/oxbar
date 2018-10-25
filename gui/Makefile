@@ -2,9 +2,9 @@
 CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2 `pkg-config --cflags pangocairo`
 LDFLAGS += -lm -L/usr/X11R6/lib `pkg-config --libs pangocairo` -lxcb -lxcb-icccm
 
-OBJS 	  = xcore.o xdraw.o chart.o gui.o
-TESTS   = xcore.t xdraw.t
-DRIVERS = xcore.d 		  chart.d
+OBJS 	  = xcore.o chart.o xdraw.o gui.o
+TESTS   = xcore.t chart.t xdraw.t
+DRIVERS = xcore.d chart.d
 
 .PHONY: clean objects tests drivers
 
@@ -33,11 +33,17 @@ LXXDFLAGS += -lm -L/usr/X11R6/lib `pkg-config --libs pangocairo` -lxcb -lxcb-icc
 LXXDFLAGS += -L/usr/lib -L/usr/local/lib -lgtest -lgtest_main -lpthread
 CXX ?= clang++
 
-xcore.t: xcore.t.o
+xcore.t: xcore.t.o xcore.o
 	$(CXX) -o $@ $(LXXDFLAGS) xcore.o xcore.t.o
 
 xcore.t.o: xcore.t.cc
 	$(CXX) $(CXXFLAGS) xcore.t.cc
+
+chart.t: chart.t.o chart.o
+	$(CXX) -o $@ $(LXXDFLAGS) chart.o chart.t.o
+
+chart.t.o: chart.t.cc
+	$(CXX) $(CXXFLAGS) chart.t.cc
 
 
 clean:

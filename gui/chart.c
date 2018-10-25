@@ -16,7 +16,7 @@ chart_init(
    chart_t *c;
    size_t   i, j;
 
-   if (0 == nseries || 0 == nsamples)
+   if (0 == nseries || 0 == nsamples || NULL == bgcolor || NULL == colors)
       errx(1, "%s: invalid parameter %zu %zu", __FUNCTION__, nseries, nsamples);
 
    if (NULL == (c = malloc(sizeof(chart_t))))
