@@ -2,23 +2,18 @@
 CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2 `pkg-config --cflags pangocairo`
 LDFLAGS += -lm -L/usr/X11R6/lib `pkg-config --libs pangocairo` -lxcb -lxcb-icccm
 
-OBJS 	  = xcore.o chart.o xdraw.o gui.o
-TESTS   = xcore.t chart.t xdraw.t
-DRIVERS = xcore.d chart.d
+OBJS 	  = xcore.o   chart.o   xdraw.o   gui.o
+DRIVERS = xcore.d   chart.d   xdraw.d
+DOBJS	  = xcore.d.o chart.d.o xdraw.d.o
 
 .PHONY: clean objects tests drivers
 
 all: $(OBJS) $(TESTS) $(DRIVERS)
 objects: $(OBJS)
-tests: $(TESTS)
 drivers: $(DRIVERS)
 
 .c.o:
 	$(CC) $(CFLAGS) $<
-
-# tests (OLD - TODO migrating these to below set of unit tests)
-xdraw.t: xcore.o xdraw.o chart.o xdraw.t.o
-	$(CC) -o $@ $(LDFLAGS) xcore.o xdraw.o chart.o xdraw.t.o
 
 # drivers (system tests)
 xcore.d: xcore.o xcore.d.o
@@ -27,27 +22,34 @@ xcore.d: xcore.o xcore.d.o
 chart.d: chart.o chart.d.o
 	$(CC) -o $@ $(LDFLAGS) chart.o chart.d.o
 
-# unit tests
+xdraw.d: xcore.o chart.o xdraw.o xdraw.d.o
+	$(CC) -o $@ $(LDFLAGS) xcore.o xdraw.o chart.o xdraw.d.o
+
+
+# unit tests (using gtest, so c++)
+CXX ?= clang++
 CXXFLAGS  += -c -Wall -Wextra -Werror -O2 `pkg-config --cflags pangocairo`
 LXXDFLAGS += -lm -L/usr/X11R6/lib `pkg-config --libs pangocairo` -lxcb -lxcb-icccm
 LXXDFLAGS += -L/usr/lib -L/usr/local/lib -lgtest -lgtest_main -lpthread
-CXX ?= clang++
+
+TESTS = xcore.t   chart.t
+TOBJS = xcore.t.o chart.t.o
+
+tests: $(TESTS)
+	gtester $(TESTS)
+
+.cc.o:
+	$(CXX) $(CXXFLAGS) $<
 
 xcore.t: xcore.t.o xcore.o
 	$(CXX) -o $@ $(LXXDFLAGS) xcore.o xcore.t.o
 
-xcore.t.o: xcore.t.cc
-	$(CXX) $(CXXFLAGS) xcore.t.cc
-
 chart.t: chart.t.o chart.o
 	$(CXX) -o $@ $(LXXDFLAGS) chart.o chart.t.o
 
-chart.t.o: chart.t.cc
-	$(CXX) $(CXXFLAGS) chart.t.cc
-
-
 clean:
 	rm -f $(OBJS)
-	rm -f $(TESTS)
+	rm -f $(DOBJS)
 	rm -f $(DRIVERS)
-	rm -f *.t.o
+	rm -f $(TOBJS)
+	rm -f $(TESTS)
