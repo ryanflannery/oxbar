@@ -187,6 +187,18 @@ main(int argc, char *argv[])
    xdisp = xdisp_init();
    setup_gui();
 
+   /*
+    * XXX pledge(2) will not work :(  ioctl's we call aren't supported
+    * This tries peldge enabling all supported promises, and it still fails.
+    * pledge is a whitelist...what oxbar needs (in it's current state) isn't
+    * whitelisted in any supported promise, and nor should pledge support it
+    * (probably). Keeping this here for posterity.
+    * Either I break-out the collectors (which violate the promises) or stick
+    * with no pledge.
+   if (0 != pledge("stdio rpath wpath cpath dpath tmppath inet mcast fattr chown dns getpw sendfd recvfd tape tty proc exec prot_exec ps vminfo id pf audio bpf unveil error", NULL))
+      err(1, "pledge");
+   */
+
    /* and we're running! start all threads */
    if (pthread_create(&pthread_sig_handler, NULL, thread_sig_handler, NULL)
    ||  pthread_create(&pthread_stats_updater, NULL, thread_stats_updater, NULL)
