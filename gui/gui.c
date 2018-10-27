@@ -54,7 +54,7 @@ draw_widget(gui_t *gui, xctx_t *dest, widget_t *w)
       return;
 
    xctx_t *scratchpad = xctx_init_scratchpad(gui->xfont, gui->xwin, L2R, &gui->s->padding);
-   xdraw_color(scratchpad, gui->s->widget_bgcolor);
+   xdraw_colorfill(scratchpad, gui->s->widget_bgcolor);
    w->draw(w, scratchpad);
    xctx_complete(scratchpad);
    xdraw_headerline(scratchpad, gui->s->header_style, w->hdcolor);

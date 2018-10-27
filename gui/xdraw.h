@@ -74,9 +74,9 @@ xdraw_context(
 
 /* draw a color over an entire context */
 void
-xdraw_color(
+xdraw_colorfill(
       xctx_t     *ctx,
-      const char *const bgcolor);
+      const char *const color);
 
 /* draw a colored headerline on a widget */
 

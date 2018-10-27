@@ -199,12 +199,12 @@ xdraw_context(
 }
 
 void
-xdraw_color(
+xdraw_colorfill(
       xctx_t     *ctx,
-      const char *const bgcolor)
+      const char *const color)
 {
    double r, g, b, a;
-   hex2rgba(bgcolor, &r, &g, &b, &a);
+   hex2rgba(color, &r, &g, &b, &a);
    cairo_set_source_rgba(ctx->cairo, r, g, b, a);
    cairo_paint(ctx->cairo);
 }
