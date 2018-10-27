@@ -36,7 +36,7 @@ main()
 
    xwin_push(w);
 
-   xdraw_color(root, "#ffffff");
+   xdraw_colorfill(root, "#ffffff");
    xdraw_printf(root, "#ff0000", "Hello world!");
 
    xwin_pop(w);
@@ -45,7 +45,7 @@ main()
 
    xwin_push(w);
 
-   xdraw_color(root, "#ffffff");
+   xdraw_colorfill(root, "#ffffff");
    xdraw_printf(root, "#00ff00", "Hello world!");
 
    xwin_pop(w);
