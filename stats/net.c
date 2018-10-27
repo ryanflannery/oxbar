@@ -4,6 +4,7 @@
 #include <limits.h>
 #include <string.h>
 #include <strings.h>
+#include <sys/ioctl.h>
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -18,9 +19,48 @@
 
 net_info_t NET;
 
+static char*
+get_egress()
+{
+	struct ifgroupreq	 ifgr;
+	struct ifg_req		*ifg;
+	unsigned int		 len;
+   int ioctlfd;
+   char *name;
+
+	memset(&ifgr, 0, sizeof(ifgr));
+   strlcpy(ifgr.ifgr_name, "egress", sizeof(ifgr.ifgr_name));
+
+   if ((ioctlfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+      err(1, "%s: socket(AF_INET, SOCK_DGRAM", __FUNCTION__);
+
+   if (ioctl(ioctlfd, SIOCGIFGMEMB, (caddr_t)&ifgr) == -1)
+      err(1, "%s: ioctl SIOCGIFGMEMB", __FUNCTION__);
+
+   len = ifgr.ifgr_len;
+   if (NULL == (ifgr.ifgr_groups = calloc(1, len)))
+      err(1, "%s: calloc failed", __FUNCTION__);
+
+   if (ioctl(ioctlfd, SIOCGIFGMEMB, (caddr_t)&ifgr) == -1)
+      err(1, "%s: ioctl SIOCGIFGMEMB", __FUNCTION__);
+
+   name = NULL;
+   for (ifg = ifgr.ifgr_groups; ifg && len >= sizeof(*ifg); ifg++) {
+      len -= sizeof(*ifg);
+      if (name != NULL)
+         errx(1, "%s: too many interfaces in group egress", __FUNCTION__);
+      if (NULL == (name = strdup(ifg->ifgrq_member)))
+         errx(1, "%s: strdup", __FUNCTION__);
+   }
+
+   free(ifgr.ifgr_groups);
+   return name;
+}
+
 void
 net_init()
 {
+   NET.iface = get_egress();
    NET.raw_ip_packets_in = NET.raw_ip_packets_out = 0;
    NET.new_ip_packets_in = NET.new_ip_packets_out = 0;
    NET.is_setup = true;
@@ -51,7 +91,8 @@ net_update_packets()
    NET.raw_ip_packets_out = stats.ips_localout;
 }
 
-/* TODO Refactor network bytes logic
+/*
+ * TODO Refactor network bytes logic
  * This could be greatly simplified. I think?
  */
 static void
@@ -71,10 +112,8 @@ get_rtaddrs(int addrs, struct sockaddr *sa, struct sockaddr **rti_info)
 void
 net_update_bytes()
 {
-   /*static struct ipstat stats;*/
    struct rt_msghdr *rtm;
 	static int mib[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
-	/*static size_t len = sizeof(stats);*/
    size_t sizeneeded = 0;
    char *buf = NULL;
 
@@ -114,8 +153,7 @@ net_update_bytes()
             else if (sdl->sdl_nlen > 0)
                memcpy(name, sdl->sdl_data, sdl->sdl_nlen);
 
-            /* TODO Support configurable interface -or- just use egress */
-            if (strcmp("iwm0", name))
+            if (strcmp(NET.iface, name))
                break;
 
             NET.new_bytes_in  = ifd->ifi_ibytes - NET.raw_bytes_in;

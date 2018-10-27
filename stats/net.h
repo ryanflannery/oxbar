@@ -9,6 +9,9 @@ typedef struct net_info {
 
    /* TODO Raw # packets in/out isn't used anymore. Remove? */
 
+   /* iface name (first in the 'egress' group) */
+   char *iface;
+
    /* raw counters (these can rollover) */
    u_long   raw_ip_packets_in;
    u_long   raw_ip_packets_out;

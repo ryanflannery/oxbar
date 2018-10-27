@@ -13,6 +13,7 @@ main()
    if (!NET.is_setup)
       errx(1, "failed to setup core!");
 
+   printf("egress interface is: '%s'\n", NET.iface);
    printf("%10s %10s %10s %10s %10s %10s %10s %10s\n",
          "#p in", "#p out", "#new in", "#new out",
          "#b in", "#b out", "#b new in", "#b new out");
