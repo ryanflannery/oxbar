@@ -1,6 +1,9 @@
+gui/xcore.c:174: * TODO cleanup & separate wm hints ... and dragons
 gui/xdraw.h:24: * TODO This abstraction should also permit vertical rendering (for a vertical
-oxbar.c:96:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
-settings.c:151:/* TODO Create a settings_free() (or refactor to make easier)
+gui/xcore.t.cc:9:/* TODO either fix googletest's [ASSERT|EXPECT]_EXIT* on openbsd or switch */
+oxbar.c:95:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
+settings.c:37:/* Print basic usage information (TODO I think I went overboard at the end) */
+settings.c:296: * TODO Create a settings_free() (or refactor to make easier)
 stats/brightness.h:1:/* TODO Build a working brightness widget
 stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
 stats/cpu.c:125:   /* TODO CPU cleanup routine should free/cleanup shiz */
