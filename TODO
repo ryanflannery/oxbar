@@ -9,7 +9,6 @@ stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
 stats/cpu.c:125:   /* TODO CPU cleanup routine should free/cleanup shiz */
 stats/memory.c:89:   /* TODO MEMORY cleanup routine should free/cleanup shiz */
 stats/volume.c:135:/* TODO GET VOLUME "IS MUTED?" WORKING
-stats/volume.h:9:   /* TODO GET VOLUME "IS MUTED?" WORKING */
 stats/net.c:95: * TODO Refactor network bytes logic
 stats/net.c:180:   /* TODO NET cleanup routine should free/cleanup shiz */
 stats/net.h:10:   /* TODO Raw # packets in/out isn't used anymore. Remove? */
