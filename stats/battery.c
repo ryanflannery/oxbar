@@ -37,18 +37,17 @@ battery_update()
       return;
 
    if (ioctl(apm_dev_fd, APM_IOC_GETPOWER, &(apm_info)) < 0)
-      warn("battery update: APM_IOC_GETPOWER");
+      errx(1, "%s: APM_IOC_GETPOWER", __FUNCTION__);
 
-   switch (apm_info.ac_state)
-   {
-      case APM_AC_OFF:
-         BATTERY.plugged_in = false;
-         break;
-      case APM_AC_ON:
-         BATTERY.plugged_in = true;
-         break;
-      default:
-         warnx("battery: failed to decode APM status");
+   switch (apm_info.ac_state) {
+   case APM_AC_OFF:
+      BATTERY.plugged_in = false;
+      break;
+   case APM_AC_ON:
+      BATTERY.plugged_in = true;
+      break;
+   default:
+      warnx("battery: failed to decode APM status");
    }
 
    BATTERY.charge_pct = apm_info.battery_life;
