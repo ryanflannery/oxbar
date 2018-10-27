@@ -30,8 +30,7 @@ volume_check_dev(int fd, int class, char *name)
       return -1;
 
    devinfo.index = 0;
-   while (ioctl(fd, AUDIO_MIXER_DEVINFO, &devinfo) >= 0)
-   {
+   while (ioctl(fd, AUDIO_MIXER_DEVINFO, &devinfo) >= 0) {
       if ((devinfo.type == AUDIO_MIXER_VALUE)
       &&  (devinfo.mixer_class == class)
       &&  (strncmp(devinfo.label.name, name, MAX_AUDIO_DEV_LEN) == 0))
@@ -57,18 +56,13 @@ volume_init()
       file = "/dev/mixer";
 
    if ((volume_dev_fd = open(file, O_RDWR)) < 0)
-   {
-      warn("volume: failed to open /dev/mixer");
-      return;
-   }
+      err(1, "%s: failed to open /dev/mixer", __FUNCTION__);
 
    /* find the outputs and inputs classes */
    oclass_idx = iclass_idx = mclass_idx = -1;
    devinfo.index = 0;
-   while (ioctl(volume_dev_fd, AUDIO_MIXER_DEVINFO, &devinfo) >= 0)
-   {
-      if (devinfo.type != AUDIO_MIXER_CLASS)
-      {
+   while (ioctl(volume_dev_fd, AUDIO_MIXER_DEVINFO, &devinfo) >= 0) {
+      if (devinfo.type != AUDIO_MIXER_CLASS) {
          devinfo.index++;
          continue;
 	   }
@@ -100,15 +94,13 @@ volume_init()
    if (volume_master_idx == -1)
       volume_master_idx = volume_check_dev(volume_dev_fd, oclass_idx, AudioNoutput);
 
-   if (volume_master_idx == -1)
-   {
+   if (volume_master_idx == -1) {
       warnx("volume: failed to find \"master\" mixer device");
       return;
    }
 
    devinfo.index = volume_master_idx;
-   if (ioctl(volume_dev_fd, AUDIO_MIXER_DEVINFO, &devinfo) == -1)
-   {
+   if (ioctl(volume_dev_fd, AUDIO_MIXER_DEVINFO, &devinfo) == -1) {
       warn("AUDIO_MIXER_DEVINFO");
       return;
    }
@@ -119,8 +111,7 @@ volume_init()
    /* finished... now close the device and reopen as read only */
    close(volume_dev_fd);
    volume_dev_fd = open("/dev/mixer", O_RDONLY);
-   if (volume_dev_fd < 0)
-   {
+   if (volume_dev_fd < 0) {
       warn("volume: failed to re-open /dev/mixer");
       return;
    }
@@ -186,16 +177,12 @@ volume_update()
    vinfo.dev = volume_master_idx;
    vinfo.type = AUDIO_MIXER_VALUE;
    if (ioctl(volume_dev_fd, AUDIO_MIXER_READ, &vinfo) < 0)
-   {
-      warn("volume update: AUDIO_MIXER_READ failed");
-      return;
-   }
+      err(1, "%s: AUDIO_MIXER_READ failed", __FUNCTION__);
 
    /* record in global struct */
    if (1 == vinfo.un.value.num_channels)
       volume_left = volume_right = vinfo.un.value.level[AUDIO_MIXER_LEVEL_MONO];
-   else
-   {
+   else {
       volume_left  = vinfo.un.value.level[AUDIO_MIXER_LEVEL_LEFT];
       volume_right = vinfo.un.value.level[AUDIO_MIXER_LEVEL_RIGHT];
    }
