@@ -2,25 +2,25 @@
 CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2
 LDFLAGS += -lm
 
-OBJS  = battery.o cpu.o memory.o net.o nprocs.o volume.o stats.o
-TESTS = battery.t cpu.t memory.t net.t nprocs.t volume.t
+OBJS    = battery.o cpu.o memory.o net.o nprocs.o volume.o stats.o
+DRIVERS = battery.d cpu.d memory.d net.d nprocs.d volume.d
 
-.PHONY: all clean objects tests
+.PHONY: all clean objects drivers
 .DEFAULT: all
 
-all: $(OBJS) $(TESTS)
+all: $(OBJS) $(DRIVERS)
 objects: $(OBJS)
-tests: $(TESTS)
+drivers: $(DRIVERS)
 
 .c.o:
 	$(CC) $(CFLAGS) $<
 
-.for st in $(TESTS)
-${st}: ${st}.o ${st:R}.o
-	$(CC) -o $@ $(LDFLAGS) ${st}.o ${st:R}.o
+.for driv in $(DRIVERS)
+${driv}: ${driv}.o ${driv:R}.o
+	$(CC) -o $@ $(LDFLAGS) ${driv}.o ${driv:R}.o
 .endfor
 
 clean:
 	rm -f $(OBJS)
-	rm -f $(TESTS)
-	rm -f *.t.o
+	rm -f $(DRIVERS)
+	rm -f *.d.o
