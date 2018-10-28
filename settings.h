@@ -11,7 +11,7 @@ typedef struct settings {
    char *config_file;   /* file to read settings from */
    char *theme;         /* theme name specified on command line (if any) */
 
-   /* these are setable but don't below to any proper component below */
+   /* these are setable but don't belong to any proper component below */
    char *widgets;       /* parsed into gui objects when changed */
    char *font;          /* parsed into an 'xfont' struct on load */
    char *fgcolor;
