@@ -1,38 +1,44 @@
+#include <sys/limits.h>
+
 #include <err.h>
 #include <pwd.h>
-#include <util.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdbool.h>
-#include <sys/limits.h>
+#include <util.h>
 
 #include "settings.h"
 #include "gui/xcore.h"
 
 /* useful utilities */
-static void print_usage();
-static char* get_default_config();
-static void get_config_and_theme(int argc, char * const argv[],
-      char **config_file, char **theme);
-static bool parse_keyvalue(const char * const keyvalue,
-      char **key, char **value);
+static void  print_usage();
+static char *get_default_config();
+static void  get_config_and_theme(int argc, char * const argv[],
+                                  char **config_file, char **theme);
+static bool  parse_keyvalue(const char * const keyvalue,
+                            char **key, char **value);
 
-/* parsers for struct's that are settings */
-static void parse_padding(struct padding *padding, const char * const value);
-static void parse_header_style(header_style_t *style, const char * const value);
+/* parsers for settings that are struct's (not base types) */
+static void parse_padding(struct padding *padding, const char * const str);
+static void parse_header_style(header_style_t *style, const char * const str);
 
 /* core settings api */
 static void settings_set_defaults(struct settings *s);
-static bool settings_set_one_keyvalue(struct settings *s, const char *key, const char *value);
-static void settings_set_keyvalue(struct settings *s, const char * const keyvalue);
-static void settings_parse_cmdline(struct settings *s, int argc, char * const argv[]);
+static bool settings_set_one_keyvalue(struct settings *s,
+                                      const char *key, const char *value);
+static void settings_set_keyvalue(struct settings *s,
+                                  const char * const keyvalue);
+static void settings_parse_cmdline(struct settings *s,
+                                   int argc, char * const argv[]);
 void settings_reload_config(struct settings *s);
 void settings_init(struct settings *settings, int argc, char *argv[]);
 
-/* This is the set of allowed switches to oxbar, getopt(3) style. */
+
+/* The set of allowed switches to oxbar, getopt(3) style (used in two places) */
 static const char * const SWITCHES = "HF:x:y:w:h:f:m:p:s:t:c:W:S:";
+
 
 /* Print basic usage information (TODO I think I went overboard at the end) */
 static void
@@ -55,8 +61,8 @@ print_usage()
 "   -h height        The height of the display in pixels\n"
 "                    If -1, derive the height based on the font used\n"
 "   -f font          The font to use, and any styles/sizing\n"
-"   -p margin        The margins in pixels between a all widget's edge & display\n"
-"   -p padding       The paddings in pixels between a widget's content and edge\n"
+"   -p margin        The margins (pixels) between a widget's edge & display\n"
+"   -p padding       The paddings (pixels) between a widget's content & edge\n"
 "                    For magin & padding you can specify all 4 components at\n"
 "                    once, eg `-p \"top right bottom left\"`\n"
 "   -s spacing       The spacing in pixels between widgets\n"
@@ -68,17 +74,18 @@ print_usage()
 "Specifying Fonts (and styles, sizes)\n"
 "   oxbar uses pango to load & render fonts, and passes the string specified\n"
 "   here to pango_font_description_from_string() - see that documentation for\n"
-"   full details on the format. Roughly, the format is \"Family (style) (size)\"\n"
-"   such as \"Helvetica italic 16px\" or just \"Helvetica 16px\". Note that when\n"
-"   specifying the size, it must be in pixels (not points or pt)\n\n"
+"   full details on the format. Roughly, the format is \"Family (style)\n"
+"   (size)\" such as \"Helvetica italic 16px\" or just \"Helvetica 16px\".\n"
+"   Note that when specifying the size, it must be in pixels (not points or\n"
+"   pt)\n\n"
 "Specifying Widgets\n"
-"   The list of widgets to show is specified as a space separate list of widget\n"
-"   names. A string such as \"cpus memory network time\" would show those four\n"
-"   widgets in that order. Some additional characters can be used to control\n"
-"   the alignment of widgets, as a common use case for oxbar is it render\n"
-"   widgets across the full width of the display, where some are aligned on\n"
-"   the left, others on the right, and others centered. The characters to\n"
-"   control such alignment are:\n"
+"   The list of widgets to show is specified as a space separate list of\n"
+"   widget names. A string such as \"cpus memory network time\" would show\n"
+"   those four widgets in that order. Some additional characters can be used\n"
+"   to control the alignment of widgets, as a common use case for oxbar is it\n"
+"   render widgets across the full width of the display, where some are\n"
+"   aligned on the left, others on the right, and others centered. The\n"
+"   characters to control such alignment are:\n"
 "      '<'     All widgets after this are in the left-aligned stack\n"
 "              (this is the default)\n"
 "      '|'     All widgets after this are in the center-aligned stack\n"
@@ -162,22 +169,22 @@ get_config_and_theme(int argc, char * const argv[],
  * callers responsibility to free() them.
  */
 static bool
-parse_keyvalue(const char * const keyvalue, char **key, char **value)
+parse_keyvalue(const char * const keyval, char **key, char **value)
 {
-   char tkey[101] = { 0 };
-   char tvalue[101] = { 0 };
+   char tk[101] = { 0 };
+   char tv[101] = { 0 };
 
-   if (2 != sscanf(keyvalue, " %100[^= ] = \"%100[ a-zA-Z0-9<>|#%:-]\"", tkey, tvalue))
-      if (2 != sscanf(keyvalue, " %100[^= ] = %100[a-zA-Z0-9<>|#%:-]", tkey, tvalue))
+   if (2 != sscanf(keyval, " %100[^= ] = \"%100[ a-zA-Z0-9<>|#%:-]\"", tk, tv))
+      if (2 != sscanf(keyval, " %100[^= ] = %100[a-zA-Z0-9<>|#%:-]", tk, tv))
          return false;
 
-   *key = strdup(tkey);
-   *value = strdup(tvalue);
+   *key = strdup(tk);
+   *value = strdup(tv);
    return true;
 }
 
 /*
- * This parses a a string into a struct padding. The string can either be a single
+ * This parses a a string into a padding. The string can either be a single
  * number ("%lf") in which case all 4 components of the struct padding are set
  * to the extracted number, or a string with all four components listed.
  * No allocations done here.
@@ -219,13 +226,13 @@ parse_header_style(header_style_t *style, const char * const value)
 }
 
 /*
- * Initialize default values for EVERYTHING in struct settings. Note this is always
- * called first - so all values of struct settings are set to a reasonable default.
+ * Initialize default values for EVERYTHING in settings. Note this is always
+ * called first - so all values of settings are set to a reasonable default.
  * XXX This assumptions also means that whenever we change any value that's
  * dynamically allocated (strings), those need to be free()'d before
  * resetting.
  *
- * ALL struct settings values should be set here, to a sane default.
+ * ALL settings values should be set here, to a sane default.
  */
 static void
 settings_set_defaults(struct settings *s)
@@ -254,11 +261,11 @@ settings_set_defaults(struct settings *s)
    s->gui.margin.right  = 0;
    s->gui.header_style = ABOVE;
 
-   s->battery.hdcolor             = strdup("b58900");
-   s->battery.fgcolor_unplugged   = strdup("dc322f");
-   s->battery.chart_width         = 7;
-   s->battery.chart_bgcolor = strdup("dc322f");
-   s->battery.chart_pgcolor = strdup("859900");
+   s->battery.hdcolor            = strdup("b58900");
+   s->battery.fgcolor_unplugged  = strdup("dc322f");
+   s->battery.chart_width        = 7;
+   s->battery.chart_bgcolor      = strdup("dc322f");
+   s->battery.chart_pgcolor      = strdup("859900");
 
    s->volume.hdcolor       = strdup("cb4b16");
    s->volume.chart_width   = 7;
@@ -296,7 +303,7 @@ settings_set_defaults(struct settings *s)
 /*
  * TODO Create a settings_free() (or refactor to make easier)
  * I should have this - but this is cumbersome given the above setup.
- * Note the way I've setup ALL settings tracked by the struct settings construct,
+ * Note the way I've setup ALL settings tracked by the settings construct,
  * the initial allocations for all dynamic stuff is managed here -- it's
  * initialized here (in settings_set_defaults() above) and then free()'d and
  * realloc'd on every change, managed below.
@@ -326,35 +333,35 @@ settings_free(struct settings *s)
  * different types of values (strings, ints, then other complex types).
  */
 #define KMS_STRING(name) \
-   if (0 == strcmp( key, #name )) { \
+   if (0 == strcmp( (key), (#name) )) { \
       if (NULL == (s->name = strdup(value))) \
-         err(1, "%s: strdup failed for key %s", __FUNCTION__, key); \
+         err(1, "%s: strdup failed for key %s", __FUNCTION__, (key)); \
       return true; \
    }
 
 #define KMS_INT(name) \
-   if (0 == strcmp( key, #name )) { \
-      s->name = strtonum(value, -1, INT_MAX, &errstr); \
+   if (0 == strcmp( (key), (#name) )) { \
+      s->name = strtonum((value), -1, INT_MAX, &errstr); \
       if (errstr) \
-         errx(1, "%s: bad value %s for key %s: %s", __FUNCTION__, value, key, errstr); \
+         errx(1, "%s: bad value %s for key %s: %s", __FUNCTION__, (value), (key), errstr); \
       return true; \
    }
 
 #define KMS_PADDING(name) \
-   if (0 == strcmp( key , #name )) { \
-      parse_padding(&s->name, value); \
+   if (0 == strcmp( (key), (#name) )) { \
+      parse_padding(&s->name, (value)); \
       return true; \
    }
 
 #define KMS_HEADER_STYLE(name) \
-   if (0 == strcmp( key , #name )) { \
-      parse_header_style(&s->name, value); \
+   if (0 == strcmp( (key), (#name) )) { \
+      parse_header_style(&s->name, (value)); \
       return true; \
    }
 
 /*
- * This method takes a struct settings and a key + value pair (as strings) and
- * will attempt to set the appropriate member of the struct settings object
+ * This method takes a settings and a key + value pair (as strings) and
+ * will attempt to set the appropriate member of the settings object
  * accordingly. The assumption is:
  *    key   => is a string that's the actual name of the struct memeber
  *    value => a string appropriate for that value
@@ -364,7 +371,7 @@ settings_free(struct settings *s)
  * The macros above are meant to help this parsing logic and cut-down on the
  * boilerplate logic around it.
  *
- * Every member of the struct settings object should have a corresponding line
+ * Every member of the settings object should have a corresponding line
  * here. Each line checks if the passed name matches key. If so, it sets that
  * member to value and returns true. Otherwise it just continues. If no
  * matching key is found, it returns false.
@@ -452,7 +459,7 @@ settings_set_one_keyvalue(struct settings *s, const char *key, const char *value
    return false;
 }
 
-/* Given a struct settings and a "key=value", set the appropriate settings member */
+/* Given a settings and a "key=value", set the appropriate settings member */
 static void
 settings_set_keyvalue(struct settings *s, const char * const keyvalue)
 {
@@ -467,7 +474,7 @@ settings_set_keyvalue(struct settings *s, const char * const keyvalue)
    free(value);
 }
 
-/* Parses an argc/argv pair and updates a struct settings appropriately */
+/* Parses an argc/argv pair and updates a settings appropriately */
 static void
 settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
 {
@@ -477,31 +484,8 @@ settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
 
    while (-1 != (ch = getopt(argc, argv, SWITCHES))) {
       switch (ch) {
-      case 'H':
-         print_usage();
-         break;
-      case 'F':
-         /* We already handled this in settings_init() - skip here */
-         break;
-      case 'x':
-         s->window.x = strtonum(optarg, 0, INT_MAX, &errstr);
-         if (errstr)
-            errx(1, "illegal x value '%s': %s", optarg, errstr);
-         break;
-      case 'y':
-         s->window.y = strtonum(optarg, -1, INT_MAX, &errstr);
-         if (errstr)
-            errx(1, "illegal y value '%s': %s", optarg, errstr);
-         break;
-      case 'w':
-         s->window.w = strtonum(optarg, -1, INT_MAX, &errstr);
-         if (errstr)
-            errx(1, "illegal w value '%s': %s", optarg, errstr);
-         break;
-      case 'h':
-         s->window.h = strtonum(optarg, -1, INT_MAX, &errstr);
-         if (errstr)
-            errx(1, "illegal h value '%s': %s", optarg, errstr);
+      case 'c':
+         parse_header_style(&s->gui.header_style, optarg);
          break;
       case 'f':
          free(s->font.desc);
@@ -520,14 +504,34 @@ settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
          if (errstr)
             errx(1, "illegal s value '%s': %s", optarg, errstr);
          break;
+      case 'S':
+         if (NULL == (keyvalue = strdup(optarg)))
+            err(1, "strdup failed for font");
+
+         settings_set_keyvalue(s, keyvalue);
+         free(keyvalue);
+         break;
       case 't':
          free(s->time.format);
          s->time.format = strdup(optarg);
          if (NULL == s->time.format)
             err(1, "strdup failed for time format");
          break;
-      case 'c':
-         parse_header_style(&s->gui.header_style, optarg);
+      case 'F':
+         /* We already handled this in settings_init() - skip here */
+         break;
+      case 'h':
+         s->window.h = strtonum(optarg, -1, INT_MAX, &errstr);
+         if (errstr)
+            errx(1, "illegal h value '%s': %s", optarg, errstr);
+         break;
+      case 'H':
+         print_usage();
+         break;
+      case 'w':
+         s->window.w = strtonum(optarg, -1, INT_MAX, &errstr);
+         if (errstr)
+            errx(1, "illegal w value '%s': %s", optarg, errstr);
          break;
       case 'W':
          free(s->widgets);
@@ -535,12 +539,15 @@ settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
          if (NULL == s->widgets)
             err(1, "strdup failed for widgets");
          break;
-      case 'S':
-         if (NULL == (keyvalue = strdup(optarg)))
-            err(1, "strdup failed for font");
-
-         settings_set_keyvalue(s, keyvalue);
-         free(keyvalue);
+      case 'x':
+         s->window.x = strtonum(optarg, 0, INT_MAX, &errstr);
+         if (errstr)
+            errx(1, "illegal x value '%s': %s", optarg, errstr);
+         break;
+      case 'y':
+         s->window.y = strtonum(optarg, -1, INT_MAX, &errstr);
+         if (errstr)
+            errx(1, "illegal y value '%s': %s", optarg, errstr);
          break;
       default:
          print_usage();
@@ -549,7 +556,8 @@ settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
 
    argc -= optind;
 
-   /* XXX We should have at most 1 - the theme (which is always at the end),
+   /*
+    * XXX We should have at most 1 - the theme (which is always at the end),
     * and that theme is extracted below in the settings_init() method.
     */
    if (1 < argc)
@@ -557,10 +565,10 @@ settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
 }
 
 /*
- * (Re)read the config file and update the passed struct settings accordingly.
+ * (Re)read the config file and update the passed settings accordingly.
  * Note this respects if oxbar was run with a theme, and will reload that
  * additional part (and no other themes).
- * The config file and theme are loaded in the struct settings object at startup,
+ * The config file and theme are loaded in the settings object at startup,
  * and this retrieves them from there.
  * XXX Be aware! This file can be called MORE THAN ONCE via a SIGHUP at
  * runtime (hence the name).
@@ -633,7 +641,7 @@ settings_reload_config(struct settings *s)
 
 /*
  * This wraps-up all the above logic and is meant as the main entry point to
- * loading an initial struct settings. After this, only settings_reload_config()
+ * loading an initial settings. After this, only settings_reload_config()
  * would be expected to be called.
  */
 void
