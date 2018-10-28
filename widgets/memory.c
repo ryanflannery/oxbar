@@ -4,9 +4,9 @@
 #include "util.h"
 
 void
-wmemory_init(widget_t *w)
+wmemory_init(struct widget *w)
 {
-   settings_t *settings = w->context->settings;
+   struct settings *settings = w->context->settings;
 
    const char *colors[] = {
       settings->memory.chart_color_active,
@@ -19,27 +19,25 @@ wmemory_init(widget_t *w)
 }
 
 void
-wmemory_free(widget_t *w)
+wmemory_free(struct widget *w)
 {
-   chart_t *c = w->context->charts[0];
+   struct chart *c = w->context->charts[0];
    if (NULL != c)
       chart_free(c);
 }
 
 bool
-wmemory_enabled(widget_t *w)
+wmemory_enabled(struct widget *w)
 {
    return w->context->stats->memory->is_setup;
 }
 
 void
-wmemory_draw(
-      widget_t *w,
-      xctx_t   *ctx)
+wmemory_draw(struct widget *w, struct xctx *ctx)
 {
-   settings_t *settings = w->context->settings;
-   oxstats_t  *stats    = w->context->stats;
-   chart_t    *chart    = w->context->charts[0];
+   struct settings *settings = w->context->settings;
+   struct oxstats  *stats    = w->context->stats;
+   struct chart    *chart    = w->context->charts[0];
 
    chart_update(chart, (double[]) {
          stats->memory->active_pct,

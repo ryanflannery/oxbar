@@ -18,7 +18,7 @@
  * you would want a chart with nseries = 3, nsamples = 60, and percents = true.
  */
 
-typedef struct chart {
+struct chart {
    size_t   nseries;    /* how many distinct series are in the chart    */
    size_t   nsamples;   /* how many samples of each series there are    */
    size_t   current;    /* index of current SAMPLE                      */
@@ -26,7 +26,7 @@ typedef struct chart {
    double **values;     /* the nseries x nsamples array of percents     */
    char    *bgcolor;    /* background color of the chart                */
    char   **colors;     /* array of nsamples - colors for each sample   */
-} chart_t;
+};
 
 /*
  * Initialize a new chart object. The parameters are:
@@ -50,7 +50,7 @@ typedef struct chart {
  *                   XXX note that the color order sets the order of which
  *                   series should be added when updating.
  */
-chart_t*
+struct chart*
 chart_init(
       size_t   nsamples,
       size_t   nseries,
@@ -59,15 +59,15 @@ chart_init(
       const char **colors);
 
 /* Free all allocated memory with a chart */
-void chart_free(chart_t *c);
+void chart_free(struct chart *c);
 
 /* Update a chart with an array of data, where size of data == c->nseries */
-void chart_update(chart_t *c, double data[]);
+void chart_update(struct chart *c, double data[]);
 
 /* Determine the min & max values in a chart's history (for scaling displays) */
-void chart_get_minmax(chart_t *c, double *min, double *max);
+void chart_get_minmax(struct chart *c, double *min, double *max);
 
 /* Debug utility: print all data in a chart */
-void chart_print(chart_t *c);
+void chart_print(struct chart *c);
 
 #endif

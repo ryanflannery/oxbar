@@ -4,10 +4,10 @@
 #include "util.h"
 
 void
-wnet_init(widget_t *w)
+wnet_init(struct widget *w)
 {
-   settings_t *settings = w->context->settings;
-   chart_t   **charts   = w->context->charts;
+   struct settings *settings = w->context->settings;
+   struct chart   **charts   = w->context->charts;
 
    const char *colors_in[] = {
       settings->network.inbound_chart_color_pgcolor
@@ -23,28 +23,26 @@ wnet_init(widget_t *w)
 }
 
 void
-wnet_free(widget_t *w)
+wnet_free(struct widget *w)
 {
-   chart_t **charts = w->context->charts;
+   struct chart **charts = w->context->charts;
    chart_free(charts[0]);
    chart_free(charts[1]);
 }
 
 bool
-wnet_enabled(widget_t *w)
+wnet_enabled(struct widget *w)
 {
    return w->context->stats->network->is_setup;
 }
 
 void
-wnet_draw(
-      widget_t *w,
-      xctx_t   *ctx)
+wnet_draw(struct widget *w, struct xctx *ctx)
 {
-   settings_t *settings  = w->context->settings;
-   oxstats_t  *stats     = w->context->stats;
-   chart_t    *chart_in  = w->context->charts[0];
-   chart_t    *chart_out = w->context->charts[1];;
+   struct settings *settings  = w->context->settings;
+   struct oxstats  *stats     = w->context->stats;
+   struct chart    *chart_in  = w->context->charts[0];
+   struct chart    *chart_out = w->context->charts[1];;
 
    chart_update(chart_in,  (double[]){ stats->network->new_bytes_in });
    chart_update(chart_out, (double[]){ stats->network->new_bytes_out });

@@ -10,7 +10,7 @@
 
 #include "memory.h"
 
-memory_info_t MEMORY;
+struct memory_info MEMORY;
 int   sys_pageshift;
 
 void

@@ -20,16 +20,16 @@ static bool parse_keyvalue(const char * const keyvalue,
       char **key, char **value);
 
 /* parsers for struct's that are settings */
-static void parse_padding(padding_t *padding, const char * const value);
+static void parse_padding(struct padding *padding, const char * const value);
 static void parse_header_style(header_style_t *style, const char * const value);
 
 /* core settings api */
-static void settings_set_defaults(settings_t *s);
-static bool settings_set_one_keyvalue(settings_t *s, const char *key, const char *value);
-static void settings_set_keyvalue(settings_t *s, const char * const keyvalue);
-static void settings_parse_cmdline(settings_t *s, int argc, char * const argv[]);
-void settings_reload_config(settings_t *s);
-void settings_init(settings_t *settings, int argc, char *argv[]);
+static void settings_set_defaults(struct settings *s);
+static bool settings_set_one_keyvalue(struct settings *s, const char *key, const char *value);
+static void settings_set_keyvalue(struct settings *s, const char * const keyvalue);
+static void settings_parse_cmdline(struct settings *s, int argc, char * const argv[]);
+void settings_reload_config(struct settings *s);
+void settings_init(struct settings *settings, int argc, char *argv[]);
 
 /* This is the set of allowed switches to oxbar, getopt(3) style. */
 static const char * const SWITCHES = "HF:x:y:w:h:f:m:p:s:t:c:W:S:";
@@ -177,13 +177,13 @@ parse_keyvalue(const char * const keyvalue, char **key, char **value)
 }
 
 /*
- * This parses a a string into a padding_t. The string can either be a single
- * number ("%lf") in which case all 4 components of the padding_t are set
+ * This parses a a string into a struct padding. The string can either be a single
+ * number ("%lf") in which case all 4 components of the struct padding are set
  * to the extracted number, or a string with all four components listed.
  * No allocations done here.
  */
 static void
-parse_padding(padding_t *padding, const char * const value)
+parse_padding(struct padding *padding, const char * const value)
 {
    double top, right, bottom, left;
    switch (sscanf(value, "%lf %lf %lf %lf", &top, &right, &bottom, &left)) {
@@ -219,16 +219,16 @@ parse_header_style(header_style_t *style, const char * const value)
 }
 
 /*
- * Initialize default values for EVERYTHING in settings_t. Note this is always
- * called first - so all values of settings_t are set to a reasonable default.
+ * Initialize default values for EVERYTHING in struct settings. Note this is always
+ * called first - so all values of struct settings are set to a reasonable default.
  * XXX This assumptions also means that whenever we change any value that's
  * dynamically allocated (strings), those need to be free()'d before
  * resetting.
  *
- * ALL settings_t values should be set here, to a sane default.
+ * ALL struct settings values should be set here, to a sane default.
  */
 static void
-settings_set_defaults(settings_t *s)
+settings_set_defaults(struct settings *s)
 {
    s->widgets = strdup("nprocs cpuslong memory net > battery volume time");
 
@@ -296,13 +296,13 @@ settings_set_defaults(settings_t *s)
 /*
  * TODO Create a settings_free() (or refactor to make easier)
  * I should have this - but this is cumbersome given the above setup.
- * Note the way I've setup ALL settings tracked by the settings_t construct,
+ * Note the way I've setup ALL settings tracked by the struct settings construct,
  * the initial allocations for all dynamic stuff is managed here -- it's
  * initialized here (in settings_set_defaults() above) and then free()'d and
  * realloc'd on every change, managed below.
  * I'll chew more on how best to refactor but for now it's low priority.
 void
-settings_free(settings_t *s)
+settings_free(struct settings *s)
 {
    free(s->display.wmname);
    free(s->display.bgcolor);
@@ -353,8 +353,8 @@ settings_free(settings_t *s)
    }
 
 /*
- * This method takes a settings_t and a key + value pair (as strings) and
- * will attempt to set the appropriate member of the settings_t object
+ * This method takes a struct settings and a key + value pair (as strings) and
+ * will attempt to set the appropriate member of the struct settings object
  * accordingly. The assumption is:
  *    key   => is a string that's the actual name of the struct memeber
  *    value => a string appropriate for that value
@@ -364,13 +364,13 @@ settings_free(settings_t *s)
  * The macros above are meant to help this parsing logic and cut-down on the
  * boilerplate logic around it.
  *
- * Every member of the settings_t object should have a corresponding line
+ * Every member of the struct settings object should have a corresponding line
  * here. Each line checks if the passed name matches key. If so, it sets that
  * member to value and returns true. Otherwise it just continues. If no
  * matching key is found, it returns false.
  */
 static bool
-settings_set_one_keyvalue(settings_t *s, const char *key, const char *value)
+settings_set_one_keyvalue(struct settings *s, const char *key, const char *value)
 {
    const char *errstr;
 
@@ -452,9 +452,9 @@ settings_set_one_keyvalue(settings_t *s, const char *key, const char *value)
    return false;
 }
 
-/* Given a settings_t and a "key=value", set the appropriate settings member */
+/* Given a struct settings and a "key=value", set the appropriate settings member */
 static void
-settings_set_keyvalue(settings_t *s, const char * const keyvalue)
+settings_set_keyvalue(struct settings *s, const char * const keyvalue)
 {
    char *key, *value;
    if (!parse_keyvalue(keyvalue, &key, &value))
@@ -467,9 +467,9 @@ settings_set_keyvalue(settings_t *s, const char * const keyvalue)
    free(value);
 }
 
-/* Parses an argc/argv pair and updates a settings_t appropriately */
+/* Parses an argc/argv pair and updates a struct settings appropriately */
 static void
-settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
+settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
 {
    const char *errstr;
    char *keyvalue;
@@ -557,16 +557,16 @@ settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
 }
 
 /*
- * (Re)read the config file and update the passed settings_t accordingly.
+ * (Re)read the config file and update the passed struct settings accordingly.
  * Note this respects if oxbar was run with a theme, and will reload that
  * additional part (and no other themes).
- * The config file and theme are loaded in the settings_t object at startup,
+ * The config file and theme are loaded in the struct settings object at startup,
  * and this retrieves them from there.
  * XXX Be aware! This file can be called MORE THAN ONCE via a SIGHUP at
  * runtime (hence the name).
  */
 void
-settings_reload_config(settings_t *s)
+settings_reload_config(struct settings *s)
 {
    char   theme_name[100];
    size_t length, linenum = 0;
@@ -633,11 +633,11 @@ settings_reload_config(settings_t *s)
 
 /*
  * This wraps-up all the above logic and is meant as the main entry point to
- * loading an initial settings_t. After this, only settings_reload_config()
+ * loading an initial struct settings. After this, only settings_reload_config()
  * would be expected to be called.
  */
 void
-settings_init(settings_t *settings, int argc, char *argv[])
+settings_init(struct settings *settings, int argc, char *argv[])
 {
    char *config_file = NULL;
    char *theme = NULL;

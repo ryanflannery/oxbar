@@ -4,9 +4,9 @@
 #include <stdbool.h>
 #include "../widgets.h"
 
-void wmemory_init(widget_t *w);
-void wmemory_free(widget_t *w);
-bool wmemory_enabled(widget_t *w);
-void wmemory_draw(widget_t *w, xctx_t *ctx);
+void wmemory_init(struct widget *w);
+void wmemory_free(struct widget *w);
+bool wmemory_enabled(struct widget *w);
+void wmemory_draw(struct widget *w, struct xctx *ctx);
 
 #endif

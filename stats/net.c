@@ -17,7 +17,7 @@
 
 #include "net.h"
 
-net_info_t NET;
+struct net_info NET;
 
 static char*
 get_egress()

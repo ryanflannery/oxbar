@@ -1,15 +1,13 @@
 #include "nprocs.h"
 
 bool
-wnprocs_enabled(widget_t *w)
+wnprocs_enabled(struct widget *w)
 {
    return w->context->stats->nprocs->is_setup;
 }
 
 void
-wnprocs_draw(
-      widget_t *w,
-      xctx_t   *ctx)
+wnprocs_draw(struct widget *w, struct xctx *ctx)
 {
    xdraw_printf(ctx,
       w->context->settings->font.fgcolor,

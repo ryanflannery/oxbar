@@ -9,51 +9,51 @@
 
 /* pango font wrapper struct & setup/teardown methods */
 
-typedef struct xfont_settings {  /* user provided settings for xfont    */
+struct xfont_settings {          /* user provided settings for xfont    */
    char  *desc;                  /* free-form font description string   */
    char  *fgcolor;               /* default foreground color for text   */
-} xfont_settings_t;
+};
 
-typedef struct xfont {           /* core xfont struct (read-only)       */
-   xfont_settings_t     *settings;
-   PangoFontDescription *pfont;  /* pango font loaded from that string  */
-   int                   height; /* derived font height (in pixels)     */
-} xfont_t;
+struct xfont {                   /* core xfont struct (read-only)       */
+   struct xfont_settings *settings;
+   PangoFontDescription  *pfont; /* pango font loaded from that string  */
+   int                    height;/* derived font height (in pixels)     */
+};
 
-xfont_t *xfont_init(xfont_settings_t *settings);
-void xfont_free(xfont_t *xf);
+struct xfont *xfont_init(struct xfont_settings *settings);
+void xfont_free(struct xfont *xf);
 
 /* xcb / display-info struct & setup/teardown methods */
-typedef struct xdisp {
+struct xdisp {
    uint16_t              display_width;
    uint16_t              display_height;
    xcb_connection_t     *con;
    xcb_screen_t         *root_screen;
    xcb_visualtype_t     *root_visual;
-} xdisp_t;
+};
 
-xdisp_t *xdisp_init();
-void xdisp_free(xdisp_t *x);
+struct xdisp *xdisp_init();
+void xdisp_free(struct xdisp *x);
 
 /* xcb / window & cairo wrapper struct & setup/teardown methods */
 
-typedef struct xwin_settings {   /* user provided settings           */
+struct xwin_settings {   /* user provided settings                   */
    char *bgcolor;    /* default background color for whole window    */
    char *wname;      /* name of window for window manager            */
    int   x, y;       /* (x,y) pixel coordinates of top-left corner   */
    int   w, h;       /* (width,height) pixel dimensions of window    */
-} xwin_settings_t;
+};
 
-typedef struct xwin {            /* core xwin struct (read-only)     */
-   xwin_settings_t  *settings;
-   xdisp_t          *xdisp;      /* x display server                 */
-   xcb_drawable_t    window;     /* oxbar xwindow                    */
-   cairo_surface_t  *surface;    /* core cairo surface mapped to X   */
-   cairo_t          *cairo;      /* core cairo object for rendering  */
-} xwin_t;
+struct xwin {            /* core xwin struct (read-only)             */
+   struct xwin_settings *settings;
+   struct xdisp         *xdisp;  /* x display server                 */
+   xcb_drawable_t        window; /* oxbar xwindow                    */
+   cairo_surface_t      *surface;/* core cairo surface mapped to X   */
+   cairo_t              *cairo;  /* core cairo object for rendering  */
+};
 
-xwin_t *xwin_init(xdisp_t *xdisp, xwin_settings_t *settings);
-void xwin_free(xwin_t *w);
+struct xwin *xwin_init(struct xdisp *xdisp, struct xwin_settings *settings);
+void xwin_free(struct xwin *w);
 
 /*
  * Double buffering API for an xwin. When starting the main draw loop,
@@ -61,8 +61,8 @@ void xwin_free(xwin_t *w);
  * color. Once the main draw loop is done, call xwin_pop() to render that
  * buffer to the screen and flush it to the display.
  */
-void xwin_push(xwin_t *w); /* double buffer: push buffer & clear it */
-void xwin_pop(xwin_t *w);  /* double buffer: pop buffer & render it */
+void xwin_push(struct xwin *w); /* double buffer: push buffer & clear it */
+void xwin_pop(struct xwin *w);  /* double buffer: pop buffer & render it */
 
 /*
  * A universal method to translate colors to r/g/b/a components.

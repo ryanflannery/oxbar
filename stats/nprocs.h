@@ -3,14 +3,13 @@
 
 #include <stdbool.h>
 
-typedef struct nprocs_info {
+struct nprocs_info {
    bool  is_setup;
 
    int   nprocs;     /* total # of processes */
+};
 
-} nprocs_info_t;
-
-extern nprocs_info_t NPROCS;
+extern struct nprocs_info NPROCS;
 
 void nprocs_init();
 void nprocs_update();

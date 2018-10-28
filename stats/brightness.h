@@ -1,4 +1,5 @@
-/* TODO Build a working brightness widget
+/*
+ * TODO Build a working brightness widget (this is currently not used)
  * OK - querying the X display's brightness is not terribly easy.
  * Checkout xbacklight's source for a good reference.
  * Lots of atoms... replys... all sorts of X goo.
@@ -9,8 +10,8 @@
  * really care about this... :D
  */
 
-typedef struct brightness {
+struct brightness {
    int   brightness;
-} brightness_info_t;
-extern brightness_info_t brightness;
+};
 
+extern struct brightness_info BRIGHTNESS;

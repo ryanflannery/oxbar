@@ -33,7 +33,7 @@ TEST(chart, InitWithNullColorArray_ShouldFail)
 
 TEST(chart, InitFree_ShouldSucceed)
 {
-   chart_t *c = chart_init(10, 1, true, "#444",
+   struct chart *c = chart_init(10, 1, true, "#444",
          (const char *[]){ (const char*)"#f00" });
    chart_free(c);
 }

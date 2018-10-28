@@ -6,7 +6,7 @@
 
 #include "battery.h"
 
-battery_info_t BATTERY;
+struct battery_info BATTERY;
 
 struct apm_power_info   apm_info;
 int                     apm_dev_fd;

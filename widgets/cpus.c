@@ -3,11 +3,11 @@
 #include "cpus.h"
 
 void
-wcpus_init(widget_t *w)
+wcpus_init(struct widget *w)
 {
-   settings_t *settings = w->context->settings;
-   oxstats_t  *stats    = w->context->stats;
-   chart_t   **charts   = w->context->charts;
+   struct settings *settings = w->context->settings;
+   struct oxstats  *stats    = w->context->stats;
+   struct chart   **charts   = w->context->charts;
 
    const char *colors[] = {
       settings->cpus.chart_color_sys,
@@ -29,28 +29,26 @@ wcpus_init(widget_t *w)
 }
 
 void
-wcpus_free(widget_t *w)
+wcpus_free(struct widget *w)
 {
-   chart_t **charts   = w->context->charts;
+   struct chart **charts   = w->context->charts;
    size_t i = 0;
    for (; NULL != charts[i]; i++)
       chart_free(charts[i]);
 }
 
 bool
-wcpus_enabled(widget_t *w)
+wcpus_enabled(struct widget *w)
 {
    return w->context->stats->cpus->is_setup;
 }
 
 void
-wcpus_draw(
-      widget_t *w,
-      xctx_t   *ctx)
+wcpus_draw(struct widget *w, struct xctx *ctx)
 {
-   settings_t *settings = w->context->settings;
-   oxstats_t  *stats    = w->context->stats;
-   chart_t   **charts   = w->context->charts;
+   struct settings *settings = w->context->settings;
+   struct oxstats  *stats    = w->context->stats;
+   struct chart   **charts   = w->context->charts;
 
    xdraw_printf(ctx, settings->font.fgcolor, "CPUs: ");
 

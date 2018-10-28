@@ -9,10 +9,10 @@
 
 /* pango wrapper */
 
-xfont_t*
-xfont_init(xfont_settings_t *settings)
+struct xfont*
+xfont_init(struct xfont_settings *settings)
 {
-   xfont_t *xf = malloc(sizeof(xfont_t));
+   struct xfont *xf = malloc(sizeof(struct xfont));
    if (NULL == xf)
       err(1, "%s: malloc failed", __FUNCTION__);
 
@@ -30,7 +30,7 @@ xfont_init(xfont_settings_t *settings)
 }
 
 void
-xfont_free(xfont_t *xf)
+xfont_free(struct xfont *xf)
 {
    pango_font_description_free(xf->pfont);
    free(xf);
@@ -67,10 +67,10 @@ get_root_visual(xcb_screen_t *screen)
    return NULL;
 }
 
-xdisp_t*
+struct xdisp*
 xdisp_init()
 {
-   xdisp_t *x = malloc(sizeof(xdisp_t));
+   struct xdisp *x = malloc(sizeof(struct xdisp));
    if (NULL == x)
       err(1, "%s: malloc failed", __FUNCTION__);
 
@@ -94,7 +94,7 @@ xdisp_init()
 }
 
 void
-xdisp_free(xdisp_t *x)
+xdisp_free(struct xdisp *x)
 {
    xcb_disconnect(x->con);
    free(x);
@@ -104,9 +104,9 @@ xdisp_free(xdisp_t *x)
 
 static void
 create_xcb_window(
-      xwin_t *xwin,
-      const xdisp_t *xdisp,
-      const char *name,
+      struct xwin        *xwin,
+      const struct xdisp *xdisp,
+      const char         *name,
       int16_t x,  int16_t y,
       uint16_t w, uint16_t h)
 {
@@ -172,7 +172,7 @@ create_xcb_window(
  * TODO cleanup & separate wm hints ... and dragons
  */
 static void
-setup_wm_hints(const xdisp_t *x, xwin_t *w)
+setup_wm_hints(const struct xdisp *x, struct xwin *w)
 {
    enum {
       NET_WM_XINFO_TYPE,
@@ -246,7 +246,7 @@ setup_wm_hints(const xdisp_t *x, xwin_t *w)
 }
 
 static void
-setup_cairo(const xdisp_t *x, xwin_t *w)
+setup_cairo(const struct xdisp *x, struct xwin *w)
 {
    w->surface = cairo_xcb_surface_create(
          x->con,
@@ -262,12 +262,12 @@ setup_cairo(const xdisp_t *x, xwin_t *w)
       errx(1, "%s: failed to create cairo object", __FUNCTION__);
 }
 
-xwin_t *
+struct xwin *
 xwin_init(
-      xdisp_t         *xdisp,
-      xwin_settings_t *settings)
+      struct xdisp         *xdisp,
+      struct xwin_settings *settings)
 {
-   xwin_t *xwin = malloc(sizeof(xwin_t));
+   struct xwin *xwin = malloc(sizeof(struct xwin));
    if (NULL == xwin)
       err(1, "%s: couldn't malloc xdisp", __FUNCTION__);
 
@@ -287,7 +287,7 @@ xwin_init(
 }
 
 void
-xwin_free(xwin_t *w)
+xwin_free(struct xwin *w)
 {
    cairo_surface_destroy(w->surface);
    cairo_destroy(w->cairo);
@@ -296,7 +296,7 @@ xwin_free(xwin_t *w)
 }
 
 void
-xwin_push(xwin_t *w)
+xwin_push(struct xwin *w)
 {
    double r, g, b, a;
    cairo_push_group(w->cairo);
@@ -306,7 +306,7 @@ xwin_push(xwin_t *w)
 }
 
 void
-xwin_pop(xwin_t *w)
+xwin_pop(struct xwin *w)
 {
    cairo_pop_group_to_source(w->cairo);
    cairo_set_operator(w->cairo, CAIRO_OPERATOR_SOURCE);

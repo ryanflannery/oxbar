@@ -12,31 +12,31 @@ pause()
 int
 main()
 {
-   xdisp_t *x = xdisp_init();
-   xfont_t *f;
+   struct xdisp *x = xdisp_init();
+   struct xfont *f;
 
    printf("display: %x x %x (pixels)\n", x->display_width, x->display_height);
 
-   xfont_settings_t fonts = {
+   struct xfont_settings fonts = {
       .desc = "serif italic 20",
       .fgcolor = "ff0000"
    };
    f = xfont_init(&fonts);
 
-   xwin_settings_t wins = {
+   struct xwin_settings wins = {
       .bgcolor = "#ff0000",
       .wname = "xcore.d :: xwin test",
       .x = 500, .y = 500,
       .w = 500, .h = 500
    };
-   padding_t padding = {
+   struct padding padding = {
       .top = 10,
       .right = 10,
       .bottom = 10,
       .left = 10
    };
-   xwin_t *w = xwin_init(x, &wins);
-   xctx_t *root = xctx_init_root(f, w, L2R, &padding);
+   struct xwin *w = xwin_init(x, &wins);
+   struct xctx *root = xctx_init_root(f, w, L2R, &padding);
 
    xwin_push(w);
 

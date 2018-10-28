@@ -4,9 +4,7 @@
 #include <stdbool.h>
 #include "../widgets.h"
 
-bool wtime_enabled(widget_t *w);
-void wtime_draw(
-      widget_t *w,
-      xctx_t   *ctx);
+bool wtime_enabled(struct widget *w);
+void wtime_draw(struct widget *w, struct xctx *ctx);
 
 #endif

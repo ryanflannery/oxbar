@@ -4,9 +4,7 @@
 #include <stdbool.h>
 #include "../widgets.h"
 
-bool wvolume_enabled(widget_t *w);
-void wvolume_draw(
-      widget_t *w,
-      xctx_t   *ctx);
+bool wvolume_enabled(struct widget *w);
+void wvolume_draw(struct widget *w, struct xctx *ctx);
 
 #endif

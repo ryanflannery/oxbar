@@ -3,18 +3,16 @@
 #include "volume.h"
 
 bool
-wvolume_enabled(widget_t *w)
+wvolume_enabled(struct widget *w)
 {
    return w->context->stats->volume->is_setup;
 }
 
 void
-wvolume_draw(
-      widget_t *w,
-      xctx_t   *ctx)
+wvolume_draw(struct widget *w, struct xctx *ctx)
 {
-   settings_t *settings = w->context->settings;
-   oxstats_t  *stats    = w->context->stats;
+   struct settings *settings = w->context->settings;
+   struct oxstats  *stats    = w->context->stats;
 
    xdraw_printf(ctx, settings->font.fgcolor, "Vol: ");
 

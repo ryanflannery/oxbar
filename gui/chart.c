@@ -5,7 +5,7 @@
 
 #include "chart.h"
 
-chart_t*
+struct chart*
 chart_init(
       size_t   nsamples,
       size_t   nseries,
@@ -13,13 +13,13 @@ chart_init(
       const char  *bgcolor,
       const char **colors)
 {
-   chart_t *c;
+   struct chart *c;
    size_t   i, j;
 
    if (0 == nseries || 0 == nsamples || NULL == bgcolor || NULL == colors)
       errx(1, "%s: invalid parameter %zu %zu", __FUNCTION__, nseries, nsamples);
 
-   if (NULL == (c = malloc(sizeof(chart_t))))
+   if (NULL == (c = malloc(sizeof(struct chart))))
       err(1, "%s: malloc failed", __FUNCTION__);
 
    c->nseries  = nseries;
@@ -53,7 +53,7 @@ chart_init(
 }
 
 void
-chart_free(chart_t *c)
+chart_free(struct chart *c)
 {
    size_t i;
    for (i = 0; i < c->nsamples; i++)
@@ -65,7 +65,7 @@ chart_free(chart_t *c)
 }
 
 void
-chart_update(chart_t *c, double data[])
+chart_update(struct chart *c, double data[])
 {
    size_t cur = (c->current + 1) % c->nsamples;
    size_t i;
@@ -81,7 +81,7 @@ chart_update(chart_t *c, double data[])
 }
 
 void
-chart_get_minmax(chart_t *c, double *min, double *max)
+chart_get_minmax(struct chart *c, double *min, double *max)
 {
    size_t i, j;
    *min = *max = c->values[0][0];
@@ -97,7 +97,7 @@ chart_get_minmax(chart_t *c, double *min, double *max)
 }
 
 void
-chart_print(chart_t *c)
+chart_print(struct chart *c)
 {
    size_t i, j;
 

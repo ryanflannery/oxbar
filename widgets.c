@@ -17,13 +17,13 @@
  * Global list of all known widget types and how to create them.
  * When adding a widget, they must be added here.
  */
-typedef struct widget_recipe {
-   widget_t widget;              /* the widget itself */
+struct widget_recipe {
+   struct widget widget;              /* the widget itself */
    void (*init)(struct widget*); /* how to build it   */
    void (*free)(struct widget*); /* how to destroy it */
-} widget_recipe_t;
+};
 
-widget_recipe_t WIDGET_RECIPES[] = {
+struct widget_recipe WIDGET_RECIPES[] = {
    {{"battery", NULL, wbattery_enabled, wbattery_draw, NULL}, NULL, NULL},
    {{"volume",  NULL, wvolume_enabled,  wvolume_draw,  NULL}, NULL, NULL},
    {{"nprocs",  NULL, wnprocs_enabled,  wnprocs_draw,  NULL}, NULL, NULL},
@@ -34,14 +34,14 @@ widget_recipe_t WIDGET_RECIPES[] = {
    {{"net",     NULL, wnet_enabled,     wnet_draw,     NULL}, wnet_init,     wnet_free },
    {{"time",    NULL, wtime_enabled,    wtime_draw,    NULL}, NULL, NULL},
 };
-const size_t NWIDGET_RECIPES = sizeof(WIDGET_RECIPES) / sizeof(widget_recipe_t);
+const size_t NWIDGET_RECIPES = sizeof(WIDGET_RECIPES) / sizeof(struct widget_recipe);
 
 /* this tracks all widgets created, so they can be destroyed on shutdown */
 #define MAX_ALL_WIDGETS 1000
-static widget_t *WIDGETS[MAX_ALL_WIDGETS];
-static size_t    NWIDGETS = 0;
+static struct widget *WIDGETS[MAX_ALL_WIDGETS];
+static size_t         NWIDGETS = 0;
 
-static widget_recipe_t*
+static struct widget_recipe*
 find_recipe(const char *name)
 {
    size_t i = 0;
@@ -52,14 +52,14 @@ find_recipe(const char *name)
    return NULL;
 }
 
-static widget_t*
+static struct widget*
 widget_create_from_recipe(
-      const char *name,
-      settings_t *settings,
-      oxstats_t  *stats)
+      const char      *name,
+      struct settings *settings,
+      struct oxstats  *stats)
 {
-   widget_recipe_t *recipe;
-   widget_t *w;
+   struct widget_recipe *recipe;
+   struct widget        *w;
 
    if (NWIDGETS == MAX_ALL_WIDGETS)
       errx(1, "%s: reached max widget count %d", __FUNCTION__, MAX_ALL_WIDGETS);
@@ -67,7 +67,7 @@ widget_create_from_recipe(
    if (NULL == (recipe = find_recipe(name)))
       errx(1, "no widget recipe named '%s'", name);
 
-   w = malloc(sizeof(widget_t));
+   w = malloc(sizeof(struct widget));
    if (NULL == w)
       err(1, "%s: malloc failed", __FUNCTION__);
 
@@ -76,7 +76,7 @@ widget_create_from_recipe(
    w->enabled  = recipe->widget.enabled;
    w->draw     = recipe->widget.draw;
 
-   w->context = malloc(sizeof(widget_context_t));
+   w->context = malloc(sizeof(struct widget_context));
    if (NULL == w->context)
       err(1, "%s: malloc failed", __FUNCTION__);
 
@@ -97,7 +97,7 @@ widgets_free()
    size_t i = 0;
 
    for (; i < NWIDGETS; i++) {
-      widget_recipe_t *recipe = find_recipe(WIDGETS[i]->name);
+      struct widget_recipe *recipe = find_recipe(WIDGETS[i]->name);
       if (NULL != recipe && NULL != recipe->free)
          recipe->free(WIDGETS[i]);
 
@@ -110,7 +110,7 @@ widgets_free()
 static void
 widgets_set_hdcolor(const char *widget_name, char *color)
 {
-   widget_recipe_t *recipe = find_recipe(widget_name);
+   struct widget_recipe *recipe = find_recipe(widget_name);
    if (NULL == recipe)
       errx(1, "unknown widget '%s'", widget_name);
 
@@ -119,10 +119,10 @@ widgets_set_hdcolor(const char *widget_name, char *color)
 
 static void
 widgets_create(
-      const char *list,
-      gui_t      *gui,
-      settings_t *settings,
-      oxstats_t  *stats)
+      const char      *list,
+      struct gui      *gui,
+      struct settings *settings,
+      struct oxstats  *stats)
 {
    xctx_direction_t direction = L2R;
    char *token;
@@ -150,7 +150,7 @@ widgets_create(
 }
 
 void
-widgets_init(gui_t *gui, settings_t *settings, oxstats_t *stats)
+widgets_init(struct gui *gui, struct settings *settings, struct oxstats *stats)
 {
    widgets_set_hdcolor("battery",   settings->battery.hdcolor);
    widgets_set_hdcolor("volume",    settings->volume.hdcolor);

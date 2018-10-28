@@ -1,6 +1,6 @@
 #include "stats.h"
 
-oxstats_t OXSTATS;
+struct oxstats OXSTATS;
 
 void
 stats_init()

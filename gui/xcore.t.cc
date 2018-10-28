@@ -12,7 +12,7 @@ extern "C" {
 
 TEST(xfont, EmptyString_ShouldExit)
 {
-   xfont_settings_t s = {
+   struct xfont_settings s = {
       .desc = (char*)"",
       .fgcolor = (char*)""
    };
@@ -21,7 +21,7 @@ TEST(xfont, EmptyString_ShouldExit)
 
 TEST(xfont, FixedUsingPt_ShouldExit)
 {
-   xfont_settings_t s = {
+   struct xfont_settings s = {
       .desc = (char*)"fixed 12pt",
       .fgcolor = (char*)""
    };
@@ -30,55 +30,55 @@ TEST(xfont, FixedUsingPt_ShouldExit)
 
 TEST(xfont, FixedUsingPx_ShouldSucced)
 {
-   xfont_settings_t s = {
+   struct xfont_settings s = {
       .desc = (char*)"fixed 12px",
       .fgcolor = (char*)""
    };
-   xfont_t *f = xfont_init(&s);
+   struct xfont *f = xfont_init(&s);
    ASSERT_EQ(f->height, 12);
    xfont_free(f);
 }
 
 TEST(xfont, FixedUsingNoSuffix_ShouldSucced)
 {
-   xfont_settings_t s = {
+   struct xfont_settings s = {
       .desc = (char*)"fixed 12",
       .fgcolor = (char*)""
    };
-   xfont_t *f = xfont_init(&s);
+   struct xfont *f = xfont_init(&s);
    ASSERT_EQ(f->height, 12);
    xfont_free(f);
 }
 
 TEST(xfont, TimesBold48_ShouldSucceed)
 {
-   xfont_settings_t s = {
+   struct xfont_settings s = {
       .desc = (char*)"Times Bold 48",
       .fgcolor = (char*)""
    };
-   xfont_t *f = xfont_init(&s);
+   struct xfont *f = xfont_init(&s);
    ASSERT_EQ(f->height, 48);
    xfont_free(f);
 }
 
 TEST(xfont, TimesOrHelveticaBold8px_ShouldSucceed)
 {
-   xfont_settings_t s = {
+   struct xfont_settings s = {
       .desc = (char*)"Times,Helvetica Bold 8px",
       .fgcolor = (char*)""
    };
-   xfont_t *f = xfont_init(&s);
+   struct xfont *f = xfont_init(&s);
    ASSERT_EQ(f->height, 8);
    xfont_free(f);
 }
 
 TEST(xfont, XFontFree_ShouldSucceed)
 {
-   xfont_settings_t s = {
+   struct xfont_settings s = {
       .desc = (char*)"Times,Helvetica Bold 8px",
       .fgcolor = (char*)""
    };
-   xfont_t *f = xfont_init(&s);
+   struct xfont *f = xfont_init(&s);
    ASSERT_EQ(f->height, 8);
    xfont_free(f);
 }
@@ -87,19 +87,19 @@ TEST(xfont, XFontFree_ShouldSucceed)
 
 TEST(xdisp, Init_IsntNull)
 {
-   xdisp_t *x = xdisp_init();
+   struct xdisp *x = xdisp_init();
    ASSERT_NE(x, NULL);
 }
 
 TEST(xdisp, Free_ShouldSucced)
 {
-   xdisp_t *x = xdisp_init();
+   struct xdisp *x = xdisp_init();
    xdisp_free(x);
 }
 
 TEST(xdisp, Dimensions_AreReasonable)
 {
-   xdisp_t *x = xdisp_init();
+   struct xdisp *x = xdisp_init();
    ASSERT_GT(x->display_width,  0);
    ASSERT_GT(x->display_height, 0);
 
@@ -112,29 +112,29 @@ TEST(xdisp, Dimensions_AreReasonable)
 
 TEST(xwin, Init_ShouldSucceed)
 {
-   xwin_settings_t s = {
+   struct xwin_settings s = {
       .bgcolor = (char*) "ff0000",
       .wname   = (char*) "test",
       .x = 1, .y = 2,
       .w = 3, .h = 4
    };
 
-   xdisp_t *x = xdisp_init();
-   xwin_t *w = xwin_init(x, &s);
+   struct xdisp *x = xdisp_init();
+   struct xwin *w = xwin_init(x, &s);
    xwin_free(w);
 }
 
 TEST(xwin, Init_OutputSettingsShouldMatchInput)
 {
-   xwin_settings_t s = {
+   struct xwin_settings s = {
       .bgcolor = (char*) "ff0000",
       .wname   = (char*) "test",
       .x = 1, .y = 2,
       .w = 3, .h = 4
    };
 
-   xdisp_t *x = xdisp_init();
-   xwin_t *w = xwin_init(x, &s);
+   struct xdisp *x = xdisp_init();
+   struct xwin *w = xwin_init(x, &s);
    ASSERT_STREQ(s.bgcolor, w->settings->bgcolor);
    ASSERT_STREQ(s.wname, w->settings->wname);
    ASSERT_EQ(s.x, w->settings->x);

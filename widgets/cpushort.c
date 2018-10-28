@@ -3,18 +3,16 @@
 #include "cpushort.h"
 
 bool
-wcpushort_enabled(widget_t *w)
+wcpushort_enabled(struct widget *w)
 {
    return w->context->stats->cpus->is_setup;
 }
 
 void
-wcpushort_draw(
-      widget_t *w,
-      xctx_t   *ctx)
+wcpushort_draw(struct widget *w, struct xctx *ctx)
 {
-   settings_t *settings = w->context->settings;
-   oxstats_t  *stats    = w->context->stats;
+   struct settings *settings = w->context->settings;
+   struct oxstats  *stats    = w->context->stats;
 
    int i = 0;
    for (i = 0; i < stats->cpus->ncpu; i++) {

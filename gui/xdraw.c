@@ -7,18 +7,23 @@
 
 #include "xdraw.h"
 
-static padding_t ZEROPAD = {
+static struct padding ZEROPAD = {
    .top    = 0,
    .right  = 0,
    .bottom = 0,
    .left   = 0
 };
 
-static xctx_t*
-xctx_init(xfont_t *font, xwin_t *win, xctx_direction_t direction,
-      double height, padding_t *padding, bool make_root)
+static struct xctx*
+xctx_init(
+      struct xfont     *font,
+      struct xwin      *win,
+      xctx_direction_t  direction,
+      double            height,
+      struct padding   *padding,
+      bool              make_root)
 {
-   xctx_t *ctx = malloc(sizeof(xctx_t));
+   struct xctx *ctx = malloc(sizeof(struct xctx));
    if (NULL == ctx)
       err(1, "%s: malloc failed", __FUNCTION__);
 
@@ -55,16 +60,22 @@ xctx_init(xfont_t *font, xwin_t *win, xctx_direction_t direction,
    return ctx;
 }
 
-xctx_t*
-xctx_init_root(xfont_t *font, xwin_t *win, xctx_direction_t direction,
-      padding_t *padding)
+struct xctx*
+xctx_init_root(
+      struct xfont     *font,
+      struct xwin      *win,
+      xctx_direction_t  direction,
+      struct padding   *padding)
 {
    return xctx_init(font, win, direction, win->settings->h, padding, true);
 }
 
-xctx_t*
-xctx_init_scratchpad(xfont_t *font, xwin_t *win, xctx_direction_t direction,
-      padding_t *padding)
+struct xctx*
+xctx_init_scratchpad(
+      struct xfont     *font,
+      struct xwin      *win,
+      xctx_direction_t  direction,
+      struct padding   *padding)
 {
    double h = win->settings->h;
    if (NULL == padding)
@@ -76,7 +87,7 @@ xctx_init_scratchpad(xfont_t *font, xwin_t *win, xctx_direction_t direction,
 }
 
 void
-xctx_free(xctx_t *ctx)
+xctx_free(struct xctx *ctx)
 {
    if (!ctx->is_root) {
       cairo_surface_destroy(ctx->surface);
@@ -86,7 +97,7 @@ xctx_free(xctx_t *ctx)
 }
 
 void
-xctx_reset(xctx_t *ctx)
+xctx_reset(struct xctx *ctx)
 {
    switch (ctx->direction) {
    case L2R:
@@ -105,7 +116,7 @@ xctx_reset(xctx_t *ctx)
 }
 
 void
-xctx_complete(xctx_t *ctx)
+xctx_complete(struct xctx *ctx)
 {
    switch (ctx->direction) {
    case L2R:
@@ -122,7 +133,7 @@ xctx_complete(xctx_t *ctx)
 
 void
 xctx_advance(
-      xctx_t      *ctx,
+      struct xctx *ctx,
       xctx_state_t state,
       double       xdelta,
       __attribute__((unused))
@@ -177,8 +188,8 @@ xctx_advance(
 
 void
 xdraw_context(
-      xctx_t     *dest,
-      xctx_t     *source)
+      struct xctx *dest,
+      struct xctx *source)
 {
    xctx_advance(dest, BEFORE_RENDER, source->xoffset, source->yoffset);
 
@@ -200,7 +211,7 @@ xdraw_context(
 
 void
 xdraw_colorfill(
-      xctx_t     *ctx,
+      struct xctx      *ctx,
       const char *const color)
 {
    double r, g, b, a;
@@ -211,7 +222,7 @@ xdraw_colorfill(
 
 void
 xdraw_headerline(
-      xctx_t         *ctx,
+      struct xctx    *ctx,
       header_style_t  style,
       const char     *color)
 {
@@ -242,9 +253,9 @@ xdraw_headerline(
 
 void
 xdraw_printf(
-      xctx_t     *ctx,
-      const char *color,
-      const char *fmt,
+      struct xctx *ctx,
+      const char  *color,
+      const char  *fmt,
       ...)
 {
 #define XDRAW_PRINTF_BUFF_MAXLEN 1000
@@ -277,11 +288,11 @@ xdraw_printf(
 
 void
 xdraw_progress_bar(
-      xctx_t     *ctx,
-      const char *bgcolor,
-      const char *pgcolor,
-      double      width,
-      double      pct)
+      struct xctx *ctx,
+      const char  *bgcolor,
+      const char  *pgcolor,
+      double       width,
+      double       pct)
 {
    double r, g, b, a;
    double height = ctx->h - ctx->padding->top - ctx->padding->bottom;
@@ -313,8 +324,8 @@ xdraw_progress_bar(
 
 void
 xdraw_chart(
-      xctx_t  *ctx,
-      chart_t *c
+      struct xctx  *ctx,
+      struct chart *c
       )
 {
    double chart_height = ctx->h - ctx->padding->top - ctx->padding->bottom;

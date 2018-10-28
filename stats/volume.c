@@ -11,7 +11,7 @@
 
 #include "volume.h"
 
-volume_info_t VOLUME;
+struct volume_info VOLUME;
 
 /* old */
 static int volume_dev_fd;

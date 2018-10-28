@@ -3,15 +3,13 @@
 #include "time.h"
 
 bool
-wtime_enabled(__attribute__((unused)) widget_t *w)
+wtime_enabled(__attribute__((unused)) struct widget *w)
 {
    return true;
 }
 
 void
-wtime_draw(
-      widget_t *w,
-      xctx_t   *ctx)
+wtime_draw(struct widget *w, struct xctx *ctx)
 {
 #define GUI_TIME_MAXLEN 100
    static char buffer[GUI_TIME_MAXLEN];

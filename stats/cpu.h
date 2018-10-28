@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include <sys/sched.h>
 
-typedef struct cpu_states {
+struct cpu_states {
    /*
     * NOTE: See sys/sched.h for CPUSTATES. It's 5, and represenets the # of
     * states tracked in each CPU. They are, in this order, shown with
@@ -19,16 +19,15 @@ typedef struct cpu_states {
     */
    float       percentages[CPUSTATES];       /* % time spent in each */
    u_int64_t   raw_ticks[CPUSTATES];         /* raw tick counters for each */
-} cpu_states_t;
+};
 
-typedef struct cpus {
-   bool           is_setup;
+struct cpus {
+   bool              is_setup;
+   int               ncpu;
+   struct cpu_states *cpus;
+};
 
-   int            ncpu;
-   cpu_states_t  *cpus;
-} cpus_t;
-
-extern cpus_t CPUS;
+extern struct cpus CPUS;
 
 void cpu_init();
 void cpu_update();

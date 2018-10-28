@@ -16,11 +16,11 @@
 #include "gui/xcore.h"
 #include "stats/stats.h"
 
-static xfont_t   *xfont = NULL;           /* loaded pango font info           */
-static xdisp_t   *xdisp = NULL;           /* core x display (via xcb) info    */
-static xwin_t    *xwin  = NULL;           /* oxbar's x window (xcb) info      */
-static gui_t     *gui   = NULL;           /* oxbar's gui                      */
-static settings_t settings;               /* global settings for oxbar        */
+static struct xfont  *xfont = NULL;       /* loaded pango font info           */
+static struct xdisp  *xdisp = NULL;       /* core x display (via xcb) info    */
+static struct xwin   *xwin  = NULL;       /* oxbar's x window (xcb) info      */
+static struct gui    *gui   = NULL;       /* oxbar's gui                      */
+static struct settings settings;          /* global settings for oxbar        */
 
 static pthread_t  pthread_stats_updater;  /* update stats & draw every second */
 static pthread_t  pthread_sig_handler;    /* listen & respond to signals      */

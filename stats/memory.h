@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-typedef struct memory_info {
+struct memory_info {
    bool  is_setup;
 
    /* raw (byte) values */
@@ -13,10 +13,9 @@ typedef struct memory_info {
    /* percentage values */
    float active_pct, free_pct, total_pct;
    float swap_used_pct;
+};
 
-} memory_info_t;
-
-extern memory_info_t MEMORY;
+extern struct memory_info MEMORY;
 
 void memory_init();
 void memory_update();

@@ -7,7 +7,7 @@
 
 #include "cpu.h"
 
-cpus_t CPUS;
+struct cpus CPUS;
 
 void
 cpu_init()
@@ -21,7 +21,7 @@ cpu_init()
       err(1, "sysinfo init: sysctl HW.NCPU failed");
 
    /* allocate array of cpu states */
-   CPUS.cpus = calloc(CPUS.ncpu, sizeof(cpu_states_t));
+   CPUS.cpus = calloc(CPUS.ncpu, sizeof(struct cpu_states));
    if (NULL == CPUS.cpus)
       err(1, "core_init: calloc failed for %d cpus", CPUS.ncpu);
 

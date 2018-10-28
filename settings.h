@@ -5,7 +5,7 @@
 #include "gui/xdraw.h"
 #include "gui/xcore.h"
 
-typedef struct settings {
+struct settings {
 
    /* these aren't directly 'set-able' settings - more meta-settings */
    char *config_file;   /* file to read settings from */
@@ -15,9 +15,9 @@ typedef struct settings {
    char *widgets;       /* widget list with formatting */
 
    /* core display settings */
-   xfont_settings_t  font;
-   xwin_settings_t   window;
-   gui_settings_t    gui;
+   struct xfont_settings   font;
+   struct xwin_settings    window;
+   struct gui_settings     gui;
 
    /* per-widget settings */
 
@@ -73,9 +73,9 @@ typedef struct settings {
       char *format;
    } time;
 
-} settings_t;
+};
 
-void settings_init(settings_t *s, int argc, char *argv[]);
-void settings_reload_config(settings_t *s);
+void settings_init(struct settings *s, int argc, char *argv[]);
+void settings_reload_config(struct settings *s);
 
 #endif

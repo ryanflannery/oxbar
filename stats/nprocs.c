@@ -4,7 +4,7 @@
 
 #include "nprocs.h"
 
-nprocs_info_t NPROCS;
+struct nprocs_info NPROCS;
 
 void
 nprocs_init()

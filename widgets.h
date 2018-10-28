@@ -6,15 +6,15 @@
 #include "stats/stats.h"
 
 /* this is the state local to each widget */
-typedef struct widget_context {
-   settings_t *settings;
-   oxstats_t  *stats;
+struct widget_context {
+   struct settings *settings;
+   struct oxstats  *stats;
 #  define MAX_CHARTS_PER_WIDGET 10
-   chart_t    *charts[MAX_CHARTS_PER_WIDGET];
-} widget_context_t;
+   struct chart    *charts[MAX_CHARTS_PER_WIDGET];
+};
 
 /* create & free actual widgets from "names" and then add them to the gui */
-void widgets_init(gui_t *gui, settings_t *settings, oxstats_t *stats);
+void widgets_init(struct gui *gui, struct settings *settings, struct oxstats *stats);
 void widgets_free();
 
 #endif

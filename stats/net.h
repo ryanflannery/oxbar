@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
-typedef struct net_info {
+struct net_info {
    bool  is_setup;
 
    /* TODO Raw # packets in/out isn't used anymore. Remove? */
@@ -23,10 +23,9 @@ typedef struct net_info {
    u_long   new_ip_packets_out;
    uint64_t new_bytes_in;
    uint64_t new_bytes_out;
+};
 
-} net_info_t;
-
-extern net_info_t NET;
+extern struct net_info NET;
 
 void net_init();
 void net_update();

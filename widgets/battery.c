@@ -1,18 +1,16 @@
 #include "battery.h"
 
 bool
-wbattery_enabled(widget_t *w)
+wbattery_enabled(struct widget *w)
 {
    return w->context->stats->battery->is_setup;
 }
 
 void
-wbattery_draw(
-      widget_t *w,
-      xctx_t   *ctx)
+wbattery_draw(struct widget *w, struct xctx *ctx)
 {
-   settings_t *settings = w->context->settings;
-   oxstats_t  *stats    = w->context->stats;
+   struct settings *settings = w->context->settings;
+   struct oxstats  *stats    = w->context->stats;
 
    xdraw_printf(ctx,
          stats->battery->plugged_in ?

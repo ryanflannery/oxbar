@@ -8,7 +8,7 @@
 #include "xcore.h"
 
 /*
- * xctx_t: A stateful context for rendering widgets sequentially.
+ * struct xctx: A stateful context for rendering widgets sequentially.
  * All drawing in the gui and widgets is done ONTO a xctx context.
  * Specifically, all the drawing primitives below draw onto such a context,
  * and the context tracts advancing the "pen" when drawing. E.g. when drawing
@@ -36,30 +36,31 @@ typedef enum {
    AFTER_RENDER
 } xctx_state_t;
 
-typedef struct padding {
+struct padding {
    double top, bottom, left, right;
-} padding_t;
+};
 
-typedef struct xctx {
+struct xctx {
    bool              is_root;
    xctx_direction_t  direction;
-   xfont_t          *xfont;
+   struct xfont     *xfont;
    cairo_t          *cairo;
    cairo_surface_t  *surface;
    int               h, w;
-   padding_t        *padding;
+   struct padding   *padding;
    double            xoffset;
    double            yoffset;
-} xctx_t;
+};
 
-xctx_t *xctx_init_root(xfont_t *font, xwin_t *win, xctx_direction_t direction,
-      padding_t *padding);
-xctx_t *xctx_init_scratchpad(xfont_t *font, xwin_t *win,
-      xctx_direction_t direction, padding_t *padding);
-void xctx_free(xctx_t *ctx);
-void xctx_reset(xctx_t *ctx);
-void xctx_complete(xctx_t *ctx);
-void xctx_advance(xctx_t *ctx, xctx_state_t state, double xplus, double yplus);
+struct xctx *xctx_init_root(struct xfont *font, struct xwin *win,
+      xctx_direction_t direction, struct padding *padding);
+struct xctx *xctx_init_scratchpad(struct xfont *font, struct xwin *win,
+      xctx_direction_t direction, struct padding *padding);
+
+void xctx_free(struct xctx *ctx);
+void xctx_reset(struct xctx *ctx);
+void xctx_complete(struct xctx *ctx);
+void xctx_advance(struct xctx *ctx, xctx_state_t state, double xplus, double yplus);
 
 /*
  * Drawing Primitives
@@ -69,13 +70,13 @@ void xctx_advance(xctx_t *ctx, xctx_state_t state, double xplus, double yplus);
 /* draw one context onto another */
 void
 xdraw_context(
-      xctx_t     *dest,
-      xctx_t     *source);
+      struct xctx     *dest,
+      struct xctx     *source);
 
 /* draw a color over an entire context */
 void
 xdraw_colorfill(
-      xctx_t     *ctx,
+      struct xctx     *ctx,
       const char *const color);
 
 /* draw a colored headerline on a widget */
@@ -88,14 +89,14 @@ typedef enum {
 
 void
 xdraw_headerline(
-      xctx_t         *ctx,
+      struct xctx         *ctx,
       header_style_t  style,
       const char     *color);
 
 /* draw some colored text (printf(3) style) */
 void
 xdraw_printf(
-      xctx_t *ctx,
+      struct xctx *ctx,
       const char *color,
       const char *fmt,
       ...);
@@ -103,7 +104,7 @@ xdraw_printf(
 /* draw simple progress bar showing some % completion */
 void
 xdraw_progress_bar(
-      xctx_t     *ctx,
+      struct xctx     *ctx,
       const char *bgcolor,
       const char *pgcolor,
       double      width,
@@ -112,7 +113,7 @@ xdraw_progress_bar(
 /* draw a historical bar chart */
 void
 xdraw_chart(
-      xctx_t  *ctx,
-      chart_t *chart);
+      struct xctx       *ctx,
+      struct chart *chart);
 
 #endif

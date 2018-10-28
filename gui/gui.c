@@ -6,7 +6,7 @@
 #include "xdraw.h"
 
 static void
-add_widget(widget_list_t *list, widget_t *w)
+add_widget(struct widget_list *list, struct widget *w)
 {
    if (list->size >= MAX_WIDGETS)
       errx(1, "%s: too many widgets", __FUNCTION__);
@@ -14,10 +14,10 @@ add_widget(widget_list_t *list, widget_t *w)
    list->widgets[ list->size++ ] = w;
 }
 
-gui_t*
-gui_init(xfont_t *xfont, xwin_t *xwin, gui_settings_t *settings)
+struct gui*
+gui_init(struct xfont *xfont, struct xwin *xwin, struct gui_settings *settings)
 {
-   gui_t *gui = malloc(sizeof(gui_t));
+   struct gui *gui = malloc(sizeof(struct gui));
    if (NULL == gui)
       err(1, "%s: couldn't malloc gui", __FUNCTION__);
 
@@ -32,13 +32,13 @@ gui_init(xfont_t *xfont, xwin_t *xwin, gui_settings_t *settings)
 }
 
 void
-gui_free(gui_t *gui)
+gui_free(struct gui *gui)
 {
    free(gui);
 }
 
 void
-gui_add_widget(gui_t *gui, xctx_direction_t direction, widget_t* w)
+gui_add_widget(struct gui *gui, xctx_direction_t direction, struct widget* w)
 {
    switch (direction) {
    case L2R:      add_widget(&gui->LeftWidgets, w);   break;
@@ -48,12 +48,12 @@ gui_add_widget(gui_t *gui, xctx_direction_t direction, widget_t* w)
 }
 
 static void
-draw_widget(gui_t *gui, xctx_t *dest, widget_t *w)
+draw_widget(struct gui *gui, struct xctx *dest, struct widget *w)
 {
    if (!w->enabled(w))
       return;
 
-   xctx_t *scratchpad = xctx_init_scratchpad(gui->xfont, gui->xwin, L2R, &gui->s->padding);
+   struct xctx *scratchpad = xctx_init_scratchpad(gui->xfont, gui->xwin, L2R, &gui->s->padding);
    xdraw_colorfill(scratchpad, gui->s->widget_bgcolor);
    w->draw(w, scratchpad);
    xctx_complete(scratchpad);
@@ -64,12 +64,12 @@ draw_widget(gui_t *gui, xctx_t *dest, widget_t *w)
 
 static void
 draw_widget_list(
-      gui_t            *gui,
-      widget_list_t    *list,
-      xctx_direction_t  direction)
+      struct gui          *gui,
+      struct widget_list  *list,
+      xctx_direction_t     direction)
 {
-   xctx_t *root = xctx_init_root(gui->xfont, gui->xwin, direction, &gui->s->margin);
-   xctx_t *temp = xctx_init_scratchpad(gui->xfont, gui->xwin, L2R, NULL);
+   struct xctx *root = xctx_init_root(gui->xfont, gui->xwin, direction, &gui->s->margin);
+   struct xctx *temp = xctx_init_scratchpad(gui->xfont, gui->xwin, L2R, NULL);
 
    size_t i = 0;
    for (; i < list->size; i++) {
@@ -85,7 +85,7 @@ draw_widget_list(
 }
 
 void
-gui_draw(gui_t *gui)
+gui_draw(struct gui *gui)
 {
    xwin_push(gui->xwin);
    draw_widget_list(gui, &gui->LeftWidgets,     L2R);

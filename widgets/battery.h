@@ -4,9 +4,7 @@
 #include <stdbool.h>
 #include "../widgets.h"
 
-bool wbattery_enabled(widget_t *w);
-void wbattery_draw(
-      widget_t *w,
-      xctx_t   *ctx);
+bool wbattery_enabled(struct widget *w);
+void wbattery_draw(struct widget *w, struct xctx *ctx);
 
 #endif

@@ -18,7 +18,7 @@ main()
       "#0000ff"
    };
 
-   chart_t *c;
+   struct chart *c;
 
    c = chart_init(
          10, 3,      /* 10 samples of 3 different series */

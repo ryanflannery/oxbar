@@ -4,9 +4,9 @@
 #include <stdbool.h>
 #include "../widgets.h"
 
-void wcpuslong_init(widget_t *w);
-void wcpuslong_free(widget_t *w);
-bool wcpuslong_enabled(widget_t *w);
-void wcpuslong_draw(widget_t *w, xctx_t *ctx);
+void wcpuslong_init(struct widget *w);
+void wcpuslong_free(struct widget *w);
+bool wcpuslong_enabled(struct widget *w);
+void wcpuslong_draw(struct widget *w, struct xctx *ctx);
 
 #endif

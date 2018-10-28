@@ -3,15 +3,13 @@
 
 #include <stdbool.h>
 
-typedef struct volume_info {
+struct volume_info {
    bool  is_setup;
-
    bool  muted;
    float left_pct, right_pct;
+};
 
-} volume_info_t;
-
-extern volume_info_t VOLUME;
+extern struct volume_info VOLUME;
 
 void volume_init();
 void volume_update();

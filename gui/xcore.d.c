@@ -23,11 +23,11 @@
 void
 test_font(char *description)
 {
-   xfont_settings_t s = {
+   struct xfont_settings s = {
       .desc = description,
       .fgcolor = "ff0000"
    };
-   xfont_t *f = xfont_init(&s);
+   struct xfont *f = xfont_init(&s);
    printf("%s :: family '%s' height: %d\n",
          0 == f->height ? "FAILED!" : "GOOD",
          pango_font_description_get_family(f->pfont),
@@ -59,7 +59,7 @@ main_xfont()
 int
 main_xdisp()
 {
-   xdisp_t *x = xdisp_init();
+   struct xdisp *x = xdisp_init();
    printf("display: %d x %d (pixels)\n", x->display_width, x->display_height);
    xdisp_free(x);
    return 0;
@@ -68,16 +68,16 @@ main_xdisp()
 int
 main_xwin()
 {
-   xdisp_t *x = xdisp_init();
+   struct xdisp *x = xdisp_init();
    printf("display: %d x %d (pixels)\n", x->display_width, x->display_height);
 
-   xwin_settings_t s = {
+   struct xwin_settings s = {
       .bgcolor = "#ff0000",
       .wname = "xcore.d :: xwin test",
       .x = 500, .y = 500,
       .w = 500, .h = 500
    };
-   xwin_t *w = xwin_init(x, &s);
+   struct xwin *w = xwin_init(x, &s);
 
    /* start double buffer - NOTE you must do this w/ xcb backend + alpha */
    cairo_push_group(w->cairo);
