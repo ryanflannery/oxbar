@@ -1,14 +1,17 @@
 gui/xcore.c:174: * TODO cleanup & separate wm hints ... and dragons
 gui/xdraw.h:24: * TODO This abstraction should also permit vertical rendering (for a vertical
 gui/xcore.t.cc:9:/* TODO either fix googletest's [ASSERT|EXPECT]_EXIT* on openbsd or switch */
-oxbar.c:95:      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
+oxbar.c:3: * TODO complete man page (probably wait until widget settings moved)
+oxbar.c:4: * TODO more examples
+oxbar.c:5: * TODO polish error messages (err/errx calls)
+oxbar.c:6: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
 settings.c:37:/* Print basic usage information (TODO I think I went overboard at the end) */
 settings.c:296: * TODO Create a settings_free() (or refactor to make easier)
 stats/brightness.h:1:/* TODO Build a working brightness widget
 stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
 stats/cpu.c:125:   /* TODO CPU cleanup routine should free/cleanup shiz */
 stats/memory.c:89:   /* TODO MEMORY cleanup routine should free/cleanup shiz */
-stats/volume.c:135:/* TODO GET VOLUME "IS MUTED?" WORKING
+stats/volume.c:126:/* TODO GET VOLUME "IS MUTED?" WORKING
 stats/net.c:95: * TODO Refactor network bytes logic
 stats/net.c:180:   /* TODO NET cleanup routine should free/cleanup shiz */
 stats/net.h:10:   /* TODO Raw # packets in/out isn't used anymore. Remove? */

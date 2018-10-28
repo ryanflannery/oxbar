@@ -1,3 +1,10 @@
+/*
+ * Various outstanding stuff that doesn't belong elsewhere...
+ * TODO complete man page (probably wait until widget settings moved)
+ * TODO more examples
+ * TODO polish error messages (err/errx calls)
+ * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
+ */
 #include <err.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -92,7 +99,7 @@ thread_gui()
    ignore_all_signals();
    xcb_generic_event_t *xevent;
    while ((xevent = xcb_wait_for_event(xdisp->con))) {
-      switch (xevent->response_type & ~0x80) {  /* TODO: why the `& ~0x80`? */
+      switch (xevent->response_type & ~0x80) {
       case XCB_EXPOSE:
          pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
          pthread_mutex_lock(&mutex_gui);
