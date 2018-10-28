@@ -8,13 +8,19 @@
 #include <pango/pango-font.h>
 
 /* pango font wrapper struct & setup/teardown methods */
-typedef struct xfont {
-   char                 *ufont;  /* user-specified font string unchanged */
-   PangoFontDescription *pfont;  /* pango font loaded from that string   */
-   int                   height; /* derived font height (in pixels)      */
+
+typedef struct xfont_settings {  /* user provided settings for xfont    */
+   char  *desc;                  /* free-form font description string   */
+   char  *fgcolor;               /* default foreground color for text   */
+} xfont_settings_t;
+
+typedef struct xfont {           /* core xfont struct (read-only)       */
+   xfont_settings_t     *settings;
+   PangoFontDescription *pfont;  /* pango font loaded from that string  */
+   int                   height; /* derived font height (in pixels)     */
 } xfont_t;
 
-xfont_t *xfont_init(const char *const font_description);
+xfont_t *xfont_init(xfont_settings_t *settings);
 void xfont_free(xfont_t *xf);
 
 /* xcb / display-info struct & setup/teardown methods */
@@ -31,21 +37,19 @@ void xdisp_free(xdisp_t *x);
 
 /* xcb / window & cairo wrapper struct & setup/teardown methods */
 
-/* these are user-specified settings for the window */
-typedef struct xwin_settings {
-   char *bgcolor;    /* background color of window                   */
+typedef struct xwin_settings {   /* user provided settings           */
+   char *bgcolor;    /* default background color for whole window    */
    char *wname;      /* name of window for window manager            */
    int   x, y;       /* (x,y) pixel coordinates of top-left corner   */
    int   w, h;       /* (width,height) pixel dimensions of window    */
 } xwin_settings_t;
 
-/* this is xwin window struct itself */
-typedef struct xwin {
+typedef struct xwin {            /* core xwin struct (read-only)     */
    xwin_settings_t  *settings;
-   xdisp_t          *xdisp;      /* x display server                    */
-   xcb_drawable_t    window;     /* oxbar xwindow                       */
-   cairo_surface_t  *surface;    /* core cairo surface mapped to X      */
-   cairo_t          *cairo;      /* core cairo object for rendering     */
+   xdisp_t          *xdisp;      /* x display server                 */
+   xcb_drawable_t    window;     /* oxbar xwindow                    */
+   cairo_surface_t  *surface;    /* core cairo surface mapped to X   */
+   cairo_t          *cairo;      /* core cairo object for rendering  */
 } xwin_t;
 
 xwin_t *xwin_init(xdisp_t *xdisp, xwin_settings_t *settings);

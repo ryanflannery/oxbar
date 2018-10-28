@@ -230,9 +230,10 @@ parse_header_style(header_style_t *style, const char * const value)
 static void
 settings_set_defaults(settings_t *s)
 {
-   s->font    = strdup("DejaVu Sans 16px");
-   s->fgcolor = strdup("93a1a1");
    s->widgets = strdup("nprocs cpuslong memory net > battery volume time");
+
+   s->font.desc = strdup("DejaVu Sans 16px");
+   s->font.fgcolor = strdup("93a1a1");
 
    s->window.x = 0;
    s->window.y = -1;
@@ -375,8 +376,10 @@ settings_set_one_keyvalue(settings_t *s, const char *key, const char *value)
 
    /* globals */
    KMS_STRING(widgets);
-   KMS_STRING(font);
-   KMS_STRING(fgcolor);
+
+   /* font */
+   KMS_STRING(font.desc);
+   KMS_STRING(font.fgcolor);
 
    /* window */
    KMS_INT(window.x);
@@ -501,9 +504,9 @@ settings_parse_cmdline(settings_t *s, int argc, char * const argv[])
             errx(1, "illegal h value '%s': %s", optarg, errstr);
          break;
       case 'f':
-         free(s->font);
-         s->font = strdup(optarg);
-         if (NULL == s->font)
+         free(s->font.desc);
+         s->font.desc= strdup(optarg);
+         if (NULL == s->font.desc)
             err(1, "strdup failed for font");
          break;
       case 'm':

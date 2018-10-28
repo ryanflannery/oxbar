@@ -54,7 +54,7 @@ wcpuslong_draw(
    oxstats_t  *stats    = w->context->stats;
    chart_t   **charts   = w->context->charts;
 
-   xdraw_printf(ctx, settings->fgcolor, "CPUs: ");
+   xdraw_printf(ctx, settings->font.fgcolor, "CPUs: ");
 
    int i = 0;
    for (i = 0; i < stats->cpus->ncpu; i++) {

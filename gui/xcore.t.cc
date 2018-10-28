@@ -12,45 +12,73 @@ extern "C" {
 
 TEST(xfont, EmptyString_ShouldExit)
 {
-   ASSERT_EXIT(xfont_init(""), ::testing::ExitedWithCode(1), "");
+   xfont_settings_t s = {
+      .desc = (char*)"",
+      .fgcolor = (char*)""
+   };
+   ASSERT_EXIT(xfont_init(&s), ::testing::ExitedWithCode(1), "");
 }
 
 TEST(xfont, FixedUsingPt_ShouldExit)
 {
-   ASSERT_EXIT(xfont_init("fixed 12pt"), ::testing::ExitedWithCode(1), "");
+   xfont_settings_t s = {
+      .desc = (char*)"fixed 12pt",
+      .fgcolor = (char*)""
+   };
+   ASSERT_EXIT(xfont_init(&s), ::testing::ExitedWithCode(1), "");
 }
 
 TEST(xfont, FixedUsingPx_ShouldSucced)
 {
-   xfont_t *f = xfont_init("fixed 12px");
+   xfont_settings_t s = {
+      .desc = (char*)"fixed 12px",
+      .fgcolor = (char*)""
+   };
+   xfont_t *f = xfont_init(&s);
    ASSERT_EQ(f->height, 12);
    xfont_free(f);
 }
 
 TEST(xfont, FixedUsingNoSuffix_ShouldSucced)
 {
-   xfont_t *f = xfont_init("fixed 12");
+   xfont_settings_t s = {
+      .desc = (char*)"fixed 12",
+      .fgcolor = (char*)""
+   };
+   xfont_t *f = xfont_init(&s);
    ASSERT_EQ(f->height, 12);
    xfont_free(f);
 }
 
 TEST(xfont, TimesBold48_ShouldSucceed)
 {
-   xfont_t *f = xfont_init("Times Bold 48");
+   xfont_settings_t s = {
+      .desc = (char*)"Times Bold 48",
+      .fgcolor = (char*)""
+   };
+   xfont_t *f = xfont_init(&s);
    ASSERT_EQ(f->height, 48);
    xfont_free(f);
 }
 
 TEST(xfont, TimesOrHelveticaBold8px_ShouldSucceed)
 {
-   xfont_t *f = xfont_init("Times,Helvetica Bold 8px");
+   xfont_settings_t s = {
+      .desc = (char*)"Times,Helvetica Bold 8px",
+      .fgcolor = (char*)""
+   };
+   xfont_t *f = xfont_init(&s);
    ASSERT_EQ(f->height, 8);
    xfont_free(f);
 }
 
 TEST(xfont, XFontFree_ShouldSucceed)
 {
-   xfont_t *f = xfont_init("Times,Helvetica Bold 8px");
+   xfont_settings_t s = {
+      .desc = (char*)"Times,Helvetica Bold 8px",
+      .fgcolor = (char*)""
+   };
+   xfont_t *f = xfont_init(&s);
    ASSERT_EQ(f->height, 8);
    xfont_free(f);
 }

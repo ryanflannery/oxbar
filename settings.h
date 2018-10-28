@@ -11,14 +11,13 @@ typedef struct settings {
    char *config_file;   /* file to read settings from */
    char *theme;         /* theme name specified on command line (if any) */
 
-   /* these are setable but don't belong to any proper component below */
-   char *widgets;       /* parsed into gui objects when changed */
-   char *font;          /* parsed into an 'xfont' struct on load */
-   char *fgcolor;
+   /* this is setable but doesn't belong to any proper component below */
+   char *widgets;       /* widget list with formatting */
 
    /* core display settings */
-   xwin_settings_t window;
-   gui_settings_t  gui;
+   xfont_settings_t  font;
+   xwin_settings_t   window;
+   gui_settings_t    gui;
 
    /* per-widget settings */
 

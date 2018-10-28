@@ -20,5 +20,5 @@ wtime_draw(
    strftime(buffer, GUI_TIME_MAXLEN, w->context->settings->time.format,
          localtime(&now));
 
-   xdraw_printf(ctx, w->context->settings->fgcolor, buffer);
+   xdraw_printf(ctx, w->context->settings->font.fgcolor, buffer);
 }

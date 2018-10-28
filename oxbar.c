@@ -45,7 +45,7 @@ ignore_all_signals()
 void
 setup_gui()
 {
-   xfont = xfont_init(settings.font);
+   xfont = xfont_init(&settings.font);
 
    if (-1 == settings.window.h)
       settings.window.h = xfont->height

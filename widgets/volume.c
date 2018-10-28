@@ -16,7 +16,7 @@ wvolume_draw(
    settings_t *settings = w->context->settings;
    oxstats_t  *stats    = w->context->stats;
 
-   xdraw_printf(ctx, settings->fgcolor, "Vol: ");
+   xdraw_printf(ctx, settings->font.fgcolor, "Vol: ");
 
    /* TODO Should volume widget ever handle this case!? I've never had it */
    if (stats->volume->left_pct != stats->volume->right_pct)
@@ -30,6 +30,6 @@ wvolume_draw(
          stats->volume->left_pct);
 
    xdraw_printf(ctx,
-         settings->fgcolor,
+         settings->font.fgcolor,
          "% 3.0f%%", stats->volume->left_pct);
 }

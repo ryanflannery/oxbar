@@ -17,9 +17,13 @@ main()
 
    printf("display: %x x %x (pixels)\n", x->display_width, x->display_height);
 
-   f = xfont_init("serif italic 20");
+   xfont_settings_t fonts = {
+      .desc = "serif italic 20",
+      .fgcolor = "ff0000"
+   };
+   f = xfont_init(&fonts);
 
-   xwin_settings_t s = {
+   xwin_settings_t wins = {
       .bgcolor = "#ff0000",
       .wname = "xcore.d :: xwin test",
       .x = 500, .y = 500,
@@ -31,7 +35,7 @@ main()
       .bottom = 10,
       .left = 10
    };
-   xwin_t *w = xwin_init(x, &s);
+   xwin_t *w = xwin_init(x, &wins);
    xctx_t *root = xctx_init_root(f, w, L2R, &padding);
 
    xwin_push(w);

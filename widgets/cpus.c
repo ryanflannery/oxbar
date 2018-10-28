@@ -52,7 +52,7 @@ wcpus_draw(
    oxstats_t  *stats    = w->context->stats;
    chart_t   **charts   = w->context->charts;
 
-   xdraw_printf(ctx, settings->fgcolor, "CPUs: ");
+   xdraw_printf(ctx, settings->font.fgcolor, "CPUs: ");
 
    int i = 0;
    for (i = 0; i < stats->cpus->ncpu; i++) {
@@ -66,7 +66,7 @@ wcpus_draw(
             });
 
       xdraw_chart(ctx, charts[i]);
-      xdraw_printf(ctx, settings->fgcolor, "% 3.0f%%",
+      xdraw_printf(ctx, settings->font.fgcolor, "% 3.0f%%",
             stats->cpus->cpus[i].percentages[CP_IDLE]);
 
       if (i != stats->cpus->ncpu - 1) xdraw_printf(ctx, "000000", " ");

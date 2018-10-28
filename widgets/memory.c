@@ -47,15 +47,15 @@ wmemory_draw(
          stats->memory->free_pct
          });
 
-   xdraw_printf(ctx, settings->fgcolor, "Mem: ");
+   xdraw_printf(ctx, settings->font.fgcolor, "Mem: ");
    xdraw_chart(ctx, chart);
    xdraw_printf(ctx, settings->memory.chart_color_active, " %s",
          fmt_memory("%.1lf", stats->memory->active));
-   xdraw_printf(ctx, settings->fgcolor, " act ");
+   xdraw_printf(ctx, settings->font.fgcolor, " act ");
    xdraw_printf(ctx, settings->memory.chart_color_total, "%s",
          fmt_memory("%.1lf", stats->memory->total));
-   xdraw_printf(ctx, settings->fgcolor, " tot ");
+   xdraw_printf(ctx, settings->font.fgcolor, " tot ");
    xdraw_printf(ctx, settings->memory.chart_color_free,
          fmt_memory("%.1lf", stats->memory->free));
-   xdraw_printf(ctx, settings->fgcolor, " free");
+   xdraw_printf(ctx, settings->font.fgcolor, " free");
 }

@@ -49,7 +49,7 @@ wnet_draw(
    chart_update(chart_in,  (double[]){ stats->network->new_bytes_in });
    chart_update(chart_out, (double[]){ stats->network->new_bytes_out });
 
-   xdraw_printf(ctx, settings->fgcolor, "Net: ");
+   xdraw_printf(ctx, settings->font.fgcolor, "Net: ");
    xdraw_chart(ctx, chart_in);
    xdraw_printf(ctx, "268bd2", " %s ",
          fmt_memory("% .0f", stats->network->new_bytes_in / 1000));

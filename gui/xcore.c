@@ -10,30 +10,28 @@
 /* pango wrapper */
 
 xfont_t*
-xfont_init(const char *font)
+xfont_init(xfont_settings_t *settings)
 {
    xfont_t *xf = malloc(sizeof(xfont_t));
    if (NULL == xf)
       err(1, "%s: malloc failed", __FUNCTION__);
 
-   if (NULL == (xf->ufont = strdup(font)))
-      err(1, "%s: strdup failed", __FUNCTION__);
-
-   xf->pfont = pango_font_description_from_string(font);
+   const char *font_desc = settings->desc;
+   xf->pfont = pango_font_description_from_string(font_desc);
    if (!xf->pfont)
-      errx(1, "pango failed to load font '%s'", font);
+      errx(1, "pango failed to parse or load font '%s'", font_desc);
 
    xf->height = pango_font_description_get_size(xf->pfont) / PANGO_SCALE;
    if (0 == xf->height)
-      errx(1, "%s: failed to determine font height '%s'", __FUNCTION__, font);
+      errx(1, "pango failed to determine font height '%s'", font_desc);
 
+   xf->settings = settings;
    return xf;
 }
 
 void
 xfont_free(xfont_t *xf)
 {
-   free(xf->ufont);
    pango_font_description_free(xf->pfont);
    free(xf);
 }

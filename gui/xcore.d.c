@@ -21,9 +21,13 @@
 #include "xcore.h"
 
 void
-test_font(const char *description)
+test_font(char *description)
 {
-   xfont_t *f = xfont_init(description);
+   xfont_settings_t s = {
+      .desc = description,
+      .fgcolor = "ff0000"
+   };
+   xfont_t *f = xfont_init(&s);
    printf("%s :: family '%s' height: %d\n",
          0 == f->height ? "FAILED!" : "GOOD",
          pango_font_description_get_family(f->pfont),
