@@ -5,15 +5,6 @@
 #include "gui.h"
 #include "xdraw.h"
 
-static void
-add_widget(struct widget_list *list, struct widget *w)
-{
-   if (list->size >= MAX_WIDGETS)
-      errx(1, "%s: too many widgets", __FUNCTION__);
-
-   list->widgets[ list->size++ ] = w;
-}
-
 struct gui*
 gui_init(struct xfont *xfont, struct xwin *xwin, struct gui_settings *settings)
 {
@@ -25,25 +16,44 @@ gui_init(struct xfont *xfont, struct xwin *xwin, struct gui_settings *settings)
    gui->xwin   = xwin;
    gui->s      = settings;
 
-   gui->LeftWidgets.size = 0;
-   gui->RightWidgets.size = 0;
-   gui->CenterWidgets.size = 0;
+   TAILQ_INIT(&gui->left);
+   TAILQ_INIT(&gui->center);
+   TAILQ_INIT(&gui->right);
    return gui;
+}
+
+static void
+free_widget_list(struct widget_list *widgets)
+{
+   struct widget_list_entry *wle = NULL;
+   while (!TAILQ_EMPTY(widgets)) {
+      wle = TAILQ_FIRST(widgets);
+      TAILQ_REMOVE(widgets, wle, widget_entry);
+      free(wle);
+   }
 }
 
 void
 gui_free(struct gui *gui)
 {
+   free_widget_list(&gui->left);
+   free_widget_list(&gui->center);
+   free_widget_list(&gui->right);
    free(gui);
 }
 
 void
 gui_add_widget(struct gui *gui, xctx_direction_t direction, struct widget* w)
 {
+   struct  widget_list_entry *wle;
+   if (NULL == (wle = malloc(sizeof(struct widget_list_entry))))
+      err(1, "failed to allocate widget list entry");
+
+   wle->widget = w;
    switch (direction) {
-   case L2R:      add_widget(&gui->LeftWidgets, w);   break;
-   case R2L:      add_widget(&gui->RightWidgets, w);  break;
-   case CENTERED: add_widget(&gui->CenterWidgets, w); break;
+   case L2R:      TAILQ_INSERT_TAIL(&gui->left,   wle, widget_entry); break;
+   case CENTERED: TAILQ_INSERT_TAIL(&gui->center, wle, widget_entry); break;
+   case R2L:      TAILQ_INSERT_TAIL(&gui->right,  wle, widget_entry); break;
    }
 }
 
@@ -64,17 +74,17 @@ draw_widget(struct gui *gui, struct xctx *dest, struct widget *w)
 
 static void
 draw_widget_list(
-      struct gui          *gui,
-      struct widget_list  *list,
-      xctx_direction_t     direction)
+      struct gui           *gui,
+      struct widget_list   *widgets,
+      xctx_direction_t      direction)
 {
+   struct widget_list_entry *wle = NULL;
    struct xctx *root = xctx_init_root(gui->xfont, gui->xwin, direction, &gui->s->margin);
    struct xctx *temp = xctx_init_scratchpad(gui->xfont, gui->xwin, L2R, NULL);
 
-   size_t i = 0;
-   for (; i < list->size; i++) {
-      draw_widget(gui, temp, list->widgets[i]);
-      if (i != list->size - 1)
+   TAILQ_FOREACH(wle, widgets, widget_entry) {
+      draw_widget(gui, temp, wle->widget);
+      if (NULL != TAILQ_NEXT(wle, widget_entry))
          xctx_advance(temp, AFTER_RENDER, gui->s->widget_spacing, 0);
    }
 
@@ -88,8 +98,8 @@ void
 gui_draw(struct gui *gui)
 {
    xwin_push(gui->xwin);
-   draw_widget_list(gui, &gui->LeftWidgets,     L2R);
-   draw_widget_list(gui, &gui->RightWidgets,    R2L);
-   draw_widget_list(gui, &gui->CenterWidgets,   CENTERED);
+   draw_widget_list(gui, &gui->left,   L2R);
+   draw_widget_list(gui, &gui->center, CENTERED);
+   draw_widget_list(gui, &gui->right,  R2L);
    xwin_pop(gui->xwin);
 }
