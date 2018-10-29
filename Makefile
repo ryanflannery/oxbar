@@ -89,8 +89,8 @@ loc:
 	find . -name "*.c" -exec wc -l {} \; | sort -r
 
 # rebuild the architecture image showing #include dependencies
-tree.png:
-	cinclude2dot --paths --merge module --exclude '.t.c' > source.dot
+tree.png::
+	cinclude2dot --paths --merge module --exclude '.t.c|.d.c' > source.dot
 	dot -Tpng -Grankdir=LR -Gratio=fill source.dot > $@
 	rm source.dot
 
