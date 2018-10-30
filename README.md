@@ -69,7 +69,6 @@ forthcoming.
 Roughly in order or my priority...
 
    * document! man page and -h flags
-   * stats/gui: support different update frequency per widget
    * gui: icons in the display could help condense it further
    * stats: add tracker for hw.sensors
    * stats: add a weather component...i like weather

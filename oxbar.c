@@ -1,7 +1,5 @@
 /*
  * Various outstanding stuff that doesn't belong elsewhere...
- * TODO hdcolor is a property across all widgets...how to handle that?
- * TODO move widget settings into widgets (NEED TO SOLVE hdcolor thing)
  * TODO complete man page (probably wait until widget settings moved)
  * TODO more examples
  * TODO polish error messages (err/errx calls)

@@ -1,14 +1,12 @@
 gui/xcore.c:172: * TODO cleanup & separate wm hints ... and dragons
 gui/xdraw.h:24: * TODO This abstraction should also permit vertical rendering (for a vertical
 gui/xcore.t.cc:9:/* TODO either fix googletest's [ASSERT|EXPECT]_EXIT* on openbsd or switch */
-oxbar.c:3: * TODO hdcolor is a property across all widgets...how to handle that?
-oxbar.c:4: * TODO move widget settings into widgets (NEED TO SOLVE hdcolor thing)
-oxbar.c:5: * TODO complete man page (probably wait until widget settings moved)
-oxbar.c:6: * TODO more examples
-oxbar.c:7: * TODO polish error messages (err/errx calls)
-oxbar.c:8: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
+oxbar.c:3: * TODO complete man page (probably wait until widget settings moved)
+oxbar.c:4: * TODO more examples
+oxbar.c:5: * TODO polish error messages (err/errx calls)
+oxbar.c:6: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
 settings.c:43:/* Print basic usage information (TODO I think I went overboard at the end) */
-settings.c:304: * TODO Create a settings_free() (or refactor to make easier)
+settings.c:311: * TODO Create a settings_free() (or refactor to make easier)
 stats/brightness.h:2: * TODO Build a working brightness widget (this is currently not used)
 stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
 stats/cpu.c:125:   /* TODO CPU cleanup routine should free/cleanup shiz */
@@ -17,5 +15,4 @@ stats/volume.c:126:/* TODO GET VOLUME "IS MUTED?" WORKING
 stats/net.h:10:   /* TODO Raw # packets in/out isn't used anymore. Remove? */
 stats/net.c:95: * TODO Refactor network bytes logic
 stats/net.c:180:   /* TODO NET cleanup routine should free/cleanup shiz */
-widgets/volume.c:19:   /* TODO Should volume widget ever handle this case!? I've never had it */
-widgets/cpuslong.c:5:/* TODO: merge widgets "cpuslong" and "cpus" easily - code is 95% the same */
+widgets/volume.c:39:   /* TODO Should volume widget ever handle this case!? I've never had it */
