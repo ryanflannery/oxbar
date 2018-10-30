@@ -2,11 +2,13 @@
 #define WCPUSLONG_H
 
 #include <stdbool.h>
-#include "../widgets.h"
+#include "cpus.h"
+#include "../gui/xdraw.h"
+#include "../stats/stats.h"
 
-void wcpuslong_init(struct widget *w);
-void wcpuslong_free(struct widget *w);
-bool wcpuslong_enabled(struct widget *w);
-void wcpuslong_draw(struct widget *w, struct xctx *ctx);
+void *wcpulong_init(struct oxstats *, void *settings);
+void  wcpulong_free(void *widget);
+bool  wcpulong_enabled(void *widget);
+void  wcpulong_draw(void *widget, struct xctx *);
 
 #endif

@@ -1,25 +1,38 @@
 #include <err.h>
 
+#include "cpus.h"
 #include "cpushort.h"
 
-bool
-wcpushort_enabled(struct widget *w)
+void *
+wcpushort_init(struct oxstats *stats, void *settings)
 {
-   return w->context->stats->cpus->is_setup;
+   return wcpu_init(stats, settings);
 }
 
 void
-wcpushort_draw(struct widget *w, struct xctx *ctx)
+wcpushort_free(void *widget)
 {
-   struct settings *settings = w->context->settings;
-   struct oxstats  *stats    = w->context->stats;
+   wcpu_free(widget);
+}
 
-   int i = 0;
-   for (i = 0; i < stats->cpus->ncpu; i++) {
-      xdraw_printf(ctx, settings->font.fgcolor, "CPU%d: ", i);
-      xdraw_printf(ctx, settings->font.fgcolor, "% 3.0f%%",
-            (100 - stats->cpus->cpus[i].percentages[CP_IDLE]));
+bool
+wcpushort_enabled(void *widget)
+{
+   struct widget_cpu *w = widget;
+   return w->stats->cpus->is_setup;
+}
 
-      if (i != stats->cpus->ncpu - 1) xdraw_printf(ctx, "000000", " ");
+void
+wcpushort_draw(void *widget, struct xctx *ctx)
+{
+   struct widget_cpu *w = widget;
+   struct oxstats *stats = w->stats;
+   int cpu;
+   for (cpu = 0; cpu < stats->cpus->ncpu; cpu++) {
+      xdraw_printf(ctx, ctx->xfont->settings->fgcolor, "CPU%d: ", cpu);
+      xdraw_printf(ctx, ctx->xfont->settings->fgcolor, "% 3.0f%%",
+            (100 - stats->cpus->cpus[cpu].percentages[CP_IDLE]));
+
+      if (cpu != stats->cpus->ncpu - 1) xdraw_printf(ctx, "000000", " ");
    }
 }

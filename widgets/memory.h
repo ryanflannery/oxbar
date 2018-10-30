@@ -2,11 +2,28 @@
 #define WMEMORY_H
 
 #include <stdbool.h>
-#include "../widgets.h"
+#include "../gui/xdraw.h"
+#include "../stats/stats.h"
 
-void wmemory_init(struct widget *w);
-void wmemory_free(struct widget *w);
-bool wmemory_enabled(struct widget *w);
-void wmemory_draw(struct widget *w, struct xctx *ctx);
+struct widget_memory_settings {
+   char *hdcolor;
+   char *chart_bgcolor;
+   char *chart_color_free;
+   char *chart_color_total;
+   char *chart_color_active;
+};
+
+struct widget_memory {
+   /* pointers to stuff */
+   struct oxstats                *stats;
+   struct widget_memory_settings *settings;
+   /* local state */
+   struct chart                  *chart;
+};
+
+void *wmemory_init(struct oxstats *, void *settings);
+void  wmemory_free(void *widget);
+bool  wmemory_enabled(void *widget);
+void  wmemory_draw(void *widget, struct xctx *);
 
 #endif

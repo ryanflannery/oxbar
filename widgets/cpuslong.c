@@ -2,77 +2,52 @@
 
 #include "cpuslong.h"
 
-/* TODO: merge widgets "cpuslong" and "cpus" easily - code is 95% the same */
-
-void
-wcpuslong_init(struct widget *w)
+void *
+wcpulong_init(struct oxstats *stats, void *settings)
 {
-   struct settings *settings = w->context->settings;
-   struct oxstats  *stats    = w->context->stats;
-   struct chart   **charts   = w->context->charts;
-
-   const char *colors[] = {
-      settings->cpus.chart_color_sys,
-      settings->cpus.chart_color_interrupt,
-      settings->cpus.chart_color_user,
-      settings->cpus.chart_color_nice,
-      settings->cpus.chart_color_spin,
-      settings->cpus.chart_color_idle
-   };
-
-   if (MAX_CHARTS_PER_WIDGET < stats->cpus->ncpu)
-      errx(1, "%s: too many cpus (%d)", __FUNCTION__, stats->cpus->ncpu);
-
-   int i = 0;
-   for (i = 0; i < stats->cpus->ncpu; i++) {
-      charts[i] = chart_init(60, CPUSTATES, true,
-            settings->cpus.chart_bgcolor, colors);
-   }
+   return wcpu_init(stats, settings);
 }
 
 void
-wcpuslong_free(struct widget *w)
+wcpulong_free(void *widget)
 {
-   struct chart **charts   = w->context->charts;
-   size_t i = 0;
-   for (; NULL != charts[i]; i++)
-      chart_free(charts[i]);
+   wcpu_free(widget);
 }
 
 bool
-wcpuslong_enabled(struct widget *w)
+wcpulong_enabled(void *widget)
 {
-   return w->context->stats->cpus->is_setup;
+   return wcpu_enabled(widget);
 }
 
 void
-wcpuslong_draw(struct widget *w, struct xctx *ctx)
+wcpulong_draw(void *widget, struct xctx *ctx)
 {
-   struct settings *settings = w->context->settings;
-   struct oxstats  *stats    = w->context->stats;
-   struct chart   **charts   = w->context->charts;
+   struct widget_cpu *w = widget;
+   struct oxstats *stats = w->stats;
+   struct widget_cpu_settings *settings = w->settings;
+   char *fgcolor = ctx->xfont->settings->fgcolor;
 
-   xdraw_printf(ctx, settings->font.fgcolor, "CPUs: ");
-
-   int i = 0;
-   for (i = 0; i < stats->cpus->ncpu; i++) {
-      chart_update(charts[i], (double[]) {
-            stats->cpus->cpus[i].percentages[CP_SYS],
-            stats->cpus->cpus[i].percentages[CP_INTR],
-            stats->cpus->cpus[i].percentages[CP_USER],
-            stats->cpus->cpus[i].percentages[CP_NICE],
-            stats->cpus->cpus[i].percentages[CP_SPIN],
-            stats->cpus->cpus[i].percentages[CP_IDLE]
+   xdraw_printf(ctx, fgcolor, "CPUs: ");
+   size_t cpu;
+   for (cpu = 0; cpu < w->ncpus; cpu++) {
+      chart_update(w->cpu_charts[cpu], (double[]) {
+            stats->cpus->cpus[cpu].percentages[CP_SYS],
+            stats->cpus->cpus[cpu].percentages[CP_INTR],
+            stats->cpus->cpus[cpu].percentages[CP_USER],
+            stats->cpus->cpus[cpu].percentages[CP_NICE],
+            stats->cpus->cpus[cpu].percentages[CP_SPIN],
+            stats->cpus->cpus[cpu].percentages[CP_IDLE]
             });
 
-      xdraw_chart(ctx, charts[i]);
-      xdraw_printf(ctx, settings->cpus.chart_color_sys,        "% 3.0f%%", stats->cpus->cpus[i].percentages[CP_SYS]);
-      xdraw_printf(ctx, settings->cpus.chart_color_interrupt,  "% 3.0f%%", stats->cpus->cpus[i].percentages[CP_INTR]);
-      xdraw_printf(ctx, settings->cpus.chart_color_user,       "% 3.0f%%", stats->cpus->cpus[i].percentages[CP_USER]);
-      xdraw_printf(ctx, settings->cpus.chart_color_nice,       "% 3.0f%%", stats->cpus->cpus[i].percentages[CP_NICE]);
-      xdraw_printf(ctx, settings->cpus.chart_color_spin,       "% 3.0f%%", stats->cpus->cpus[i].percentages[CP_SPIN]);
-      xdraw_printf(ctx, settings->cpus.chart_color_idle,       "% 3.0f%%", stats->cpus->cpus[i].percentages[CP_IDLE]);
+      xdraw_chart(ctx, w->cpu_charts[cpu]);
+      xdraw_printf(ctx, settings->chart_color_sys,        "% 3.0f%%", stats->cpus->cpus[cpu].percentages[CP_SYS]);
+      xdraw_printf(ctx, settings->chart_color_interrupt,  "% 3.0f%%", stats->cpus->cpus[cpu].percentages[CP_INTR]);
+      xdraw_printf(ctx, settings->chart_color_user,       "% 3.0f%%", stats->cpus->cpus[cpu].percentages[CP_USER]);
+      xdraw_printf(ctx, settings->chart_color_nice,       "% 3.0f%%", stats->cpus->cpus[cpu].percentages[CP_NICE]);
+      xdraw_printf(ctx, settings->chart_color_spin,       "% 3.0f%%", stats->cpus->cpus[cpu].percentages[CP_SPIN]);
+      xdraw_printf(ctx, settings->chart_color_idle,       "% 3.0f%%", stats->cpus->cpus[cpu].percentages[CP_IDLE]);
 
-      if (i != stats->cpus->ncpu - 1) xdraw_printf(ctx, "000000", " ");
+      if (cpu != w->ncpus - 1) xdraw_printf(ctx, "000000", " ");
    }
 }

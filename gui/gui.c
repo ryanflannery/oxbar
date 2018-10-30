@@ -60,12 +60,12 @@ gui_add_widget(struct gui *gui, xctx_direction_t direction, struct widget* w)
 static void
 draw_widget(struct gui *gui, struct xctx *dest, struct widget *w)
 {
-   if (!w->enabled(w))
+   if (!w->enabled(w->state))
       return;
 
    struct xctx *scratchpad = xctx_init_scratchpad(gui->xfont, gui->xwin, L2R, &gui->s->padding);
    xdraw_colorfill(scratchpad, gui->s->widget_bgcolor);
-   w->draw(w, scratchpad);
+   w->draw(w->state, scratchpad);
    xctx_complete(scratchpad);
    xdraw_headerline(scratchpad, gui->s->header_style, w->hdcolor);
    xdraw_context(dest, scratchpad);

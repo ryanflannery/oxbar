@@ -18,21 +18,21 @@
  * When adding a widget, they must be added here.
  */
 struct widget_recipe {
-   struct widget widget;              /* the widget itself */
-   void (*init)(struct widget*); /* how to build it   */
-   void (*free)(struct widget*); /* how to destroy it */
+   struct widget widget;                              /* the widget itself */
+   void  *(*init)(struct oxstats *, void *settings);  /* how to build it   */
+   void   (*free)(void *widget);                      /* how to destroy it */
 };
 
 struct widget_recipe WIDGET_RECIPES[] = {
-   {{"battery", NULL, wbattery_enabled, wbattery_draw, NULL}, NULL, NULL},
-   {{"volume",  NULL, wvolume_enabled,  wvolume_draw,  NULL}, NULL, NULL},
-   {{"nprocs",  NULL, wnprocs_enabled,  wnprocs_draw,  NULL}, NULL, NULL},
-   {{"memory",  NULL, wmemory_enabled,  wmemory_draw,  NULL}, wmemory_init,  wmemory_free },
-   {{"cpus",    NULL, wcpus_enabled,    wcpus_draw,    NULL}, wcpus_init,    wcpus_free },
-   {{"cpushort",NULL, wcpushort_enabled,wcpushort_draw,NULL}, NULL, NULL},
-   {{"cpuslong",NULL, wcpuslong_enabled,wcpuslong_draw,NULL}, wcpuslong_init,wcpuslong_free },
-   {{"net",     NULL, wnet_enabled,     wnet_draw,     NULL}, wnet_init,     wnet_free },
-   {{"time",    NULL, wtime_enabled,    wtime_draw,    NULL}, NULL, NULL},
+   {{"battery", NULL, wbattery_enabled, wbattery_draw,  NULL}, wbattery_init, wbattery_free },
+   {{"cpus",    NULL, wcpu_enabled,     wcpu_draw,      NULL}, wcpu_init,     wcpu_free },
+   {{"cpuslong",NULL, wcpulong_enabled, wcpulong_draw,  NULL}, wcpulong_init, wcpulong_free },
+   {{"cpushort",NULL, wcpushort_enabled,wcpushort_draw, NULL}, wcpushort_init,wcpushort_free },
+   {{"memory",  NULL, wmemory_enabled,  wmemory_draw,   NULL}, wmemory_init,  wmemory_free },
+   {{"net",     NULL, wnet_enabled,     wnet_draw,      NULL}, wnet_init,     wnet_free },
+   {{"nprocs",  NULL, wnprocs_enabled,  wnprocs_draw,   NULL}, wnprocs_init,  wnprocs_free },
+   {{"time",    NULL, wtime_enabled,    wtime_draw,     NULL}, wtime_init,    wtime_free },
+   {{"volume",  NULL, wvolume_enabled,  wvolume_draw,   NULL}, wvolume_init,  wvolume_free },
 };
 const size_t NWIDGET_RECIPES = sizeof(WIDGET_RECIPES) / sizeof(struct widget_recipe);
 
@@ -52,6 +52,31 @@ find_recipe(const char *name)
    return NULL;
 }
 
+static void *
+get_settings_component(const char * const name, struct settings *settings)
+{
+   if (0 == strcmp(name, "battery"))
+      return &settings->battery;
+   if (0 == strcmp(name, "cpus"))
+      return &settings->cpus;
+   if (0 == strcmp(name, "cpuslong"))
+      return &settings->cpus;
+   if (0 == strcmp(name, "cpushort"))
+      return &settings->cpus;
+   if (0 == strcmp(name, "memory"))
+      return &settings->memory;
+   if (0 == strcmp(name, "net"))
+      return &settings->net;
+   if (0 == strcmp(name, "nprocs"))
+      return &settings->nprocs;
+   if (0 == strcmp(name, "time"))
+      return &settings->time;
+   if (0 == strcmp(name, "volume"))
+      return &settings->volume;
+
+   errx(1, "failed to find settings component for '%s'", name);
+}
+
 static struct widget*
 widget_create_from_recipe(
       const char      *name,
@@ -62,7 +87,7 @@ widget_create_from_recipe(
    struct widget        *w;
 
    if (NWIDGETS == MAX_ALL_WIDGETS)
-      errx(1, "%s: reached max widget count %d", __FUNCTION__, MAX_ALL_WIDGETS);
+      errx(1, "reached max widget count %d", MAX_ALL_WIDGETS);
 
    if (NULL == (recipe = find_recipe(name)))
       errx(1, "no widget recipe named '%s'", name);
@@ -76,16 +101,10 @@ widget_create_from_recipe(
    w->enabled  = recipe->widget.enabled;
    w->draw     = recipe->widget.draw;
 
-   w->context = malloc(sizeof(struct widget_context));
-   if (NULL == w->context)
-      err(1, "%s: malloc failed", __FUNCTION__);
-
-   w->context->settings = settings;
-   w->context->stats    = stats;
-   bzero(w->context->charts, sizeof(w->context->charts));
-
-   if (NULL != recipe->init)
-      recipe->init(w);
+   if (NULL != recipe->init) {
+      void *state = recipe->init(stats, get_settings_component(name, settings));
+      w->state = state;
+   }
 
    WIDGETS[NWIDGETS++] = w;   /* track to cleanup in widgets_free() */
    return w;
@@ -99,9 +118,8 @@ widgets_free()
    for (; i < NWIDGETS; i++) {
       struct widget_recipe *recipe = find_recipe(WIDGETS[i]->name);
       if (NULL != recipe && NULL != recipe->free)
-         recipe->free(WIDGETS[i]);
+         recipe->free(WIDGETS[i]->state);
 
-      free(WIDGETS[i]->context);
       free(WIDGETS[i]);
    }
    NWIDGETS = 0;
@@ -153,14 +171,14 @@ void
 widgets_init(struct gui *gui, struct settings *settings, struct oxstats *stats)
 {
    widgets_set_hdcolor("battery",   settings->battery.hdcolor);
-   widgets_set_hdcolor("volume",    settings->volume.hdcolor);
-   widgets_set_hdcolor("nprocs",    settings->nprocs.hdcolor);
-   widgets_set_hdcolor("memory",    settings->memory.hdcolor);
    widgets_set_hdcolor("cpus",      settings->cpus.hdcolor);
    widgets_set_hdcolor("cpushort",  settings->cpus.hdcolor);
    widgets_set_hdcolor("cpuslong",  settings->cpus.hdcolor);
-   widgets_set_hdcolor("net",       settings->network.hdcolor);
+   widgets_set_hdcolor("memory",    settings->memory.hdcolor);
+   widgets_set_hdcolor("net",       settings->net.hdcolor);
+   widgets_set_hdcolor("nprocs",    settings->nprocs.hdcolor);
    widgets_set_hdcolor("time",      settings->time.hdcolor);
+   widgets_set_hdcolor("volume",    settings->volume.hdcolor);
 
    widgets_create(settings->widgets, gui, settings, stats);
 }

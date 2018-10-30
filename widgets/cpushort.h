@@ -2,9 +2,12 @@
 #define WCPUSHORT_H
 
 #include <stdbool.h>
-#include "../widgets.h"
+#include "../gui/xdraw.h"
+#include "../stats/stats.h"
 
-bool wcpushort_enabled(struct widget *w);
-void wcpushort_draw(struct widget *w, struct xctx *ctx);
+void *wcpushort_init(struct oxstats *, void *settings);
+void  wcpushort_free(void *widget);
+bool  wcpushort_enabled(void *widget);
+void  wcpushort_draw(void *widget, struct xctx *);
 
 #endif

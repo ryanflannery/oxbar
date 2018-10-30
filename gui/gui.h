@@ -17,9 +17,9 @@
 struct widget {
    const char       *name;             /* only used for debugging             */
    char             *hdcolor;          /* header color (set by settings.*)    */
-   bool (*enabled)(struct widget*);    /* does the widget work? could change! */
-   void (*draw)(struct widget*, struct xctx*); /* draw it to a context!       */
-   struct widget_context *context;     /* local per-widget state              */
+   bool (*enabled)(void *);            /* does the widget work? can change!   */
+   void (*draw)(void *, struct xctx*); /* draw it to a context!               */
+   void             *state;            /* internal state to the widget        */
 };
 
 /* pad that wraps all user-customizable settings for a gui */

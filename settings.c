@@ -289,12 +289,12 @@ settings_set_defaults(struct settings *s)
    s->cpus.chart_color_spin      = strdup("00ffff");
    s->cpus.chart_color_idle      = strdup("859900");
 
-   s->network.hdcolor                        = strdup("268bd2");
-   s->network.chart_bgcolor                  = strdup("555555");
-   s->network.inbound_chart_color_bgcolor    = strdup("859900");
-   s->network.inbound_chart_color_pgcolor    = strdup("157ad2");
-   s->network.outbound_chart_color_bgcolor   = strdup("859900");
-   s->network.outbound_chart_color_pgcolor   = strdup("dc322f");
+   s->net.hdcolor                        = strdup("268bd2");
+   s->net.chart_bgcolor                  = strdup("555555");
+   s->net.inbound_chart_color_bgcolor    = strdup("859900");
+   s->net.inbound_chart_color_pgcolor    = strdup("157ad2");
+   s->net.outbound_chart_color_bgcolor   = strdup("859900");
+   s->net.outbound_chart_color_pgcolor   = strdup("dc322f");
 
    s->time.hdcolor = strdup("859900");
    s->time.format  = strdup("%a %d %b %Y  %I:%M:%S %p");
@@ -445,12 +445,12 @@ settings_set_one_keyvalue(struct settings *s, const char *key, const char *value
    KMS_STRING(cpus.chart_color_idle);
 
    /* network */
-   KMS_STRING(network.hdcolor);
-   KMS_STRING(network.chart_bgcolor);
-   KMS_STRING(network.inbound_chart_color_bgcolor);
-   KMS_STRING(network.inbound_chart_color_pgcolor);
-   KMS_STRING(network.outbound_chart_color_bgcolor);
-   KMS_STRING(network.outbound_chart_color_pgcolor);
+   KMS_STRING(net.hdcolor);
+   KMS_STRING(net.chart_bgcolor);
+   KMS_STRING(net.inbound_chart_color_bgcolor);
+   KMS_STRING(net.inbound_chart_color_pgcolor);
+   KMS_STRING(net.outbound_chart_color_bgcolor);
+   KMS_STRING(net.outbound_chart_color_pgcolor);
 
    /* time */
    KMS_STRING(time.hdcolor);

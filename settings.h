@@ -5,6 +5,14 @@
 #include "gui/xdraw.h"
 #include "gui/xcore.h"
 
+#include "widgets/battery.h"
+#include "widgets/cpus.h"
+#include "widgets/memory.h"
+#include "widgets/net.h"
+#include "widgets/nprocs.h"
+#include "widgets/time.h"
+#include "widgets/volume.h"
+
 struct settings {
 
    /* these aren't directly 'set-able' settings - more meta-settings */
@@ -21,58 +29,13 @@ struct settings {
 
    /* per-widget settings */
 
-   struct widget_battery{
-      char *hdcolor;
-      char *fgcolor_unplugged;
-      int   chart_width;
-      char *chart_bgcolor;
-      char *chart_pgcolor;
-   } battery;
-
-   struct widget_volume {
-      char *hdcolor;
-      int   chart_width;
-      char *chart_bgcolor;
-      char *chart_pgcolor;
-   } volume;
-
-   struct widget_nprocs {
-      char *hdcolor;
-   } nprocs;
-
-   struct widget_memory {
-      char *hdcolor;
-      char *chart_bgcolor;
-      char *chart_color_free;
-      char *chart_color_total;
-      char *chart_color_active;
-   } memory;
-
-   struct widget_cpus {
-      char *hdcolor;
-      char *chart_bgcolor;
-      char *chart_color_sys;
-      char *chart_color_interrupt;
-      char *chart_color_user;
-      char *chart_color_nice;
-      char *chart_color_spin;
-      char *chart_color_idle;
-   } cpus;
-
-   struct widget_network {
-      char *hdcolor;
-      char *chart_bgcolor;
-      char *inbound_chart_color_bgcolor;
-      char *inbound_chart_color_pgcolor;
-      char *outbound_chart_color_bgcolor;
-      char *outbound_chart_color_pgcolor;
-   } network;
-
-   struct widget_time {
-      char *hdcolor;
-      char *format;
-   } time;
-
+   struct widget_battery_settings   battery;
+   struct widget_volume_settings    volume;
+   struct widget_nprocs_settings    nprocs;
+   struct widget_memory_settings    memory;
+   struct widget_cpu_settings       cpus;
+   struct widget_net_settings       net;
+   struct widget_time_settings      time;
 };
 
 void settings_init(struct settings *s, int argc, char *argv[]);

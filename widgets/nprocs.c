@@ -1,15 +1,36 @@
+#include <err.h>
+
 #include "nprocs.h"
 
-bool
-wnprocs_enabled(struct widget *w)
+void *
+wnprocs_init(struct oxstats *stats, void *settings)
 {
-   return w->context->stats->nprocs->is_setup;
+   struct widget_nprocs *w;
+   if (NULL == (w = malloc(sizeof(struct widget_nprocs))))
+      err(1, "failed to allocate widget_nprocs");
+
+   w->settings = settings;
+   w->stats    = stats;
+   return w;
 }
 
 void
-wnprocs_draw(struct widget *w, struct xctx *ctx)
+wnprocs_free(void *widget)
 {
-   xdraw_printf(ctx,
-      w->context->settings->font.fgcolor,
-      "#Procs: %d", w->context->stats->nprocs->nprocs);
+   free(widget);
+}
+
+bool
+wnprocs_enabled(void *widget)
+{
+   struct widget_nprocs *w = widget;
+   return w->stats->nprocs->is_setup;
+}
+
+void
+wnprocs_draw(void *widget, struct xctx *ctx)
+{
+   struct widget_nprocs *w = widget;
+   xdraw_printf(ctx, ctx->xfont->settings->fgcolor,
+      "#Procs: %d", w->stats->nprocs->nprocs);
 }

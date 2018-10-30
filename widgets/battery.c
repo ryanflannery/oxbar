@@ -1,38 +1,58 @@
+#include <err.h>
+
 #include "battery.h"
 
-bool
-wbattery_enabled(struct widget *w)
+void *
+wbattery_init(struct oxstats *stats, void *settings)
 {
-   return w->context->stats->battery->is_setup;
+   struct widget_battery *w;
+   if (NULL == (w = malloc(sizeof(struct widget_battery))))
+      err(1, "failed to allocate widget_battery");
+
+   w->settings = settings;
+   w->stats    = stats;
+   return w;
 }
 
 void
-wbattery_draw(struct widget *w, struct xctx *ctx)
+wbattery_free(void *widget)
 {
-   struct settings *settings = w->context->settings;
-   struct oxstats  *stats    = w->context->stats;
+   free(widget);
+}
+
+bool
+wbattery_enabled(void *widget)
+{
+   struct widget_battery *w = widget;
+   return w->stats->battery->is_setup;
+}
+
+void
+wbattery_draw(void *widget, struct xctx *ctx)
+{
+   struct widget_battery *w = widget;
 
    xdraw_printf(ctx,
-         stats->battery->plugged_in ?
-            settings->font.fgcolor :
-            settings->battery.fgcolor_unplugged ,
-         stats->battery->plugged_in ? "AC " : "BAT ");
+         w->stats->battery->plugged_in ?
+            ctx->xfont->settings->fgcolor :
+            w->settings->fgcolor_unplugged ,
+         w->stats->battery->plugged_in ? "AC " : "BAT ");
 
    xdraw_progress_bar(ctx,
-         settings->battery.chart_bgcolor,
-         settings->battery.chart_pgcolor,
-         settings->battery.chart_width,
-         stats->battery->charge_pct);
+         w->settings->chart_bgcolor,
+         w->settings->chart_pgcolor,
+         w->settings->chart_width,
+         w->stats->battery->charge_pct);
 
    xdraw_printf(ctx,
-         settings->font.fgcolor,
-         "% 3.0f%%", stats->battery->charge_pct);
+         ctx->xfont->settings->fgcolor,
+         "% 3.0f%%", w->stats->battery->charge_pct);
 
-   if (-1 != stats->battery->minutes_remaining) {
+   if (-1 != w->stats->battery->minutes_remaining) {
       xdraw_printf(ctx,
-            settings->font.fgcolor,
+            ctx->xfont->settings->fgcolor,
             " %dh %dm",
-            stats->battery->minutes_remaining / 60,
-            stats->battery->minutes_remaining % 60);
+            w->stats->battery->minutes_remaining / 60,
+            w->stats->battery->minutes_remaining % 60);
    }
 }

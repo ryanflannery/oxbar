@@ -86,7 +86,7 @@ TODO::
 
 # report # of lines per flie
 loc:
-	find . -name "*.c" -exec wc -l {} \; | sort -r
+	wc -l `find . -name "*.c"`
 
 # rebuild the architecture image showing #include dependencies
 tree.png::

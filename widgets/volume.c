@@ -2,19 +2,39 @@
 
 #include "volume.h"
 
-bool
-wvolume_enabled(struct widget *w)
+void *
+wvolume_init(struct oxstats *stats, void *settings)
 {
-   return w->context->stats->volume->is_setup;
+   struct widget_volume *w;
+   if (NULL == (w = malloc(sizeof(struct widget_volume))))
+      err(1, "failed to allocate widget_volume");
+
+   w->settings = settings;
+   w->stats    = stats;
+   return w;
 }
 
 void
-wvolume_draw(struct widget *w, struct xctx *ctx)
+wvolume_free(void *widget)
 {
-   struct settings *settings = w->context->settings;
-   struct oxstats  *stats    = w->context->stats;
+   free(widget);
+}
 
-   xdraw_printf(ctx, settings->font.fgcolor, "Vol: ");
+bool
+wvolume_enabled(void *widget)
+{
+   struct widget_volume *w = widget;
+   return w->stats->volume->is_setup;
+}
+
+void
+wvolume_draw(void *widget, struct xctx *ctx)
+{
+   struct widget_volume *w = widget;
+   struct widget_volume_settings *settings = w->settings;
+   struct oxstats *stats = w->stats;
+
+   xdraw_printf(ctx, ctx->xfont->settings->fgcolor, "Vol: ");
 
    /* TODO Should volume widget ever handle this case!? I've never had it */
    if (stats->volume->left_pct != stats->volume->right_pct)
@@ -22,12 +42,11 @@ wvolume_draw(struct widget *w, struct xctx *ctx)
             __FUNCTION__);
 
    xdraw_progress_bar(ctx,
-         settings->volume.chart_bgcolor,
-         settings->volume.chart_pgcolor,
-         settings->volume.chart_width,
+         settings->chart_bgcolor,
+         settings->chart_pgcolor,
+         settings->chart_width,
          stats->volume->left_pct);
 
-   xdraw_printf(ctx,
-         settings->font.fgcolor,
+   xdraw_printf(ctx, ctx->xfont->settings->fgcolor,
          "% 3.0f%%", stats->volume->left_pct);
 }
