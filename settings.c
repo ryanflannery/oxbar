@@ -40,17 +40,17 @@ void settings_init(struct settings *settings, int argc, char *argv[]);
 static const char * const SWITCHES = "HF:x:y:w:h:f:m:p:s:t:c:W:S:";
 
 
-/* Print basic usage information (TODO I think I went overboard at the end) */
+/* Print basic usage information */
 static void
 print_usage()
 {
    printf(
-"usage: oxbar [-H] [-x xloc] [-y yloc] [-w width] [-h height]\n"
-"             [-f font] [-p padding] [-s spacing] [-t time_format]\n"
-"             [-W widgets] [-S key=value]\n"
-"             [named-configuration]\n"
-"Each of the options is described briefly below. They are explained in full\n"
-"detail in the man page.\n"
+"usage: oxbar [-H] [-F config] [-x xloc] [-y yloc] [-w width] [-h height]\n"
+"             [-f font] [-m margins] [-p paddings] [-s spacing]\n"
+"             [-c header-style] [-t time_format] [-W widgets]\n"
+"             [-S key=value]\n"
+"             [theme]\n"
+"Where: (see man page for full details)\n"
 "   -H               Show this help text\n"
 "   -F file          Use file as the config file rather than ~/.oxbar.conf\n"
 "   -x xloc          The x coordinate in pixels of the upper-left corner\n"
@@ -61,8 +61,8 @@ print_usage()
 "   -h height        The height of the display in pixels\n"
 "                    If -1, derive the height based on the font used\n"
 "   -f font          The font to use, and any styles/sizing\n"
-"   -p margin        The margins (pixels) between a widget's edge & display\n"
-"   -p padding       The paddings (pixels) between a widget's content & edge\n"
+"   -m margins       The margins (pixels) between a widget's edge & display\n"
+"   -p paddings      The paddings (pixels) between a widget's content & edge\n"
 "                    For magin & padding you can specify all 4 components at\n"
 "                    once, eg `-p \"top right bottom left\"`\n"
 "   -s spacing       The spacing in pixels between widgets\n"
@@ -70,29 +70,7 @@ print_usage()
 "                    widgets. Can be \'none\', \'above\', or \'below\'.\n"
 "   -t time_format   The format to display date/time in (see strftime(3))\n"
 "   -W widgets       The list of widgets to display\n"
-"   -S key=value     Set any configurable value in oxba\n\n"
-"Specifying Fonts (and styles, sizes)\n"
-"   oxbar uses pango to load & render fonts, and passes the string specified\n"
-"   here to pango_font_description_from_string() - see that documentation for\n"
-"   full details on the format. Roughly, the format is \"Family (style)\n"
-"   (size)\" such as \"Helvetica italic 16px\" or just \"Helvetica 16px\".\n"
-"   Note that when specifying the size, it must be in pixels (not points or\n"
-"   pt)\n\n"
-"Specifying Widgets\n"
-"   The list of widgets to show is specified as a space separate list of\n"
-"   widget names. A string such as \"cpus memory network time\" would show\n"
-"   those four widgets in that order. Some additional characters can be used\n"
-"   to control the alignment of widgets, as a common use case for oxbar is it\n"
-"   render widgets across the full width of the display, where some are\n"
-"   aligned on the left, others on the right, and others centered. The\n"
-"   characters to control such alignment are:\n"
-"      '<'     All widgets after this are in the left-aligned stack\n"
-"              (this is the default)\n"
-"      '|'     All widgets after this are in the center-aligned stack\n"
-"      '>'     All widgets after this are in the right-aligned stack\n"
-"   So the string \"cpus memory network | time > volume battery\" would show\n"
-"   cpus/memory/network widgets on the left, time in the center, and volume\n"
-"   and battery widgets on the right.\n"
+"   -S key=value     Set any configurable value in oxbar (see oxbar(1))\n"
          );
    exit(1);
 }
