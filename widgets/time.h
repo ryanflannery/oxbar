@@ -10,7 +10,7 @@ struct widget_time_settings {
    char *format;
 };
 
-struct widget_time {
+struct widget_time_state {
    /* pointers to stuff */
    struct oxstats              *stats;
    struct widget_time_settings *settings;
@@ -18,8 +18,8 @@ struct widget_time {
 };
 
 void *wtime_init(struct oxstats *, void *settings);
-void  wtime_free(void *widget);
-bool  wtime_enabled(void *widget);
-void  wtime_draw(void *widget, struct xctx *);
+void  wtime_free(void *wstate);
+bool  wtime_enabled(void *wstate);
+void  wtime_draw(void *wstate, struct xctx *);
 
 #endif

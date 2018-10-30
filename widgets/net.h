@@ -14,7 +14,7 @@ struct widget_net_settings {
    char *outbound_chart_color_pgcolor;
 };
 
-struct widget_net {
+struct widget_net_state {
    /* pointers to stuff */
    struct oxstats             *stats;
    struct widget_net_settings *settings;
@@ -24,8 +24,8 @@ struct widget_net {
 };
 
 void *wnet_init(struct oxstats *, void *settings);
-void  wnet_free(void *widget);
-bool  wnet_enabled(void *widget);
-void  wnet_draw(void *widget, struct xctx *);
+void  wnet_free(void *wstate);
+bool  wnet_enabled(void *wstate);
+void  wnet_draw(void *wstate, struct xctx *);
 
 #endif

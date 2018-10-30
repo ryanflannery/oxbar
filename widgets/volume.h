@@ -12,7 +12,7 @@ struct widget_volume_settings {
    char *chart_pgcolor;
 };
 
-struct widget_volume {
+struct widget_volume_state {
    /* pointers to stuff */
    struct oxstats                 *stats;
    struct widget_volume_settings *settings;
@@ -20,8 +20,8 @@ struct widget_volume {
 };
 
 void *wvolume_init(struct oxstats *, void *settings);
-void  wvolume_free(void *widget);
-bool  wvolume_enabled(void *widget);
-void  wvolume_draw(void *widget, struct xctx *);
+void  wvolume_free(void *wstate);
+bool  wvolume_enabled(void *wstate);
+void  wvolume_draw(void *wstate, struct xctx *);
 
 #endif

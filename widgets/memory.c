@@ -6,9 +6,9 @@
 void *
 wmemory_init(struct oxstats *stats, void *settings)
 {
-   struct widget_memory *w;
-   if (NULL == (w = malloc(sizeof(struct widget_memory))))
-      err(1, "failed to allocate widget_memory");
+   struct widget_memory_state *w;
+   if (NULL == (w = malloc(sizeof(struct widget_memory_state))))
+      err(1, "failed to allocate widget_memory_state");
 
    w->settings = settings;
    w->stats    = stats;
@@ -24,24 +24,24 @@ wmemory_init(struct oxstats *stats, void *settings)
 }
 
 void
-wmemory_free(void *widget)
+wmemory_free(void *wstate)
 {
-   struct widget_memory *w = widget;
+   struct widget_memory_state *w = wstate;
    chart_free(w->chart);
    free(w);
 }
 
 bool
-wmemory_enabled(void *widget)
+wmemory_enabled(void *wstate)
 {
-   struct widget_memory *w = widget;
+   struct widget_memory_state *w = wstate;
    return w->stats->memory->is_setup;
 }
 
 void
-wmemory_draw(void *widget, struct xctx *ctx)
+wmemory_draw(void *wstate, struct xctx *ctx)
 {
-   struct widget_memory *w = widget;
+   struct widget_memory_state *w = wstate;
    struct widget_memory_settings *settings = w->settings;
    struct oxstats  *stats    = w->stats;
 

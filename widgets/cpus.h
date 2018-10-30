@@ -20,7 +20,7 @@ struct widget_cpu_settings {
    char *chart_color_idle;
 };
 
-struct widget_cpu {
+struct widget_cpu_state {
    /* pointers to stuff */
    struct oxstats             *stats;
    struct widget_cpu_settings *settings;
@@ -30,8 +30,8 @@ struct widget_cpu {
 };
 
 void *wcpu_init(struct oxstats *, void *settings);
-void  wcpu_free(void *widget);
-bool  wcpu_enabled(void *widget);
-void  wcpu_draw(void *widget, struct xctx *);
+void  wcpu_free(void *wstate);
+bool  wcpu_enabled(void *wstate);
+void  wcpu_draw(void *wstate, struct xctx *);
 
 #endif

@@ -6,9 +6,9 @@
 void *
 wnet_init(struct oxstats *stats, void *settings)
 {
-   struct widget_net *w;
-   if (NULL == (w = malloc(sizeof(struct widget_net))))
-      err(1, "failed to allocate widget_net");
+   struct widget_net_state *w;
+   if (NULL == (w = malloc(sizeof(struct widget_net_state))))
+      err(1, "failed to allocate widget_net_state");
 
    w->settings = settings;
    w->stats    = stats;
@@ -28,25 +28,25 @@ wnet_init(struct oxstats *stats, void *settings)
 }
 
 void
-wnet_free(void *widget)
+wnet_free(void *wstate)
 {
-   struct widget_net *w = widget;
+   struct widget_net_state *w = wstate;
    chart_free(w->inbound);
    chart_free(w->outbound);
    free(w);
 }
 
 bool
-wnet_enabled(void *widget)
+wnet_enabled(void *wstate)
 {
-   struct widget_net *w = widget;
+   struct widget_net_state *w = wstate;
    return w->stats->network->is_setup;
 }
 
 void
-wnet_draw(void *widget, struct xctx *ctx)
+wnet_draw(void *wstate, struct xctx *ctx)
 {
-   struct widget_net *w = widget;
+   struct widget_net_state *w = wstate;
    struct oxstats  *stats     = w->stats;
    struct chart    *chart_in  = w->inbound;
    struct chart    *chart_out = w->outbound;

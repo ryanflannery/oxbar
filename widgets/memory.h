@@ -13,7 +13,7 @@ struct widget_memory_settings {
    char *chart_color_active;
 };
 
-struct widget_memory {
+struct widget_memory_state {
    /* pointers to stuff */
    struct oxstats                *stats;
    struct widget_memory_settings *settings;
@@ -22,8 +22,8 @@ struct widget_memory {
 };
 
 void *wmemory_init(struct oxstats *, void *settings);
-void  wmemory_free(void *widget);
-bool  wmemory_enabled(void *widget);
-void  wmemory_draw(void *widget, struct xctx *);
+void  wmemory_free(void *wstate);
+bool  wmemory_enabled(void *wstate);
+void  wmemory_draw(void *wstate, struct xctx *);
 
 #endif

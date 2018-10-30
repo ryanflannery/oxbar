@@ -5,9 +5,9 @@
 void *
 wcpu_init(struct oxstats *stats, void *settings)
 {
-   struct widget_cpu *w;
-   if (NULL == (w = malloc(sizeof(struct widget_cpu))))
-      err(1, "failed to allocate widget_cpu");
+   struct widget_cpu_state *w;
+   if (NULL == (w = malloc(sizeof(struct widget_cpu_state))))
+      err(1, "failed to allocate widget_cpu_state");
 
    w->settings = settings;
    w->stats    = stats;
@@ -35,9 +35,9 @@ wcpu_init(struct oxstats *stats, void *settings)
 }
 
 void
-wcpu_free(void *widget)
+wcpu_free(void *wstate)
 {
-   struct widget_cpu *w = widget;
+   struct widget_cpu_state *w = wstate;
    size_t cpu;
    for (cpu = 0; cpu < w->ncpus; cpu++)
       chart_free(w->cpu_charts[cpu]);
@@ -46,16 +46,16 @@ wcpu_free(void *widget)
 }
 
 bool
-wcpu_enabled(void *widget)
+wcpu_enabled(void *wstate)
 {
-   struct widget_cpu *w = widget;
+   struct widget_cpu_state *w = wstate;
    return w->stats->cpus->is_setup;
 }
 
 void
-wcpu_draw(void *widget, struct xctx *ctx)
+wcpu_draw(void *wstate, struct xctx *ctx)
 {
-   struct widget_cpu *w = widget;
+   struct widget_cpu_state *w = wstate;
    char *fgcolor = ctx->xfont->settings->fgcolor;
    xdraw_printf(ctx, fgcolor, "CPUs: ");
 

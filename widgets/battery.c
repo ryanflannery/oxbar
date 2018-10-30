@@ -5,9 +5,9 @@
 void *
 wbattery_init(struct oxstats *stats, void *settings)
 {
-   struct widget_battery *w;
-   if (NULL == (w = malloc(sizeof(struct widget_battery))))
-      err(1, "failed to allocate widget_battery");
+   struct widget_battery_state *w;
+   if (NULL == (w = malloc(sizeof(struct widget_battery_state))))
+      err(1, "failed to allocate widget_battery_state");
 
    w->settings = settings;
    w->stats    = stats;
@@ -15,22 +15,22 @@ wbattery_init(struct oxstats *stats, void *settings)
 }
 
 void
-wbattery_free(void *widget)
+wbattery_free(void *wstate)
 {
-   free(widget);
+   free(wstate);
 }
 
 bool
-wbattery_enabled(void *widget)
+wbattery_enabled(void *wstate)
 {
-   struct widget_battery *w = widget;
+   struct widget_battery_state *w = wstate;
    return w->stats->battery->is_setup;
 }
 
 void
-wbattery_draw(void *widget, struct xctx *ctx)
+wbattery_draw(void *wstate, struct xctx *ctx)
 {
-   struct widget_battery *w = widget;
+   struct widget_battery_state *w = wstate;
 
    xdraw_printf(ctx,
          w->stats->battery->plugged_in ?

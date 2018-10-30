@@ -6,9 +6,9 @@
 void *
 wtime_init(struct oxstats *stats, void *settings)
 {
-   struct widget_time *w;
-   if (NULL == (w = malloc(sizeof(struct widget_time))))
-      err(1, "failed to allocate widget_time");
+   struct widget_time_state *w;
+   if (NULL == (w = malloc(sizeof(struct widget_time_state))))
+      err(1, "failed to allocate widget_time_state");
 
    w->settings = settings;
    w->stats    = stats;
@@ -16,21 +16,21 @@ wtime_init(struct oxstats *stats, void *settings)
 }
 
 void
-wtime_free(void *widget)
+wtime_free(void *wstate)
 {
-   free(widget);
+   free(wstate);
 }
 
 bool
-wtime_enabled(__attribute__((unused)) void *widget)
+wtime_enabled(__attribute__((unused)) void *wstate)
 {
    return true;
 }
 
 void
-wtime_draw(void *widget, struct xctx *ctx)
+wtime_draw(void *wstate, struct xctx *ctx)
 {
-   struct widget_time *w = widget;
+   struct widget_time_state *w = wstate;
 #define GUI_TIME_MAXLEN 100
    static char buffer[GUI_TIME_MAXLEN];
 

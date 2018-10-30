@@ -10,22 +10,22 @@ wcpushort_init(struct oxstats *stats, void *settings)
 }
 
 void
-wcpushort_free(void *widget)
+wcpushort_free(void *wstate)
 {
-   wcpu_free(widget);
+   wcpu_free(wstate);
 }
 
 bool
-wcpushort_enabled(void *widget)
+wcpushort_enabled(void *wstate)
 {
-   struct widget_cpu *w = widget;
+   struct widget_cpu_state *w = wstate;
    return w->stats->cpus->is_setup;
 }
 
 void
-wcpushort_draw(void *widget, struct xctx *ctx)
+wcpushort_draw(void *wstate, struct xctx *ctx)
 {
-   struct widget_cpu *w = widget;
+   struct widget_cpu_state *w = wstate;
    struct oxstats *stats = w->stats;
    int cpu;
    for (cpu = 0; cpu < stats->cpus->ncpu; cpu++) {

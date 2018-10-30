@@ -6,8 +6,8 @@
 #include "../stats/stats.h"
 
 void *wcpushort_init(struct oxstats *, void *settings);
-void  wcpushort_free(void *widget);
-bool  wcpushort_enabled(void *widget);
-void  wcpushort_draw(void *widget, struct xctx *);
+void  wcpushort_free(void *wstate);
+bool  wcpushort_enabled(void *wstate);
+void  wcpushort_draw(void *wstate, struct xctx *);
 
 #endif

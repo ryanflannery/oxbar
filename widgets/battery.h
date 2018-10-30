@@ -13,16 +13,16 @@ struct widget_battery_settings {
    char *chart_pgcolor;
 };
 
-struct widget_battery {
+struct widget_battery_state {
    /* pointers to stuff */
-   struct oxstats             *stats;
+   struct oxstats                 *stats;
    struct widget_battery_settings *settings;
    /* no local state */
 };
 
 void *wbattery_init(struct oxstats *, void *settings);
-void  wbattery_free(void *widget);
-bool  wbattery_enabled(void *widget);
-void  wbattery_draw(void *widget, struct xctx *);
+void  wbattery_free(void *wstate);
+bool  wbattery_enabled(void *wstate);
+void  wbattery_draw(void *wstate, struct xctx *);
 
 #endif

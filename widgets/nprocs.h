@@ -9,7 +9,7 @@ struct widget_nprocs_settings {
    char *hdcolor;
 };
 
-struct widget_nprocs {
+struct widget_nprocs_state {
    /* pointers to stuff */
    struct oxstats                *stats;
    struct widget_nprocs_settings *settings;
@@ -17,8 +17,8 @@ struct widget_nprocs {
 };
 
 void *wnprocs_init(struct oxstats *, void *settings);
-void  wnprocs_free(void *widget);
-bool  wnprocs_enabled(void *widget);
-void  wnprocs_draw(void *widget, struct xctx *);
+void  wnprocs_free(void *wstate);
+bool  wnprocs_enabled(void *wstate);
+void  wnprocs_draw(void *wstate, struct xctx *);
 
 #endif

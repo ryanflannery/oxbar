@@ -5,9 +5,9 @@
 void *
 wvolume_init(struct oxstats *stats, void *settings)
 {
-   struct widget_volume *w;
-   if (NULL == (w = malloc(sizeof(struct widget_volume))))
-      err(1, "failed to allocate widget_volume");
+   struct widget_volume_state *w;
+   if (NULL == (w = malloc(sizeof(struct widget_volume_state))))
+      err(1, "failed to allocate widget_volume_state");
 
    w->settings = settings;
    w->stats    = stats;
@@ -15,22 +15,22 @@ wvolume_init(struct oxstats *stats, void *settings)
 }
 
 void
-wvolume_free(void *widget)
+wvolume_free(void *wstate)
 {
-   free(widget);
+   free(wstate);
 }
 
 bool
-wvolume_enabled(void *widget)
+wvolume_enabled(void *wstate)
 {
-   struct widget_volume *w = widget;
+   struct widget_volume_state *w = wstate;
    return w->stats->volume->is_setup;
 }
 
 void
-wvolume_draw(void *widget, struct xctx *ctx)
+wvolume_draw(void *wstate, struct xctx *ctx)
 {
-   struct widget_volume *w = widget;
+   struct widget_volume_state *w = wstate;
    struct widget_volume_settings *settings = w->settings;
    struct oxstats *stats = w->stats;
 

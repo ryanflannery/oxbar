@@ -9,21 +9,21 @@ wcpulong_init(struct oxstats *stats, void *settings)
 }
 
 void
-wcpulong_free(void *widget)
+wcpulong_free(void *wstate)
 {
-   wcpu_free(widget);
+   wcpu_free(wstate);
 }
 
 bool
-wcpulong_enabled(void *widget)
+wcpulong_enabled(void *wstate)
 {
-   return wcpu_enabled(widget);
+   return wcpu_enabled(wstate);
 }
 
 void
-wcpulong_draw(void *widget, struct xctx *ctx)
+wcpulong_draw(void *wstate, struct xctx *ctx)
 {
-   struct widget_cpu *w = widget;
+   struct widget_cpu_state *w = wstate;
    struct oxstats *stats = w->stats;
    struct widget_cpu_settings *settings = w->settings;
    char *fgcolor = ctx->xfont->settings->fgcolor;
