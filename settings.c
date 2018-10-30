@@ -208,7 +208,7 @@ parse_header_style(header_style_t *style, const char * const value)
  * called first - so all values of settings are set to a reasonable default.
  * XXX This assumptions also means that whenever we change any value that's
  * dynamically allocated (strings), those need to be free()'d before
- * resetting.
+ * resetting. The macro's below (used to set these) ensure that.
  *
  * ALL settings values should be set here, to a sane default.
  */
@@ -217,7 +217,7 @@ settings_set_defaults(struct settings *s)
 {
    s->widgets = strdup("nprocs cpuslong memory net > battery volume time");
 
-   s->font.desc = strdup("DejaVu Sans 16px");
+   s->font.desc = strdup("helvetica bold 18px");
    s->font.fgcolor = strdup("93a1a1");
 
    s->window.x = 0;
@@ -227,8 +227,8 @@ settings_set_defaults(struct settings *s)
    s->window.wname = strdup("oxbar");
    s->window.bgcolor = strdup("0a0a0a");
 
-   s->gui.widget_bgcolor = strdup("0a0a0a");
-   s->gui.widget_spacing = 10;
+   s->gui.widget_bgcolor = strdup("050505");
+   s->gui.widget_spacing = 20;
    s->gui.padding.top    = 5;
    s->gui.padding.bottom = 5;
    s->gui.padding.left   = 5;
@@ -248,7 +248,7 @@ settings_set_defaults(struct settings *s)
 
    s->cpus.hdcolor               = strdup("6c71c4");
    s->cpus.bgcolor               = strdup("");
-   s->cpus.chart_bgcolor         = strdup("555555");
+   s->cpus.chart_bgcolor         = strdup("333333");
    s->cpus.chart_color_system    = strdup("ff0000");
    s->cpus.chart_color_interrupt = strdup("ffff00");
    s->cpus.chart_color_user      = strdup("3333ff");
@@ -258,7 +258,7 @@ settings_set_defaults(struct settings *s)
 
    s->memory.hdcolor             = strdup("d33682");
    s->memory.bgcolor             = strdup("");
-   s->memory.chart_bgcolor       = strdup("555555");
+   s->memory.chart_bgcolor       = strdup("333333");
    s->memory.chart_color_free    = strdup("859900");
    s->memory.chart_color_total   = strdup("bbbb00");
    s->memory.chart_color_active  = strdup("dc322f");
@@ -268,7 +268,7 @@ settings_set_defaults(struct settings *s)
 
    s->net.hdcolor                        = strdup("268bd2");
    s->net.bgcolor                        = strdup("");
-   s->net.chart_bgcolor                  = strdup("555555");
+   s->net.chart_bgcolor                  = strdup("333333");
    s->net.inbound_chart_color_bgcolor    = strdup("859900");
    s->net.inbound_chart_color_pgcolor    = strdup("157ad2");
    s->net.outbound_chart_color_bgcolor   = strdup("859900");
