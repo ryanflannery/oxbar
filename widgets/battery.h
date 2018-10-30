@@ -7,6 +7,7 @@
 
 struct widget_battery_settings {
    char *hdcolor;
+   char *bgcolor;
    char *fgcolor_unplugged;
    int   chart_width;
    char *chart_bgcolor;

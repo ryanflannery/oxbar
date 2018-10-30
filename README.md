@@ -68,12 +68,9 @@ forthcoming.
 
 Roughly in order or my priority...
 
-   * gui: settle padding and margin mess
    * document! man page and -h flags
-   * gui: improve test driver for gui/ components (for my sake)
    * stats/gui: support different update frequency per widget
    * gui: icons in the display could help condense it further
-   * stats: support "mute" status in volume (this is non-trivial)
    * stats: add tracker for hw.sensors
    * stats: add a weather component...i like weather
    * gui: support vertical rendering (a sidebar!)

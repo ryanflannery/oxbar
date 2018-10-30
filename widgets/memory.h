@@ -7,6 +7,7 @@
 
 struct widget_memory_settings {
    char *hdcolor;
+   char *bgcolor;
    char *chart_bgcolor;
    char *chart_color_free;
    char *chart_color_total;

@@ -3,13 +3,12 @@
 #include "nprocs.h"
 
 void *
-wnprocs_init(struct oxstats *stats, void *settings)
+wnprocs_init(struct oxstats *stats, __attribute__((unused)) void *settings)
 {
    struct widget_nprocs_state *w;
    if (NULL == (w = malloc(sizeof(struct widget_nprocs_state))))
       err(1, "failed to allocate widget_nprocs_state");
 
-   w->settings = settings;
    w->stats    = stats;
    return w;
 }

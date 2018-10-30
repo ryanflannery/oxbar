@@ -9,4 +9,7 @@
 void widgets_init(struct gui *, struct settings *, struct oxstats *);
 void widgets_free();
 
+void widget_set_hdcolor(const char * const name, char *color);
+void widget_set_bgcolor(const char * const name, char *color);
+
 #endif

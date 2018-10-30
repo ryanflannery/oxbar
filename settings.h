@@ -28,7 +28,6 @@ struct settings {
    struct gui_settings     gui;
 
    /* per-widget settings */
-
    struct widget_battery_settings   battery;
    struct widget_volume_settings    volume;
    struct widget_nprocs_settings    nprocs;

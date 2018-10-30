@@ -65,6 +65,7 @@ draw_widget(struct gui *gui, struct xctx *dest, struct widget *w)
 
    struct xctx *scratchpad = xctx_init_scratchpad(gui->xfont, gui->xwin, L2R, &gui->s->padding);
    xdraw_colorfill(scratchpad, gui->s->widget_bgcolor);
+   if (0 != strlen(w->bgcolor)) xdraw_colorfill(scratchpad, w->bgcolor);
    w->draw(w->state, scratchpad);
    xctx_complete(scratchpad);
    xdraw_headerline(scratchpad, gui->s->header_style, w->hdcolor);

@@ -24,15 +24,15 @@ struct widget_recipe {
 };
 
 struct widget_recipe WIDGET_RECIPES[] = {
-   {{"battery", NULL, wbattery_enabled, wbattery_draw,  NULL}, wbattery_init, wbattery_free },
-   {{"cpus",    NULL, wcpu_enabled,     wcpu_draw,      NULL}, wcpu_init,     wcpu_free },
-   {{"cpuslong",NULL, wcpulong_enabled, wcpulong_draw,  NULL}, wcpulong_init, wcpulong_free },
-   {{"cpushort",NULL, wcpushort_enabled,wcpushort_draw, NULL}, wcpushort_init,wcpushort_free },
-   {{"memory",  NULL, wmemory_enabled,  wmemory_draw,   NULL}, wmemory_init,  wmemory_free },
-   {{"net",     NULL, wnet_enabled,     wnet_draw,      NULL}, wnet_init,     wnet_free },
-   {{"nprocs",  NULL, wnprocs_enabled,  wnprocs_draw,   NULL}, wnprocs_init,  wnprocs_free },
-   {{"time",    NULL, wtime_enabled,    wtime_draw,     NULL}, wtime_init,    wtime_free },
-   {{"volume",  NULL, wvolume_enabled,  wvolume_draw,   NULL}, wvolume_init,  wvolume_free },
+   {{"battery", NULL, NULL, wbattery_enabled, wbattery_draw,  NULL}, wbattery_init, wbattery_free },
+   {{"cpus",    NULL, NULL, wcpu_enabled,     wcpu_draw,      NULL}, wcpu_init,     wcpu_free },
+   {{"cpuslong",NULL, NULL, wcpulong_enabled, wcpulong_draw,  NULL}, wcpulong_init, wcpulong_free },
+   {{"cpushort",NULL, NULL, wcpushort_enabled,wcpushort_draw, NULL}, wcpushort_init,wcpushort_free },
+   {{"memory",  NULL, NULL, wmemory_enabled,  wmemory_draw,   NULL}, wmemory_init,  wmemory_free },
+   {{"net",     NULL, NULL, wnet_enabled,     wnet_draw,      NULL}, wnet_init,     wnet_free },
+   {{"nprocs",  NULL, NULL, wnprocs_enabled,  wnprocs_draw,   NULL}, wnprocs_init,  wnprocs_free },
+   {{"time",    NULL, NULL, wtime_enabled,    wtime_draw,     NULL}, wtime_init,    wtime_free },
+   {{"volume",  NULL, NULL, wvolume_enabled,  wvolume_draw,   NULL}, wvolume_init,  wvolume_free },
 };
 const size_t NWIDGET_RECIPES = sizeof(WIDGET_RECIPES) / sizeof(struct widget_recipe);
 
@@ -98,6 +98,7 @@ widget_create_from_recipe(
 
    w->name     = recipe->widget.name;
    w->hdcolor  = recipe->widget.hdcolor;
+   w->bgcolor  = recipe->widget.bgcolor;
    w->enabled  = recipe->widget.enabled;
    w->draw     = recipe->widget.draw;
 
@@ -108,31 +109,6 @@ widget_create_from_recipe(
 
    WIDGETS[NWIDGETS++] = w;   /* track to cleanup in widgets_free() */
    return w;
-}
-
-void
-widgets_free()
-{
-   size_t i = 0;
-
-   for (; i < NWIDGETS; i++) {
-      struct widget_recipe *recipe = find_recipe(WIDGETS[i]->name);
-      if (NULL != recipe && NULL != recipe->free)
-         recipe->free(WIDGETS[i]->state);
-
-      free(WIDGETS[i]);
-   }
-   NWIDGETS = 0;
-}
-
-static void
-widgets_set_hdcolor(const char *widget_name, char *color)
-{
-   struct widget_recipe *recipe = find_recipe(widget_name);
-   if (NULL == recipe)
-      errx(1, "unknown widget '%s'", widget_name);
-
-   recipe->widget.hdcolor = color;
 }
 
 static void
@@ -170,15 +146,60 @@ widgets_create(
 void
 widgets_init(struct gui *gui, struct settings *settings, struct oxstats *stats)
 {
-   widgets_set_hdcolor("battery",   settings->battery.hdcolor);
-   widgets_set_hdcolor("cpus",      settings->cpus.hdcolor);
-   widgets_set_hdcolor("cpushort",  settings->cpus.hdcolor);
-   widgets_set_hdcolor("cpuslong",  settings->cpus.hdcolor);
-   widgets_set_hdcolor("memory",    settings->memory.hdcolor);
-   widgets_set_hdcolor("net",       settings->net.hdcolor);
-   widgets_set_hdcolor("nprocs",    settings->nprocs.hdcolor);
-   widgets_set_hdcolor("time",      settings->time.hdcolor);
-   widgets_set_hdcolor("volume",    settings->volume.hdcolor);
+   widget_set_hdcolor("battery",   settings->battery.hdcolor);
+   widget_set_hdcolor("cpus",      settings->cpus.hdcolor);
+   widget_set_hdcolor("cpushort",  settings->cpus.hdcolor);
+   widget_set_hdcolor("cpuslong",  settings->cpus.hdcolor);
+   widget_set_hdcolor("memory",    settings->memory.hdcolor);
+   widget_set_hdcolor("net",       settings->net.hdcolor);
+   widget_set_hdcolor("nprocs",    settings->nprocs.hdcolor);
+   widget_set_hdcolor("time",      settings->time.hdcolor);
+   widget_set_hdcolor("volume",    settings->volume.hdcolor);
+
+   widget_set_bgcolor("battery",   settings->battery.bgcolor);
+   widget_set_bgcolor("cpus",      settings->cpus.bgcolor);
+   widget_set_bgcolor("cpushort",  settings->cpus.bgcolor);
+   widget_set_bgcolor("cpuslong",  settings->cpus.bgcolor);
+   widget_set_bgcolor("memory",    settings->memory.bgcolor);
+   widget_set_bgcolor("net",       settings->net.bgcolor);
+   widget_set_bgcolor("nprocs",    settings->nprocs.bgcolor);
+   widget_set_bgcolor("time",      settings->time.bgcolor);
+   widget_set_bgcolor("volume",    settings->volume.bgcolor);
 
    widgets_create(settings->widgets, gui, settings, stats);
+}
+
+void
+widgets_free()
+{
+   size_t i = 0;
+
+   for (; i < NWIDGETS; i++) {
+      struct widget_recipe *recipe = find_recipe(WIDGETS[i]->name);
+      if (NULL != recipe && NULL != recipe->free)
+         recipe->free(WIDGETS[i]->state);
+
+      free(WIDGETS[i]);
+   }
+   NWIDGETS = 0;
+}
+
+void
+widget_set_hdcolor(const char * const name, char *color)
+{
+   struct widget_recipe *recipe = find_recipe(name);
+   if (NULL == recipe)
+      errx(1, "unknown widget '%s' when setting hdcolor", name);
+
+   recipe->widget.hdcolor = color;
+}
+
+void
+widget_set_bgcolor(const char * const name, char *color)
+{
+   struct widget_recipe *recipe = find_recipe(name);
+   if (NULL == recipe)
+      errx(1, "unknown widget '%s' when setting bgcolor", name);
+
+   recipe->widget.bgcolor = color;
 }

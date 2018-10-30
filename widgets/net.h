@@ -7,6 +7,7 @@
 
 struct widget_net_settings {
    char *hdcolor;
+   char *bgcolor;
    char *chart_bgcolor;
    char *inbound_chart_color_bgcolor;
    char *inbound_chart_color_pgcolor;

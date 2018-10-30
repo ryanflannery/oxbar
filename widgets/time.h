@@ -7,6 +7,7 @@
 
 struct widget_time_settings {
    char *hdcolor;
+   char *bgcolor;
    char *format;
 };
 

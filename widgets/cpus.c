@@ -14,7 +14,7 @@ wcpu_init(struct oxstats *stats, void *settings)
    w->ncpus    = stats->cpus->ncpu; /* XXX this can change at run-time! */
 
    const char *colors[] = {
-      w->settings->chart_color_sys,
+      w->settings->chart_color_system,
       w->settings->chart_color_interrupt,
       w->settings->chart_color_user,
       w->settings->chart_color_nice,
