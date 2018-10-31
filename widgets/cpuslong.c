@@ -2,18 +2,6 @@
 
 #include "cpuslong.h"
 
-void *
-wcpulong_init(struct oxstats *stats, void *settings)
-{
-   return wcpu_init(stats, settings);
-}
-
-void
-wcpulong_free(void *wstate)
-{
-   wcpu_free(wstate);
-}
-
 bool
 wcpulong_enabled(void *wstate)
 {

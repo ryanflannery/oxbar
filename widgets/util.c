@@ -1,7 +1,26 @@
 #include <err.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "util.h"
+
+void*
+generic_init(struct oxstats *stats, void *settings)
+{
+   struct generic_wstate *w;
+   if (NULL == (w = malloc(sizeof(struct generic_wstate))))
+      err(1, "malloc() failed for generic widget state");
+
+   w->settings = settings;
+   w->stats    = stats;
+   return w;
+}
+
+void
+generic_free(void *wstate)
+{
+   free(wstate);
+}
 
 const char *
 fmt_memory(const char *fmt, int kbytes)

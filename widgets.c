@@ -3,6 +3,8 @@
 
 #include "gui/xdraw.h"
 #include "widgets.h"
+#include "widgets/util.h"
+
 #include "widgets/battery.h"
 #include "widgets/volume.h"
 #include "widgets/nprocs.h"
@@ -23,17 +25,18 @@ struct widget_recipe {
    void   (*free)(void *widget);                      /* how to destroy it */
 };
 
+/* define all widget recipes */
 #define WCLRS() NULL, NULL, NULL
 struct widget_recipe WIDGET_RECIPES[] = {
-   {{"battery", WCLRS(), wbattery_enabled, wbattery_draw,  NULL}, wbattery_init, wbattery_free },
+   {{"battery", WCLRS(), wbattery_enabled, wbattery_draw,  NULL}, generic_init,  generic_free },
    {{"cpus",    WCLRS(), wcpu_enabled,     wcpu_draw,      NULL}, wcpu_init,     wcpu_free },
-   {{"cpuslong",WCLRS(), wcpulong_enabled, wcpulong_draw,  NULL}, wcpulong_init, wcpulong_free },
-   {{"cpushort",WCLRS(), wcpushort_enabled,wcpushort_draw, NULL}, wcpushort_init,wcpushort_free },
+   {{"cpuslong",WCLRS(), wcpulong_enabled, wcpulong_draw,  NULL}, wcpu_init,     wcpu_free },
+   {{"cpushort",WCLRS(), wcpushort_enabled,wcpushort_draw, NULL}, wcpu_init,     wcpu_free },
    {{"memory",  WCLRS(), wmemory_enabled,  wmemory_draw,   NULL}, wmemory_init,  wmemory_free },
    {{"net",     WCLRS(), wnet_enabled,     wnet_draw,      NULL}, wnet_init,     wnet_free },
-   {{"nprocs",  WCLRS(), wnprocs_enabled,  wnprocs_draw,   NULL}, wnprocs_init,  wnprocs_free },
-   {{"time",    WCLRS(), wtime_enabled,    wtime_draw,     NULL}, wtime_init,    wtime_free },
-   {{"volume",  WCLRS(), wvolume_enabled,  wvolume_draw,   NULL}, wvolume_init,  wvolume_free },
+   {{"nprocs",  WCLRS(), wnprocs_enabled,  wnprocs_draw,   NULL}, generic_init,  generic_free },
+   {{"time",    WCLRS(), wtime_enabled,    wtime_draw,     NULL}, generic_init,  generic_free },
+   {{"volume",  WCLRS(), wvolume_enabled,  wvolume_draw,   NULL}, generic_init,  generic_free }
 };
 const size_t NWIDGET_RECIPES = sizeof(WIDGET_RECIPES) / sizeof(struct widget_recipe);
 

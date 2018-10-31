@@ -11,15 +11,6 @@ struct widget_nprocs_settings {
    char *fgcolor;
 };
 
-struct widget_nprocs_state {
-   /* pointers to stuff */
-   struct oxstats                *stats;
-   struct widget_nprocs_settings *settings;
-   /* no local state */
-};
-
-void *wnprocs_init(struct oxstats *, void *settings);
-void  wnprocs_free(void *wstate);
 bool  wnprocs_enabled(void *wstate);
 void  wnprocs_draw(void *wstate, struct xctx *);
 

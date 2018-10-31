@@ -3,18 +3,6 @@
 #include "cpus.h"
 #include "cpushort.h"
 
-void *
-wcpushort_init(struct oxstats *stats, void *settings)
-{
-   return wcpu_init(stats, settings);
-}
-
-void
-wcpushort_free(void *wstate)
-{
-   wcpu_free(wstate);
-}
-
 bool
 wcpushort_enabled(void *wstate)
 {

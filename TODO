@@ -14,4 +14,4 @@ stats/volume.c:126:/* TODO GET VOLUME "IS MUTED?" WORKING
 stats/net.h:10:   /* TODO Raw # packets in/out isn't used anymore. Remove? */
 stats/net.c:95: * TODO Refactor network bytes logic
 stats/net.c:180:   /* TODO NET cleanup routine should free/cleanup shiz */
-widgets/volume.c:39:   /* TODO Should volume widget ever handle this case!? I've never had it */
+widgets/volume.c:22:   /* TODO Should volume widget ever handle this case!? I've never had it */
