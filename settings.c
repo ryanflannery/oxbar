@@ -217,7 +217,7 @@ settings_set_defaults(struct settings *s)
 {
    s->widgets = strdup("nprocs cpuslong memory net > battery volume time");
 
-   s->font.desc = strdup("helvetica bold 18px");
+   s->font.desc = strdup("helvetica 18px");
    s->font.fgcolor = strdup("93a1a1");
 
    s->window.x = 0;
@@ -227,7 +227,7 @@ settings_set_defaults(struct settings *s)
    s->window.wname = strdup("oxbar");
    s->window.bgcolor = strdup("0a0a0a");
 
-   s->gui.widget_bgcolor = strdup("050505");
+   s->gui.widget_bgcolor = strdup("");
    s->gui.widget_spacing = 20;
    s->gui.padding.top    = 5;
    s->gui.padding.bottom = 5;
@@ -241,6 +241,7 @@ settings_set_defaults(struct settings *s)
 
    s->battery.hdcolor            = strdup("b58900");
    s->battery.bgcolor            = strdup("");
+   s->battery.fgcolor            = strdup("");
    s->battery.fgcolor_unplugged  = strdup("dc322f");
    s->battery.chart_width        = 7;
    s->battery.chart_bgcolor      = strdup("dc322f");
@@ -248,6 +249,7 @@ settings_set_defaults(struct settings *s)
 
    s->cpus.hdcolor               = strdup("6c71c4");
    s->cpus.bgcolor               = strdup("");
+   s->cpus.fgcolor               = strdup("");
    s->cpus.chart_bgcolor         = strdup("333333");
    s->cpus.chart_color_system    = strdup("ff0000");
    s->cpus.chart_color_interrupt = strdup("ffff00");
@@ -258,6 +260,7 @@ settings_set_defaults(struct settings *s)
 
    s->memory.hdcolor             = strdup("d33682");
    s->memory.bgcolor             = strdup("");
+   s->memory.fgcolor             = strdup("");
    s->memory.chart_bgcolor       = strdup("333333");
    s->memory.chart_color_free    = strdup("859900");
    s->memory.chart_color_total   = strdup("bbbb00");
@@ -265,23 +268,28 @@ settings_set_defaults(struct settings *s)
 
    s->nprocs.hdcolor = strdup("dc322f");
    s->nprocs.bgcolor = strdup("");
+   s->nprocs.fgcolor = strdup("");
 
    s->net.hdcolor                        = strdup("268bd2");
    s->net.bgcolor                        = strdup("");
-   s->net.chart_bgcolor                  = strdup("333333");
+   s->net.fgcolor                        = strdup("");
    s->net.inbound_chart_color_bgcolor    = strdup("859900");
    s->net.inbound_chart_color_pgcolor    = strdup("157ad2");
+   s->net.inbound_text_fgcolor           = strdup("157ad2");
    s->net.outbound_chart_color_bgcolor   = strdup("859900");
    s->net.outbound_chart_color_pgcolor   = strdup("dc322f");
+   s->net.outbound_text_fgcolor          = strdup("dc322f");
 
    s->volume.hdcolor       = strdup("cb4b16");
    s->volume.bgcolor       = strdup("");
+   s->volume.fgcolor       = strdup("");
    s->volume.chart_width   = 7;
    s->volume.chart_bgcolor = strdup("dc322f");
    s->volume.chart_pgcolor = strdup("859900");
 
    s->time.hdcolor = strdup("859900");
    s->time.bgcolor = strdup("");
+   s->time.fgcolor = strdup("");
    s->time.format  = strdup("%a %d %b %Y  %I:%M:%S %p");
 }
 
@@ -399,6 +407,7 @@ settings_set_one_keyvalue(struct settings *s, const char *key, const char *value
    /* battery */
    KMS_STRING(battery.hdcolor);
    KMS_STRING(battery.bgcolor);
+   KMS_STRING(battery.fgcolor);
    KMS_STRING(battery.fgcolor_unplugged);
    KMS_INT(battery.chart_width);
    KMS_STRING(battery.chart_bgcolor);
@@ -407,6 +416,7 @@ settings_set_one_keyvalue(struct settings *s, const char *key, const char *value
    /* cpus */
    KMS_STRING(cpus.hdcolor);
    KMS_STRING(cpus.bgcolor);
+   KMS_STRING(cpus.fgcolor);
    KMS_STRING(cpus.chart_bgcolor);
    KMS_STRING(cpus.chart_color_system);
    KMS_STRING(cpus.chart_color_interrupt);
@@ -418,6 +428,7 @@ settings_set_one_keyvalue(struct settings *s, const char *key, const char *value
    /* memory */
    KMS_STRING(memory.hdcolor);
    KMS_STRING(memory.bgcolor);
+   KMS_STRING(memory.fgcolor);
    KMS_STRING(memory.chart_bgcolor);
    KMS_STRING(memory.chart_color_free);
    KMS_STRING(memory.chart_color_total);
@@ -426,19 +437,23 @@ settings_set_one_keyvalue(struct settings *s, const char *key, const char *value
    /* network */
    KMS_STRING(net.hdcolor);
    KMS_STRING(net.bgcolor);
-   KMS_STRING(net.chart_bgcolor);
+   KMS_STRING(net.fgcolor);
    KMS_STRING(net.inbound_chart_color_bgcolor);
    KMS_STRING(net.inbound_chart_color_pgcolor);
+   KMS_STRING(net.inbound_text_fgcolor);
    KMS_STRING(net.outbound_chart_color_bgcolor);
    KMS_STRING(net.outbound_chart_color_pgcolor);
+   KMS_STRING(net.outbound_text_fgcolor);
 
    /* nprocs */
    KMS_STRING(nprocs.hdcolor);
    KMS_STRING(nprocs.bgcolor);
+   KMS_STRING(nprocs.fgcolor);
 
    /* volume */
    KMS_STRING(volume.hdcolor);
    KMS_STRING(volume.bgcolor);
+   KMS_STRING(volume.fgcolor);
    KMS_INT(volume.chart_width);
    KMS_STRING(volume.chart_bgcolor);
    KMS_STRING(volume.chart_pgcolor);
@@ -446,6 +461,7 @@ settings_set_one_keyvalue(struct settings *s, const char *key, const char *value
    /* time */
    KMS_STRING(time.hdcolor);
    KMS_STRING(time.bgcolor);
+   KMS_STRING(time.fgcolor);
    KMS_STRING(time.format);
 
    return false;
@@ -604,7 +620,7 @@ settings_reload_config(struct settings *s)
       }
 
       /* do we have a new 'theme' section starting? */
-      if (1 == sscanf(line, " [%100[a-zA-Z0-9]] ", theme_name)) {
+      if (1 == sscanf(line, " [%100[-a-zA-Z0-9]] ", theme_name)) {
          /* yes - either read it (if it matches loaded theme) or skip it */
          if (NULL != s->theme && 0 == strcmp(theme_name, s->theme)) {
             found_theme = true;

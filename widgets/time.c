@@ -36,5 +36,5 @@ wtime_draw(void *wstate, struct xctx *ctx)
 
    time_t now = time(NULL);
    strftime(buffer, GUI_TIME_MAXLEN, w->settings->format, localtime(&now));
-   xdraw_printf(ctx, ctx->xfont->settings->fgcolor, buffer);
+   xdraw_printf(ctx, w->settings->fgcolor, buffer);
 }

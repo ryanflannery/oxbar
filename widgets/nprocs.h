@@ -8,6 +8,7 @@
 struct widget_nprocs_settings {
    char *hdcolor;
    char *bgcolor;
+   char *fgcolor;
 };
 
 struct widget_nprocs_state {

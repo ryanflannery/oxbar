@@ -54,11 +54,11 @@ wnet_draw(void *wstate, struct xctx *ctx)
    chart_update(chart_in,  (double[]){ stats->network->new_bytes_in });
    chart_update(chart_out, (double[]){ stats->network->new_bytes_out });
 
-   xdraw_printf(ctx, ctx->xfont->settings->fgcolor, "Net: ");
+   xdraw_printf(ctx, w->settings->fgcolor, "Net: ");
    xdraw_chart(ctx, chart_in);
-   xdraw_printf(ctx, "268bd2", " %s ",
+   xdraw_printf(ctx, w->settings->inbound_text_fgcolor, " %s ",
          fmt_memory("% .0f", stats->network->new_bytes_in / 1000));
    xdraw_chart(ctx, chart_out);
-   xdraw_printf(ctx, "dc322f", " %s",
+   xdraw_printf(ctx, w->settings->outbound_text_fgcolor, " %s",
          fmt_memory("% .0f", stats->network->new_bytes_out / 1000));
 }

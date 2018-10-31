@@ -23,16 +23,17 @@ struct widget_recipe {
    void   (*free)(void *widget);                      /* how to destroy it */
 };
 
+#define WCLRS() NULL, NULL, NULL
 struct widget_recipe WIDGET_RECIPES[] = {
-   {{"battery", NULL, NULL, wbattery_enabled, wbattery_draw,  NULL}, wbattery_init, wbattery_free },
-   {{"cpus",    NULL, NULL, wcpu_enabled,     wcpu_draw,      NULL}, wcpu_init,     wcpu_free },
-   {{"cpuslong",NULL, NULL, wcpulong_enabled, wcpulong_draw,  NULL}, wcpulong_init, wcpulong_free },
-   {{"cpushort",NULL, NULL, wcpushort_enabled,wcpushort_draw, NULL}, wcpushort_init,wcpushort_free },
-   {{"memory",  NULL, NULL, wmemory_enabled,  wmemory_draw,   NULL}, wmemory_init,  wmemory_free },
-   {{"net",     NULL, NULL, wnet_enabled,     wnet_draw,      NULL}, wnet_init,     wnet_free },
-   {{"nprocs",  NULL, NULL, wnprocs_enabled,  wnprocs_draw,   NULL}, wnprocs_init,  wnprocs_free },
-   {{"time",    NULL, NULL, wtime_enabled,    wtime_draw,     NULL}, wtime_init,    wtime_free },
-   {{"volume",  NULL, NULL, wvolume_enabled,  wvolume_draw,   NULL}, wvolume_init,  wvolume_free },
+   {{"battery", WCLRS(), wbattery_enabled, wbattery_draw,  NULL}, wbattery_init, wbattery_free },
+   {{"cpus",    WCLRS(), wcpu_enabled,     wcpu_draw,      NULL}, wcpu_init,     wcpu_free },
+   {{"cpuslong",WCLRS(), wcpulong_enabled, wcpulong_draw,  NULL}, wcpulong_init, wcpulong_free },
+   {{"cpushort",WCLRS(), wcpushort_enabled,wcpushort_draw, NULL}, wcpushort_init,wcpushort_free },
+   {{"memory",  WCLRS(), wmemory_enabled,  wmemory_draw,   NULL}, wmemory_init,  wmemory_free },
+   {{"net",     WCLRS(), wnet_enabled,     wnet_draw,      NULL}, wnet_init,     wnet_free },
+   {{"nprocs",  WCLRS(), wnprocs_enabled,  wnprocs_draw,   NULL}, wnprocs_init,  wnprocs_free },
+   {{"time",    WCLRS(), wtime_enabled,    wtime_draw,     NULL}, wtime_init,    wtime_free },
+   {{"volume",  WCLRS(), wvolume_enabled,  wvolume_draw,   NULL}, wvolume_init,  wvolume_free },
 };
 const size_t NWIDGET_RECIPES = sizeof(WIDGET_RECIPES) / sizeof(struct widget_recipe);
 
@@ -99,6 +100,7 @@ widget_create_from_recipe(
    w->name     = recipe->widget.name;
    w->hdcolor  = recipe->widget.hdcolor;
    w->bgcolor  = recipe->widget.bgcolor;
+   w->fgcolor  = recipe->widget.fgcolor;
    w->enabled  = recipe->widget.enabled;
    w->draw     = recipe->widget.draw;
 
@@ -146,25 +148,36 @@ widgets_create(
 void
 widgets_init(struct gui *gui, struct settings *settings, struct oxstats *stats)
 {
-   widget_set_hdcolor("battery",   settings->battery.hdcolor);
-   widget_set_hdcolor("cpus",      settings->cpus.hdcolor);
-   widget_set_hdcolor("cpushort",  settings->cpus.hdcolor);
-   widget_set_hdcolor("cpuslong",  settings->cpus.hdcolor);
-   widget_set_hdcolor("memory",    settings->memory.hdcolor);
-   widget_set_hdcolor("net",       settings->net.hdcolor);
-   widget_set_hdcolor("nprocs",    settings->nprocs.hdcolor);
-   widget_set_hdcolor("time",      settings->time.hdcolor);
-   widget_set_hdcolor("volume",    settings->volume.hdcolor);
+   /* connect hdcolor, bgcolor, and fgcolor components to their globals */
+   widget_set_hdcolor("battery",   &settings->battery.hdcolor);
+   widget_set_hdcolor("cpus",      &settings->cpus.hdcolor);
+   widget_set_hdcolor("cpushort",  &settings->cpus.hdcolor);
+   widget_set_hdcolor("cpuslong",  &settings->cpus.hdcolor);
+   widget_set_hdcolor("memory",    &settings->memory.hdcolor);
+   widget_set_hdcolor("net",       &settings->net.hdcolor);
+   widget_set_hdcolor("nprocs",    &settings->nprocs.hdcolor);
+   widget_set_hdcolor("time",      &settings->time.hdcolor);
+   widget_set_hdcolor("volume",    &settings->volume.hdcolor);
 
-   widget_set_bgcolor("battery",   settings->battery.bgcolor);
-   widget_set_bgcolor("cpus",      settings->cpus.bgcolor);
-   widget_set_bgcolor("cpushort",  settings->cpus.bgcolor);
-   widget_set_bgcolor("cpuslong",  settings->cpus.bgcolor);
-   widget_set_bgcolor("memory",    settings->memory.bgcolor);
-   widget_set_bgcolor("net",       settings->net.bgcolor);
-   widget_set_bgcolor("nprocs",    settings->nprocs.bgcolor);
-   widget_set_bgcolor("time",      settings->time.bgcolor);
-   widget_set_bgcolor("volume",    settings->volume.bgcolor);
+   widget_set_bgcolor("battery",   &settings->battery.bgcolor);
+   widget_set_bgcolor("cpus",      &settings->cpus.bgcolor);
+   widget_set_bgcolor("cpushort",  &settings->cpus.bgcolor);
+   widget_set_bgcolor("cpuslong",  &settings->cpus.bgcolor);
+   widget_set_bgcolor("memory",    &settings->memory.bgcolor);
+   widget_set_bgcolor("net",       &settings->net.bgcolor);
+   widget_set_bgcolor("nprocs",    &settings->nprocs.bgcolor);
+   widget_set_bgcolor("time",      &settings->time.bgcolor);
+   widget_set_bgcolor("volume",    &settings->volume.bgcolor);
+
+   widget_set_fgcolor("battery",   &settings->battery.fgcolor);
+   widget_set_fgcolor("cpus",      &settings->cpus.fgcolor);
+   widget_set_fgcolor("cpushort",  &settings->cpus.fgcolor);
+   widget_set_fgcolor("cpuslong",  &settings->cpus.fgcolor);
+   widget_set_fgcolor("memory",    &settings->memory.fgcolor);
+   widget_set_fgcolor("net",       &settings->net.fgcolor);
+   widget_set_fgcolor("nprocs",    &settings->nprocs.fgcolor);
+   widget_set_fgcolor("time",      &settings->time.fgcolor);
+   widget_set_fgcolor("volume",    &settings->volume.fgcolor);
 
    widgets_create(settings->widgets, gui, settings, stats);
 }
@@ -185,7 +198,7 @@ widgets_free()
 }
 
 void
-widget_set_hdcolor(const char * const name, char *color)
+widget_set_hdcolor(const char * const name, char **color)
 {
    struct widget_recipe *recipe = find_recipe(name);
    if (NULL == recipe)
@@ -195,11 +208,21 @@ widget_set_hdcolor(const char * const name, char *color)
 }
 
 void
-widget_set_bgcolor(const char * const name, char *color)
+widget_set_bgcolor(const char * const name, char **color)
 {
    struct widget_recipe *recipe = find_recipe(name);
    if (NULL == recipe)
       errx(1, "unknown widget '%s' when setting bgcolor", name);
 
    recipe->widget.bgcolor = color;
+}
+
+void
+widget_set_fgcolor(const char * const name, char **color)
+{
+   struct widget_recipe *recipe = find_recipe(name);
+   if (NULL == recipe)
+      errx(1, "unknown widget '%s' when setting fgcolor", name);
+
+   recipe->widget.fgcolor = color;
 }

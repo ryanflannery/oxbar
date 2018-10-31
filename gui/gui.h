@@ -16,8 +16,9 @@
  */
 struct widget {
    const char       *name;             /* only used for debugging             */
-   char             *hdcolor;          /* header color (set by settings.*)    */
-   char             *bgcolor;          /* backround color (set by settings.*) */
+   char            **hdcolor;          /* header color (set by settings.*)    */
+   char            **bgcolor;          /* backround color (set by settings.*) */
+   char            **fgcolor;          /* backround color (set by settings.*) */
    bool (*enabled)(void *);            /* does the widget work? can change!   */
    void (*draw)(void *, struct xctx*); /* draw it to a context!               */
    void             *state;            /* internal state to the widget        */

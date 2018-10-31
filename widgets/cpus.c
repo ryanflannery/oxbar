@@ -56,7 +56,7 @@ void
 wcpu_draw(void *wstate, struct xctx *ctx)
 {
    struct widget_cpu_state *w = wstate;
-   char *fgcolor = ctx->xfont->settings->fgcolor;
+   char *fgcolor = w->settings->fgcolor;
    xdraw_printf(ctx, fgcolor, "CPUs: ");
 
    size_t cpu;

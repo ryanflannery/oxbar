@@ -12,6 +12,7 @@
 struct widget_cpu_settings {
    char *hdcolor;
    char *bgcolor;
+   char *fgcolor;
    char *chart_bgcolor;
    char *chart_color_system;
    char *chart_color_interrupt;

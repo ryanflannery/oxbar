@@ -59,6 +59,8 @@ kill $pid
 # test config file & themes
 ./oxbar -F sample.oxbar.conf
 ./oxbar -F sample.oxbar.conf FooBar       # should fail
-./oxbar -F sample.oxbar.conf Top
-./oxbar -F sample.oxbar.conf Bottom
+./oxbar -F sample.oxbar.conf top
+./oxbar -F sample.oxbar.conf bottom
+./oxbar -F sample.oxbar.conf minimal
+./oxbar -F sample.oxbar.conf islands
 ./oxbar -F sample.oxbar.conf xstatbar

@@ -34,7 +34,7 @@ wbattery_draw(void *wstate, struct xctx *ctx)
 
    xdraw_printf(ctx,
          w->stats->battery->plugged_in ?
-            ctx->xfont->settings->fgcolor :
+            w->settings->fgcolor :
             w->settings->fgcolor_unplugged ,
          w->stats->battery->plugged_in ? "AC " : "BAT ");
 
@@ -45,12 +45,12 @@ wbattery_draw(void *wstate, struct xctx *ctx)
          w->stats->battery->charge_pct);
 
    xdraw_printf(ctx,
-         ctx->xfont->settings->fgcolor,
+         w->settings->fgcolor,
          "% 3.0f%%", w->stats->battery->charge_pct);
 
    if (-1 != w->stats->battery->minutes_remaining) {
       xdraw_printf(ctx,
-            ctx->xfont->settings->fgcolor,
+            w->settings->fgcolor,
             " %dh %dm",
             w->stats->battery->minutes_remaining / 60,
             w->stats->battery->minutes_remaining % 60);

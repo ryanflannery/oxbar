@@ -8,6 +8,7 @@
 struct widget_volume_settings {
    char *hdcolor;
    char *bgcolor;
+   char *fgcolor;
    int   chart_width;
    char *chart_bgcolor;
    char *chart_pgcolor;

@@ -8,11 +8,13 @@
 struct widget_net_settings {
    char *hdcolor;
    char *bgcolor;
-   char *chart_bgcolor;
+   char *fgcolor;
    char *inbound_chart_color_bgcolor;
    char *inbound_chart_color_pgcolor;
+   char *inbound_text_fgcolor;
    char *outbound_chart_color_bgcolor;
    char *outbound_chart_color_pgcolor;
+   char *outbound_text_fgcolor;
 };
 
 struct widget_net_state {
