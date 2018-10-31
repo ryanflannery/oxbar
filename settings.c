@@ -217,7 +217,7 @@ settings_set_defaults(struct settings *s)
 {
    s->widgets = strdup("nprocs cpuslong memory net > battery volume time");
 
-   s->font.desc = strdup("helvetica 18px");
+   s->font.desc = strdup("helvetica 16px");
    s->font.fgcolor = strdup("93a1a1");
 
    s->window.x = 0;
@@ -233,10 +233,10 @@ settings_set_defaults(struct settings *s)
    s->gui.padding.bottom = 5;
    s->gui.padding.left   = 5;
    s->gui.padding.right  = 5;
-   s->gui.margin.top    = 0;
-   s->gui.margin.bottom = 0;
-   s->gui.margin.left   = 0;
-   s->gui.margin.right  = 0;
+   s->gui.margin.top    = 2;
+   s->gui.margin.bottom = 2;
+   s->gui.margin.left   = 2;
+   s->gui.margin.right  = 2;
    s->gui.header_style = BELOW;
 
    s->battery.hdcolor            = strdup("b58900");
