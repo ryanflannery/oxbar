@@ -92,6 +92,7 @@ loc::
 	wc -l `find . -name "*.d.c" -o -name "*.t.cc"` >> loc
 	@echo Lines in build setup >> loc
 	wc -l `find . -name "Makefile" -o -name "testruns.sh" -o -name "*.conf"` >> loc
+	cat loc
 
 # rebuild the architecture image showing #include dependencies
 tree.png::

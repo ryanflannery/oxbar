@@ -38,11 +38,11 @@ Lines in tests and drivers
       43 ./stats/memory.d.c
      763 total
 Lines in build setup
-     104 ./Makefile
+     105 ./Makefile
      150 ./sample.oxbar.conf
       12 ./man/Makefile
       64 ./testruns.sh
       18 ./widgets/Makefile
       55 ./gui/Makefile
       26 ./stats/Makefile
-     429 total
+     430 total
