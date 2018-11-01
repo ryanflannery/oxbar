@@ -3,30 +3,109 @@
 .Os
 .Sh NAME
 .Nm oxbar
-.Nd OpenBSD X status bar showing various system stats
+.Nd configurable X11 status bar for OpenBSD
 .Sh SYNOPSIS
 .Nm oxbar
 .Bk -words
 .Op Fl H
 .Op Fl F Ar config-file
-.Op Fl x Ar xoff
-.Op Fl y Ar yoff
+.Op Fl x Ar xloc
+.Op Fl y Ar yloc
 .Op Fl w Ar width
 .Op Fl h Ar height
 .Op Fl f Ar font
-.Op Fl p Ar padding
+.Op Fl m Ar margins
+.Op Fl p Ar paddings
 .Op Fl s Ar spacing
-.Op Fl t Ar time_format
+.Op Fl c Ar header-style
+.Op Fl t Ar time-format
 .Op Fl W Ar widgets
 .Op Fl S Ar key=value
+.Op Ar theme
 .Ek
 .Sh DESCRIPTION
 .Nm
-is a simple status bar for OpenBSD showing various system stats.
+is a simple X11 status bar for OpenBSD showing various system stats.
 .Nm
-is highly configurable and aims to work out-of-the-box in various window
-managers in an intuitive fashion.
-It supports a number of widgets and configuration optons described below.
+aims to have a configurable display and work out-of-the-box on most
+modern window managers in an intuitive fashion. It supports full FreeType
+.Xr Xft 3
+font rendering and styling (easily), true transparency/alpha blending on all
+UI components, and a simple configuration format that concisely supports
+multiple themes.
+.Pp
 .Nm
 is also a replacement for my old
-.Xr xstatbar 1 .
+.Xr xstatbar 1 ,
+and it started as a derivative of that.
+.Pp
+All configuration options to
+.Nm
+can be configured via the command line or a configuration file. The default
+configuration file is
+.Pa ~/.oxbar.conf
+but that can be overridden with the
+.Fl F Ar config-file
+command line option. When using a configuration file, the file can be reread
+at runtime via a SIGHUP signal to
+.Nm .
+.Pp
+.Nm
+supports the following command line options:
+.Bl -tag -width Fl
+.It Fl H
+Print brief help information regarding the supported command line flags.
+.It Fl F Ar config-file
+Load
+.Pa config-file
+instead of the default configuration file
+.Pa ~/.oxbar.conf .
+.It Fl x Ar xloc
+Sets the x coordinate, in pixels, of the upper-left corner of the window.
+.It Fl y Ar yloc
+Sets the y coordinate, in pixels, of the upper-left corner of the window.
+If set to -1, the window will be aligned to the bottom of the display minus
+whatever the height of the window is determined to be.
+.It Fl w Ar width
+Sets the width, in pixels, of the window.
+If set to -1, the window will span the full width of the X display.
+.It Fl h Ar height
+Sets the height, in pixels, of the window.
+If set to -1, the window's height will be derived from the font description
+used and any margins/paddings specified.
+.It Fl f Ar font
+.It Fl m Ar margins
+.It Fl p Ar paddings
+.It Fl s Ar spacing
+.It Fl c Ar header-style
+.It Fl t Ar time-format
+.It Fl W Ar widgets
+.It Fl S Ar key=value
+.El
+.Sh ENVIRONMENT
+The only environment variable
+.Nm
+uses is
+.Ev HOME ,
+to determine the default configuration file to load. If no
+.Fl F Ar config-file
+command-line parameter is set,
+.Nm
+will always attempt to load
+.Pa $HOME/.oxbar.conf .
+If
+.Ev HOME
+is not set,
+.Nm
+will use
+.Xr getpwuid 3
+to try and determine the caller's home directory.
+.Sh FILES
+.Sh EXIT STATUS
+.Sh SEE ALSO
+.Sh STANDARDS
+.Sh HISTORY
+.Sh AUTHORS
+\" TODO add section on TRANSPARENCY and compton
+\" TODO add section on setting the font
+\" TODO add section on setting the widget list

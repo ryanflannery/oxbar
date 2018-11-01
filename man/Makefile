@@ -9,4 +9,4 @@ lint:
 	mandoc -Tlint $(MAN_PAGES)
 
 test:
-	mandoc oxbar.1
+	mandoc oxbar.1 | less
