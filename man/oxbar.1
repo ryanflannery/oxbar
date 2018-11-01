@@ -190,8 +190,6 @@ will use
 to try and determine the caller's home directory.
 .Sh FILES
 .\" TODO document config file
-.Sh SEE ALSO
-.\" TODO reference pango/cairo/xcb and xstatbar
 .Sh STANDARDS
 .Nm
 is written on
@@ -211,14 +209,28 @@ and
 .Ic make cppcheck ,
 respectively).
 .Sh HISTORY
-.\" TODO document!
+.Nm
+started as xstatbar, first written in 2006 as a status-bar that would work
+reasonably well for OpenBSD.
+It was written on a Friday and Saturday evening and had many, many
+bugs/shortcomings.
+It was further hacked over a few years to support a handful of new features and
+widgets, but the term
+.Dq hack
+there undervalues the level of code shit-hattery done to
+.Dq Make-It-Work! .
+I have personally received much derision because of that, and
+.Nm
+is an attempt to eliminate that.
+.Pp
+Shaming works 'yo.
 .Sh AUTHORS
 .Nm
-is written and maintained by Ryan Flannery
-.Mt ryan.flannery@gmail.com .
+is written and maintained by
+.An Ryan Flannery Aq Mt ryan.flannery@gmail.com .
 See also
 .Lk https://ryanflannery.net .
 .Pp
-The github repository is the main place for submitting changes or
-bug/change/enhancement/threat reports, and is located at:
+The github repository is the main place for submitting
+bugs/changes/threats, and is located at:
 .Lk https://github.com/ryanflannery/oxbar
