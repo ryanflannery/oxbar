@@ -62,7 +62,7 @@ cppcheck:
 
 # cppcheck (should ALWAYS be clean)
 scan-build: clean
-	scan-build make
+	scan-build --status-bugs make
 
 # run include-what-you-use (identify includes that are missing/extra)
 iwyu:

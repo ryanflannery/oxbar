@@ -94,11 +94,11 @@ widget_create_from_recipe(
       errx(1, "reached max widget count %d", MAX_ALL_WIDGETS);
 
    if (NULL == (recipe = find_recipe(name)))
-      errx(1, "no widget recipe named '%s'", name);
+      errx(1, "no widget recipe found named '%s'", name);
 
    w = malloc(sizeof(struct widget));
    if (NULL == w)
-      err(1, "%s: malloc failed", __FUNCTION__);
+      err(1, "failed to malloc widget named '%s'", name);
 
    w->name     = recipe->widget.name;
    w->hdcolor  = recipe->widget.hdcolor;
@@ -129,7 +129,7 @@ widgets_create(
    char *memhandle = copylist;      /* need this for free() and clang */
 
    if (NULL == copylist)
-      err(1, "%s strdup failed", __FUNCTION__);
+      err(1, "failed to strdup widget list '%s'", list);
 
    while (NULL != (token = strsep(&copylist, " ,"))) {
       if ('\0' == *token)
@@ -205,7 +205,7 @@ widget_set_hdcolor(const char * const name, char **color)
 {
    struct widget_recipe *recipe = find_recipe(name);
    if (NULL == recipe)
-      errx(1, "unknown widget '%s' when setting hdcolor", name);
+      errx(1, "unknown widget named '%s' used when setting hdcolor", name);
 
    recipe->widget.hdcolor = color;
 }
@@ -215,7 +215,7 @@ widget_set_bgcolor(const char * const name, char **color)
 {
    struct widget_recipe *recipe = find_recipe(name);
    if (NULL == recipe)
-      errx(1, "unknown widget '%s' when setting bgcolor", name);
+      errx(1, "unknown widget named '%s' used when setting bgcolor", name);
 
    recipe->widget.bgcolor = color;
 }
@@ -225,7 +225,7 @@ widget_set_fgcolor(const char * const name, char **color)
 {
    struct widget_recipe *recipe = find_recipe(name);
    if (NULL == recipe)
-      errx(1, "unknown widget '%s' when setting fgcolor", name);
+      errx(1, "unknown widget named '%s' used when setting fgcolor", name);
 
    recipe->widget.fgcolor = color;
 }

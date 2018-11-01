@@ -160,7 +160,7 @@ thread_sig_handler()
    ||  sigaction(SIGTERM, &sig_act, NULL)
    ||  sigaction(SIGTSTP, &sig_act, NULL)
    ||  sigaction(SIGCONT, &sig_act, NULL))
-      err(1, "%s: sigaction failed", __FUNCTION__);
+      err(1, "%s: failed to install signal handlers", __FUNCTION__);
 
    while (1) {
       usleep(100000);   /* 1/10 second */
@@ -180,7 +180,7 @@ thread_sig_handler()
          if (pthread_cancel(pthread_gui)
          ||  pthread_cancel(pthread_stats_updater)
          ||  pthread_cancel(pthread_sig_handler))         /* ...it's painless */
-            errx(1, "%s: pthread_cancels failed", __FUNCTION__);
+            errx(1, "failed to cancel ongoing pthreads");
       }
    }
    return NULL;
@@ -210,13 +210,13 @@ main(int argc, char *argv[])
    if (pthread_create(&pthread_sig_handler, NULL, thread_sig_handler, NULL)
    ||  pthread_create(&pthread_stats_updater, NULL, thread_stats_updater, NULL)
    ||  pthread_create(&pthread_gui, NULL, thread_gui, NULL))
-      errx(1, "pthread_creates failed");
+      errx(1, "failed to create pthreads");
 
    /* wait for done (only from signal handler) */
    if (pthread_join(pthread_gui, NULL)
    ||  pthread_join(pthread_stats_updater, NULL)
    ||  pthread_join(pthread_sig_handler, NULL))
-      errx(1, "pthread_joins failed");
+      errx(1, "failed to join pthreads");
 
    /* cleanup */
    cleanup_gui();

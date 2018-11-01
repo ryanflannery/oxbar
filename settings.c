@@ -89,13 +89,13 @@ get_default_config()
 
    if (NULL == (home = getenv("HOME")) || '\0' == *home) {
       if (NULL == (pw = getpwuid(getuid())))
-         errx(1, "couldn't determine home directory");
+         errx(1, "failed to determine home directory");
 
       home = pw->pw_dir;
    }
 
    if (-1 == asprintf(&config_file, "%s/.oxbar.conf", home))
-      err(1, "%s: asprintf failed", __FUNCTION__);
+      err(1, "failed to build config file path using '%s'", home);
 
    return config_file;
 }
@@ -121,7 +121,7 @@ get_config_and_theme(int argc, char * const argv[],
    while (-1 != (ch = getopt(argc, argv, SWITCHES))) {
       if ('F' == ch) {
          if (NULL == (*config_file = strdup(optarg)))
-            err(1, "%s: strdup failed for config_file", __FUNCTION__);
+            err(1, "failed to strdup config file '%s'", optarg);
       }
    }
 
@@ -132,7 +132,7 @@ get_config_and_theme(int argc, char * const argv[],
    if (1 == argc) {
       /* we have a theme - set it */
       if (NULL == (*theme = strdup(argv[argc - 1])))
-         err(1, "%s: strdup failed for theme", __FUNCTION__);
+         err(1, "failed to strdup theme '%s'", argv[argc - 1]);
    }
 
    /* reest getopt(3) */
@@ -185,7 +185,7 @@ parse_padding(struct padding *padding, const char * const value)
       padding->left   = left;
       break;
    default:
-      errx(1, "%s: bad padding string '%s'", __FUNCTION__, value);
+      errx(1, "invalid padding string '%s' encountered", value);
    }
 }
 
@@ -200,7 +200,7 @@ parse_header_style(header_style_t *style, const char * const value)
    else if (0 == strcasecmp("below", value))
       *style = BELOW;
    else
-      errx(1, "%s: bad header style string '%s'", __FUNCTION__, value);
+      errx(1, "failed to parse header-style '%s'", value);
 }
 
 /*
@@ -473,10 +473,10 @@ settings_set_keyvalue(struct settings *s, const char * const keyvalue)
 {
    char *key, *value;
    if (!parse_keyvalue(keyvalue, &key, &value))
-      errx(1, "invalid format '%s' (should be 'key = value')", keyvalue);
+      errx(1, "failed to parse key & value from '%s'", keyvalue);
 
    if (!settings_set_one_keyvalue(s, key, value))
-      errx(1, "unkown key '%s' in '%s'", key, keyvalue);
+      errx(1, "unkown key '%s' in key-value pair '%s'", key, keyvalue);
 
    free(key);
    free(value);
@@ -499,7 +499,7 @@ settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
          free(s->font.desc);
          s->font.desc= strdup(optarg);
          if (NULL == s->font.desc)
-            err(1, "strdup failed for font");
+            err(1, "failed to copy font string from -f '%s'", optarg);
          break;
       case 'm':
          parse_padding(&s->gui.margin, optarg);
@@ -510,11 +510,11 @@ settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
       case 's':
          s->gui.widget_spacing = strtonum(optarg, 0, INT_MAX, &errstr);
          if (errstr)
-            errx(1, "illegal s value '%s': %s", optarg, errstr);
+            errx(1, "illegal widget spacing in -s '%s': %s", optarg, errstr);
          break;
       case 'S':
          if (NULL == (keyvalue = strdup(optarg)))
-            err(1, "strdup failed for font");
+            err(1, "failed to copy settings string from -S '%s'", optarg);
 
          settings_set_keyvalue(s, keyvalue);
          free(keyvalue);
@@ -523,7 +523,7 @@ settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
          free(s->time.format);
          s->time.format = strdup(optarg);
          if (NULL == s->time.format)
-            err(1, "strdup failed for time format");
+            err(1, "failed to copy time format from -t '%s'", optarg);
          break;
       case 'F':
          /* We already handled this in settings_init() - skip here */
@@ -531,7 +531,7 @@ settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
       case 'h':
          s->window.h = strtonum(optarg, -1, INT_MAX, &errstr);
          if (errstr)
-            errx(1, "illegal h value '%s': %s", optarg, errstr);
+            errx(1, "illegal height value in -h '%s': %s", optarg, errstr);
          break;
       case 'H':
          print_usage();
@@ -539,23 +539,23 @@ settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
       case 'w':
          s->window.w = strtonum(optarg, -1, INT_MAX, &errstr);
          if (errstr)
-            errx(1, "illegal w value '%s': %s", optarg, errstr);
+            errx(1, "illegal width value in -w '%s': %s", optarg, errstr);
          break;
       case 'W':
          free(s->widgets);
          s->widgets = strdup(optarg);
          if (NULL == s->widgets)
-            err(1, "strdup failed for widgets");
+            err(1, "failed to copy widget string in -W '%s'", optarg);
          break;
       case 'x':
          s->window.x = strtonum(optarg, 0, INT_MAX, &errstr);
          if (errstr)
-            errx(1, "illegal x value '%s': %s", optarg, errstr);
+            errx(1, "illegal x offset in -x '%s': %s", optarg, errstr);
          break;
       case 'y':
          s->window.y = strtonum(optarg, -1, INT_MAX, &errstr);
          if (errstr)
-            errx(1, "illegal y value '%s': %s", optarg, errstr);
+            errx(1, "illegal y offset in -y '%s': %s", optarg, errstr);
          break;
       default:
          print_usage();
@@ -606,7 +606,7 @@ settings_reload_config(struct settings *s)
       /* read next line */
       if (NULL == (line = fparseln(fin, &length, &linenum, NULL, 0))) {
          if (ferror(fin))
-            err(1, "error reading config file '%s'", s->config_file);
+            err(1, "failed to parse line %zd in %s", linenum, s->config_file);
          else
             break;
       }
@@ -643,7 +643,7 @@ settings_reload_config(struct settings *s)
 
    /* if we never found a theme, but had one specified, that's an error */
    if (NULL != s->theme && !found_theme)
-      errx(1, "did not find a theme named '%s' in '%s'",
+      errx(1, "failed to find a theme named '%s' in %s",
             s->theme, s->config_file);
 }
 

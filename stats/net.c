@@ -32,25 +32,25 @@ get_egress()
    strlcpy(ifgr.ifgr_name, "egress", sizeof(ifgr.ifgr_name));
 
    if ((ioctlfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-      err(1, "%s: socket(AF_INET, SOCK_DGRAM", __FUNCTION__);
+      err(1, "%s: socket(AF_INET, SOCK_DGRAM) failed", __FUNCTION__);
 
    if (ioctl(ioctlfd, SIOCGIFGMEMB, (caddr_t)&ifgr) == -1)
-      err(1, "%s: ioctl SIOCGIFGMEMB", __FUNCTION__);
+      err(1, "%s: ioctl for SIOCGIFGMEMB failed", __FUNCTION__);
 
    len = ifgr.ifgr_len;
    if (NULL == (ifgr.ifgr_groups = calloc(1, len)))
-      err(1, "%s: calloc failed", __FUNCTION__);
+      err(1, "%s: calloc failed (len = %d)", __FUNCTION__, len);
 
    if (ioctl(ioctlfd, SIOCGIFGMEMB, (caddr_t)&ifgr) == -1)
-      err(1, "%s: ioctl SIOCGIFGMEMB", __FUNCTION__);
+      err(1, "%s: ioctl for SIOCGIFGMEMB (2nd time) failed", __FUNCTION__);
 
    name = NULL;
    for (ifg = ifgr.ifgr_groups; ifg && len >= sizeof(*ifg); ifg++) {
       len -= sizeof(*ifg);
       if (name != NULL)
-         errx(1, "%s: too many interfaces in group egress", __FUNCTION__);
+         errx(1, "more than 1 interface in group egress (unsupported)");
       if (NULL == (name = strdup(ifg->ifgrq_member)))
-         errx(1, "%s: strdup", __FUNCTION__);
+         errx(1, "%s: strdup failed for '%s'", __FUNCTION__, ifg->ifgrq_member);
    }
 
    free(ifgr.ifgr_groups);
@@ -118,7 +118,7 @@ net_update_bytes()
    char *buf = NULL;
 
    if (-1 == sysctl(mib, 6, NULL, &sizeneeded, NULL, 0))
-      err(1, "%s: sysctl failed", __FUNCTION__);
+      err(1, "sysctl CTL_NET.PF_ROUTE.0.0.NET_RT_IFLIST.0 failed");
 
    if (NULL == (buf = malloc(sizeneeded)))
       err(1, "%s: malloc failed", __FUNCTION__);
