@@ -5,6 +5,9 @@ MAN_PAGES=oxbar.1
 .DEFAULT:
 	@echo Nothing to do here
 
+oxbar.html: oxbar.1
+	mandoc -T html -O toc oxbar.1 > $@
+
 lint:
 	mandoc -Tlint $(MAN_PAGES)
 

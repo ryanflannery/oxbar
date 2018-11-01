@@ -1,4 +1,8 @@
-.Dd $Mdocdate: October 12 2018$
+.\" TODO add section on TRANSPARENCY and compton
+.\" TODO add section on setting the font
+.\" TODO add section on setting the widget list
+.\" $OpenBSD: oxbar.1,v 0.99 2018/10/31 12:00:00 ryan Exp $
+.Dd $Mdocdate: October 31 2018$
 .Dt OXBAR 1
 .Os
 .Sh NAME
@@ -25,10 +29,13 @@
 .Ek
 .Sh DESCRIPTION
 .Nm
-is a simple X11 status bar for OpenBSD showing various system stats.
+is a simple X11 status bar for
+.Ox
+showing various system stats.
 .Nm
-aims to have a configurable display and work out-of-the-box on most
-modern window managers in an intuitive fashion. It supports full FreeType
+aims to have a configurable display and work out-of-the-box on most modern
+window managers in an intuitive fashion.
+It supports full FreeType
 .Xr Xft 3
 font rendering and styling (easily), true transparency/alpha blending on all
 UI components, and a simple configuration format that concisely supports
@@ -41,17 +48,20 @@ and it started as a derivative of that.
 .Pp
 All configuration options to
 .Nm
-can be configured via the command line or a configuration file. The default
-configuration file is
+can be configured via the command line or a configuration file.
+The default configuration file is
 .Pa ~/.oxbar.conf
 but that can be overridden with the
 .Fl F Ar config-file
-command line option. When using a configuration file, the file can be reread
-at runtime via a SIGHUP signal to
+command line option.
+When using a configuration file, the file can be reread at runtime via a SIGHUP
+signal to
 .Nm .
 .Pp
 .Nm
-supports the following command line options:
+supports the following command line options, which are backwards compatible
+with
+.Xr xstatar 1 :
 .Bl -tag -width Fl
 .It Fl H
 Print brief help information regarding the supported command line flags.
@@ -74,20 +84,98 @@ Sets the height, in pixels, of the window.
 If set to -1, the window's height will be derived from the font description
 used and any margins/paddings specified.
 .It Fl f Ar font
+A string specifying the font, and its styling, used throughout the display of
+.Nm .
+This supports a very flexible format as it's parsed by
+.Xr pango_font_description_from_string 3 .
+See the section XXX below for details and samples.  \" TODO add section on font
 .It Fl m Ar margins
+Sets the margins, in pixels, surrounding each widget shown in
+.Nm .
+The margins are the same for every widget.
+The margins can be specified for the
+.Em top ,
+.Em right ,
+.Em bottom ,
+and
+.Em left
+regions around a widget, in that order, by providing a quoted string with four
+integer.
+E.g.
+.Fl m Dq 10 20 10 20
+would set the top and bottom margins to 10 pixels, and the right and left
+margins to 20 pixels.
+Providing a single number, such as
+.Fl m Ar 10
+will set all components to 10 pixels.
+This follows CSS style conventions.
 .It Fl p Ar paddings
+Sets the paddings, in pixels, within each widget shown in
+.Nm .
+The paddings are the same for every widget, and can be specified using the
+same format as the
+.Fl m Ar margins
+option (above).
 .It Fl s Ar spacing
+Sets the spacing, in pixels, between each widget in the display.
 .It Fl c Ar header-style
+.Nm
+can show colored
+.Dq headers
+above/below each widget, within the padding region of each widget.
+These help quickly find/identify widgets visually.
+The color can be specified per-widget.
+This option instructs if/where to render such headers.
+It accepts the following string options:
+.Bl -tag -width Ds
+.It none
+Do not render any header bars.
+.It above
+Render header bars in the
+.Em top
+padding region of each widget (they will be as
+wide as the
+.Em top
+padding of each widget).
+.It below
+Render header bars in the
+.Em bottom
+padding region of each widget.
+.El
 .It Fl t Ar time-format
+Sets the format used by the
+.Em time
+widget when rendering the date/time.
+This is any string accepted by
+.Xr strftime 3 .
 .It Fl W Ar widgets
-.It Fl S Ar key=value
+A string specifying the list of widgets to be rendered by
+.Nm .
+See the section XXX on the format of this string. \" TODO section on this
+.It Fl S Dq key=value
+Set any configuration option
+.Em key
+to
+.Em value
+in
+.Nm .
+This is a generic way to set any configurable option in
+.Nm
+at the command line.
+Note that all such options could also be set in the
+.Nm
+configuration file.
+This option is useful for testing changes/tweaks to
+.Nm .
+See the section XXX for a list of all such options. \" TODO section on this
 .El
 .Sh ENVIRONMENT
 The only environment variable
 .Nm
 uses is
 .Ev HOME ,
-to determine the default configuration file to load. If no
+to determine the default configuration file to load.
+If no
 .Fl F Ar config-file
 command-line parameter is set,
 .Nm
@@ -101,11 +189,36 @@ will use
 .Xr getpwuid 3
 to try and determine the caller's home directory.
 .Sh FILES
-.Sh EXIT STATUS
+.\" TODO document config file
 .Sh SEE ALSO
+.\" TODO reference pango/cairo/xcb and xstatbar
 .Sh STANDARDS
+.Nm
+is written on
+.Ox
+and for
+.Ox .
+It adheres to a strict C89 standard on the base llvm compiler in OpenBSD.
+It should always compile with
+.Dq -std=c89 -Wall -Wextra -Werror
+and produce no errors or warnings by
+.Xr scan-build 1
+or
+.Xr cppcheck 1
+(run via
+.Ic make scan-build
+and
+.Ic make cppcheck ,
+respectively).
 .Sh HISTORY
+.\" TODO document!
 .Sh AUTHORS
-\" TODO add section on TRANSPARENCY and compton
-\" TODO add section on setting the font
-\" TODO add section on setting the widget list
+.Nm
+is written and maintained by Ryan Flannery
+.Mt ryan.flannery@gmail.com .
+See also
+.Lk https://ryanflannery.net .
+.Pp
+The github repository is the main place for submitting changes or
+bug/change/enhancement/threat reports, and is located at:
+.Lk https://github.com/ryanflannery/oxbar
