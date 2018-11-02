@@ -5,6 +5,8 @@ MAN_PAGES=oxbar.1
 .DEFAULT:
 	@echo Nothing to do here
 
+all: oxbar.html
+
 oxbar.html: oxbar.1
 	mandoc -T html -O toc oxbar.1 > $@
 

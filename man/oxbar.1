@@ -1,7 +1,7 @@
 .\" TODO add section on TRANSPARENCY and compton
 .\" TODO add section on setting the font
 .\" TODO add section on setting the widget list
-.\" $OpenBSD: oxbar.1,v 0.99 2018/10/31 12:00:00 ryan Exp $
+.\" $OpenBSD$
 .Dd $Mdocdate: October 31 2018$
 .Dt OXBAR 1
 .Os
@@ -29,7 +29,7 @@
 .Ek
 .Sh DESCRIPTION
 .Nm
-is a simple X11 status bar for
+is a X11 status bar for
 .Ox
 showing various system stats.
 .Nm
@@ -38,19 +38,19 @@ window managers in an intuitive fashion.
 It supports full FreeType
 .Xr Xft 3
 font rendering and styling (easily), true transparency/alpha blending on all
-UI components, and a simple configuration format that concisely supports
+UI components, and a simple configuration format that can concisely support
 multiple themes.
 .Pp
 .Nm
 is also a replacement for my old
 .Xr xstatbar 1 ,
 and it started as a derivative of that.
-.Pp
+.Ss Configuring oxbar
 All configuration options to
 .Nm
 can be configured via the command line or a configuration file.
 The default configuration file is
-.Pa ~/.oxbar.conf
+.Pa $HOME/.oxbar.conf
 but that can be overridden with the
 .Fl F Ar config-file
 command line option.
@@ -58,6 +58,10 @@ When using a configuration file, the file can be reread at runtime via a SIGHUP
 signal to
 .Nm .
 .Pp
+See the section
+.Sx CONFIGURATION
+for a list of all configurable options.
+.Ss Command Line Flags
 .Nm
 supports the following command line options, which are backwards compatible
 with
@@ -72,23 +76,38 @@ instead of the default configuration file
 .Pa ~/.oxbar.conf .
 .It Fl x Ar xloc
 Sets the x coordinate, in pixels, of the upper-left corner of the window.
+.Pp
+Corresponding configuration option:
+.Em window.x .
 .It Fl y Ar yloc
 Sets the y coordinate, in pixels, of the upper-left corner of the window.
 If set to -1, the window will be aligned to the bottom of the display minus
 whatever the height of the window is determined to be.
+.Pp
+Corresponding configuration option:
+.Em window.y .
 .It Fl w Ar width
 Sets the width, in pixels, of the window.
 If set to -1, the window will span the full width of the X display.
+.Pp
+Corresponding configuration option:
+.Em window.w .
 .It Fl h Ar height
 Sets the height, in pixels, of the window.
 If set to -1, the window's height will be derived from the font description
 used and any margins/paddings specified.
+.Pp
+Corresponding configuration option:
+.Em window.h .
 .It Fl f Ar font
 A string specifying the font, and its styling, used throughout the display of
 .Nm .
 This supports a very flexible format as it's parsed by
 .Xr pango_font_description_from_string 3 .
 See the section XXX below for details and samples.  \" TODO add section on font
+.Pp
+Corresponding configuration option:
+.Em font.desc .
 .It Fl m Ar margins
 Sets the margins, in pixels, surrounding each widget shown in
 .Nm .
@@ -100,7 +119,7 @@ The margins can be specified for the
 and
 .Em left
 regions around a widget, in that order, by providing a quoted string with four
-integer.
+unsigned integers.
 E.g.
 .Fl m Dq 10 20 10 20
 would set the top and bottom margins to 10 pixels, and the right and left
@@ -109,6 +128,9 @@ Providing a single number, such as
 .Fl m Ar 10
 will set all components to 10 pixels.
 This follows CSS style conventions.
+.Pp
+Corresponding configuration option:
+.Em gui.margin .
 .It Fl p Ar paddings
 Sets the paddings, in pixels, within each widget shown in
 .Nm .
@@ -116,8 +138,14 @@ The paddings are the same for every widget, and can be specified using the
 same format as the
 .Fl m Ar margins
 option (above).
+.Pp
+Corresponding configuration option:
+.Em gui.padding .
 .It Fl s Ar spacing
 Sets the spacing, in pixels, between each widget in the display.
+.Pp
+Corresponding configuration option:
+.Em gui.widget_spacing .
 .It Fl c Ar header-style
 .Nm
 can show colored
@@ -142,16 +170,25 @@ Render header bars in the
 .Em bottom
 padding region of each widget.
 .El
+.Pp
+Corresponding configuration option:
+.Em gui.header_style .
 .It Fl t Ar time-format
 Sets the format used by the
 .Em time
 widget when rendering the date/time.
 This is any string accepted by
 .Xr strftime 3 .
+.Pp
+Corresponding configuration option:
+.Em time.format .
 .It Fl W Ar widgets
 A string specifying the list of widgets to be rendered by
 .Nm .
 See the section XXX on the format of this string. \" TODO section on this
+.Pp
+Corresponding configuration option:
+.Em widgets .
 .It Fl S Dq key=value
 Set any configuration option
 .Em key
@@ -168,55 +205,227 @@ configuration file.
 This option is useful for testing changes/tweaks to
 .Nm .
 See the section XXX for a list of all such options. \" TODO section on this
+.It Ar theme
+An optional theme name to load from the configuration file.
+If no configuration file is found (either specified via
+.Fl F Ar config-file
+or using the default
+.Pa $HOME/.oxbar.conf )
+an error is returned.
+When a theme is specified, any lines in the configuration file after a line
+like
+.Cm [theme]
+will be loaded.
+Note theme sections end whenever a new theme is defined.
+See the
+.Sx FILES
+section for more details.
 .El
 .Sh ENVIRONMENT
-The only environment variable
+.Bl -tag -width HOME
+.It Ev HOME
+The user's home directory, which
 .Nm
-uses is
-.Ev HOME ,
-to determine the default configuration file to load.
-If no
+will use to construct the name of the default configuration file to load if no
 .Fl F Ar config-file
-command-line parameter is set,
+command-line parameter is set.
+In that case,
+.Nm
+will always attempt to load
+.Pa $HOME/.oxbar.conf .
+.El
+.Sh FILES
+.Nm
+can optionally use a configuration file, whose format is described next.
+This file can be explicitly set on the command line using
+.Fl F Ar config-file .
+If that option is not present,
 .Nm
 will always attempt to load
 .Pa $HOME/.oxbar.conf .
 If
-.Ev HOME
+.Ev $HOME
 is not set,
-.Nm
-will use
 .Xr getpwuid 3
-to try and determine the caller's home directory.
-.Sh FILES
-.\" TODO document config file
+is used to try and determine the caller's home directory.
+.Pp
+When using a configuration file, the file can be re-loaded and processed at
+runtime by sending a
+.Em SIGHUP
+signal to
+.Nm .
+.Ss Configuration File Format
+The config file format.
+.Ss Using Themes
+The config file format.
+.Sh CONFIGURATION
+This is a complete list of all configurable options supported by
+.Nm .
+They can be set:
+.Bl -bullet -compact
+.It
+At the command line with
+.Fl S Ar key=value ,
+where
+.Em key
+is the option listed below (on the left) and
+.Em value
+is the value you which to set it to, or
+.It
+In the configuration file with a line like
+.Em key = value .
+See the section
+.Sx FILES
+for more details on that format.
+.El
+.Ss Font Properties
+.Bl -tag -compact -width font.fgcolor
+.It font.desc
+Set's the font and styles to be used throughout the display.
+.It font.fgcolor
+Set's the default foreground color for all text in the display.
+.El
+.Ss Window Properties
+.Bl -tag -compact -width window.bgcolor
+.It window.x
+.It window.y
+.It window.w
+.It window.h
+.It window.wname
+.It window.bgcolor
+.El
+.Ss GUI Properties
+.Bl -tag -compact -width gui.widget_spacing
+.It widgets
+.It gui.margin
+.It gui.padding
+.It gui.header_style
+.It gui.widget_bgcolor
+.It gui.widget_spacing
+.El
+.Ss Battery Widget
+.Bl -tag -compact -width battery.chart_bgcolor
+.It battery.hdcolor
+.It battery.bgcolor
+.It battery.fgcolor
+.It battery.fgcolor_unplugged
+.It battery.chart_width
+.It battery.chart_bgcolor
+.It battery.chart_pgcolor
+.El
+.Ss CPUs Widget
+.Bl -tag -compact -width gui.widget_spacing
+.It cpus.hdcolor
+.It cpus.bgcolor
+.It cpus.fgcolor
+.It cpus.chart_bgcolor
+.It cpus.chart_color_system
+.It cpus.chart_color_interrupt
+.It cpus.chart_color_user
+.It cpus.chart_color_nice
+.It cpus.chart_color_spin
+.It cpus.chart_color_idle
+.El
+.Ss Memory Widget
+.Bl -tag -compact -width gui.widget_spacing
+.It memory.hdcolor
+.It memory.bgcolor
+.It memory.fgcolor
+.It memory.chart_bgcolor
+.It memory.chart_color_free
+.It memory.chart_color_total
+.It memory.chart_color_active
+.El
+.Ss Number Processes Widget
+.Bl -tag -compact -width gui.widget_spacing
+.It nprocs.hdcolor
+.It nprocs.bgcolor
+.It nprocs.fgcolor
+.El
+.Ss Network Widget
+.Bl -tag -compact -width gui.widget_spacing
+.It net.hdcolor
+.It net.bgcolor
+.It net.fgcolor
+.It net.inbound_chart_color_bgcolor
+.It net.inbound_chart_color_pgcolor
+.It net.inbound_text_fgcolor
+.It net.outbound_chart_color_bgcolor
+.It net.outbound_chart_color_pgcolor
+.It net.outbound_text_fgcolor
+.El
+.Ss Time Widget
+.Bl -tag -compact -width gui.widget_spacing
+.It time.hdcolor
+.It time.bgcolor
+.It time.fgcolor
+.It time.format
+.El
+.Ss Volume Widget
+.Bl -tag -compact -width gui.widget_spacing
+.It volume.hdcolor
+.It volume.bgcolor
+.It volume.fgcolor
+.It volume.chart_width
+.It volume.chart_bgcolor
+.It volume.chart_pgcolor
+.El
+.Sh SPECIFYING FONTS
+.\" TODO specify font and give examples
+.Sh SPECIFYING COLORS
+.\" TODO specify font and give examples
+.Sh SPECIFYING WIDGETS
+.\" TODO specify font and give examples
+.Sh SEE ALSO
+.Bl -tag -width HOME
+.It Lk https://xcb.freedesktop.org
+XCB is a MIT licensed X rendering library used by
+.Nm
+to connect to an X display, render the window, and handle events.
+.It Lk https://www.pango.org
+Pango is a LGPL licensed text layout / font rendering engine used by
+.Nm
+to load, render, and style fonts.
+Pango supports most modern fonts and font features.
+.It Lk https://cairographics.org
+Cairo is a LGPL licensed vector graphics rendering library used by
+.Nm
+for all graphics rendering.
+.El
 .Sh STANDARDS
 .Nm
-is written on
-.Ox
-and for
+is written natively on
 .Ox .
-It adheres to a strict C89 standard on the base llvm compiler in OpenBSD.
-It should always compile with
-.Dq -std=c89 -Wall -Wextra -Werror
-and produce no errors or warnings by
-.Xr scan-build 1
-or
-.Xr cppcheck 1
-(run via
-.Ic make scan-build
+It adheres to a strict C89 standard on the base
+.Xr clang 1
+compiler, and builds/runs cleanly with
+.Dq -std=c89 -Wall -Wextra -Werror .
+Additionally, the
+.Xr make 1
+targets
+.Cm scan-build
 and
-.Ic make cppcheck ,
-respectively).
+.Cm cppcheck
+run those tools, respecitively, and should remain error/warning-free.
+.Pp
+.Xr style 9
+is mostly followed, but there's still work there to be done.
+.Pp
+If interested in contributing, see the following guidelines for tips on
+navigating the code base and getting started adding stats, widgets, etc:
+.Bd -centered
+.Lk https://github.com/ryanflannery/oxbar/CONTRIBUTING.md
+.Ed
 .Sh HISTORY
 .Nm
 started as xstatbar, first written in 2006 as a status-bar that would work
-reasonably well for OpenBSD.
+reasonably well for
+.Ox .
 It was written on a Friday and Saturday evening and had many, many
-bugs/shortcomings.
+bugs/shortcomings/etc.
 It was further hacked over a few years to support a handful of new features and
 widgets, but the term
-.Dq hack
+.Dq hacked
 there undervalues the level of code shit-hattery done to
 .Dq Make-It-Work! .
 I have personally received much derision because of that, and
@@ -227,10 +436,10 @@ Shaming works 'yo.
 .Sh AUTHORS
 .Nm
 is written and maintained by
-.An Ryan Flannery Aq Mt ryan.flannery@gmail.com .
-See also
+.An Ryan Flannery Aq Mt ryan.flannery@gmail.com
+or
 .Lk https://ryanflannery.net .
 .Pp
-The github repository is the main place for submitting
+The github repo is the place to submit
 bugs/changes/threats, and is located at:
 .Lk https://github.com/ryanflannery/oxbar
