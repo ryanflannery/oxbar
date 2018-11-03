@@ -467,6 +467,7 @@ See the section
 .Sx FILES
 for more details on that format.
 .El
+.\" --- Useful Terminology ----------------------------------------------------
 .Ss Useful Terminology
 Many of the configurable properties have common suffixes, and knowing what
 they mean can help to understand their use.
@@ -484,7 +485,13 @@ These properties allow you to color each widget's bar seperately.
 The color of a progress indicator, typically a progress bar (like those used
 for the battery and volume widgets).
 .El
+.Pp
+What follows is the list of all configurable properites in
+.Nm .
+.\" --- Font Properties -------------------------------------------------------
 .Ss Font Properties
+These control core font used throughout the display and what the default color
+of all text is.
 .Bl -tag -width font.fgcolor
 .It font.desc
 Set's the font and styles to be used throughout the display.
@@ -499,7 +506,9 @@ below).
 Default value:
 .Dq #93a1a1
 .El
+.\" --- Window Properties -----------------------------------------------------
 .Ss Window Properties
+These control with window placement, dimensions, color, and window-manager name.
 .Bl -tag -compact -width window.bgcolor
 .It window.x
 .It window.y
@@ -508,7 +517,15 @@ Default value:
 .It window.wname
 .It window.bgcolor
 .El
+.\" --- GUI Properties --------------------------------------------------------
 .Ss GUI Properties
+The
+.Dq GUI
+of
+.Nm
+is just an orchestrator of widgets, in that it only controls where/how they
+are rendered.
+These properites are specific to that, spanning all widgets and the display.
 .Bl -tag -compact -width gui.widget_spacing
 .It widgets
 .It gui.margin
@@ -517,7 +534,10 @@ Default value:
 .It gui.widget_bgcolor
 .It gui.widget_spacing
 .El
+.\" --- Battery Widget --------------------------------------------------------
 .Ss Battery Widget
+These properties configure the battery widget, showing charging & capactiy
+status.
 .Bl -tag -compact -width battery.chart_bgcolor
 .It battery.hdcolor
 .It battery.bgcolor
@@ -527,7 +547,10 @@ Default value:
 .It battery.chart_bgcolor
 .It battery.chart_pgcolor
 .El
+.\" --- CPUs Widget -----------------------------------------------------------
 .Ss CPUs Widget
+These properties configure the CPU widget, showing a breakdown of CPU usage by
+core.
 .Bl -tag -compact -width gui.widget_spacing
 .It cpus.hdcolor
 .It cpus.bgcolor
@@ -540,7 +563,10 @@ Default value:
 .It cpus.chart_color_spin
 .It cpus.chart_color_idle
 .El
+.\" --- Memory Widget ---------------------------------------------------------
 .Ss Memory Widget
+These properties configure the memory widget, showing a breakdown of memory
+usage.
 .Bl -tag -compact -width gui.widget_spacing
 .It memory.hdcolor
 .It memory.bgcolor
@@ -550,13 +576,18 @@ Default value:
 .It memory.chart_color_total
 .It memory.chart_color_active
 .El
+.\" --- NProcs Widget ---------------------------------------------------------
 .Ss Number Processes Widget
+These properties configure the nprocs widget, showing the number of processes.
 .Bl -tag -compact -width gui.widget_spacing
 .It nprocs.hdcolor
 .It nprocs.bgcolor
 .It nprocs.fgcolor
 .El
+.\" --- Network Widget --------------------------------------------------------
 .Ss Network Widget
+These properties configure the network widget, showing the bytes in/out on the
+egress interface.
 .Bl -tag -compact -width gui.widget_spacing
 .It net.hdcolor
 .It net.bgcolor
@@ -568,14 +599,18 @@ Default value:
 .It net.outbound_chart_color_pgcolor
 .It net.outbound_text_fgcolor
 .El
+.\" --- Time Widget -----------------------------------------------------------
 .Ss Time Widget
+These properties configure the time widget, showing the date/time.
 .Bl -tag -compact -width gui.widget_spacing
 .It time.hdcolor
 .It time.bgcolor
 .It time.fgcolor
 .It time.format
 .El
+.\" --- Volume Widget ---------------------------------------------------------
 .Ss Volume Widget
+These properties configure the volume widget, showing the current volume levels.
 .Bl -tag -compact -width gui.widget_spacing
 .It volume.hdcolor
 .It volume.bgcolor

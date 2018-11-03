@@ -490,8 +490,13 @@ Many of the configurable properties have common suffixes, and knowing what they
   <dd>The color of a progress indicator, typically a progress bar (like those
       used for the battery and volume widgets).</dd>
 </dl>
+<div class="Pp"></div>
+What follows is the list of all configurable properites in
+  <code class="Nm" title="Nm">oxbar</code>.
 <h2 class="Ss" title="Ss" id="Font_Properties"><a class="permalink" href="#Font_Properties">Font
   Properties</a></h2>
+These control core font used throughout the display and what the default color
+  of all text is.
 <dl class="Bl-tag">
   <dt>font.desc</dt>
   <dd>Set's the font and styles to be used throughout the display.
@@ -506,6 +511,7 @@ Many of the configurable properties have common suffixes, and knowing what they
 </dl>
 <h2 class="Ss" title="Ss" id="Window_Properties"><a class="permalink" href="#Window_Properties">Window
   Properties</a></h2>
+These control with window placement, dimensions, color, and window-manager name.
 <dl class="Bl-tag Bl-compact">
   <dt>window.x</dt>
   <dd style="width: auto;">&#x00A0;</dd>
@@ -522,6 +528,9 @@ Many of the configurable properties have common suffixes, and knowing what they
 </dl>
 <h2 class="Ss" title="Ss" id="GUI_Properties"><a class="permalink" href="#GUI_Properties">GUI
   Properties</a></h2>
+The &#x201C;GUI&#x201D; of <code class="Nm" title="Nm">oxbar</code> is just an
+  orchestrator of widgets, in that it only controls where/how they are rendered.
+  These properites are specific to that, spanning all widgets and the display.
 <dl class="Bl-tag Bl-compact">
   <dt>widgets</dt>
   <dd style="width: auto;">&#x00A0;</dd>
@@ -538,6 +547,8 @@ Many of the configurable properties have common suffixes, and knowing what they
 </dl>
 <h2 class="Ss" title="Ss" id="Battery_Widget"><a class="permalink" href="#Battery_Widget">Battery
   Widget</a></h2>
+These properties configure the battery widget, showing charging &amp; capactiy
+  status.
 <dl class="Bl-tag Bl-compact">
   <dt>battery.hdcolor</dt>
   <dd style="width: auto;">&#x00A0;</dd>
@@ -556,6 +567,8 @@ Many of the configurable properties have common suffixes, and knowing what they
 </dl>
 <h2 class="Ss" title="Ss" id="CPUs_Widget"><a class="permalink" href="#CPUs_Widget">CPUs
   Widget</a></h2>
+These properties configure the CPU widget, showing a breakdown of CPU usage by
+  core.
 <dl class="Bl-tag Bl-compact">
   <dt>cpus.hdcolor</dt>
   <dd style="width: auto;">&#x00A0;</dd>
@@ -580,6 +593,8 @@ Many of the configurable properties have common suffixes, and knowing what they
 </dl>
 <h2 class="Ss" title="Ss" id="Memory_Widget"><a class="permalink" href="#Memory_Widget">Memory
   Widget</a></h2>
+These properties configure the memory widget, showing a breakdown of memory
+  usage.
 <dl class="Bl-tag Bl-compact">
   <dt>memory.hdcolor</dt>
   <dd style="width: auto;">&#x00A0;</dd>
@@ -598,6 +613,7 @@ Many of the configurable properties have common suffixes, and knowing what they
 </dl>
 <h2 class="Ss" title="Ss" id="Number_Processes_Widget"><a class="permalink" href="#Number_Processes_Widget">Number
   Processes Widget</a></h2>
+These properties configure the nprocs widget, showing the number of processes.
 <dl class="Bl-tag Bl-compact">
   <dt>nprocs.hdcolor</dt>
   <dd style="width: auto;">&#x00A0;</dd>
@@ -608,6 +624,8 @@ Many of the configurable properties have common suffixes, and knowing what they
 </dl>
 <h2 class="Ss" title="Ss" id="Network_Widget"><a class="permalink" href="#Network_Widget">Network
   Widget</a></h2>
+These properties configure the network widget, showing the bytes in/out on the
+  egress interface.
 <dl class="Bl-tag Bl-compact">
   <dt>net.hdcolor</dt>
   <dd style="width: auto;">&#x00A0;</dd>
@@ -630,6 +648,7 @@ Many of the configurable properties have common suffixes, and knowing what they
 </dl>
 <h2 class="Ss" title="Ss" id="Time_Widget"><a class="permalink" href="#Time_Widget">Time
   Widget</a></h2>
+These properties configure the time widget, showing the date/time.
 <dl class="Bl-tag Bl-compact">
   <dt>time.hdcolor</dt>
   <dd style="width: auto;">&#x00A0;</dd>
@@ -642,6 +661,7 @@ Many of the configurable properties have common suffixes, and knowing what they
 </dl>
 <h2 class="Ss" title="Ss" id="Volume_Widget"><a class="permalink" href="#Volume_Widget">Volume
   Widget</a></h2>
+These properties configure the volume widget, showing the current volume levels.
 <dl class="Bl-tag Bl-compact">
   <dt>volume.hdcolor</dt>
   <dd style="width: auto;">&#x00A0;</dd>
