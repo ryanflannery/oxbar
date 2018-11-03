@@ -27,6 +27,7 @@
 .Op Fl S Ar key=value
 .Op Ar theme
 .Ek
+.\" === DESCRIPTION ===========================================================
 .Sh DESCRIPTION
 .Nm
 is a X11 status bar for
@@ -35,79 +36,104 @@ showing various system stats.
 .Nm
 aims to have a configurable display and work out-of-the-box on most modern
 window managers in an intuitive fashion.
-It supports full FreeType
-.Xr Xft 3
-font rendering and styling (easily), true transparency/alpha blending on all
-UI components, and a simple configuration format that can concisely support
-multiple themes.
+It supports full FreeType font rendering and styling (easily), true
+transparency/alpha blending on all UI components, and a simple configuration
+format that can concisely support multiple themes.
 .Pp
 .Nm
 is also a replacement for my old
 .Xr xstatbar 1 ,
 and it started as a derivative of that.
-.Ss Configuring oxbar
-All configuration options to
+.\" --- Overview of Configuring oxbar -----------------------------------------
+.Ss Overview of Configuring Nm
+All configurable properties in
 .Nm
-can be configured via the command line or a configuration file.
+can be set via the command line or a configuration file.
 The default configuration file is
 .Pa $HOME/.oxbar.conf
 but that can be overridden with the
 .Fl F Ar config-file
 command line option.
-When using a configuration file, the file can be reread at runtime via a SIGHUP
+When using a configuration file, the file can be reread at runtime by sending
+a
+.Em SIGHUP
 signal to
 .Nm .
 .Pp
+The configuration file can have any number of named subsections called
+.Dq themes
+that can be loaded on the command line with the
+.Ar theme
+parameter.
+See the section
+.Sx FILES
+below for details on the configuration file format and how to use themes.
+.Pp
+Setting configurable properties is always of the form
+.Ar property=value ,
+either from the command line or configuration file.
+Many properties have intuitive shortcuts on the command line.
 See the section
 .Sx CONFIGURATION
-for a list of all configurable options.
+for a list of all configurable properties.
+.\" --- Command Line Flags ----------------------------------------------------
 .Ss Command Line Flags
 .Nm
-supports the following command line options, which are backwards compatible
+supports the following command line flags, which are backwards compatible
 with
 .Xr xstatar 1 :
 .Bl -tag -width Fl
+.\" option: -H
 .It Fl H
 Print brief help information regarding the supported command line flags.
+.\" option: -F
 .It Fl F Ar config-file
 Load
 .Pa config-file
 instead of the default configuration file
-.Pa ~/.oxbar.conf .
+.Pa $HOME/.oxbar.conf .
+.\" option: -x
 .It Fl x Ar xloc
 Sets the x coordinate, in pixels, of the upper-left corner of the window.
 .Pp
-Corresponding configuration option:
+Corresponding configurable property:
 .Em window.x .
+.\" option: -y
 .It Fl y Ar yloc
 Sets the y coordinate, in pixels, of the upper-left corner of the window.
 If set to -1, the window will be aligned to the bottom of the display minus
 whatever the height of the window is determined to be.
 .Pp
-Corresponding configuration option:
+Corresponding configurable property:
 .Em window.y .
+.\" option: -w
 .It Fl w Ar width
 Sets the width, in pixels, of the window.
 If set to -1, the window will span the full width of the X display.
 .Pp
-Corresponding configuration option:
+Corresponding configurable property:
 .Em window.w .
+.\" option: -h
 .It Fl h Ar height
 Sets the height, in pixels, of the window.
 If set to -1, the window's height will be derived from the font description
 used and any margins/paddings specified.
 .Pp
-Corresponding configuration option:
+Corresponding configurable property:
 .Em window.h .
+.\" option: -f
 .It Fl f Ar font
 A string specifying the font, and its styling, used throughout the display of
 .Nm .
 This supports a very flexible format as it's parsed by
 .Xr pango_font_description_from_string 3 .
-See the section XXX below for details and samples.  \" TODO add section on font
+See the section
+.Sx SPECIFYING FONTS
+below for details on the format and samples.
 .Pp
-Corresponding configuration option:
+Corresponding configurable property:
 .Em font.desc .
+.\" option: -m
 .It Fl m Ar margins
 Sets the margins, in pixels, surrounding each widget shown in
 .Nm .
@@ -129,8 +155,9 @@ Providing a single number, such as
 will set all components to 10 pixels.
 This follows CSS style conventions.
 .Pp
-Corresponding configuration option:
+Corresponding configurable property:
 .Em gui.margin .
+.\" option: -p
 .It Fl p Ar paddings
 Sets the paddings, in pixels, within each widget shown in
 .Nm .
@@ -139,13 +166,15 @@ same format as the
 .Fl m Ar margins
 option (above).
 .Pp
-Corresponding configuration option:
+Corresponding configurable property:
 .Em gui.padding .
+.\" option: -s
 .It Fl s Ar spacing
 Sets the spacing, in pixels, between each widget in the display.
 .Pp
-Corresponding configuration option:
+Corresponding configurable property:
 .Em gui.widget_spacing .
+.\" option: -c
 .It Fl c Ar header-style
 .Nm
 can show colored
@@ -155,7 +184,7 @@ These help quickly find/identify widgets visually.
 The color can be specified per-widget.
 This option instructs if/where to render such headers.
 It accepts the following string options:
-.Bl -tag -width Ds
+.Bl -tag -width below
 .It none
 Do not render any header bars.
 .It above
@@ -171,8 +200,9 @@ Render header bars in the
 padding region of each widget.
 .El
 .Pp
-Corresponding configuration option:
+Corresponding configurable property:
 .Em gui.header_style .
+.\" option: -t
 .It Fl t Ar time-format
 Sets the format used by the
 .Em time
@@ -180,23 +210,28 @@ widget when rendering the date/time.
 This is any string accepted by
 .Xr strftime 3 .
 .Pp
-Corresponding configuration option:
+Corresponding configurable property:
 .Em time.format .
+.\" option: -W
 .It Fl W Ar widgets
 A string specifying the list of widgets to be rendered by
-.Nm .
-See the section XXX on the format of this string. \" TODO section on this
+.Nm
+and where they should appear.
+See the section
+.Sx SPECIFYING WIDGETS
+below on the format of this string.
 .Pp
-Corresponding configuration option:
+Corresponding configurable property:
 .Em widgets .
-.It Fl S Dq key=value
-Set any configuration option
-.Em key
+.\" option: -S
+.It Fl S Dq property=value
+Set any configurable
+.Em property
 to
 .Em value
 in
 .Nm .
-This is a generic way to set any configurable option in
+This is a generic way to set any aspect of
 .Nm
 at the command line.
 Note that all such options could also be set in the
@@ -204,7 +239,21 @@ Note that all such options could also be set in the
 configuration file.
 This option is useful for testing changes/tweaks to
 .Nm .
-See the section XXX for a list of all such options. \" TODO section on this
+See the section
+.Sx CONFIGURATION
+below for a list of all such properties that can be set.
+.Pp
+As an example, the flag
+.Fl S Dq window.x = 100
+would set the x location (in pixels) of the upper-left corner of the display
+to
+.Ar x .
+This would be equivalent to either
+.Fl x Ar 100
+at the command line, or a line like
+.Ar window.x = 100
+in the configuration file.
+.\" option: theme
 .It Ar theme
 An optional theme name to load from the configuration file.
 If no configuration file is found (either specified via
@@ -219,8 +268,9 @@ will be loaded.
 Note theme sections end whenever a new theme is defined.
 See the
 .Sx FILES
-section for more details.
+section for full details.
 .El
+.\" === ENVIRONMENT ===========================================================
 .Sh ENVIRONMENT
 .Bl -tag -width HOME
 .It Ev HOME
@@ -234,56 +284,175 @@ In that case,
 will always attempt to load
 .Pa $HOME/.oxbar.conf .
 .El
+.\" === FILES =================================================================
 .Sh FILES
 .Nm
-can optionally use a configuration file, whose format is described next.
-This file can be explicitly set on the command line using
-.Fl F Ar config-file .
-If that option is not present,
-.Nm
-will always attempt to load
-.Pa $HOME/.oxbar.conf .
-If
-.Ev $HOME
-is not set,
-.Xr getpwuid 3
-is used to try and determine the caller's home directory.
-.Pp
+can optionally use a configuration file, whose format is described here.
 When using a configuration file, the file can be re-loaded and processed at
 runtime by sending a
 .Em SIGHUP
 signal to
 .Nm .
+.\" --- Configuration File Location -------------------------------------------
+.Ss Configuration File Location
+By default
+.Nm
+will attempt to use
+.Pa $HOME/.oxbar.conf
+by using the
+.Ev $HOME
+environment variable.
+If that variable is not set,
+.Xr getpwuid 3
+is used to try and determine the caller's home directory as a replacement for
+.Ev $HOME .
+If both of those fail, no default configuration file is loaded.
+.Pp
+To load a different configuration file on startup, use the
+.Fl F Ar config-file
+command line flag.
+.\" --- Configuration File Format ---------------------------------------------
 .Ss Configuration File Format
-The config file format.
+The bulk of the configuration file contains lines like
+.Bd -literal -offset indent
+property = value
+.Ed
+.Pp
+Most properties have a prefix (or
+.Dq namespace )
+that denote the scope of the property.
+As an example, a line like
+.Bd -literal -offset indent
+window.x = 100
+.Ed
+.Pp
+would set the location of the main window's top-left corner to
+.Em x
+(in pixels).
+And a block like
+.Bd -literal -offset indent
+window.bgcolor = "ff0000"
+time.bgcolor   = "00ff00"
+.Ed
+.Pp
+would set the window's primary background color to red, but the background
+color for the time widget to green (these are using 32-bit hex color codes,
+see the section
+.Sx SPECIFYING COLORS
+for details).
+.Pp
+The configuration file is parsed with
+.Xr fparseln 3 ,
+and thus supports rich spacing and comments.
+Specifically,
+.Bl -bullet
+.It
+Blank lines are ignored
+.It
+Spacing within lines is liberal.
+All of the following are permitted and equivalent:
+.Bd -literal -offset indent
+window.x=100
+window.x    =     100
+      window.x    =     100
+.Ed
+.It
+Lines can be continued with a \\ ending a line, such as:
+.Bd -literal -offset indent
+window.x = \\
+           10
+.Ed
+.It
+Anything after a # is considered a comment.
+.Bd -literal -offset indent
+# this is a comment
+   # so is this
+window.x = 100    # set offset to 100 (this is a comment)
+.Ed
+.El
+.\" --- Using Themes ----------------------------------------------------------
 .Ss Using Themes
-The config file format.
+Themes provide a way to support multiple configurations of
+.Nm
+in a single file and load each optionally at runtime.
+This is useful if you run multiple instances of
+.Nm ,
+say one configuration for the top of your display showing some widgets, and
+another configuration at the bottom of your display showing a different set of
+widgets.
+.Pp
+The following example configuration file is used below to discuss the semantics
+of themes.
+.Bd -literal -offset indent
+# global configuration
+font.desc = "DejaVu Sans Mono 20px"    # needs DejaVu fonts installed
+font.fgcolor = "93a1a1"                # a light grey
+window.x = 0                           # make oxbar align to left-most pixel
+window.w = -1                          # make oxbar use full width of display
+window.h = -1                          # derive height
+
+[top]
+widgets = "< nprocs cpuslong | memory > net"
+window.y = 0                           # show oxbar at the top of the display
+
+[bottom]
+widgets = "< volume | time > battery"
+window.y = -1                          # show oxbar at the bottom of the display
+.Ed
+.Pp
+TODO
+.\" === CONFIGURATION =========================================================
 .Sh CONFIGURATION
-This is a complete list of all configurable options supported by
+This is a complete list of all configurable properties supported by
 .Nm .
 They can be set:
-.Bl -bullet -compact
+.Bl -bullet
 .It
 At the command line with
-.Fl S Ar key=value ,
+.Fl S Ar property=value ,
 where
-.Em key
-is the option listed below (on the left) and
+.Em property
+is one of the properties listed below and
 .Em value
 is the value you which to set it to, or
 .It
 In the configuration file with a line like
-.Em key = value .
+.Em property=value .
 See the section
 .Sx FILES
 for more details on that format.
 .El
+.Ss Useful Terminology
+Many of the configurable properties have common suffixes, and knowing what
+they mean can help to understand their use.
+These suffixes are:
+.Bl -tag -width fgcolor
+.It fgcolor
+A foreground color, typically for text.
+.It bgcolor
+A background color, for the whole window or individual widgets.
+.It hdcolor
+A header color, typically denoting the header of each widget (the horizontal
+bars optionally shown above or below each widget).
+These properties allow you to color each widget's bar seperately.
+.It pgcolor
+The color of a progress indicator, typically a progress bar (like those used
+for the battery and volume widgets).
+.El
 .Ss Font Properties
-.Bl -tag -compact -width font.fgcolor
+.Bl -tag -width font.fgcolor
 .It font.desc
 Set's the font and styles to be used throughout the display.
+.Pp
+Default value:
+.Dq helvetica 16px
 .It font.fgcolor
 Set's the default foreground color for all text in the display.
+Note the foreground color of each widget can be overriden (see other options
+below).
+.Pp
+Default value:
+.Dq #93a1a1
 .El
 .Ss Window Properties
 .Bl -tag -compact -width window.bgcolor
@@ -370,12 +539,16 @@ Set's the default foreground color for all text in the display.
 .It volume.chart_bgcolor
 .It volume.chart_pgcolor
 .El
+.\" === SPECIFYING FONTS ======================================================
 .Sh SPECIFYING FONTS
 .\" TODO specify font and give examples
+.\" === SPECIFYING COLORS =====================================================
 .Sh SPECIFYING COLORS
 .\" TODO specify font and give examples
+.\" === SPECIFYING WIDGETS ====================================================
 .Sh SPECIFYING WIDGETS
 .\" TODO specify font and give examples
+.\" === SEE ALSO ==============================================================
 .Sh SEE ALSO
 .Bl -tag -width HOME
 .It Lk https://xcb.freedesktop.org
@@ -392,6 +565,7 @@ Cairo is a LGPL licensed vector graphics rendering library used by
 .Nm
 for all graphics rendering.
 .El
+.\" === STANDARDS =============================================================
 .Sh STANDARDS
 .Nm
 is written natively on
@@ -411,11 +585,16 @@ run those tools, respecitively, and should remain error/warning-free.
 .Xr style 9
 is mostly followed, but there's still work there to be done.
 .Pp
-If interested in contributing, see the following guidelines for tips on
+If interested in contributing, see the following link for tips on
 navigating the code base and getting started adding stats, widgets, etc:
 .Bd -centered
 .Lk https://github.com/ryanflannery/oxbar/CONTRIBUTING.md
 .Ed
+.Pp
+The github repo is the place to submit
+bugs/changes/threats, and is located at:
+.Lk https://github.com/ryanflannery/oxbar
+.\" === HISTORY ===============================================================
 .Sh HISTORY
 .Nm
 started as xstatbar, first written in 2006 as a status-bar that would work
@@ -433,13 +612,10 @@ I have personally received much derision because of that, and
 is an attempt to eliminate that.
 .Pp
 Shaming works 'yo.
+.\" === AUTHORS ===============================================================
 .Sh AUTHORS
 .Nm
 is written and maintained by
 .An Ryan Flannery Aq Mt ryan.flannery@gmail.com
 or
 .Lk https://ryanflannery.net .
-.Pp
-The github repo is the place to submit
-bugs/changes/threats, and is located at:
-.Lk https://github.com/ryanflannery/oxbar

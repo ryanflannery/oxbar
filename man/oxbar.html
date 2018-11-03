@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   TODO add section on TRANSPARENCY and compton
+   TODO add section on setting the font
+   TODO add section on setting the widget list
+   $OpenBSD$
+ -->
+<head>
+  <meta charset="utf-8"/>
+  <style>
+    table.head, table.foot { width: 100%; }
+    td.head-rtitle, td.foot-os { text-align: right; }
+    td.head-vol { text-align: center; }
+    div.Pp { margin: 1ex 0ex; }
+    div.Nd, div.Bf, div.Op { display: inline; }
+    span.Pa, span.Ad { font-style: italic; }
+    span.Ms { font-weight: bold; }
+    dl.Bl-diag > dt { font-weight: bold; }
+    code.Nm, code.Fl, code.Cm, code.Ic, code.In, code.Fd, code.Fn,
+    code.Cd { font-weight: bold; font-family: inherit; }
+  </style>
+  <title>OXBAR(1)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">OXBAR(1)</td>
+    <td class="head-vol">General Commands Manual</td>
+    <td class="head-rtitle">OXBAR(1)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<h1 class="Sh" title="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm" title="Nm">oxbar</code> &#x2014;
+<div class="Nd" title="Nd">configurable X11 status bar for OpenBSD</div>
+<h1 class="Sh" title="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm" title="Nm">oxbar</code></td>
+    <td>[<div class="Op"><code class="Fl" title="Fl">-H</code></div>]
+      [<div class="Op"><code class="Fl" title="Fl">-F</code>&#x00A0;<var class="Ar" title="Ar">config-file</var></div>]
+      [<div class="Op"><code class="Fl" title="Fl">-x</code>&#x00A0;<var class="Ar" title="Ar">xloc</var></div>]
+      [<div class="Op"><code class="Fl" title="Fl">-y</code>&#x00A0;<var class="Ar" title="Ar">yloc</var></div>]
+      [<div class="Op"><code class="Fl" title="Fl">-w</code>&#x00A0;<var class="Ar" title="Ar">width</var></div>]
+      [<div class="Op"><code class="Fl" title="Fl">-h</code>&#x00A0;<var class="Ar" title="Ar">height</var></div>]
+      [<div class="Op"><code class="Fl" title="Fl">-f</code>&#x00A0;<var class="Ar" title="Ar">font</var></div>]
+      [<div class="Op"><code class="Fl" title="Fl">-m</code>&#x00A0;<var class="Ar" title="Ar">margins</var></div>]
+      [<div class="Op"><code class="Fl" title="Fl">-p</code>&#x00A0;<var class="Ar" title="Ar">paddings</var></div>]
+      [<div class="Op"><code class="Fl" title="Fl">-s</code>&#x00A0;<var class="Ar" title="Ar">spacing</var></div>]
+      [<div class="Op"><code class="Fl" title="Fl">-c</code>&#x00A0;<var class="Ar" title="Ar">header-style</var></div>]
+      [<div class="Op"><code class="Fl" title="Fl">-t</code>&#x00A0;<var class="Ar" title="Ar">time-format</var></div>]
+      [<div class="Op"><code class="Fl" title="Fl">-W</code>&#x00A0;<var class="Ar" title="Ar">widgets</var></div>]
+      [<div class="Op"><code class="Fl" title="Fl">-S</code>&#x00A0;<var class="Ar" title="Ar">key=value</var></div>]
+      [<div class="Op"><var class="Ar" title="Ar">theme</var></div>]</td>
+  </tr>
+</table>
+<h1 class="Sh">TABLE OF CONTENTS</h1>
+<ul class="Bl-compact">
+  <li><a href="#DESCRIPTION">DESCRIPTION
+    <ul class="Bl-compact">
+      <li><a href="#Command_Line_Flags">Command Line Flags</a></li>
+    </ul>
+    </a></li>
+  <li><a href="#ENVIRONMENT">ENVIRONMENT</a></li>
+  <li><a href="#FILES">FILES
+    <ul class="Bl-compact">
+      <li><a href="#Configuration_File_Location">Configuration File
+        Location</a></li>
+      <li><a href="#Configuration_File_Format">Configuration File
+        Format</a></li>
+      <li><a href="#Using_Themes">Using Themes</a></li>
+    </ul>
+    </a></li>
+  <li><a href="#CONFIGURATION">CONFIGURATION
+    <ul class="Bl-compact">
+      <li><a href="#Useful_Terminology">Useful Terminology</a></li>
+      <li><a href="#Font_Properties">Font Properties</a></li>
+      <li><a href="#Window_Properties">Window Properties</a></li>
+      <li><a href="#GUI_Properties">GUI Properties</a></li>
+      <li><a href="#Battery_Widget">Battery Widget</a></li>
+      <li><a href="#CPUs_Widget">CPUs Widget</a></li>
+      <li><a href="#Memory_Widget">Memory Widget</a></li>
+      <li><a href="#Number_Processes_Widget">Number Processes Widget</a></li>
+      <li><a href="#Network_Widget">Network Widget</a></li>
+      <li><a href="#Time_Widget">Time Widget</a></li>
+      <li><a href="#Volume_Widget">Volume Widget</a></li>
+    </ul>
+    </a></li>
+  <li><a href="#SPECIFYING_FONTS">SPECIFYING FONTS</a></li>
+  <li><a href="#SPECIFYING_COLORS">SPECIFYING COLORS</a></li>
+  <li><a href="#SPECIFYING_WIDGETS">SPECIFYING WIDGETS</a></li>
+  <li><a href="#SEE_ALSO">SEE ALSO</a></li>
+  <li><a href="#STANDARDS">STANDARDS</a></li>
+  <li><a href="#HISTORY">HISTORY</a></li>
+  <li><a href="#AUTHORS">AUTHORS</a></li>
+</ul>
+<h1 class="Sh" title="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm" title="Nm">oxbar</code> is a X11 status bar for
+  <span class="Ux">OpenBSD</span> showing various system stats.
+  <code class="Nm" title="Nm">oxbar</code> aims to have a configurable display
+  and work out-of-the-box on most modern window managers in an intuitive
+  fashion. It supports full FreeType font rendering and styling (easily), true
+  transparency/alpha blending on all UI components, and a simple configuration
+  format that can concisely support multiple themes.
+<div class="Pp"></div>
+<code class="Nm" title="Nm">oxbar</code> is also a replacement for my old
+  <a class="Xr" title="Xr">xstatbar(1)</a>, and it started as a derivative of
+  that.
+<h2 class="Ss" title="Ss">Overview of Configuring
+  <code class="Nm" title="Nm">oxbar</code></h2>
+All configurable properties in <code class="Nm" title="Nm">oxbar</code> can be
+  set via the command line or a configuration file. The default configuration
+  file is <span class="Pa" title="Pa">$HOME/.oxbar.conf</span> but that can be
+  overridden with the <code class="Fl" title="Fl">-F</code>
+  <var class="Ar" title="Ar">config-file</var> command line option. When using a
+  configuration file, the file can be reread at runtime by sending a
+  <i class="Em" title="Em">SIGHUP</i> signal to
+  <code class="Nm" title="Nm">oxbar</code>.
+<div class="Pp"></div>
+The configuration file can have any number of named subsections called
+  &#x201C;themes&#x201D; that can be loaded on the command line with the
+  <var class="Ar" title="Ar">theme</var> parameter. See the section
+  <a class="Sx" title="Sx" href="#FILES">FILES</a> below for details on the
+  configuration file format and how to use themes.
+<div class="Pp"></div>
+Setting configurable properties is always of the form
+  <var class="Ar" title="Ar">property=value</var>, either from the command line
+  or configuration file. Many properties have intuitive shortcuts on the command
+  line. See the section
+  <a class="Sx" title="Sx" href="#CONFIGURATION">CONFIGURATION</a> for a list of
+  all configurable properties.
+<h2 class="Ss" title="Ss" id="Command_Line_Flags"><a class="permalink" href="#Command_Line_Flags">Command
+  Line Flags</a></h2>
+<code class="Nm" title="Nm">oxbar</code> supports the following command line
+  flags, which are backwards compatible with
+  <a class="Xr" title="Xr">xstatar(1)</a>:
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#H"><code class="Fl" title="Fl" id="H">-H</code></a></dt>
+  <dd>Print brief help information regarding the supported command line
+    flags.</dd>
+  <dt><a class="permalink" href="#F"><code class="Fl" title="Fl" id="F">-F</code></a>
+    <var class="Ar" title="Ar">config-file</var></dt>
+  <dd>Load <span class="Pa" title="Pa">config-file</span> instead of the default
+      configuration file
+    <span class="Pa" title="Pa">$HOME/.oxbar.conf</span>.</dd>
+  <dt><a class="permalink" href="#x"><code class="Fl" title="Fl" id="x">-x</code></a>
+    <var class="Ar" title="Ar">xloc</var></dt>
+  <dd>Sets the x coordinate, in pixels, of the upper-left corner of the window.
+    <div class="Pp"></div>
+    Corresponding configurable property:
+    <i class="Em" title="Em">window.x</i>.</dd>
+  <dt><a class="permalink" href="#y"><code class="Fl" title="Fl" id="y">-y</code></a>
+    <var class="Ar" title="Ar">yloc</var></dt>
+  <dd>Sets the y coordinate, in pixels, of the upper-left corner of the window.
+      If set to -1, the window will be aligned to the bottom of the display
+      minus whatever the height of the window is determined to be.
+    <div class="Pp"></div>
+    Corresponding configurable property:
+    <i class="Em" title="Em">window.y</i>.</dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" title="Fl" id="w">-w</code></a>
+    <var class="Ar" title="Ar">width</var></dt>
+  <dd>Sets the width, in pixels, of the window. If set to -1, the window will
+      span the full width of the X display.
+    <div class="Pp"></div>
+    Corresponding configurable property:
+    <i class="Em" title="Em">window.w</i>.</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" title="Fl" id="h">-h</code></a>
+    <var class="Ar" title="Ar">height</var></dt>
+  <dd>Sets the height, in pixels, of the window. If set to -1, the window's
+      height will be derived from the font description used and any
+      margins/paddings specified.
+    <div class="Pp"></div>
+    Corresponding configurable property:
+    <i class="Em" title="Em">window.h</i>.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" title="Fl" id="f">-f</code></a>
+    <var class="Ar" title="Ar">font</var></dt>
+  <dd>A string specifying the font, and its styling, used throughout the display
+      of <code class="Nm" title="Nm">oxbar</code>. This supports a very flexible
+      format as it's parsed by
+      <a class="Xr" title="Xr">pango_font_description_from_string(3)</a>. See
+      the section <a class="Sx" title="Sx" href="#SPECIFYING_FONTS">SPECIFYING
+      FONTS</a> below for details on the format and samples.
+    <div class="Pp"></div>
+    Corresponding configurable property:
+    <i class="Em" title="Em">font.desc</i>.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" title="Fl" id="m">-m</code></a>
+    <var class="Ar" title="Ar">margins</var></dt>
+  <dd>Sets the margins, in pixels, surrounding each widget shown in
+      <code class="Nm" title="Nm">oxbar</code>. The margins are the same for
+      every widget. The margins can be specified for the
+      <i class="Em" title="Em">top</i>, <i class="Em" title="Em">right</i>,
+      <i class="Em" title="Em">bottom</i>, and <i class="Em" title="Em">left</i>
+      regions around a widget, in that order, by providing a quoted string with
+      four unsigned integers. E.g. <code class="Fl" title="Fl">-m</code>
+      &#x201C;10 20 10 20&#x201D; would set the top and bottom margins to 10
+      pixels, and the right and left margins to 20 pixels. Providing a single
+      number, such as <code class="Fl" title="Fl">-m</code>
+      <var class="Ar" title="Ar">10</var> will set all components to 10 pixels.
+      This follows CSS style conventions.
+    <div class="Pp"></div>
+    Corresponding configurable property:
+      <i class="Em" title="Em">gui.margin</i>.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" title="Fl" id="p">-p</code></a>
+    <var class="Ar" title="Ar">paddings</var></dt>
+  <dd>Sets the paddings, in pixels, within each widget shown in
+      <code class="Nm" title="Nm">oxbar</code>. The paddings are the same for
+      every widget, and can be specified using the same format as the
+      <code class="Fl" title="Fl">-m</code>
+      <var class="Ar" title="Ar">margins</var> option (above).
+    <div class="Pp"></div>
+    Corresponding configurable property:
+      <i class="Em" title="Em">gui.padding</i>.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" title="Fl" id="s">-s</code></a>
+    <var class="Ar" title="Ar">spacing</var></dt>
+  <dd>Sets the spacing, in pixels, between each widget in the display.
+    <div class="Pp"></div>
+    Corresponding configurable property:
+      <i class="Em" title="Em">gui.widget_spacing</i>.</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" title="Fl" id="c">-c</code></a>
+    <var class="Ar" title="Ar">header-style</var></dt>
+  <dd><code class="Nm" title="Nm">oxbar</code> can show colored
+      &#x201C;headers&#x201D; above/below each widget, within the padding region
+      of each widget. These help quickly find/identify widgets visually. The
+      color can be specified per-widget. This option instructs if/where to
+      render such headers. It accepts the following string options:
+    <dl class="Bl-tag">
+      <dt>none</dt>
+      <dd>Do not render any header bars.</dd>
+      <dt>above</dt>
+      <dd>Render header bars in the <i class="Em" title="Em">top</i> padding
+          region of each widget (they will be as wide as the
+          <i class="Em" title="Em">top</i> padding of each widget).</dd>
+      <dt>below</dt>
+      <dd>Render header bars in the <i class="Em" title="Em">bottom</i> padding
+          region of each widget.</dd>
+    </dl>
+    <div class="Pp"></div>
+    Corresponding configurable property:
+      <i class="Em" title="Em">gui.header_style</i>.</dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" title="Fl" id="t">-t</code></a>
+    <var class="Ar" title="Ar">time-format</var></dt>
+  <dd>Sets the format used by the <i class="Em" title="Em">time</i> widget when
+      rendering the date/time. This is any string accepted by
+      <a class="Xr" title="Xr">strftime(3)</a>.
+    <div class="Pp"></div>
+    Corresponding configurable property:
+      <i class="Em" title="Em">time.format</i>.</dd>
+  <dt><a class="permalink" href="#W"><code class="Fl" title="Fl" id="W">-W</code></a>
+    <var class="Ar" title="Ar">widgets</var></dt>
+  <dd>A string specifying the list of widgets to be rendered by
+      <code class="Nm" title="Nm">oxbar</code> and where they should appear. See
+      the section <a class="Sx" title="Sx" href="#SPECIFYING_WIDGETS">SPECIFYING
+      WIDGETS</a> below on the format of this string.
+    <div class="Pp"></div>
+    Corresponding configurable property:
+    <i class="Em" title="Em">widgets</i>.</dd>
+  <dt><a class="permalink" href="#S"><code class="Fl" title="Fl" id="S">-S</code></a>
+    &#x201C;property=value&#x201D;</dt>
+  <dd>Set any configurable <i class="Em" title="Em">property</i> to
+      <i class="Em" title="Em">value</i> in
+      <code class="Nm" title="Nm">oxbar</code>. This is a generic way to set any
+      aspect of <code class="Nm" title="Nm">oxbar</code> at the command line.
+      Note that all such options could also be set in the
+      <code class="Nm" title="Nm">oxbar</code> configuration file. This option
+      is useful for testing changes/tweaks to
+      <code class="Nm" title="Nm">oxbar</code>. See the section
+      <a class="Sx" title="Sx" href="#CONFIGURATION">CONFIGURATION</a> below for
+      a list of all such properties that can be set.
+    <div class="Pp"></div>
+    As an example, the flag <code class="Fl" title="Fl">-S</code>
+      &#x201C;window.x = 100&#x201D; would set the x location (in pixels) of the
+      upper-left corner of the display to <var class="Ar" title="Ar">x</var>.
+      This would be equivalent to either <code class="Fl" title="Fl">-x</code>
+      <var class="Ar" title="Ar">100</var> at the command line, or a line like
+      <var class="Ar" title="Ar">window.x = 100</var> in the configuration
+    file.</dd>
+  <dt><var class="Ar" title="Ar">theme</var></dt>
+  <dd>An optional theme name to load from the configuration file. If no
+      configuration file is found (either specified via
+      <code class="Fl" title="Fl">-F</code>
+      <var class="Ar" title="Ar">config-file</var> or using the default
+      <span class="Pa" title="Pa">$HOME/.oxbar.conf</span>) an error is
+      returned. When a theme is specified, any lines in the configuration file
+      after a line like <code class="Cm" title="Cm">[theme]</code> will be
+      loaded. Note theme sections end whenever a new theme is defined. See the
+      <a class="Sx" title="Sx" href="#FILES">FILES</a> section for full
+    details.</dd>
+</dl>
+<h1 class="Sh" title="Sh" id="ENVIRONMENT"><a class="permalink" href="#ENVIRONMENT">ENVIRONMENT</a></h1>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#HOME"><code class="Ev" title="Ev" id="HOME">HOME</code></a></dt>
+  <dd>The user's home directory, which <code class="Nm" title="Nm">oxbar</code>
+      will use to construct the name of the default configuration file to load
+      if no <code class="Fl" title="Fl">-F</code>
+      <var class="Ar" title="Ar">config-file</var> command-line parameter is
+      set. In that case, <code class="Nm" title="Nm">oxbar</code> will always
+      attempt to load <span class="Pa" title="Pa">$HOME/.oxbar.conf</span>.</dd>
+</dl>
+<h1 class="Sh" title="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<code class="Nm" title="Nm">oxbar</code> can optionally use a configuration
+  file, whose format is described here. When using a configuration file, the
+  file can be re-loaded and processed at runtime by sending a
+  <i class="Em" title="Em">SIGHUP</i> signal to
+  <code class="Nm" title="Nm">oxbar</code>.
+<h2 class="Ss" title="Ss" id="Configuration_File_Location"><a class="permalink" href="#Configuration_File_Location">Configuration
+  File Location</a></h2>
+By default <code class="Nm" title="Nm">oxbar</code> will attempt to use
+  <span class="Pa" title="Pa">$HOME/.oxbar.conf</span> by using the
+  <code class="Ev" title="Ev">$HOME</code> environment variable. If that
+  variable is not set, <a class="Xr" title="Xr">getpwuid(3)</a> is used to try
+  and determine the caller's home directory as a replacement for
+  <code class="Ev" title="Ev">$HOME</code>. If both of those fail, no default
+  configuration file is loaded.
+<div class="Pp"></div>
+To load a different configuration file on startup, use the
+  <code class="Fl" title="Fl">-F</code>
+  <var class="Ar" title="Ar">config-file</var> command line flag.
+<h2 class="Ss" title="Ss" id="Configuration_File_Format"><a class="permalink" href="#Configuration_File_Format">Configuration
+  File Format</a></h2>
+The bulk of the configuration file contains lines like
+<div class="Pp"></div>
+<div class="Bd Bd-indent">
+<pre class="Li">
+property = value
+</pre>
+</div>
+<div class="Pp"></div>
+Most properties have a prefix (or &#x201C;namespace&#x201D;) that denote the
+  scope of the property. As an example, a line like
+<div class="Pp"></div>
+<div class="Bd Bd-indent">
+<pre class="Li">
+window.x = 100
+</pre>
+</div>
+<div class="Pp"></div>
+would set the location of the main window's top-left corner to
+  <i class="Em" title="Em">x</i> (in pixels). And a block like
+<div class="Pp"></div>
+<div class="Bd Bd-indent">
+<pre class="Li">
+window.bgcolor = &quot;ff0000&quot; 
+time.bgcolor   = &quot;00ff00&quot;
+</pre>
+</div>
+<div class="Pp"></div>
+would set the window's primary background color to red, but the background color
+  for the time widget to green (these are using 32-bit hex color codes, see the
+  section <a class="Sx" title="Sx" href="#SPECIFYING_COLORS">SPECIFYING
+  COLORS</a> for details).
+<div class="Pp"></div>
+The configuration file is parsed with <a class="Xr" title="Xr">fparseln(3)</a>,
+  and thus supports rich spacing and comments. Specifically,
+<ul class="Bl-bullet">
+  <li>Blank lines are ignored</li>
+  <li>Spacing within lines is liberal. All of the following are permitted and
+      equivalent:
+    <div class="Pp"></div>
+    <div class="Bd Bd-indent">
+    <pre class="Li">
+window.x=100 
+window.x    =     100 
+      window.x    =     100
+    </pre>
+    </div>
+  </li>
+  <li>Lines can be continued with a \ ending a line, such as:
+    <div class="Pp"></div>
+    <div class="Bd Bd-indent">
+    <pre class="Li">
+window.x = \ 
+           10
+    </pre>
+    </div>
+  </li>
+  <li>Anything after a # is considered a comment.
+    <div class="Pp"></div>
+    <div class="Bd Bd-indent">
+    <pre class="Li">
+# this is a comment 
+   # so is this 
+window.x = 100    # set offset to 100 (this is a comment)
+    </pre>
+    </div>
+  </li>
+</ul>
+<h2 class="Ss" title="Ss" id="Using_Themes"><a class="permalink" href="#Using_Themes">Using
+  Themes</a></h2>
+Themes provide a way to support multiple configurations of
+  <code class="Nm" title="Nm">oxbar</code> in a single file and load each
+  optionally at runtime. This is useful if you run multiple instances of
+  <code class="Nm" title="Nm">oxbar</code>, say one configuration for the top of
+  your display showing some widgets, and another configuration at the bottom of
+  your display showing a different set of widgets.
+<div class="Pp"></div>
+The following example configuration file is used below to discuss the semantics
+  of themes.
+<div class="Pp"></div>
+<div class="Bd Bd-indent">
+<pre class="Li">
+# global configuration 
+font.desc = &quot;DejaVu Sans Mono 20px&quot;    # needs DejaVu fonts installed 
+font.fgcolor = &quot;93a1a1&quot;                # a light grey 
+window.x = 0                           # make oxbar align to left-most pixel 
+window.w = -1                          # make oxbar use full width of display 
+window.h = -1                          # derive height 
+ 
+[top] 
+widgets = &quot;&lt; nprocs cpuslong | memory &gt; net&quot; 
+window.y = 0                           # show oxbar at the top of the display 
+ 
+[bottom] 
+widgets = &quot;&lt; volume | time &gt; battery&quot; 
+window.y = -1                          # show oxbar at the bottom of the display
+</pre>
+</div>
+<div class="Pp"></div>
+TODO
+<h1 class="Sh" title="Sh" id="CONFIGURATION"><a class="permalink" href="#CONFIGURATION">CONFIGURATION</a></h1>
+This is a complete list of all configurable properties supported by
+  <code class="Nm" title="Nm">oxbar</code>. They can be set:
+<ul class="Bl-bullet">
+  <li>At the command line with <code class="Fl" title="Fl">-S</code>
+      <var class="Ar" title="Ar">property=value</var>, where
+      <i class="Em" title="Em">property</i> is one of the properties listed
+      below and <i class="Em" title="Em">value</i> is the value you which to set
+      it to, or</li>
+  <li>In the configuration file with a line like
+      <i class="Em" title="Em">property=value</i>. See the section
+      <a class="Sx" title="Sx" href="#FILES">FILES</a> for more details on that
+      format.</li>
+</ul>
+<h2 class="Ss" title="Ss" id="Useful_Terminology"><a class="permalink" href="#Useful_Terminology">Useful
+  Terminology</a></h2>
+Many of the configurable properties have common suffixes, and knowing what they
+  mean can help to understand their use. These suffixes are:
+<dl class="Bl-tag">
+  <dt>fgcolor</dt>
+  <dd>A foreground color, typically for text.</dd>
+  <dt>bgcolor</dt>
+  <dd>A background color, for the whole window or individual widgets.</dd>
+  <dt>hdcolor</dt>
+  <dd>A header color, typically denoting the header of each widget (the
+      horizontal bars optionally shown above or below each widget). These
+      properties allow you to color each widget's bar seperately.</dd>
+  <dt>pgcolor</dt>
+  <dd>The color of a progress indicator, typically a progress bar (like those
+      used for the battery and volume widgets).</dd>
+</dl>
+<h2 class="Ss" title="Ss" id="Font_Properties"><a class="permalink" href="#Font_Properties">Font
+  Properties</a></h2>
+<dl class="Bl-tag">
+  <dt>font.desc</dt>
+  <dd>Set's the font and styles to be used throughout the display.
+    <div class="Pp"></div>
+    Default value: &#x201C;helvetica 16px&#x201D;</dd>
+  <dt>font.fgcolor</dt>
+  <dd>Set's the default foreground color for all text in the display. Note the
+      foreground color of each widget can be overriden (see other options
+      below).
+    <div class="Pp"></div>
+    Default value: &#x201C;#93a1a1&#x201D;</dd>
+</dl>
+<h2 class="Ss" title="Ss" id="Window_Properties"><a class="permalink" href="#Window_Properties">Window
+  Properties</a></h2>
+<dl class="Bl-tag Bl-compact">
+  <dt>window.x</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>window.y</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>window.w</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>window.h</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>window.wname</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>window.bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+<h2 class="Ss" title="Ss" id="GUI_Properties"><a class="permalink" href="#GUI_Properties">GUI
+  Properties</a></h2>
+<dl class="Bl-tag Bl-compact">
+  <dt>widgets</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>gui.margin</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>gui.padding</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>gui.header_style</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>gui.widget_bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>gui.widget_spacing</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+<h2 class="Ss" title="Ss" id="Battery_Widget"><a class="permalink" href="#Battery_Widget">Battery
+  Widget</a></h2>
+<dl class="Bl-tag Bl-compact">
+  <dt>battery.hdcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>battery.bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>battery.fgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>battery.fgcolor_unplugged</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>battery.chart_width</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>battery.chart_bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>battery.chart_pgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+<h2 class="Ss" title="Ss" id="CPUs_Widget"><a class="permalink" href="#CPUs_Widget">CPUs
+  Widget</a></h2>
+<dl class="Bl-tag Bl-compact">
+  <dt>cpus.hdcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>cpus.bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>cpus.fgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>cpus.chart_bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>cpus.chart_color_system</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>cpus.chart_color_interrupt</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>cpus.chart_color_user</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>cpus.chart_color_nice</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>cpus.chart_color_spin</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>cpus.chart_color_idle</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+<h2 class="Ss" title="Ss" id="Memory_Widget"><a class="permalink" href="#Memory_Widget">Memory
+  Widget</a></h2>
+<dl class="Bl-tag Bl-compact">
+  <dt>memory.hdcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>memory.bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>memory.fgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>memory.chart_bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>memory.chart_color_free</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>memory.chart_color_total</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>memory.chart_color_active</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+<h2 class="Ss" title="Ss" id="Number_Processes_Widget"><a class="permalink" href="#Number_Processes_Widget">Number
+  Processes Widget</a></h2>
+<dl class="Bl-tag Bl-compact">
+  <dt>nprocs.hdcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>nprocs.bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>nprocs.fgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+<h2 class="Ss" title="Ss" id="Network_Widget"><a class="permalink" href="#Network_Widget">Network
+  Widget</a></h2>
+<dl class="Bl-tag Bl-compact">
+  <dt>net.hdcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>net.bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>net.fgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>net.inbound_chart_color_bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>net.inbound_chart_color_pgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>net.inbound_text_fgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>net.outbound_chart_color_bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>net.outbound_chart_color_pgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>net.outbound_text_fgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+<h2 class="Ss" title="Ss" id="Time_Widget"><a class="permalink" href="#Time_Widget">Time
+  Widget</a></h2>
+<dl class="Bl-tag Bl-compact">
+  <dt>time.hdcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>time.bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>time.fgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>time.format</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+<h2 class="Ss" title="Ss" id="Volume_Widget"><a class="permalink" href="#Volume_Widget">Volume
+  Widget</a></h2>
+<dl class="Bl-tag Bl-compact">
+  <dt>volume.hdcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>volume.bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>volume.fgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>volume.chart_width</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>volume.chart_bgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt>volume.chart_pgcolor</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+<h1 class="Sh" title="Sh" id="SPECIFYING_FONTS"><a class="permalink" href="#SPECIFYING_FONTS">SPECIFYING
+  FONTS</a></h1>
+<h1 class="Sh" title="Sh" id="SPECIFYING_COLORS"><a class="permalink" href="#SPECIFYING_COLORS">SPECIFYING
+  COLORS</a></h1>
+<h1 class="Sh" title="Sh" id="SPECIFYING_WIDGETS"><a class="permalink" href="#SPECIFYING_WIDGETS">SPECIFYING
+  WIDGETS</a></h1>
+<h1 class="Sh" title="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<dl class="Bl-tag">
+  <dt><a class="Lk" title="Lk" href="https://xcb.freedesktop.org">https://xcb.freedesktop.org</a></dt>
+  <dd>XCB is a MIT licensed X rendering library used by
+      <code class="Nm" title="Nm">oxbar</code> to connect to an X display,
+      render the window, and handle events.</dd>
+  <dt><a class="Lk" title="Lk" href="https://www.pango.org">https://www.pango.org</a></dt>
+  <dd>Pango is a LGPL licensed text layout / font rendering engine used by
+      <code class="Nm" title="Nm">oxbar</code> to load, render, and style fonts.
+      Pango supports most modern fonts and font features.</dd>
+  <dt><a class="Lk" title="Lk" href="https://cairographics.org">https://cairographics.org</a></dt>
+  <dd>Cairo is a LGPL licensed vector graphics rendering library used by
+      <code class="Nm" title="Nm">oxbar</code> for all graphics rendering.</dd>
+</dl>
+<h1 class="Sh" title="Sh" id="STANDARDS"><a class="permalink" href="#STANDARDS">STANDARDS</a></h1>
+<code class="Nm" title="Nm">oxbar</code> is written natively on
+  <span class="Ux">OpenBSD</span>. It adheres to a strict C89 standard on the
+  base <a class="Xr" title="Xr">clang(1)</a> compiler, and builds/runs cleanly
+  with &#x201C;-std=c89 -Wall -Wextra -Werror&#x201D;. Additionally, the
+  <a class="Xr" title="Xr">make(1)</a> targets
+  <code class="Cm" title="Cm">scan-build</code> and
+  <code class="Cm" title="Cm">cppcheck</code> run those tools, respecitively,
+  and should remain error/warning-free.
+<div class="Pp"></div>
+<a class="Xr" title="Xr">style(9)</a> is mostly followed, but there's still work
+  there to be done.
+<div class="Pp"></div>
+If interested in contributing, see the following link for tips on navigating the
+  code base and getting started adding stats, widgets, etc:
+<div class="Pp"></div>
+<div class="Bd"><a class="Lk" title="Lk" href="https://github.com/ryanflannery/oxbar/CONTRIBUTING.md">https://github.com/ryanflannery/oxbar/CONTRIBUTING.md</a></div>
+<div class="Pp"></div>
+The github repo is the place to submit bugs/changes/threats, and is located at:
+  <a class="Lk" title="Lk" href="https://github.com/ryanflannery/oxbar">https://github.com/ryanflannery/oxbar</a>
+<h1 class="Sh" title="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+<code class="Nm" title="Nm">oxbar</code> started as xstatbar, first written in
+  2006 as a status-bar that would work reasonably well for
+  <span class="Ux">OpenBSD</span>. It was written on a Friday and Saturday
+  evening and had many, many bugs/shortcomings/etc. It was further hacked over a
+  few years to support a handful of new features and widgets, but the term
+  &#x201C;hacked&#x201D; there undervalues the level of code shit-hattery done
+  to &#x201C;Make-It-Work!&#x201D;. I have personally received much derision
+  because of that, and <code class="Nm" title="Nm">oxbar</code> is an attempt to
+  eliminate that.
+<div class="Pp"></div>
+Shaming works 'yo.
+<h1 class="Sh" title="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<code class="Nm" title="Nm">oxbar</code> is written and maintained by
+  <span class="An" title="An">Ryan Flannery</span>
+  &lt;<a class="Mt" title="Mt" href="mailto:ryan.flannery@gmail.com">ryan.flannery@gmail.com</a>&gt;
+  or
+  <a class="Lk" title="Lk" href="https://ryanflannery.net">https://ryanflannery.net</a>.</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">October 31, 2018</td>
+    <td class="foot-os">OpenBSD 6.4</td>
+  </tr>
+</table>
+</body>
+</html>

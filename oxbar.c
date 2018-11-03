@@ -1,6 +1,7 @@
 /*
  * Various outstanding stuff that doesn't belong elsewhere...
  * TODO complete man page (probably wait until widget settings moved)
+ * TODO don't use -1 for y/w/h magic - use 0 and use unsigned types
  * TODO more examples
  * TODO polish error messages (err/errx calls)
  * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
