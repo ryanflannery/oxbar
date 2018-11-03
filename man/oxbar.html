@@ -406,17 +406,59 @@ window.x = 0                           # make oxbar align to left-most pixel
 window.w = -1                          # make oxbar use full width of display 
 window.h = -1                          # derive height 
  
+# start the &quot;top&quot; theme 
 [top] 
 widgets = &quot;&lt; nprocs cpuslong | memory &gt; net&quot; 
 window.y = 0                           # show oxbar at the top of the display 
  
+# start the &quot;bottom&quot; theme 
 [bottom] 
 widgets = &quot;&lt; volume | time &gt; battery&quot; 
 window.y = -1                          # show oxbar at the bottom of the display
 </pre>
 </div>
 <div class="Pp"></div>
-TODO
+Themes are a subset of a configuration file. They begin with a line like:
+<div class="Pp"></div>
+<div class="Bd Bd-indent">
+<pre class="Li">
+[theme-name]
+</pre>
+</div>
+<div class="Pp"></div>
+All lines after that are considered part of that theme
+  <i class="Em" title="Em">theme-name</i> until either the end of the file or a
+  new theme is defined. So the above example defines two themes:
+  <i class="Em" title="Em">top</i> and <i class="Em" title="Em">bottom</i>.
+<div class="Pp"></div>
+To run <code class="Nm" title="Nm">oxbar</code> and use a theme, simply provide
+  the <i class="Em" title="Em">theme-name</i> as the last parameter on the
+  command line, like this:
+<div class="Pp"></div>
+<div class="Bd">
+<pre class="Li">
+$ oxbar [options] theme-name
+</pre>
+</div>
+<div class="Pp"></div>
+That will instruct oxbar to load the configuration file and parse/load all lines
+  before any theme definition (considered the global section), and then only
+  those lines after the the line <code class="Cm" title="Cm">[theme-name]</code>
+  and before any subsequent theme definition.
+<div class="Pp"></div>
+Using the example above,
+<div class="Pp"></div>
+<div class="Bd Bd-indent">
+<pre class="Li">
+$ oxbar [options] top
+</pre>
+</div>
+<div class="Pp"></div>
+would run openbsd with the global options (setting the font to DejaVu, etc) and
+  then load just the lines after <i class="Em" title="Em">[top]</i> and before
+  <i class="Em" title="Em">[bottom]</i>, thus creating a version of
+  <code class="Nm" title="Nm">oxbar</code> at the top of the X display with the
+  <i class="Em" title="Em">nprocs, cpuslong, memory, and net</i> widgets.
 <h1 class="Sh" title="Sh" id="CONFIGURATION"><a class="permalink" href="#CONFIGURATION">CONFIGURATION</a></h1>
 This is a complete list of all configurable properties supported by
   <code class="Nm" title="Nm">oxbar</code>. They can be set:

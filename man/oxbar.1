@@ -391,16 +391,61 @@ window.x = 0                           # make oxbar align to left-most pixel
 window.w = -1                          # make oxbar use full width of display
 window.h = -1                          # derive height
 
+# start the "top" theme
 [top]
 widgets = "< nprocs cpuslong | memory > net"
 window.y = 0                           # show oxbar at the top of the display
 
+# start the "bottom" theme
 [bottom]
 widgets = "< volume | time > battery"
 window.y = -1                          # show oxbar at the bottom of the display
 .Ed
 .Pp
-TODO
+Themes are a subset of a configuration file.
+They begin with a line like:
+.Bd -literal -offset indent
+[theme-name]
+.Ed
+.Pp
+All lines after that are considered part of that theme
+.Em theme-name
+until either the end of the file or a new theme is defined.
+So the above example defines two themes:
+.Em top
+and
+.Em bottom .
+.Pp
+To run
+.Nm
+and use a theme, simply provide the
+.Em theme-name
+as the last parameter on the command line, like this:
+.Bd -literal
+$ oxbar [options] theme-name
+.Ed
+.Pp
+That will instruct oxbar to load the configuration file and parse/load all
+lines before any theme definition (considered the global section), and then only
+those lines after the the line
+.Cm [theme-name]
+and before any subsequent theme definition.
+.Pp
+Using the example above,
+.Bd -literal -offset indent
+$ oxbar [options] top
+.Ed
+.Pp
+would run openbsd with the global options (setting the font to DejaVu, etc)
+and then load just the lines after
+.Em [top]
+and before
+.Em [bottom] ,
+thus creating a version of
+.Nm
+at the top of the X display with the
+.Em nprocs, cpuslong, memory, and net
+widgets.
 .\" === CONFIGURATION =========================================================
 .Sh CONFIGURATION
 This is a complete list of all configurable properties supported by
