@@ -369,6 +369,8 @@ xdraw_chart(
          /* don't go past the top (can happen w/ double rounding */
          if (y_top < ctx->padding->top)
             y_top = ctx->padding->top;
+         else if (c->percents && j == c->nseries - 1)
+            y_top = ctx->padding->top;
 
          /* NOTE: using cairo lines appears fuzzy - stick w/ rectangle */
          hex2rgba(c->colors[j], &r, &g, &b, &a);

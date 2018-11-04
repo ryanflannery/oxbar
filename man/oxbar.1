@@ -1,13 +1,12 @@
-.\" TODO add section on TRANSPARENCY and compton
-.\" TODO add section on setting the font
-.\" TODO add section on setting the widget list
 .\" $OpenBSD$
 .Dd $Mdocdate: October 31 2018$
 .Dt OXBAR 1
 .Os
+.\" === NAME ==================================================================
 .Sh NAME
 .Nm oxbar
 .Nd configurable X11 status bar for OpenBSD
+.\" === SYNOPSIS ==============================================================
 .Sh SYNOPSIS
 .Nm oxbar
 .Bk -words
@@ -81,7 +80,7 @@ for a list of all configurable properties.
 .Nm
 supports the following command line flags, which are backwards compatible
 with
-.Xr xstatar 1 :
+.Xr xstatbar 1 :
 .Bl -tag -width Fl
 .\" option: -H
 .It Fl H
@@ -256,15 +255,16 @@ in the configuration file.
 .\" option: theme
 .It Ar theme
 An optional theme name to load from the configuration file.
-If no configuration file is found (either specified via
+If a theme is specified and no configuration file is found (either specified via
 .Fl F Ar config-file
 or using the default
 .Pa $HOME/.oxbar.conf )
 an error is returned.
-When a theme is specified, any lines in the configuration file after a line
-like
-.Cm [theme]
-will be loaded.
+When specified, any lines in the configuration file after a line like
+.Cm [theme] ,
+and before any other theme definition,
+will be loaded, along with any lines before the first theme definition
+(considered global options).
 Note theme sections end whenever a new theme is defined.
 See the
 .Sx FILES
@@ -278,7 +278,7 @@ The user's home directory, which
 .Nm
 will use to construct the name of the default configuration file to load if no
 .Fl F Ar config-file
-command-line parameter is set.
+command line parameter is set.
 In that case,
 .Nm
 will always attempt to load
@@ -384,7 +384,7 @@ widgets.
 The following example configuration file is used below to discuss the semantics
 of themes.
 .Bd -literal -offset indent
-# global configuration
+# global configuration (always loaded for any or no themes)
 font.desc = "DejaVu Sans Mono 20px"    # needs DejaVu fonts installed
 font.fgcolor = "93a1a1"                # a light grey
 window.x = 0                           # make oxbar align to left-most pixel
@@ -393,7 +393,7 @@ window.h = -1                          # derive height
 
 # start the "top" theme
 [top]
-widgets = "< nprocs cpuslong | memory > net"
+widgets = "< nprocs cpulong | memory > net"
 window.y = 0                           # show oxbar at the top of the display
 
 # start the "bottom" theme
@@ -408,13 +408,16 @@ They begin with a line like:
 [theme-name]
 .Ed
 .Pp
-All lines after that are considered part of that theme
+All lines after that are considered part of a theme named
 .Em theme-name
 until either the end of the file or a new theme is defined.
 So the above example defines two themes:
 .Em top
 and
 .Em bottom .
+The lines that occur before any theme definition are considered global, and are
+always loaded for any, or no, theme.
+This is handy if some things (such as font) apply to all themes.
 .Pp
 To run
 .Nm
@@ -426,26 +429,26 @@ $ oxbar [options] theme-name
 .Ed
 .Pp
 That will instruct oxbar to load the configuration file and parse/load all
-lines before any theme definition (considered the global section), and then only
+lines before any theme definition (the global section), and then only
 those lines after the the line
 .Cm [theme-name]
 and before any subsequent theme definition.
 .Pp
-Using the example above,
+Using the example above, the following two commands would launch two instances
+of
+.Nm ,
+each using their respective theme definitions.
 .Bd -literal -offset indent
-$ oxbar [options] top
+$ oxbar [options] top &
+$ oxbar [options] bottom &
 .Ed
 .Pp
-would run openbsd with the global options (setting the font to DejaVu, etc)
-and then load just the lines after
-.Em [top]
-and before
-.Em [bottom] ,
-thus creating a version of
-.Nm
-at the top of the X display with the
-.Em nprocs, cpuslong, memory, and net
-widgets.
+The result is one instance
+.Pq Dq top
+running at the top of the display with the 4 widgets (nprocs, cpulong, memory,
+and net) and another instnace
+.Pq Dq bottom
+running at the bottom of the display with 3 widgets (volume, time, and battery).
 .\" === CONFIGURATION =========================================================
 .Sh CONFIGURATION
 This is a complete list of all configurable properties supported by
@@ -621,22 +624,251 @@ These properties configure the volume widget, showing the current volume levels.
 .El
 .\" === SPECIFYING FONTS ======================================================
 .Sh SPECIFYING FONTS
-.\" TODO specify font and give examples
+The font used by
+.Nm ,
+and styling for it, it described and set using the
+.Em font.desc
+property which is a string such as
+.Dq helvetica 12px .
+Its value is passed directly to Pango through the
+.Xr pango_font_description_from_string 3
+API, and will thus accept any value that API accepts (which is quite
+expressive).
+All text rendered in
+.Nm
+will be done using the font loaded from that description.
+.Pp
+See the documentation of that API for full details.
+In summary, the format of the string is a space seperated list of the form
+.Bd -literal
+FONT-FAMILY [STYLE | VARIANT | WEIGHT]* SIZEpx
+.Ed
+.Pp
+where
+.Em FONT-FAMILY
+is the name of the font family desired, optionally followed by some number of
+style/variant/weight modifiers (like
+.Em italic ,
+.Em bold ,
+.Em heavy ,
+.Em light ,
+etc).
+The
+.Em SIZE
+is then specified in pixels.
+Note that
+.Nm
+currently requires the font to
+.Em ALWAYS BE SPECIFIED IN PIXELS ,
+and thus should always have the
+.Sq px
+suffix on the size component.
+.Pp
+.Sy CAVEAT: ALL FONTS SHOULD EXPLICITLY STATE PIXEL SIZING (px)
+.Pp
+Some examples:
+.Bl -tag -width foobar
+.It Dq fixed 16px
+Specifies the default fixed-width (monospaced) font for the system, at 16 pixels
+in height.
+.It Dq Helvetica italic 16px
+Specifies the italic variant of the Helvetica font, sized at 16 pixels in
+height.
+.It Dq DejaVu Mono bold 20px
+Uses the monospaced and bold variant combination of the DejaVu font (requires
+package to be installed), sized at 20 pixels in height.
+.El
 .\" === SPECIFYING COLORS =====================================================
 .Sh SPECIFYING COLORS
-.\" TODO specify font and give examples
+All colors in the configuration of
+.Nm
+are ultimately resolved to 32-bit color pairs of red, green, blue, and alpha
+values.
+All colors are specified as either 3 or 6 character hex codes without
+transparency, or 4 or 8 character hex codes with transparency.
+.Pp
+Some examples are:
+.Bl -tag -compact -width ffffffff
+.It f00
+Solid red, completely opaque
+.It f008
+Red, about half opaque / half transparent
+.It ff0000
+Also solid red (same as f00)
+.It ff000088
+Red, about half opaque / half transparent
+.El
+.Pp
+The strings specifying these can optionally include a leading # symbol, though
+in the configuration file that must be escaped to prevent that character
+being interpretted as the start of a comment.
+.Pp
+.Nm
+supports true transparency / alpha blending on the main window by specifying a
+transparent color to the
+.Em window.bgcolor
+property, such as
+.Em window.bgcolor=5558 .
+For this support to work, however, your window manager must support true
+transparency and may need a compositing manager running for the transparency
+to function.
+On the base install of
+.Ox
+this is
+.Xr xcompmgr 1 ,
+though
+.Xr compton 1
+from ports is often preferred.
 .\" === SPECIFYING WIDGETS ====================================================
 .Sh SPECIFYING WIDGETS
-.\" TODO specify font and give examples
+The configurable property used to control which widgets are shown, and where,
+is
+.Ar widgets ,
+and this section describes how to configure that property.
+.Pp
+The property is simply a string containing a list of space-separated widget
+names (such as
+.Dq time ,
+.Dq memory ,
+etc), and some special characters that control the alignment of those widgets
+within the display.
+A setting such as
+.Bd -literal
+widgets = "time volume battery"
+.Ed
+.Pp
+would show the time, volume, and then battery widgets, in that order.
+They would also be shown left-aligned (growing the left-most side of the
+window) as that's the default display alignment.
+The next subsection describes how to alter that.
+.Pp
+Note that the widgets property can also be set on the command line using the
+.Fl W
+flag.
+The above example could be specified on the command line with simply:
+.Bd -literal
+oxbar -W "time volume battery"
+.Ed
+.\" --- Specifying Widget Alignment -------------------------------------------
+.Ss Specifying Widget Alignment
+The following characters in the
+.Ar widgets
+value string can alter the alginment of subsequent widgets specified:
+.Bl -tag -width foo
+.It <
+All subsequent widgets are
+.Em left-aligned ,
+growing from the left-most edge of the display.
+This is the default alignment and thus not stricly required.
+.It >
+All subsequent widgets are
+.Em right-aligned ,
+growing from the right-most edge of the display.
+.It |
+All subsequent widgets are
+.Em centered ,
+so that the list of widgets appears in the exact center of the display.
+.El
+.Pp
+As an example, the following setting
+.Bd -literal
+widgets = "nprocs cpu memory net | time > battery volume"
+.Ed
+.Pp
+would show the nprocs, cpu, memory, and net widgets on the left, a centered
+time widget, and then the battery and volume widgets on the right.
+.\" --- Available Widgets -----------------------------------------------------
+.Ss Available Widgets
+This is the list of all available widgets that can be set.
+.Bl -tag -width cpushort
+.It battery
+This widget shows the battery status.
+It starts with the string "BAT" if running on battery or "AC" if plugged-in.
+It then shows a progress bar indicating the battery charge percentage and a
+corresponding text value for that percentage.
+.Pp
+Corresponding configurable properties:
+.Em battery.* .
+.It cpu
+This widget shows an overview, with charts, of CPU utilization.
+For each CPU it shows a historical histogram (spanning the last 60 seconds)
+breaking down the usage of that CPU (for user, system, idle, etc time),
+followed by the latest percentage idle time.
+.Pp
+Corresponding configurable properties:
+.Em cpus.* .
+.It cpulong
+Similar to the cpu widget above, only after each chart all CPU state
+percentages are printed, not just idle (so system, interrupt, user, nice, spin,
+and idle, in that orer).
+.Pp
+Corresponding configurable properties:
+.Em cpus.* .
+.It cpushort
+This widget is a very brief, text-only display of CPU utilization.
+For each CPU, the percentage time non-idle is printed.
+That is all.
+.Pp
+Corresponding configurable properties:
+.Em cpus.* .
+.It memory
+This widget shows a breakdown of memory usage over time.
+It includes a historical histogram (spanning the last 60 seconds) showing a
+breakdown of the active, total, and free memory utilization, followed by text
+restating the latest sampled values for each (as raw memory values, not
+percentages).
+.Pp
+Corresponding configurable properties:
+.Em memory.* .
+.It net
+This widget shows a very brief overview of the network utilization on the
+.Em egress
+interface.
+It shows two historical charts plotting the number of bytes inbound/outbound
+on that interface, for the past 60 seconds, followed by a textual
+representation of the latest sample of that activity.
+.Pp
+Corresponding configurable properties:
+.Em net.* .
+.It nprocs
+This widget simply shows the number of processes.
+That is all.
+Useful if you work on something that uses
+.Xr fork 2
+a lot and you frequently fork-bomb yourself.
+.Pp
+Corresponding configurable properties:
+.Em nprocs.* .
+.It time
+This widget shows the current date/time.
+.Pp
+Corresponding configurable properties:
+.Em time.* .
+.It volume
+This widget shows the current volume.
+It includes a progress bar indicating the percentage of the current volume
+setting followed by a textual representation of that percentage.
+.Pp
+Corresponding configurable properties:
+.Em volume.* .
+.El
 .\" === SEE ALSO ==============================================================
 .Sh SEE ALSO
+.Xr compton 1 ,
+.Xr xcompmgr 1 ,
+.Xr fparseln 3 ,
+.Xr getpwuid 3 ,
+.Xr strftime 3
+.Pp
+In addition, the following libraries are heavily utilized by
+.Nm :
 .Bl -tag -width HOME
 .It Lk https://xcb.freedesktop.org
-XCB is a MIT licensed X rendering library used by
+XCB is a MIT licensed X11 client library used by
 .Nm
-to connect to an X display, render the window, and handle events.
+to connect to an X11 display, render the window, and handle events.
 .It Lk https://www.pango.org
-Pango is a LGPL licensed text layout / font rendering engine used by
+Pango is a LGPL licensed text layout and font rendering engine used by
 .Nm
 to load, render, and style fonts.
 Pango supports most modern fonts and font features.

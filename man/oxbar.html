@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html>
 <!-- This is an automatically generated file.  Do not edit.
-   TODO add section on TRANSPARENCY and compton
-   TODO add section on setting the font
-   TODO add section on setting the widget list
    $OpenBSD$
  -->
 <head>
@@ -89,7 +86,13 @@
     </a></li>
   <li><a href="#SPECIFYING_FONTS">SPECIFYING FONTS</a></li>
   <li><a href="#SPECIFYING_COLORS">SPECIFYING COLORS</a></li>
-  <li><a href="#SPECIFYING_WIDGETS">SPECIFYING WIDGETS</a></li>
+  <li><a href="#SPECIFYING_WIDGETS">SPECIFYING WIDGETS
+    <ul class="Bl-compact">
+      <li><a href="#Specifying_Widget_Alignment">Specifying Widget
+        Alignment</a></li>
+      <li><a href="#Available_Widgets">Available Widgets</a></li>
+    </ul>
+    </a></li>
   <li><a href="#SEE_ALSO">SEE ALSO</a></li>
   <li><a href="#STANDARDS">STANDARDS</a></li>
   <li><a href="#HISTORY">HISTORY</a></li>
@@ -134,7 +137,7 @@ Setting configurable properties is always of the form
   Line Flags</a></h2>
 <code class="Nm" title="Nm">oxbar</code> supports the following command line
   flags, which are backwards compatible with
-  <a class="Xr" title="Xr">xstatar(1)</a>:
+  <a class="Xr" title="Xr">xstatbar(1)</a>:
 <dl class="Bl-tag">
   <dt><a class="permalink" href="#H"><code class="Fl" title="Fl" id="H">-H</code></a></dt>
   <dd>Print brief help information regarding the supported command line
@@ -276,14 +279,16 @@ Setting configurable properties is always of the form
       <var class="Ar" title="Ar">window.x = 100</var> in the configuration
     file.</dd>
   <dt><var class="Ar" title="Ar">theme</var></dt>
-  <dd>An optional theme name to load from the configuration file. If no
-      configuration file is found (either specified via
+  <dd>An optional theme name to load from the configuration file. If a theme is
+      specified and no configuration file is found (either specified via
       <code class="Fl" title="Fl">-F</code>
       <var class="Ar" title="Ar">config-file</var> or using the default
       <span class="Pa" title="Pa">$HOME/.oxbar.conf</span>) an error is
-      returned. When a theme is specified, any lines in the configuration file
-      after a line like <code class="Cm" title="Cm">[theme]</code> will be
-      loaded. Note theme sections end whenever a new theme is defined. See the
+      returned. When specified, any lines in the configuration file after a line
+      like <code class="Cm" title="Cm">[theme]</code>, and before any other
+      theme definition, will be loaded, along with any lines before the first
+      theme definition (considered global options). Note theme sections end
+      whenever a new theme is defined. See the
       <a class="Sx" title="Sx" href="#FILES">FILES</a> section for full
     details.</dd>
 </dl>
@@ -293,7 +298,7 @@ Setting configurable properties is always of the form
   <dd>The user's home directory, which <code class="Nm" title="Nm">oxbar</code>
       will use to construct the name of the default configuration file to load
       if no <code class="Fl" title="Fl">-F</code>
-      <var class="Ar" title="Ar">config-file</var> command-line parameter is
+      <var class="Ar" title="Ar">config-file</var> command line parameter is
       set. In that case, <code class="Nm" title="Nm">oxbar</code> will always
       attempt to load <span class="Pa" title="Pa">$HOME/.oxbar.conf</span>.</dd>
 </dl>
@@ -399,7 +404,7 @@ The following example configuration file is used below to discuss the semantics
 <div class="Pp"></div>
 <div class="Bd Bd-indent">
 <pre class="Li">
-# global configuration 
+# global configuration (always loaded for any or no themes) 
 font.desc = &quot;DejaVu Sans Mono 20px&quot;    # needs DejaVu fonts installed 
 font.fgcolor = &quot;93a1a1&quot;                # a light grey 
 window.x = 0                           # make oxbar align to left-most pixel 
@@ -408,7 +413,7 @@ window.h = -1                          # derive height
  
 # start the &quot;top&quot; theme 
 [top] 
-widgets = &quot;&lt; nprocs cpuslong | memory &gt; net&quot; 
+widgets = &quot;&lt; nprocs cpulong | memory &gt; net&quot; 
 window.y = 0                           # show oxbar at the top of the display 
  
 # start the &quot;bottom&quot; theme 
@@ -426,10 +431,13 @@ Themes are a subset of a configuration file. They begin with a line like:
 </pre>
 </div>
 <div class="Pp"></div>
-All lines after that are considered part of that theme
+All lines after that are considered part of a theme named
   <i class="Em" title="Em">theme-name</i> until either the end of the file or a
   new theme is defined. So the above example defines two themes:
-  <i class="Em" title="Em">top</i> and <i class="Em" title="Em">bottom</i>.
+  <i class="Em" title="Em">top</i> and <i class="Em" title="Em">bottom</i>. The
+  lines that occur before any theme definition are considered global, and are
+  always loaded for any, or no, theme. This is handy if some things (such as
+  font) apply to all themes.
 <div class="Pp"></div>
 To run <code class="Nm" title="Nm">oxbar</code> and use a theme, simply provide
   the <i class="Em" title="Em">theme-name</i> as the last parameter on the
@@ -442,23 +450,25 @@ $ oxbar [options] theme-name
 </div>
 <div class="Pp"></div>
 That will instruct oxbar to load the configuration file and parse/load all lines
-  before any theme definition (considered the global section), and then only
-  those lines after the the line <code class="Cm" title="Cm">[theme-name]</code>
-  and before any subsequent theme definition.
+  before any theme definition (the global section), and then only those lines
+  after the the line <code class="Cm" title="Cm">[theme-name]</code> and before
+  any subsequent theme definition.
 <div class="Pp"></div>
-Using the example above,
+Using the example above, the following two commands would launch two instances
+  of <code class="Nm" title="Nm">oxbar</code>, each using their respective theme
+  definitions.
 <div class="Pp"></div>
 <div class="Bd Bd-indent">
 <pre class="Li">
-$ oxbar [options] top
+$ oxbar [options] top &amp; 
+$ oxbar [options] bottom &amp;
 </pre>
 </div>
 <div class="Pp"></div>
-would run openbsd with the global options (setting the font to DejaVu, etc) and
-  then load just the lines after <i class="Em" title="Em">[top]</i> and before
-  <i class="Em" title="Em">[bottom]</i>, thus creating a version of
-  <code class="Nm" title="Nm">oxbar</code> at the top of the X display with the
-  <i class="Em" title="Em">nprocs, cpuslong, memory, and net</i> widgets.
+The result is one instance (&#x201C;top&#x201D;) running at the top of the
+  display with the 4 widgets (nprocs, cpulong, memory, and net) and another
+  instnace (&#x201C;bottom&#x201D;) running at the bottom of the display with 3
+  widgets (volume, time, and battery).
 <h1 class="Sh" title="Sh" id="CONFIGURATION"><a class="permalink" href="#CONFIGURATION">CONFIGURATION</a></h1>
 This is a complete list of all configurable properties supported by
   <code class="Nm" title="Nm">oxbar</code>. They can be set:
@@ -678,19 +688,226 @@ These properties configure the volume widget, showing the current volume levels.
 </dl>
 <h1 class="Sh" title="Sh" id="SPECIFYING_FONTS"><a class="permalink" href="#SPECIFYING_FONTS">SPECIFYING
   FONTS</a></h1>
+The font used by <code class="Nm" title="Nm">oxbar</code>, and styling for it,
+  it described and set using the <i class="Em" title="Em">font.desc</i> property
+  which is a string such as &#x201C;helvetica 12px&#x201D;. Its value is passed
+  directly to Pango through the
+  <a class="Xr" title="Xr">pango_font_description_from_string(3)</a> API, and
+  will thus accept any value that API accepts (which is quite expressive). All
+  text rendered in <code class="Nm" title="Nm">oxbar</code> will be done using
+  the font loaded from that description.
+<div class="Pp"></div>
+See the documentation of that API for full details. In summary, the format of
+  the string is a space seperated list of the form
+<div class="Pp"></div>
+<div class="Bd">
+<pre class="Li">
+FONT-FAMILY [STYLE | VARIANT | WEIGHT]* SIZEpx
+</pre>
+</div>
+<div class="Pp"></div>
+where <i class="Em" title="Em">FONT-FAMILY</i> is the name of the font family
+  desired, optionally followed by some number of style/variant/weight modifiers
+  (like <i class="Em" title="Em">italic</i>, <i class="Em" title="Em">bold</i>,
+  <i class="Em" title="Em">heavy</i>, <i class="Em" title="Em">light</i>, etc).
+  The <i class="Em" title="Em">SIZE</i> is then specified in pixels. Note that
+  <code class="Nm" title="Nm">oxbar</code> currently requires the font to
+  <i class="Em" title="Em">ALWAYS BE SPECIFIED IN PIXELS</i>, and thus should
+  always have the &#x2018;px&#x2019; suffix on the size component.
+<div class="Pp"></div>
+<b class="Sy" title="Sy">CAVEAT: ALL FONTS SHOULD EXPLICITLY STATE PIXEL SIZING
+  (px)</b>
+<div class="Pp"></div>
+Some examples:
+<dl class="Bl-tag">
+  <dt>&#x201C;fixed 16px&#x201D;</dt>
+  <dd>Specifies the default fixed-width (monospaced) font for the system, at 16
+      pixels in height.</dd>
+  <dt>&#x201C;Helvetica italic 16px&#x201D;</dt>
+  <dd>Specifies the italic variant of the Helvetica font, sized at 16 pixels in
+      height.</dd>
+  <dt>&#x201C;DejaVu Mono bold 20px&#x201D;</dt>
+  <dd>Uses the monospaced and bold variant combination of the DejaVu font
+      (requires package to be installed), sized at 20 pixels in height.</dd>
+</dl>
 <h1 class="Sh" title="Sh" id="SPECIFYING_COLORS"><a class="permalink" href="#SPECIFYING_COLORS">SPECIFYING
   COLORS</a></h1>
+All colors in the configuration of <code class="Nm" title="Nm">oxbar</code> are
+  ultimately resolved to 32-bit color pairs of red, green, blue, and alpha
+  values. All colors are specified as either 3 or 6 character hex codes without
+  transparency, or 4 or 8 character hex codes with transparency.
+<div class="Pp"></div>
+Some examples are:
+<dl class="Bl-tag Bl-compact">
+  <dt>f00</dt>
+  <dd>Solid red, completely opaque</dd>
+  <dt>f008</dt>
+  <dd>Red, about half opaque / half transparent</dd>
+  <dt>ff0000</dt>
+  <dd>Also solid red (same as f00)</dd>
+  <dt>ff000088</dt>
+  <dd>Red, about half opaque / half transparent</dd>
+</dl>
+<div class="Pp"></div>
+The strings specifying these can optionally include a leading # symbol, though
+  in the configuration file that must be escaped to prevent that character being
+  interpretted as the start of a comment.
+<div class="Pp"></div>
+<code class="Nm" title="Nm">oxbar</code> supports true transparency / alpha
+  blending on the main window by specifying a transparent color to the
+  <i class="Em" title="Em">window.bgcolor</i> property, such as
+  <i class="Em" title="Em">window.bgcolor=5558</i>. For this support to work,
+  however, your window manager must support true transparency and may need a
+  compositing manager running for the transparency to function. On the base
+  install of <span class="Ux">OpenBSD</span> this is
+  <a class="Xr" title="Xr">xcompmgr(1)</a>, though
+  <a class="Xr" title="Xr">compton(1)</a> from ports is often preferred.
 <h1 class="Sh" title="Sh" id="SPECIFYING_WIDGETS"><a class="permalink" href="#SPECIFYING_WIDGETS">SPECIFYING
   WIDGETS</a></h1>
+The configurable property used to control which widgets are shown, and where, is
+  <var class="Ar" title="Ar">widgets</var>, and this section describes how to
+  configure that property.
+<div class="Pp"></div>
+The property is simply a string containing a list of space-separated widget
+  names (such as &#x201C;time&#x201D;, &#x201C;memory&#x201D;, etc), and some
+  special characters that control the alignment of those widgets within the
+  display. A setting such as
+<div class="Pp"></div>
+<div class="Bd">
+<pre class="Li">
+widgets = &quot;time volume battery&quot;
+</pre>
+</div>
+<div class="Pp"></div>
+would show the time, volume, and then battery widgets, in that order. They would
+  also be shown left-aligned (growing the left-most side of the window) as
+  that's the default display alignment. The next subsection describes how to
+  alter that.
+<div class="Pp"></div>
+Note that the widgets property can also be set on the command line using the
+  <code class="Fl" title="Fl">-W</code> flag. The above example could be
+  specified on the command line with simply:
+<div class="Pp"></div>
+<div class="Bd">
+<pre class="Li">
+oxbar -W &quot;time volume battery&quot;
+</pre>
+</div>
+<h2 class="Ss" title="Ss" id="Specifying_Widget_Alignment"><a class="permalink" href="#Specifying_Widget_Alignment">Specifying
+  Widget Alignment</a></h2>
+The following characters in the <var class="Ar" title="Ar">widgets</var> value
+  string can alter the alginment of subsequent widgets specified:
+<dl class="Bl-tag">
+  <dt>&lt;</dt>
+  <dd>All subsequent widgets are <i class="Em" title="Em">left-aligned</i>,
+      growing from the left-most edge of the display. This is the default
+      alignment and thus not stricly required.</dd>
+  <dt>&gt;</dt>
+  <dd>All subsequent widgets are <i class="Em" title="Em">right-aligned</i>,
+      growing from the right-most edge of the display.</dd>
+  <dt>|</dt>
+  <dd>All subsequent widgets are <i class="Em" title="Em">centered</i>, so that
+      the list of widgets appears in the exact center of the display.</dd>
+</dl>
+<div class="Pp"></div>
+As an example, the following setting
+<div class="Pp"></div>
+<div class="Bd">
+<pre class="Li">
+widgets = &quot;nprocs cpu memory net | time &gt; battery volume&quot;
+</pre>
+</div>
+<div class="Pp"></div>
+would show the nprocs, cpu, memory, and net widgets on the left, a centered time
+  widget, and then the battery and volume widgets on the right.
+<h2 class="Ss" title="Ss" id="Available_Widgets"><a class="permalink" href="#Available_Widgets">Available
+  Widgets</a></h2>
+This is the list of all available widgets that can be set.
+<dl class="Bl-tag">
+  <dt>battery</dt>
+  <dd>This widget shows the battery status. It starts with the string
+      &quot;BAT&quot; if running on battery or &quot;AC&quot; if plugged-in. It
+      then shows a progress bar indicating the battery charge percentage and a
+      corresponding text value for that percentage.
+    <div class="Pp"></div>
+    Corresponding configurable properties:
+      <i class="Em" title="Em">battery.*</i>.</dd>
+  <dt>cpu</dt>
+  <dd>This widget shows an overview, with charts, of CPU utilization. For each
+      CPU it shows a historical histogram (spanning the last 60 seconds)
+      breaking down the usage of that CPU (for user, system, idle, etc time),
+      followed by the latest percentage idle time.
+    <div class="Pp"></div>
+    Corresponding configurable properties:
+    <i class="Em" title="Em">cpus.*</i>.</dd>
+  <dt>cpulong</dt>
+  <dd>Similar to the cpu widget above, only after each chart all CPU state
+      percentages are printed, not just idle (so system, interrupt, user, nice,
+      spin, and idle, in that orer).
+    <div class="Pp"></div>
+    Corresponding configurable properties:
+    <i class="Em" title="Em">cpus.*</i>.</dd>
+  <dt>cpushort</dt>
+  <dd>This widget is a very brief, text-only display of CPU utilization. For
+      each CPU, the percentage time non-idle is printed. That is all.
+    <div class="Pp"></div>
+    Corresponding configurable properties:
+    <i class="Em" title="Em">cpus.*</i>.</dd>
+  <dt>memory</dt>
+  <dd>This widget shows a breakdown of memory usage over time. It includes a
+      historical histogram (spanning the last 60 seconds) showing a breakdown of
+      the active, total, and free memory utilization, followed by text restating
+      the latest sampled values for each (as raw memory values, not
+      percentages).
+    <div class="Pp"></div>
+    Corresponding configurable properties:
+      <i class="Em" title="Em">memory.*</i>.</dd>
+  <dt>net</dt>
+  <dd>This widget shows a very brief overview of the network utilization on the
+      <i class="Em" title="Em">egress</i> interface. It shows two historical
+      charts plotting the number of bytes inbound/outbound on that interface,
+      for the past 60 seconds, followed by a textual representation of the
+      latest sample of that activity.
+    <div class="Pp"></div>
+    Corresponding configurable properties:
+    <i class="Em" title="Em">net.*</i>.</dd>
+  <dt>nprocs</dt>
+  <dd>This widget simply shows the number of processes. That is all. Useful if
+      you work on something that uses <a class="Xr" title="Xr">fork(2)</a> a lot
+      and you frequently fork-bomb yourself.
+    <div class="Pp"></div>
+    Corresponding configurable properties:
+      <i class="Em" title="Em">nprocs.*</i>.</dd>
+  <dt>time</dt>
+  <dd>This widget shows the current date/time.
+    <div class="Pp"></div>
+    Corresponding configurable properties:
+    <i class="Em" title="Em">time.*</i>.</dd>
+  <dt>volume</dt>
+  <dd>This widget shows the current volume. It includes a progress bar
+      indicating the percentage of the current volume setting followed by a
+      textual representation of that percentage.
+    <div class="Pp"></div>
+    Corresponding configurable properties:
+      <i class="Em" title="Em">volume.*</i>.</dd>
+</dl>
 <h1 class="Sh" title="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
   ALSO</a></h1>
+<a class="Xr" title="Xr">compton(1)</a>,
+  <a class="Xr" title="Xr">xcompmgr(1)</a>,
+  <a class="Xr" title="Xr">fparseln(3)</a>,
+  <a class="Xr" title="Xr">getpwuid(3)</a>,
+  <a class="Xr" title="Xr">strftime(3)</a>
+<div class="Pp"></div>
+In addition, the following libraries are heavily utilized by
+  <code class="Nm" title="Nm">oxbar</code>:
 <dl class="Bl-tag">
   <dt><a class="Lk" title="Lk" href="https://xcb.freedesktop.org">https://xcb.freedesktop.org</a></dt>
-  <dd>XCB is a MIT licensed X rendering library used by
-      <code class="Nm" title="Nm">oxbar</code> to connect to an X display,
+  <dd>XCB is a MIT licensed X11 client library used by
+      <code class="Nm" title="Nm">oxbar</code> to connect to an X11 display,
       render the window, and handle events.</dd>
   <dt><a class="Lk" title="Lk" href="https://www.pango.org">https://www.pango.org</a></dt>
-  <dd>Pango is a LGPL licensed text layout / font rendering engine used by
+  <dd>Pango is a LGPL licensed text layout and font rendering engine used by
       <code class="Nm" title="Nm">oxbar</code> to load, render, and style fonts.
       Pango supports most modern fonts and font features.</dd>
   <dt><a class="Lk" title="Lk" href="https://cairographics.org">https://cairographics.org</a></dt>
