@@ -100,8 +100,7 @@ Corresponding configurable property:
 .\" option: -y
 .It Fl y Ar yloc
 Sets the y coordinate, in pixels, of the upper-left corner of the window.
-If set to -1, the window will be aligned to the bottom of the display minus
-whatever the height of the window is determined to be.
+If set to -1, the window will be aligned to the bottom of the display.
 .Pp
 Corresponding configurable property:
 .Em window.y .
@@ -430,7 +429,7 @@ $ oxbar [options] theme-name
 .Pp
 That will instruct oxbar to load the configuration file and parse/load all
 lines before any theme definition (the global section), and then only
-those lines after the the line
+those lines after the line
 .Cm [theme-name]
 and before any subsequent theme definition.
 .Pp
@@ -446,7 +445,7 @@ $ oxbar [options] bottom &
 The result is one instance
 .Pq Dq top
 running at the top of the display with the 4 widgets (nprocs, cpulong, memory,
-and net) and another instnace
+and net) and another instance
 .Pq Dq bottom
 running at the bottom of the display with 3 widgets (volume, time, and battery).
 .\" === CONFIGURATION =========================================================
@@ -483,27 +482,30 @@ A background color, for the whole window or individual widgets.
 .It hdcolor
 A header color, typically denoting the header of each widget (the horizontal
 bars optionally shown above or below each widget).
-These properties allow you to color each widget's bar seperately.
+These properties allow you to color each widget's bar separately.
 .It pgcolor
 The color of a progress indicator, typically a progress bar (like those used
 for the battery and volume widgets).
 .El
 .Pp
-What follows is the list of all configurable properites in
+What follows is the list of all configurable properties in
 .Nm .
 .\" --- Font Properties -------------------------------------------------------
 .Ss Font Properties
 These control core font used throughout the display and what the default color
 of all text is.
-.Bl -tag -width font.fgcolor
+.Bl -tag -width window.bgcolor
 .It font.desc
 Set's the font and styles to be used throughout the display.
+See the section
+.Sx SPECIFYING FONTS
+for full details.
 .Pp
 Default value:
 .Dq helvetica 16px
 .It font.fgcolor
 Set's the default foreground color for all text in the display.
-Note the foreground color of each widget can be overriden (see other options
+Note the foreground color of each widget can be overridden (see other options
 below).
 .Pp
 Default value:
@@ -512,13 +514,46 @@ Default value:
 .\" --- Window Properties -----------------------------------------------------
 .Ss Window Properties
 These control with window placement, dimensions, color, and window-manager name.
-.Bl -tag -compact -width window.bgcolor
+.Bl -tag -width window.bgcolor
 .It window.x
+The x coordinate, in pixels, of the upper-left corner of the display.
+.Pp
+Default value:
+.Dq 0
 .It window.y
+The y coordinate, in pixels, of the upper-left corner of the display.
+If set to -1, the window will be aligned to the bottom of the display.
+.Pp
+Default value:
+.Dq 0
 .It window.w
+The width, in pixels, of the display.
+If set to -1, the window will span the full width of the X display.
+.Pp
+Default value:
+.Dq -1
 .It window.h
+The height, in pixels, of the display.
+If set to -1, derive the height from the font described and any
+margins/paddings specified.
+.Pp
+Default value:
+.Dq -1
 .It window.wname
+The name of the window created as identified by the X11 display.
+.Pp
+Default value:
+.Dq Nm
 .It window.bgcolor
+The background color of the main display.
+To achieve a transparent display, use
+alpha blending here by explicitly setting an alpha component in the value.
+See the section
+.Sx SPECIFYING COLORS
+for how to do that.
+.Pp
+Default value:
+.Dq 0a0a0a
 .El
 .\" --- GUI Properties --------------------------------------------------------
 .Ss GUI Properties
@@ -528,43 +563,197 @@ of
 .Nm
 is just an orchestrator of widgets, in that it only controls where/how they
 are rendered.
-These properites are specific to that, spanning all widgets and the display.
-.Bl -tag -compact -width gui.widget_spacing
+These properties are specific to that, spanning all widgets and the display.
+.Bl -tag -width window.bgcolor
 .It widgets
+The list of widgets to be rendered, and where.
+See the section
+.Sx SPECIFYING WIDGETS
+for full details.
+.Pp
+Default value:
+.Dq nprocs cpuslong memory net > battery volume time
 .It gui.margin
+The margins, in pixels, surrounding each widget.
+The margins can be specified for the
+.Em top ,
+.Em right ,
+.Em bottom ,
+and
+.Em left
+regions around a widget, in that order, by providing a quoted string with four
+unsigned integers.
+E.g.
+.Fl m Dq 10 20 10 20
+would set the top and bottom margins to 10 pixels, and the right and left
+margins to 20 pixels.
+Providing a single number, such as
+.Fl m Ar 10
+will set all components to 10 pixels.
+This follows CSS style conventions.
+.Pp
+Default value:
+.Dq 2
 .It gui.padding
+The paddings, in pixels, within each widget.
+The value follows the same format as the
+.Em gui.margins
+property above.
+.Pp
+Default value:
+.Dq 5
 .It gui.header_style
+.Nm
+can show colored
+.Dq headers
+above/below each widget, within the padding region of each widget.
+These help quickly find/identify widgets visually.
+The color can be specified per-widget.
+This option instructs if/where to render such headers.
+It accepts the following string options:
+.Bl -tag -width below
+.It none
+Do not render any header bars.
+.It above
+Render header bars in the
+.Em top
+padding region of each widget (they will be as
+wide as the
+.Em top
+padding of each widget).
+.It below
+Render header bars in the
+.Em bottom
+padding region of each widget.
+.El
+.Pp
+Default value:
+.Dq below
 .It gui.widget_bgcolor
+The background color for every widget.
+Useful if you want each widget to have the same background color separate from
+the main window's background color.
+If unset (or set to
+.Dq )
+then the value is unused.
+.Pp
+Default value:
+.Dq
 .It gui.widget_spacing
+The spacing, in pixels, between each widget in the display.
+.Pp
+Default value:
+.Dq 20
 .El
 .\" --- Battery Widget --------------------------------------------------------
 .Ss Battery Widget
-These properties configure the battery widget, showing charging & capactiy
+These properties configure the battery widget, showing charging & capacity
 status.
-.Bl -tag -compact -width battery.chart_bgcolor
+.Bl -tag -width battery.chart_bgcolor
 .It battery.hdcolor
+The header color for this widget.
+.Pp
+Default value:
+.Dq b58900
 .It battery.bgcolor
+The background color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em gui.widget_bgcolor
+if set, or
+.Em window.bgcolor
+otherwise).
 .It battery.fgcolor
+The foreground color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em font.fgcolor
+).
 .It battery.fgcolor_unplugged
+Color of the leading text when unplugged.
+Useful to highlight when on battery.
+.Pp
+Default value:
+.Dq dc322f
 .It battery.chart_width
+Width (in pixels) of the progress bar.
+.Pp
+Default value:
+.Dq 7
 .It battery.chart_bgcolor
+Background color of the progress bar chart.
+.Pp
+Default value:
+.Dq dc322f
 .It battery.chart_pgcolor
+Progress color of the progress bar chart.
+.Pp
+Default value:
+.Dq 859900
 .El
 .\" --- CPUs Widget -----------------------------------------------------------
 .Ss CPUs Widget
-These properties configure the CPU widget, showing a breakdown of CPU usage by
-core.
-.Bl -tag -compact -width gui.widget_spacing
+These properties configure the CPU widgets (which includes the
+.Em cpu ,
+.Em cpulong ,
+and
+.Em cpushort
+widgets), showing a breakdown of CPU usage by core.
+.Bl -tag -width gui.widget_spacing
 .It cpus.hdcolor
+The header color for this widget.
+.Pp
+Default value:
+.Dq 6c71c4
 .It cpus.bgcolor
+The background color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em gui.widget_bgcolor
+if set, or
+.Em window.bgcolor
+otherwise).
 .It cpus.fgcolor
+The foreground color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em font.fgcolor
+).
 .It cpus.chart_bgcolor
+Background color of the chart.
+.Pp
+Default values:
+.Dq 333333
 .It cpus.chart_color_system
+Color of the system component of the charts.
+.Pp
+Default value:
+.Dq ff0000
 .It cpus.chart_color_interrupt
+Color of the interrupt component of the charts.
+.Pp
+Default value:
+.Dq ffff00
 .It cpus.chart_color_user
+Color of the user component of the charts.
+.Pp
+Default value:
+.Dq 3333ff
 .It cpus.chart_color_nice
+Color of the nice component of the charts.
+.Pp
+Default value:
+.Dq ff00ff
 .It cpus.chart_color_spin
+Color of the spin component of the charts.
+.Pp
+Default value:
+.Dq 00ffff
 .It cpus.chart_color_idle
+Color of the idle component of the charts.
+.Pp
+Default value:
+.Dq 859900
 .El
 .\" --- Memory Widget ---------------------------------------------------------
 .Ss Memory Widget
@@ -572,20 +761,68 @@ These properties configure the memory widget, showing a breakdown of memory
 usage.
 .Bl -tag -compact -width gui.widget_spacing
 .It memory.hdcolor
+The header color for this widget.
+.Pp
+Default value:
+.Dq d33682
 .It memory.bgcolor
+The background color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em gui.widget_bgcolor
+if set, or
+.Em window.bgcolor
+otherwise).
 .It memory.fgcolor
+The foreground color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em font.fgcolor
+).
 .It memory.chart_bgcolor
+Background color of the chart.
+.Pp
+Default values:
+.Dq 333333
 .It memory.chart_color_free
+Color of the free memory component of the chart and text.
+.Pp
+Default value:
+.Dq 859900
 .It memory.chart_color_total
+Color of the total memory component of the chart and text.
+.Pp
+Default value:
+.Dq bbbb00
 .It memory.chart_color_active
+Color of the active memory component of the chart and text.
+.Pp
+Default value:
+.Dq dc322f
 .El
 .\" --- NProcs Widget ---------------------------------------------------------
 .Ss Number Processes Widget
 These properties configure the nprocs widget, showing the number of processes.
 .Bl -tag -compact -width gui.widget_spacing
 .It nprocs.hdcolor
+The header color for this widget.
+.Pp
+Default value:
+.Dq dc322f
 .It nprocs.bgcolor
+The background color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em gui.widget_bgcolor
+if set, or
+.Em window.bgcolor
+otherwise).
 .It nprocs.fgcolor
+The foreground color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em font.fgcolor
+).
 .El
 .\" --- Network Widget --------------------------------------------------------
 .Ss Network Widget
@@ -593,34 +830,125 @@ These properties configure the network widget, showing the bytes in/out on the
 egress interface.
 .Bl -tag -compact -width gui.widget_spacing
 .It net.hdcolor
+The header color for this widget.
+.Pp
+Default value:
+.Dq 268bd2
 .It net.bgcolor
+The background color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em gui.widget_bgcolor
+if set, or
+.Em window.bgcolor
+otherwise).
 .It net.fgcolor
+The foreground color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em font.fgcolor
+).
 .It net.inbound_chart_color_bgcolor
+Background color of the inbound traffic chart.
+.Pp
+Default value:
+.Dq 859900
 .It net.inbound_chart_color_pgcolor
+Progress color of the inbound traffic chart.
+.Pp
+Default value:
+.Dq 157ad2
 .It net.inbound_text_fgcolor
+Text color of the inbound traffic number.
+.Pp
+Default value:
+.Dq 157ad2
 .It net.outbound_chart_color_bgcolor
+Background color of the outbound traffic chart.
+.Pp
+Default value:
+.Dq 859900
 .It net.outbound_chart_color_pgcolor
+Progress color of the outbound traffic chart.
+.Pp
+Default value:
+.Dq dc322f
 .It net.outbound_text_fgcolor
+Text color of the outbound traffic number.
+.Pp
+Default value:
+.Dq dc322f
 .El
 .\" --- Time Widget -----------------------------------------------------------
 .Ss Time Widget
 These properties configure the time widget, showing the date/time.
 .Bl -tag -compact -width gui.widget_spacing
 .It time.hdcolor
+The header color for this widget.
+.Pp
+Default value:
+.Dq 859900
 .It time.bgcolor
+The background color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em gui.widget_bgcolor
+if set, or
+.Em window.bgcolor
+otherwise).
 .It time.fgcolor
+The foreground color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em font.fgcolor
+).
 .It time.format
+The format to use when displaying the date/time.
+Any string by
+.Xr strftime 3
+is supported.
+.Pp
+Default value:
+.Dq %a %b %d %Y  %I:%M:%S %p
 .El
 .\" --- Volume Widget ---------------------------------------------------------
 .Ss Volume Widget
 These properties configure the volume widget, showing the current volume levels.
 .Bl -tag -compact -width gui.widget_spacing
 .It volume.hdcolor
+The header color for this widget.
+.Pp
+Default value:
+.Dq cb4b16
 .It volume.bgcolor
+The background color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em gui.widget_bgcolor
+if set, or
+.Em window.bgcolor
+otherwise).
 .It volume.fgcolor
+The foreground color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em font.fgcolor
+).
 .It volume.chart_width
+Width (in pixels) of the progress bar.
+.Pp
+Default value:
+.Dq 7
 .It volume.chart_bgcolor
+Background color of the progress bar chart.
+.Pp
+Default value:
+.Dq dc322f
 .It volume.chart_pgcolor
+Progress color of the progress bar chart.
+.Pp
+Default value:
+.Dq 859900
 .El
 .\" === SPECIFYING FONTS ======================================================
 .Sh SPECIFYING FONTS
@@ -639,7 +967,7 @@ All text rendered in
 will be done using the font loaded from that description.
 .Pp
 See the documentation of that API for full details.
-In summary, the format of the string is a space seperated list of the form
+In summary, the format of the string is a space separated list of the form
 .Bd -literal
 FONT-FAMILY [STYLE | VARIANT | WEIGHT]* SIZEpx
 .Ed
@@ -701,7 +1029,7 @@ Red, about half opaque / half transparent
 .Pp
 The strings specifying these can optionally include a leading # symbol, though
 in the configuration file that must be escaped to prevent that character
-being interpretted as the start of a comment.
+being interpreted as the start of a comment.
 .Pp
 .Nm
 supports true transparency / alpha blending on the main window by specifying a
@@ -753,13 +1081,13 @@ oxbar -W "time volume battery"
 .Ss Specifying Widget Alignment
 The following characters in the
 .Ar widgets
-value string can alter the alginment of subsequent widgets specified:
+value string can alter the alignment of subsequent widgets specified:
 .Bl -tag -width foo
 .It <
 All subsequent widgets are
 .Em left-aligned ,
 growing from the left-most edge of the display.
-This is the default alignment and thus not stricly required.
+This is the default alignment and thus not strictly required.
 .It >
 All subsequent widgets are
 .Em right-aligned ,
@@ -800,7 +1128,7 @@ Corresponding configurable properties:
 .It cpulong
 Similar to the cpu widget above, only after each chart all CPU state
 percentages are printed, not just idle (so system, interrupt, user, nice, spin,
-and idle, in that orer).
+and idle, in that order).
 .Pp
 Corresponding configurable properties:
 .Em cpus.* .
@@ -892,7 +1220,7 @@ targets
 .Cm scan-build
 and
 .Cm cppcheck
-run those tools, respecitively, and should remain error/warning-free.
+run those tools, respectively, and should remain error/warning-free.
 .Pp
 .Xr style 9
 is mostly followed, but there's still work there to be done.

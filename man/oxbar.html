@@ -156,8 +156,7 @@ Setting configurable properties is always of the form
   <dt><a class="permalink" href="#y"><code class="Fl" title="Fl" id="y">-y</code></a>
     <var class="Ar" title="Ar">yloc</var></dt>
   <dd>Sets the y coordinate, in pixels, of the upper-left corner of the window.
-      If set to -1, the window will be aligned to the bottom of the display
-      minus whatever the height of the window is determined to be.
+      If set to -1, the window will be aligned to the bottom of the display.
     <div class="Pp"></div>
     Corresponding configurable property:
     <i class="Em" title="Em">window.y</i>.</dd>
@@ -451,8 +450,8 @@ $ oxbar [options] theme-name
 <div class="Pp"></div>
 That will instruct oxbar to load the configuration file and parse/load all lines
   before any theme definition (the global section), and then only those lines
-  after the the line <code class="Cm" title="Cm">[theme-name]</code> and before
-  any subsequent theme definition.
+  after the line <code class="Cm" title="Cm">[theme-name]</code> and before any
+  subsequent theme definition.
 <div class="Pp"></div>
 Using the example above, the following two commands would launch two instances
   of <code class="Nm" title="Nm">oxbar</code>, each using their respective theme
@@ -467,7 +466,7 @@ $ oxbar [options] bottom &amp;
 <div class="Pp"></div>
 The result is one instance (&#x201C;top&#x201D;) running at the top of the
   display with the 4 widgets (nprocs, cpulong, memory, and net) and another
-  instnace (&#x201C;bottom&#x201D;) running at the bottom of the display with 3
+  instance (&#x201C;bottom&#x201D;) running at the bottom of the display with 3
   widgets (volume, time, and battery).
 <h1 class="Sh" title="Sh" id="CONFIGURATION"><a class="permalink" href="#CONFIGURATION">CONFIGURATION</a></h1>
 This is a complete list of all configurable properties supported by
@@ -495,13 +494,13 @@ Many of the configurable properties have common suffixes, and knowing what they
   <dt>hdcolor</dt>
   <dd>A header color, typically denoting the header of each widget (the
       horizontal bars optionally shown above or below each widget). These
-      properties allow you to color each widget's bar seperately.</dd>
+      properties allow you to color each widget's bar separately.</dd>
   <dt>pgcolor</dt>
   <dd>The color of a progress indicator, typically a progress bar (like those
       used for the battery and volume widgets).</dd>
 </dl>
 <div class="Pp"></div>
-What follows is the list of all configurable properites in
+What follows is the list of all configurable properties in
   <code class="Nm" title="Nm">oxbar</code>.
 <h2 class="Ss" title="Ss" id="Font_Properties"><a class="permalink" href="#Font_Properties">Font
   Properties</a></h2>
@@ -509,12 +508,14 @@ These control core font used throughout the display and what the default color
   of all text is.
 <dl class="Bl-tag">
   <dt>font.desc</dt>
-  <dd>Set's the font and styles to be used throughout the display.
+  <dd>Set's the font and styles to be used throughout the display. See the
+      section <a class="Sx" title="Sx" href="#SPECIFYING_FONTS">SPECIFYING
+      FONTS</a> for full details.
     <div class="Pp"></div>
     Default value: &#x201C;helvetica 16px&#x201D;</dd>
   <dt>font.fgcolor</dt>
   <dd>Set's the default foreground color for all text in the display. Note the
-      foreground color of each widget can be overriden (see other options
+      foreground color of each widget can be overridden (see other options
       below).
     <div class="Pp"></div>
     Default value: &#x201C;#93a1a1&#x201D;</dd>
@@ -522,84 +523,188 @@ These control core font used throughout the display and what the default color
 <h2 class="Ss" title="Ss" id="Window_Properties"><a class="permalink" href="#Window_Properties">Window
   Properties</a></h2>
 These control with window placement, dimensions, color, and window-manager name.
-<dl class="Bl-tag Bl-compact">
+<dl class="Bl-tag">
   <dt>window.x</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The x coordinate, in pixels, of the upper-left corner of the display.
+    <div class="Pp"></div>
+    Default value: &#x201C;0&#x201D;</dd>
   <dt>window.y</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The y coordinate, in pixels, of the upper-left corner of the display. If
+      set to -1, the window will be aligned to the bottom of the display.
+    <div class="Pp"></div>
+    Default value: &#x201C;0&#x201D;</dd>
   <dt>window.w</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The width, in pixels, of the display. If set to -1, the window will span
+      the full width of the X display.
+    <div class="Pp"></div>
+    Default value: &#x201C;-1&#x201D;</dd>
   <dt>window.h</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The height, in pixels, of the display. If set to -1, derive the height
+      from the font described and any margins/paddings specified.
+    <div class="Pp"></div>
+    Default value: &#x201C;-1&#x201D;</dd>
   <dt>window.wname</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The name of the window created as identified by the X11 display.
+    <div class="Pp"></div>
+    Default value: &#x201C;<code class="Nm" title="Nm">oxbar</code>&#x201D;</dd>
   <dt>window.bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The background color of the main display. To achieve a transparent
+      display, use alpha blending here by explicitly setting an alpha component
+      in the value. See the section
+      <a class="Sx" title="Sx" href="#SPECIFYING_COLORS">SPECIFYING COLORS</a>
+      for how to do that.
+    <div class="Pp"></div>
+    Default value: &#x201C;0a0a0a&#x201D;</dd>
 </dl>
 <h2 class="Ss" title="Ss" id="GUI_Properties"><a class="permalink" href="#GUI_Properties">GUI
   Properties</a></h2>
 The &#x201C;GUI&#x201D; of <code class="Nm" title="Nm">oxbar</code> is just an
   orchestrator of widgets, in that it only controls where/how they are rendered.
-  These properites are specific to that, spanning all widgets and the display.
-<dl class="Bl-tag Bl-compact">
+  These properties are specific to that, spanning all widgets and the display.
+<dl class="Bl-tag">
   <dt>widgets</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The list of widgets to be rendered, and where. See the section
+      <a class="Sx" title="Sx" href="#SPECIFYING_WIDGETS">SPECIFYING WIDGETS</a>
+      for full details.
+    <div class="Pp"></div>
+    Default value: &#x201C;nprocs cpuslong memory net &gt; battery volume
+      time&#x201D;</dd>
   <dt>gui.margin</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The margins, in pixels, surrounding each widget. The margins can be
+      specified for the <i class="Em" title="Em">top</i>,
+      <i class="Em" title="Em">right</i>, <i class="Em" title="Em">bottom</i>,
+      and <i class="Em" title="Em">left</i> regions around a widget, in that
+      order, by providing a quoted string with four unsigned integers. E.g.
+      <code class="Fl" title="Fl">-m</code> &#x201C;10 20 10 20&#x201D; would
+      set the top and bottom margins to 10 pixels, and the right and left
+      margins to 20 pixels. Providing a single number, such as
+      <code class="Fl" title="Fl">-m</code> <var class="Ar" title="Ar">10</var>
+      will set all components to 10 pixels. This follows CSS style conventions.
+    <div class="Pp"></div>
+    Default value: &#x201C;2&#x201D;</dd>
   <dt>gui.padding</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The paddings, in pixels, within each widget. The value follows the same
+      format as the <i class="Em" title="Em">gui.margins</i> property above.
+    <div class="Pp"></div>
+    Default value: &#x201C;5&#x201D;</dd>
   <dt>gui.header_style</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd><code class="Nm" title="Nm">oxbar</code> can show colored
+      &#x201C;headers&#x201D; above/below each widget, within the padding region
+      of each widget. These help quickly find/identify widgets visually. The
+      color can be specified per-widget. This option instructs if/where to
+      render such headers. It accepts the following string options:
+    <dl class="Bl-tag">
+      <dt>none</dt>
+      <dd>Do not render any header bars.</dd>
+      <dt>above</dt>
+      <dd>Render header bars in the <i class="Em" title="Em">top</i> padding
+          region of each widget (they will be as wide as the
+          <i class="Em" title="Em">top</i> padding of each widget).</dd>
+      <dt>below</dt>
+      <dd>Render header bars in the <i class="Em" title="Em">bottom</i> padding
+          region of each widget.</dd>
+    </dl>
+    <div class="Pp"></div>
+    Default value: &#x201C;below&#x201D;</dd>
   <dt>gui.widget_bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The background color for every widget. Useful if you want each widget to
+      have the same background color separate from the main window's background
+      color. If unset (or set to &#x201C;&#x201D;) then the value is unused.
+    <div class="Pp"></div>
+    Default value: &#x201C;&#x201D;</dd>
   <dt>gui.widget_spacing</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The spacing, in pixels, between each widget in the display.
+    <div class="Pp"></div>
+    Default value: &#x201C;20&#x201D;</dd>
 </dl>
 <h2 class="Ss" title="Ss" id="Battery_Widget"><a class="permalink" href="#Battery_Widget">Battery
   Widget</a></h2>
-These properties configure the battery widget, showing charging &amp; capactiy
+These properties configure the battery widget, showing charging &amp; capacity
   status.
-<dl class="Bl-tag Bl-compact">
+<dl class="Bl-tag">
   <dt>battery.hdcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The header color for this widget.
+    <div class="Pp"></div>
+    Default value: &#x201C;b58900&#x201D;</dd>
   <dt>battery.bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The background color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to
+      <i class="Em" title="Em">gui.widget_bgcolor</i> if set, or
+      <i class="Em" title="Em">window.bgcolor</i> otherwise).</dd>
   <dt>battery.fgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The foreground color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to <i class="Em" title="Em">font.fgcolor</i>
+      ).</dd>
   <dt>battery.fgcolor_unplugged</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Color of the leading text when unplugged. Useful to highlight when on
+      battery.
+    <div class="Pp"></div>
+    Default value: &#x201C;dc322f&#x201D;</dd>
   <dt>battery.chart_width</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Width (in pixels) of the progress bar.
+    <div class="Pp"></div>
+    Default value: &#x201C;7&#x201D;</dd>
   <dt>battery.chart_bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Background color of the progress bar chart.
+    <div class="Pp"></div>
+    Default value: &#x201C;dc322f&#x201D;</dd>
   <dt>battery.chart_pgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Progress color of the progress bar chart.
+    <div class="Pp"></div>
+    Default value: &#x201C;859900&#x201D;</dd>
 </dl>
 <h2 class="Ss" title="Ss" id="CPUs_Widget"><a class="permalink" href="#CPUs_Widget">CPUs
   Widget</a></h2>
-These properties configure the CPU widget, showing a breakdown of CPU usage by
-  core.
-<dl class="Bl-tag Bl-compact">
+These properties configure the CPU widgets (which includes the
+  <i class="Em" title="Em">cpu</i>, <i class="Em" title="Em">cpulong</i>, and
+  <i class="Em" title="Em">cpushort</i> widgets), showing a breakdown of CPU
+  usage by core.
+<dl class="Bl-tag">
   <dt>cpus.hdcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The header color for this widget.
+    <div class="Pp"></div>
+    Default value: &#x201C;6c71c4&#x201D;</dd>
   <dt>cpus.bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The background color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to
+      <i class="Em" title="Em">gui.widget_bgcolor</i> if set, or
+      <i class="Em" title="Em">window.bgcolor</i> otherwise).</dd>
   <dt>cpus.fgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The foreground color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to <i class="Em" title="Em">font.fgcolor</i>
+      ).</dd>
   <dt>cpus.chart_bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Background color of the chart.
+    <div class="Pp"></div>
+    Default values: &#x201C;333333&#x201D;</dd>
   <dt>cpus.chart_color_system</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Color of the system component of the charts.
+    <div class="Pp"></div>
+    Default value: &#x201C;ff0000&#x201D;</dd>
   <dt>cpus.chart_color_interrupt</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Color of the interrupt component of the charts.
+    <div class="Pp"></div>
+    Default value: &#x201C;ffff00&#x201D;</dd>
   <dt>cpus.chart_color_user</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Color of the user component of the charts.
+    <div class="Pp"></div>
+    Default value: &#x201C;3333ff&#x201D;</dd>
   <dt>cpus.chart_color_nice</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Color of the nice component of the charts.
+    <div class="Pp"></div>
+    Default value: &#x201C;ff00ff&#x201D;</dd>
   <dt>cpus.chart_color_spin</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Color of the spin component of the charts.
+    <div class="Pp"></div>
+    Default value: &#x201C;00ffff&#x201D;</dd>
   <dt>cpus.chart_color_idle</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Color of the idle component of the charts.
+    <div class="Pp"></div>
+    Default value: &#x201C;859900&#x201D;</dd>
 </dl>
 <h2 class="Ss" title="Ss" id="Memory_Widget"><a class="permalink" href="#Memory_Widget">Memory
   Widget</a></h2>
@@ -607,30 +712,56 @@ These properties configure the memory widget, showing a breakdown of memory
   usage.
 <dl class="Bl-tag Bl-compact">
   <dt>memory.hdcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The header color for this widget.
+    <div class="Pp"></div>
+    Default value: &#x201C;d33682&#x201D;</dd>
   <dt>memory.bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The background color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to
+      <i class="Em" title="Em">gui.widget_bgcolor</i> if set, or
+      <i class="Em" title="Em">window.bgcolor</i> otherwise).</dd>
   <dt>memory.fgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The foreground color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to <i class="Em" title="Em">font.fgcolor</i>
+      ).</dd>
   <dt>memory.chart_bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Background color of the chart.
+    <div class="Pp"></div>
+    Default values: &#x201C;333333&#x201D;</dd>
   <dt>memory.chart_color_free</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Color of the free memory component of the chart and text.
+    <div class="Pp"></div>
+    Default value: &#x201C;859900&#x201D;</dd>
   <dt>memory.chart_color_total</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Color of the total memory component of the chart and text.
+    <div class="Pp"></div>
+    Default value: &#x201C;bbbb00&#x201D;</dd>
   <dt>memory.chart_color_active</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Color of the active memory component of the chart and text.
+    <div class="Pp"></div>
+    Default value: &#x201C;dc322f&#x201D;</dd>
 </dl>
 <h2 class="Ss" title="Ss" id="Number_Processes_Widget"><a class="permalink" href="#Number_Processes_Widget">Number
   Processes Widget</a></h2>
 These properties configure the nprocs widget, showing the number of processes.
 <dl class="Bl-tag Bl-compact">
   <dt>nprocs.hdcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The header color for this widget.
+    <div class="Pp"></div>
+    Default value: &#x201C;dc322f&#x201D;</dd>
   <dt>nprocs.bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The background color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to
+      <i class="Em" title="Em">gui.widget_bgcolor</i> if set, or
+      <i class="Em" title="Em">window.bgcolor</i> otherwise).</dd>
   <dt>nprocs.fgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The foreground color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to <i class="Em" title="Em">font.fgcolor</i>
+      ).</dd>
 </dl>
 <h2 class="Ss" title="Ss" id="Network_Widget"><a class="permalink" href="#Network_Widget">Network
   Widget</a></h2>
@@ -638,53 +769,101 @@ These properties configure the network widget, showing the bytes in/out on the
   egress interface.
 <dl class="Bl-tag Bl-compact">
   <dt>net.hdcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The header color for this widget.
+    <div class="Pp"></div>
+    Default value: &#x201C;268bd2&#x201D;</dd>
   <dt>net.bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The background color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to
+      <i class="Em" title="Em">gui.widget_bgcolor</i> if set, or
+      <i class="Em" title="Em">window.bgcolor</i> otherwise).</dd>
   <dt>net.fgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The foreground color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to <i class="Em" title="Em">font.fgcolor</i>
+      ).</dd>
   <dt>net.inbound_chart_color_bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Background color of the inbound traffic chart.
+    <div class="Pp"></div>
+    Default value: &#x201C;859900&#x201D;</dd>
   <dt>net.inbound_chart_color_pgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Progress color of the inbound traffic chart.
+    <div class="Pp"></div>
+    Default value: &#x201C;157ad2&#x201D;</dd>
   <dt>net.inbound_text_fgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Text color of the inbound traffic number.
+    <div class="Pp"></div>
+    Default value: &#x201C;157ad2&#x201D;</dd>
   <dt>net.outbound_chart_color_bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Background color of the outbound traffic chart.
+    <div class="Pp"></div>
+    Default value: &#x201C;859900&#x201D;</dd>
   <dt>net.outbound_chart_color_pgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Progress color of the outbound traffic chart.
+    <div class="Pp"></div>
+    Default value: &#x201C;dc322f&#x201D;</dd>
   <dt>net.outbound_text_fgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Text color of the outbound traffic number.
+    <div class="Pp"></div>
+    Default value: &#x201C;dc322f&#x201D;</dd>
 </dl>
 <h2 class="Ss" title="Ss" id="Time_Widget"><a class="permalink" href="#Time_Widget">Time
   Widget</a></h2>
 These properties configure the time widget, showing the date/time.
 <dl class="Bl-tag Bl-compact">
   <dt>time.hdcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The header color for this widget.
+    <div class="Pp"></div>
+    Default value: &#x201C;859900&#x201D;</dd>
   <dt>time.bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The background color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to
+      <i class="Em" title="Em">gui.widget_bgcolor</i> if set, or
+      <i class="Em" title="Em">window.bgcolor</i> otherwise).</dd>
   <dt>time.fgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The foreground color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to <i class="Em" title="Em">font.fgcolor</i>
+      ).</dd>
   <dt>time.format</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The format to use when displaying the date/time. Any string by
+      <a class="Xr" title="Xr">strftime(3)</a> is supported.
+    <div class="Pp"></div>
+    Default value: &#x201C;%a %b %d %Y %I:%M:%S %p&#x201D;</dd>
 </dl>
 <h2 class="Ss" title="Ss" id="Volume_Widget"><a class="permalink" href="#Volume_Widget">Volume
   Widget</a></h2>
 These properties configure the volume widget, showing the current volume levels.
 <dl class="Bl-tag Bl-compact">
   <dt>volume.hdcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The header color for this widget.
+    <div class="Pp"></div>
+    Default value: &#x201C;cb4b16&#x201D;</dd>
   <dt>volume.bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The background color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to
+      <i class="Em" title="Em">gui.widget_bgcolor</i> if set, or
+      <i class="Em" title="Em">window.bgcolor</i> otherwise).</dd>
   <dt>volume.fgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>The foreground color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to <i class="Em" title="Em">font.fgcolor</i>
+      ).</dd>
   <dt>volume.chart_width</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Width (in pixels) of the progress bar.
+    <div class="Pp"></div>
+    Default value: &#x201C;7&#x201D;</dd>
   <dt>volume.chart_bgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Background color of the progress bar chart.
+    <div class="Pp"></div>
+    Default value: &#x201C;dc322f&#x201D;</dd>
   <dt>volume.chart_pgcolor</dt>
-  <dd style="width: auto;">&#x00A0;</dd>
+  <dd>Progress color of the progress bar chart.
+    <div class="Pp"></div>
+    Default value: &#x201C;859900&#x201D;</dd>
 </dl>
 <h1 class="Sh" title="Sh" id="SPECIFYING_FONTS"><a class="permalink" href="#SPECIFYING_FONTS">SPECIFYING
   FONTS</a></h1>
@@ -698,7 +877,7 @@ The font used by <code class="Nm" title="Nm">oxbar</code>, and styling for it,
   the font loaded from that description.
 <div class="Pp"></div>
 See the documentation of that API for full details. In summary, the format of
-  the string is a space seperated list of the form
+  the string is a space separated list of the form
 <div class="Pp"></div>
 <div class="Bd">
 <pre class="Li">
@@ -751,7 +930,7 @@ Some examples are:
 <div class="Pp"></div>
 The strings specifying these can optionally include a leading # symbol, though
   in the configuration file that must be escaped to prevent that character being
-  interpretted as the start of a comment.
+  interpreted as the start of a comment.
 <div class="Pp"></div>
 <code class="Nm" title="Nm">oxbar</code> supports true transparency / alpha
   blending on the main window by specifying a transparent color to the
@@ -796,12 +975,12 @@ oxbar -W &quot;time volume battery&quot;
 <h2 class="Ss" title="Ss" id="Specifying_Widget_Alignment"><a class="permalink" href="#Specifying_Widget_Alignment">Specifying
   Widget Alignment</a></h2>
 The following characters in the <var class="Ar" title="Ar">widgets</var> value
-  string can alter the alginment of subsequent widgets specified:
+  string can alter the alignment of subsequent widgets specified:
 <dl class="Bl-tag">
   <dt>&lt;</dt>
   <dd>All subsequent widgets are <i class="Em" title="Em">left-aligned</i>,
       growing from the left-most edge of the display. This is the default
-      alignment and thus not stricly required.</dd>
+      alignment and thus not strictly required.</dd>
   <dt>&gt;</dt>
   <dd>All subsequent widgets are <i class="Em" title="Em">right-aligned</i>,
       growing from the right-most edge of the display.</dd>
@@ -843,7 +1022,7 @@ This is the list of all available widgets that can be set.
   <dt>cpulong</dt>
   <dd>Similar to the cpu widget above, only after each chart all CPU state
       percentages are printed, not just idle (so system, interrupt, user, nice,
-      spin, and idle, in that orer).
+      spin, and idle, in that order).
     <div class="Pp"></div>
     Corresponding configurable properties:
     <i class="Em" title="Em">cpus.*</i>.</dd>
@@ -921,8 +1100,8 @@ In addition, the following libraries are heavily utilized by
   with &#x201C;-std=c89 -Wall -Wextra -Werror&#x201D;. Additionally, the
   <a class="Xr" title="Xr">make(1)</a> targets
   <code class="Cm" title="Cm">scan-build</code> and
-  <code class="Cm" title="Cm">cppcheck</code> run those tools, respecitively,
-  and should remain error/warning-free.
+  <code class="Cm" title="Cm">cppcheck</code> run those tools, respectively, and
+  should remain error/warning-free.
 <div class="Pp"></div>
 <a class="Xr" title="Xr">style(9)</a> is mostly followed, but there's still work
   there to be done.
