@@ -2,9 +2,12 @@ gui/xcore.c:172: * TODO cleanup & separate wm hints ... and dragons
 gui/xdraw.h:24: * TODO This abstraction should also permit vertical rendering (for a vertical
 gui/xcore.t.cc:9:/* TODO either fix googletest's [ASSERT|EXPECT]_EXIT* on openbsd or switch */
 oxbar.c:3: * TODO complete man page (probably wait until widget settings moved)
-oxbar.c:4: * TODO more examples
-oxbar.c:5: * TODO polish error messages (err/errx calls)
-oxbar.c:6: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
+oxbar.c:4: * TODO don't bomb on more than one egress interface / configurable (XXX MAN)
+oxbar.c:5: * TODO don't use -1 for y/w/h magic - use 0 and use unsigned types (XXX MAN)
+oxbar.c:6: * TODO fix font sizing issue (support pt/none/etc) (XXX MAN)
+oxbar.c:7: * TODO more examples
+oxbar.c:8: * TODO polish error messages (err/errx calls)
+oxbar.c:9: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
 settings.c:297: * TODO Create a settings_free() (or refactor to make easier)
 stats/brightness.h:2: * TODO Build a working brightness widget (this is currently not used)
 stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
