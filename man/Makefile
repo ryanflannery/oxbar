@@ -1,6 +1,9 @@
-MAN_PAGES=oxbar.1
+PREFIX ?= /usr/local
+MANDIR ?= $(PREFIX)/man/man1
 
-.PHONY: lint
+MAN_PAGES = oxbar.1
+
+.PHONY: lint test
 
 .DEFAULT:
 	@echo Nothing to do here
@@ -15,3 +18,10 @@ lint:
 
 test:
 	mandoc oxbar.1 | less
+
+install:
+	install -c -m 0444 $(MAN_PAGES) $(MANDIR)
+
+uninstall:
+	cd $(MANDIR)
+	rm -f $(MAN_PAGES)
