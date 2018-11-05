@@ -1,7 +1,8 @@
 # install locations
-PREFIX ?= /usr/local
-BINDIR ?= $(PREFIX)/bin
-MANDIR ?= $(PREFIX)/man/man1
+PREFIX   ?= /usr/local
+BINDIR   ?= $(PREFIX)/bin
+MANDIR   ?= $(PREFIX)/man/man1
+SHAREDIR ?= $(PREFIX)/share/oxbar
 
 # build flags
 CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2 `pkg-config --cflags pangocairo`
@@ -48,7 +49,10 @@ clean:
 	rm -f oxbar.core
 
 install:
+	$(MAKE) -C man $(MFLAGS) $@
 	install oxbar $(BINDIR)
+	install -d $(SHAREDIR)
+	install -m 644 sample.oxbar.conf $(SHAREDIR)
 
 # some simple test runs that work the gui/widget logic
 testruns:

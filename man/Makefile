@@ -20,7 +20,7 @@ test:
 	mandoc oxbar.1 | less
 
 install:
-	install -c -m 0444 $(MAN_PAGES) $(MANDIR)
+	install -m 0444 $(MAN_PAGES) $(MANDIR)
 
 uninstall:
 	cd $(MANDIR)
