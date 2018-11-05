@@ -71,7 +71,7 @@ wcpu_draw(void *wstate, struct xctx *ctx)
             });
 
       xdraw_chart(ctx, w->cpu_charts[cpu]);
-      xdraw_printf(ctx, fgcolor, "% 3.0f%%",
+      xdraw_printf(ctx, fgcolor, "%3.0f%%",
             w->stats->cpus->cpus[cpu].percentages[CP_IDLE]);
 
       if (cpu != w->ncpus - 1) xdraw_printf(ctx, "000000", " ");

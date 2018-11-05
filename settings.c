@@ -217,7 +217,7 @@ settings_set_defaults(struct settings *s)
 {
    s->widgets = strdup("nprocs cpuslong memory net > battery volume time");
 
-   s->font.desc = strdup("helvetica 16px");
+   s->font.desc = strdup("DejaVu sans mono 16px");
    s->font.fgcolor = strdup("93a1a1");
 
    s->window.x = 0;
