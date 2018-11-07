@@ -31,18 +31,11 @@
 .Nm
 is a X11 status bar for
 .Ox
-showing various system stats.
-.Nm
-aims to have a configurable display and work out-of-the-box on most modern
-window managers in an intuitive fashion.
-It supports full FreeType font rendering and styling (easily), true
-transparency/alpha blending on all UI components, and a simple configuration
-format that can concisely support multiple themes.
-.Pp
-.Nm
-is also a replacement for my old
-.Xr xstatbar 1 ,
-and it started as a derivative of that.
+showing various system stats, has a configurable display, and works
+out-of-the-box on most modern window managers in an intuitive fashion.
+It supports FreeType font rendering and styling, true transparency & alpha
+blending on all UI components (including the background), and a simple
+configuration format that can concisely support multiple themes.
 .\" --- Overview of Configuring oxbar -----------------------------------------
 .Ss Overview of Configuring Nm
 All configurable properties in
@@ -59,15 +52,6 @@ a
 signal to
 .Nm .
 .Pp
-The configuration file can have any number of named subsections called
-.Dq themes
-that can be loaded on the command line with the
-.Ar theme
-parameter.
-See the section
-.Sx FILES
-below for details on the configuration file format and how to use themes.
-.Pp
 Setting configurable properties is always of the form
 .Ar property=value ,
 either from the command line or configuration file.
@@ -78,9 +62,7 @@ for a list of all configurable properties.
 .\" --- Command Line Flags ----------------------------------------------------
 .Ss Command Line Flags
 .Nm
-supports the following command line flags, which are backwards compatible
-with
-.Xr xstatbar 1 :
+supports the following command line flags:
 .Bl -tag -width Fl
 .\" option: -H
 .It Fl H
@@ -149,7 +131,7 @@ E.g.
 would set the top and bottom margins to 10 pixels, and the right and left
 margins to 20 pixels.
 Providing a single number, such as
-.Fl m Ar 10
+.Fl m Ar 10 ,
 will set all components to 10 pixels.
 This follows CSS style conventions.
 .Pp
@@ -258,13 +240,14 @@ If a theme is specified and no configuration file is found (either specified via
 .Fl F Ar config-file
 or using the default
 .Pa $HOME/.oxbar.conf )
-an error is returned.
+.Nm
+will report an error and exit.
+.Pp
 When specified, any lines in the configuration file after a line like
 .Cm [theme] ,
 and before any other theme definition,
 will be loaded, along with any lines before the first theme definition
 (considered global options).
-Note theme sections end whenever a new theme is defined.
 See the
 .Sx FILES
 section for full details.
@@ -275,13 +258,11 @@ section for full details.
 .It Ev HOME
 The user's home directory, which
 .Nm
-will use to construct the name of the default configuration file to load if no
+will use to construct the name of the default configuration file to load
+.Pq Pa $HOME/.oxbar.conf
+if no
 .Fl F Ar config-file
 command line parameter is set.
-In that case,
-.Nm
-will always attempt to load
-.Pa $HOME/.oxbar.conf .
 .El
 .\" === FILES =================================================================
 .Sh FILES
@@ -335,7 +316,7 @@ time.bgcolor   = "00ff00"
 .Ed
 .Pp
 would set the window's primary background color to red, but the background
-color for the time widget to green (these are using 32-bit hex color codes,
+color for time widget to green (these are using 32-bit hex color codes,
 see the section
 .Sx SPECIFYING COLORS
 for details).
@@ -373,33 +354,12 @@ window.x = 100    # set offset to 100 (this is a comment)
 .Ss Using Themes
 Themes provide a way to support multiple configurations of
 .Nm
-in a single file and load each optionally at runtime.
+in a single file and load each optionally at the command line.
 This is useful if you run multiple instances of
 .Nm ,
 say one configuration for the top of your display showing some widgets, and
 another configuration at the bottom of your display showing a different set of
 widgets.
-.Pp
-The following example configuration file is used below to discuss the semantics
-of themes.
-.Bd -literal -offset indent
-# global configuration (always loaded for any or no themes)
-font.desc = "DejaVu Sans Mono 20px"    # needs DejaVu fonts installed
-font.fgcolor = "93a1a1"                # a light grey
-window.x = 0                           # make oxbar align to left-most pixel
-window.w = -1                          # make oxbar use full width of display
-window.h = -1                          # derive height
-
-# start the "top" theme
-[top]
-widgets = "< nprocs cpulong | memory > net"
-window.y = 0                           # show oxbar at the top of the display
-
-# start the "bottom" theme
-[bottom]
-widgets = "< volume | time > battery"
-window.y = -1                          # show oxbar at the bottom of the display
-.Ed
 .Pp
 Themes are a subset of a configuration file.
 They begin with a line like:
@@ -410,7 +370,38 @@ They begin with a line like:
 All lines after that are considered part of a theme named
 .Em theme-name
 until either the end of the file or a new theme is defined.
-So the above example defines two themes:
+.Pp
+To run
+.Nm
+and use a theme, simply provide the
+.Em theme-name
+as the last parameter on the command line, like this:
+.Bd -literal -offset indent
+$ oxbar [options] theme-name
+.Ed
+.Pp
+The following example configuration file is used below to illustrate the usage
+of themes.
+.Bd -literal -offset indent
+# global configuration (always loaded for any or no themes)
+font.desc = "DejaVu Sans Mono 20px" # font used everywhere
+font.fgcolor = "93a1a1"             # a light gray
+window.x = 0                        # align to left of display
+window.w = -1                       # align to bottom of display
+window.h = -1                       # derive height
+
+# start the "top" theme
+[top]
+widgets = "< nprocs cpulong | memory > net"
+window.y = 0                        # show at top of display
+
+# start the "bottom" theme
+[bottom]
+widgets = "< volume | time > battery"
+window.y = -1                       # show at bottom of display
+.Ed
+.Pp
+Given the above configuration file, two themes are defined:
 .Em top
 and
 .Em bottom .
@@ -418,25 +409,9 @@ The lines that occur before any theme definition are considered global, and are
 always loaded for any, or no, theme.
 This is handy if some things (such as font) apply to all themes.
 .Pp
-To run
-.Nm
-and use a theme, simply provide the
-.Em theme-name
-as the last parameter on the command line, like this:
-.Bd -literal
-$ oxbar [options] theme-name
-.Ed
-.Pp
-That will instruct oxbar to load the configuration file and parse/load all
-lines before any theme definition (the global section), and then only
-those lines after the line
-.Cm [theme-name]
-and before any subsequent theme definition.
-.Pp
-Using the example above, the following two commands would launch two instances
-of
+Using the above, the following two commands would launch two instances of
 .Nm ,
-each using their respective theme definitions.
+using their respective theme definitions.
 .Bd -literal -offset indent
 $ oxbar [options] top &
 $ oxbar [options] bottom &
@@ -453,7 +428,7 @@ running at the bottom of the display with 3 widgets (volume, time, and battery).
 This is a complete list of all configurable properties supported by
 .Nm .
 They can be set:
-.Bl -bullet
+.Bl -bullet -compact
 .It
 At the command line with
 .Fl S Ar property=value ,
@@ -954,7 +929,7 @@ Default value:
 .Sh SPECIFYING FONTS
 The font used by
 .Nm ,
-and styling for it, it described and set using the
+and styling for it, is described and set using the
 .Em font.desc
 property which is a string such as
 .Dq helvetica 12px .
@@ -1002,7 +977,7 @@ in height.
 .It Dq Helvetica italic 16px
 Specifies the italic variant of the Helvetica font, sized at 16 pixels in
 height.
-.It Dq DejaVu Mono bold 20px
+.It Dq DejaVu Sans Mono bold 20px
 Uses the monospaced and bold variant combination of the DejaVu font (requires
 package to be installed), sized at 20 pixels in height.
 .El
@@ -1030,7 +1005,8 @@ Red, about half opaque / half transparent
 The strings specifying these can optionally include a leading # symbol, though
 in the configuration file that must be escaped to prevent that character
 being interpreted as the start of a comment.
-.Pp
+.\" --- Note on True Transparency ---------------------------------------------
+.Ss Note on True Transparency
 .Nm
 supports true transparency / alpha blending on the main window by specifying a
 transparent color to the
@@ -1046,7 +1022,7 @@ this is
 .Xr xcompmgr 1 ,
 though
 .Xr compton 1
-from ports is often preferred.
+from ports is often easier to setup and configure.
 .\" === SPECIFYING WIDGETS ====================================================
 .Sh SPECIFYING WIDGETS
 The configurable property used to control which widgets are shown, and where,
@@ -1066,7 +1042,7 @@ widgets = "time volume battery"
 .Ed
 .Pp
 would show the time, volume, and then battery widgets, in that order.
-They would also be shown left-aligned (growing the left-most side of the
+They would also be shown left-aligned (growing from the left-most side of the
 window) as that's the default display alignment.
 The next subsection describes how to alter that.
 .Pp
@@ -1107,8 +1083,10 @@ would show the nprocs, cpu, memory, and net widgets on the left, a centered
 time widget, and then the battery and volume widgets on the right.
 .\" --- Available Widgets -----------------------------------------------------
 .Ss Available Widgets
-This is the list of all available widgets that can be set.
+This is the list of all available widgets.
 .Bl -tag -width cpushort
+.It Sy NAME
+.Sy DESCRIPTION
 .It battery
 This widget shows the battery status.
 It starts with the string "BAT" if running on battery or "AC" if plugged-in.
@@ -1226,7 +1204,8 @@ run those tools, respectively, and should remain error/warning-free.
 is mostly followed, but there's still work there to be done.
 .Pp
 If interested in contributing, see the following link for tips on
-navigating the code base and getting started adding stats, widgets, etc:
+navigating the code base and getting started adding stats, widgets, etc.
+Care has been taken to make adding new stats and widgets easy.
 .Bd -centered
 .Lk https://github.com/ryanflannery/oxbar/CONTRIBUTING.md
 .Ed
