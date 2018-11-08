@@ -1,4 +1,5 @@
-gui/xcore.c:172: * TODO cleanup & separate wm hints ... and dragons
+gui/xcore.c:30:      /* TODO apparently in this case you just try & measure the size :( */
+gui/xcore.c:219: * TODO cleanup & separate wm hints ... and dragons
 gui/xdraw.h:24: * TODO This abstraction should also permit vertical rendering (for a vertical
 gui/xcore.t.cc:9:/* TODO either fix googletest's [ASSERT|EXPECT]_EXIT* on openbsd or switch */
 oxbar.c:3: * TODO complete man page (probably wait until widget settings moved)
@@ -8,6 +9,7 @@ oxbar.c:6: * TODO fix font sizing issue (support pt/none/etc) (XXX MAN)
 oxbar.c:7: * TODO more examples
 oxbar.c:8: * TODO polish error messages (err/errx calls)
 oxbar.c:9: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
+screenshots.sh:3:# TODO disclaimer (images not here bc yada, other tools yada, ...)
 settings.c:297: * TODO Create a settings_free() (or refactor to make easier)
 stats/brightness.h:2: * TODO Build a working brightness widget (this is currently not used)
 stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
