@@ -48,6 +48,10 @@ you'll see what they all are.
 
 [View (raw) Image](images/default.png?raw=true)
 
+Other themes:
+![](images/islands_oxbar.png)
+![](images/islands-colorful_oxbar.png)
+
 # usage
 
 See `oxbar -h` for the basics and the sample configuration file included for
