@@ -22,7 +22,6 @@ main()
       .fgcolor = "ff0000"
    };
    f = xfont_init(&fonts);
-
    struct xwin_settings wins = {
       .bgcolor = "#ff0000",
       .wname = "xcore.d :: xwin test",

@@ -19,13 +19,15 @@ TEST(xfont, EmptyString_ShouldExit)
    ASSERT_EXIT(xfont_init(&s), ::testing::ExitedWithCode(1), "");
 }
 
-TEST(xfont, FixedUsingPt_ShouldExit)
+TEST(xfont, FixedUsingPt_ShouldWork)
 {
    struct xfont_settings s = {
       .desc = (char*)"fixed 12pt",
       .fgcolor = (char*)""
    };
-   ASSERT_EXIT(xfont_init(&s), ::testing::ExitedWithCode(1), "");
+   struct xfont *f = xfont_init(&s);
+   ASSERT_EQ(f->height, 19);
+   xfont_free(f);
 }
 
 TEST(xfont, FixedUsingPx_ShouldSucced)
@@ -46,7 +48,7 @@ TEST(xfont, FixedUsingNoSuffix_ShouldSucced)
       .fgcolor = (char*)""
    };
    struct xfont *f = xfont_init(&s);
-   ASSERT_EQ(f->height, 12);
+   ASSERT_EQ(f->height, 16);
    xfont_free(f);
 }
 
@@ -57,7 +59,7 @@ TEST(xfont, TimesBold48_ShouldSucceed)
       .fgcolor = (char*)""
    };
    struct xfont *f = xfont_init(&s);
-   ASSERT_EQ(f->height, 48);
+   ASSERT_EQ(f->height, 84);
    xfont_free(f);
 }
 

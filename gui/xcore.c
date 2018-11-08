@@ -4,8 +4,11 @@
 #include <string.h>
 #include <xcb/xcb_icccm.h>
 #include <cairo/cairo-xcb.h>
+#include <pango/pangocairo.h>
 
 #include "xcore.h"
+
+static xcb_visualtype_t* get_root_visual(xcb_screen_t *screen);
 
 /* pango wrapper */
 
@@ -21,9 +24,52 @@ xfont_init(struct xfont_settings *settings)
    if (!xf->pfont)
       errx(1, "pango failed to parse or load font '%s'", font_desc);
 
-   xf->height = pango_font_description_get_size(xf->pfont) / PANGO_SCALE;
+   if (pango_font_description_get_size_is_absolute(xf->pfont))
+      xf->height = pango_font_description_get_size(xf->pfont) / PANGO_SCALE;
+   else {
+      /* TODO apparently in this case you just try & measure the size :( */
+      if (NULL == pango_font_description_get_family(xf->pfont))
+         errx(1, "pango failed to determine font family from '%s'", font_desc);
+
+      xcb_connection_t *x = xcb_connect(NULL, NULL);
+      xcb_drawable_t    w = xcb_generate_id(x);
+      xcb_screen_t     *s = xcb_setup_roots_iterator(xcb_get_setup(x)).data;
+      xcb_visualtype_t *v = get_root_visual(s);
+      xcb_create_window(
+            x,
+            32,                        /* force 32 bit */
+            w,
+            s->root,
+            0, 0, 0, 0,                /* x,y,w,h */
+            0,                         /* border width */
+            XCB_WINDOW_CLASS_INPUT_OUTPUT,
+            s->root_visual,
+            0, NULL);
+      cairo_surface_t *cs = cairo_xcb_surface_create(
+            x,
+            w,
+            v,
+            1000,
+            1000);
+      cairo_t *c = cairo_create(cs);
+
+      int width, height;
+      PangoLayout *layout = pango_cairo_create_layout(c);
+      pango_layout_set_font_description(layout, xf->pfont);
+      pango_layout_set_text(layout, "BIG TEXTM|$!", -1);
+      pango_layout_get_pixel_size(layout, &width, &height);
+      g_object_unref(layout);
+
+      xf->height = height;
+
+      cairo_destroy(c);
+      cairo_surface_destroy(cs);
+      xcb_destroy_window(x, w);
+      xcb_disconnect(x);
+   }
+
    if (0 == xf->height)
-      errx(1, "pango failed to determine font height '%s'", font_desc);
+      errx(1, "pango failed to determine font height from '%s'", font_desc);
 
    xf->settings = settings;
    return xf;
@@ -46,6 +92,7 @@ get_root_screen(xcb_connection_t *c, int screen)
       if (0 == screen)
          return i.data;
    }
+
    return NULL;
 }
 
@@ -289,8 +336,8 @@ xwin_init(
 void
 xwin_free(struct xwin *w)
 {
-   cairo_surface_destroy(w->surface);
    cairo_destroy(w->cairo);
+   cairo_surface_destroy(w->surface);
    xcb_destroy_window(w->xdisp->con, w->window);
    free(w);
 }
