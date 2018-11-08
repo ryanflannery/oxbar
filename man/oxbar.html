@@ -105,12 +105,12 @@
 </ul>
 <h1 class="Sh" title="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
 <code class="Nm" title="Nm">oxbar</code> is a X11 status bar for
-  <span class="Ux">OpenBSD</span> showing various system stats, has a
-  configurable display, and works out-of-the-box on most modern window managers
-  in an intuitive fashion. It supports FreeType font rendering and styling, true
-  transparency &amp; alpha blending on all UI components (including the
-  background), and a simple configuration format that can concisely support
-  multiple themes.
+  <span class="Ux">OpenBSD</span> showing various system stats. It has a
+  configurable display and works out-of-the-box on most modern window managers
+  in an intuitive fashion. <code class="Nm" title="Nm">oxbar</code> supports
+  FreeType font rendering and styling, true transparency &amp; alpha blending on
+  all UI components (including the root window), and a simple configuration
+  format that can concisely support multiple themes.
 <h2 class="Ss" title="Ss">Overview of Configuring
   <code class="Nm" title="Nm">oxbar</code></h2>
 All configurable properties in <code class="Nm" title="Nm">oxbar</code> can be
@@ -422,9 +422,9 @@ The following example configuration file is used below to illustrate the usage
 <pre class="Li">
 # global configuration (always loaded for any or no themes) 
 font.desc = &quot;DejaVu Sans Mono 20px&quot; # font used everywhere 
-font.fgcolor = &quot;93a1a1&quot;             # a light grey 
+font.fgcolor = &quot;93a1a1&quot;             # a light gray 
 window.x = 0                        # align to left of display 
-window.w = -1                       # align to bototm of display 
+window.w = -1                       # align to bottom of display 
 window.h = -1                       # derive height 
  
 # start the &quot;top&quot; theme 
@@ -439,7 +439,7 @@ window.y = -1                       # show at bottom of display
 </pre>
 </div>
 <div class="Pp"></div>
-Given the above configuration file, two theemse are defined:
+Given the above configuration file, two themes are defined:
   <i class="Em" title="Em">top</i> and <i class="Em" title="Em">bottom</i>. The
   lines that occur before any theme definition are considered global, and are
   always loaded for any, or no, theme. This is handy if some things (such as
