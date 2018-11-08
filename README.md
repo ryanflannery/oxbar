@@ -1,13 +1,14 @@
 # oxbar
 
-oxbar is a small, concise system monitor that displays various stats on an X
-window that's immovable and outside tabbing in most window managers. It's built
-on and for OpenBSD, and is a replacement for my old
-[xstatbar](https://ryanflannery.net/hacking/xstatbar/). It supports FreeType
-font rendering, alpha transparency, and is highly configurable.
+oxbar is a X11 status bar for OpenBSD showing various system stats.
+It has a configurable display and works out-of-the-box on most modern window
+managers in an intuitive fashion.
+oxbar supports FreeType font rendering and styling, true transparency & alpha
+blending on all UI components (including the root window), and a simple
+configuration format that can concisely support multiple themes.
 
-It's motivated mostly by the frequent complaints I get about my old xstatbar
-and its many shortcomings/hacks. Shaming works yo.
+It's motivated mostly by the frequent derisions/complaints/threats I get about
+my old xstatbar and its many shortcomings/hacks. Shaming works 'yo.
 
 oxbar is released under an
 [ISC license](https://github.com/ryanflannery/oxbar/blob/master/LICENSE)
