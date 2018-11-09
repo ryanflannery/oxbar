@@ -50,11 +50,11 @@ you'll see what they all are.
 [View (raw) Image](images/default.png?raw=true)
 
 Other themes:
-![](images/themes-islands.png)
-![](images/themes-islands-colorful.png)
-![](images/themes-minimal.png)
-![](images/themes-ryan.png)
-![](images/themes-xstatbar.png)
+![](images/theme-islands.png)
+![](images/theme-islands-colorful.png)
+![](images/theme-minimal.png)
+![](images/theme-ryan.png)
+![](images/theme-xstatbar.png)
 
 # usage
 
