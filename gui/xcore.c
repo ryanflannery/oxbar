@@ -27,45 +27,28 @@ xfont_init(struct xfont_settings *settings)
    if (pango_font_description_get_size_is_absolute(xf->pfont))
       xf->height = pango_font_description_get_size(xf->pfont) / PANGO_SCALE;
    else {
-      /* TODO apparently in this case you just try & measure the size :( */
+      /* XXX apparently in this case you just try & measure the size :( */
       if (NULL == pango_font_description_get_family(xf->pfont))
          errx(1, "pango failed to determine font family from '%s'", font_desc);
 
-      xcb_connection_t *x = xcb_connect(NULL, NULL);
-      xcb_drawable_t    w = xcb_generate_id(x);
-      xcb_screen_t     *s = xcb_setup_roots_iterator(xcb_get_setup(x)).data;
-      xcb_visualtype_t *v = get_root_visual(s);
-      xcb_create_window(
-            x,
-            32,                        /* force 32 bit */
-            w,
-            s->root,
-            0, 0, 0, 0,                /* x,y,w,h */
-            0,                         /* border width */
-            XCB_WINDOW_CLASS_INPUT_OUTPUT,
-            s->root_visual,
-            0, NULL);
-      cairo_surface_t *cs = cairo_xcb_surface_create(
-            x,
-            w,
-            v,
-            1000,
-            1000);
-      cairo_t *c = cairo_create(cs);
-
+      struct xwin_settings s = {
+         .bgcolor = "ff000",
+         .wname = "oxbar-xfont-init",
+         .x = 0,     .y = 0,
+         .w = 1000,  .h = 1000
+      };
+      struct xdisp *x = xdisp_init();
+      struct xwin  *w = xwin_init(x, &s);
       int width, height;
-      PangoLayout *layout = pango_cairo_create_layout(c);
+      PangoLayout *layout = pango_cairo_create_layout(w->cairo);
       pango_layout_set_font_description(layout, xf->pfont);
-      pango_layout_set_text(layout, "BIG TEXTM|$!", -1);
+      pango_layout_set_text(layout, "SOME BIG TEXT |$!", -1);
       pango_layout_get_pixel_size(layout, &width, &height);
       g_object_unref(layout);
 
       xf->height = height;
-
-      cairo_destroy(c);
-      cairo_surface_destroy(cs);
-      xcb_destroy_window(x, w);
-      xcb_disconnect(x);
+      xwin_free(w);
+      xdisp_free(x);
    }
 
    if (0 == xf->height)
@@ -117,8 +100,28 @@ get_root_visual(xcb_screen_t *screen)
 struct xdisp*
 xdisp_init()
 {
-   struct xdisp *x = malloc(sizeof(struct xdisp));
-   if (NULL == x)
+   /*
+    * TODO Fix the below issue with cairo/xcb connection state
+    * Using a poor man's (non-thread-safe) singleton here.
+    * I'm doing this in haste because of an issue with cairo/xcb binding
+    * described in [1]. Basically, after creating a cairo xcb surface with
+    * one xcb connection, all future such surfaces, if given the same pointer
+    * to an xcb connection, must have the same values. Those values can change
+    * if, for example, you close and then re-open the conncetion, which
+    * is what the xfont_init() method basically does.
+    * This also mean, unfortunately, that I can't clean this up. Note reference
+    * counting doesn't work (as has been suggested by others).
+    *
+    * For now I'm doing this as a solution. The threads in oxbar are fine with
+    * this, for now, but should try to re-address later.
+    *
+    * [1] https://lists.cairographics.org/archives/cairo/2018-November/028791.html
+    */
+   static struct xdisp *x = NULL;
+   if (NULL != x)
+      return x;
+
+   if (NULL == (x = malloc(sizeof(struct xdisp))))
       err(1, "%s: malloc failed", __FUNCTION__);
 
    int default_screen;
@@ -141,10 +144,15 @@ xdisp_init()
 }
 
 void
-xdisp_free(struct xdisp *x)
+xdisp_free(__attribute__((unused)) struct xdisp *x)
 {
+   /*
+    * Yes, this should be done, and used to be.
+    * No, it can't be done now.
+    * See the TODO at the top of xdisp_init() for why.
    xcb_disconnect(x->con);
    free(x);
+   */
 }
 
 /* xcb window wrapper */

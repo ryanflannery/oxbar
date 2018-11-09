@@ -873,7 +873,7 @@ See the documentation of that API for full details. In summary, the format of
 <div class="Pp"></div>
 <div class="Bd">
 <pre class="Li">
-FONT-FAMILY [STYLE | VARIANT | WEIGHT]* SIZEpx
+FONT-FAMILY [STYLE | VARIANT | WEIGHT]* SIZE
 </pre>
 </div>
 <div class="Pp"></div>
@@ -881,13 +881,9 @@ where <i class="Em" title="Em">FONT-FAMILY</i> is the name of the font family
   desired, optionally followed by some number of style/variant/weight modifiers
   (like <i class="Em" title="Em">italic</i>, <i class="Em" title="Em">bold</i>,
   <i class="Em" title="Em">heavy</i>, <i class="Em" title="Em">light</i>, etc).
-  The <i class="Em" title="Em">SIZE</i> is then specified in pixels. Note that
-  <code class="Nm" title="Nm">oxbar</code> currently requires the font to
-  <i class="Em" title="Em">ALWAYS BE SPECIFIED IN PIXELS</i>, and thus should
-  always have the &#x2018;px&#x2019; suffix on the size component.
-<div class="Pp"></div>
-<b class="Sy" title="Sy">CAVEAT: ALL FONTS SHOULD EXPLICITLY STATE PIXEL SIZING
-  (px)</b>
+  The <i class="Em" title="Em">SIZE</i> is then specified, which can be pixels,
+  such as &#x201C;16px&#x201D;, or points, such as &#x201C;16pt&#x201D;. If no
+  suffix is specified, points are assumed.
 <div class="Pp"></div>
 Some examples:
 <dl class="Bl-tag">
@@ -997,8 +993,6 @@ would show the nprocs, cpu, memory, and net widgets on the left, a centered time
   Widgets</a></h2>
 This is the list of all available widgets.
 <dl class="Bl-tag">
-  <dt><b class="Sy" title="Sy">NAME</b></dt>
-  <dd><b class="Sy" title="Sy">DESCRIPTION</b></dd>
   <dt>battery</dt>
   <dd>This widget shows the battery status. It starts with the string
       &quot;BAT&quot; if running on battery or &quot;AC&quot; if plugged-in. It

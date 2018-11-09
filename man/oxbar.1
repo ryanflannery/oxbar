@@ -946,7 +946,7 @@ will be done using the font loaded from that description.
 See the documentation of that API for full details.
 In summary, the format of the string is a space separated list of the form
 .Bd -literal
-FONT-FAMILY [STYLE | VARIANT | WEIGHT]* SIZEpx
+FONT-FAMILY [STYLE | VARIANT | WEIGHT]* SIZE
 .Ed
 .Pp
 where
@@ -960,16 +960,11 @@ style/variant/weight modifiers (like
 etc).
 The
 .Em SIZE
-is then specified in pixels.
-Note that
-.Nm
-currently requires the font to
-.Em ALWAYS BE SPECIFIED IN PIXELS ,
-and thus should always have the
-.Sq px
-suffix on the size component.
-.Pp
-.Sy CAVEAT: ALL FONTS SHOULD EXPLICITLY STATE PIXEL SIZING (px)
+is then specified, which can be pixels, such as
+.Dq 16px ,
+or points, such as
+.Dq 16pt .
+If no suffix is specified, points are assumed.
 .Pp
 Some examples:
 .Bl -tag -width foobar
@@ -1087,8 +1082,6 @@ time widget, and then the battery and volume widgets on the right.
 .Ss Available Widgets
 This is the list of all available widgets.
 .Bl -tag -width cpushort
-.It Sy NAME
-.Sy DESCRIPTION
 .It battery
 This widget shows the battery status.
 It starts with the string "BAT" if running on battery or "AC" if plugged-in.

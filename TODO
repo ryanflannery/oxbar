@@ -1,5 +1,7 @@
 gui/xcore.c:30:      /* TODO apparently in this case you just try & measure the size :( */
-gui/xcore.c:219: * TODO cleanup & separate wm hints ... and dragons
+gui/xcore.c:104:    * TODO Fix the below issue with cairo/xcb connection state
+gui/xcore.c:152:    * See the TODO at the top of xdisp_init() for why.
+gui/xcore.c:227: * TODO cleanup & separate wm hints ... and dragons
 gui/xdraw.h:24: * TODO This abstraction should also permit vertical rendering (for a vertical
 gui/xcore.t.cc:9:/* TODO either fix googletest's [ASSERT|EXPECT]_EXIT* on openbsd or switch */
 oxbar.c:3: * TODO complete man page (probably wait until widget settings moved)
