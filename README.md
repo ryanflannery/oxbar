@@ -50,11 +50,11 @@ you'll see what they all are.
 [View (raw) Image](images/default.png?raw=true)
 
 Other themes:
-![](images/theme-islands.png)
-![](images/theme-islands-colorful.png)
-![](images/theme-minimal.png)
-![](images/theme-ryan.png)
-![](images/theme-xstatbar.png)
+![xstatbar](https://raw.githubusercontent.com/ryanflannery/oxbar/master/images/theme-islands.png)
+![xstatbar](https://raw.githubusercontent.com/ryanflannery/oxbar/master/images/theme-islands-colorful.png)
+![xstatbar](https://raw.githubusercontent.com/ryanflannery/oxbar/master/images/theme-minimal.png)
+![xstatbar](https://raw.githubusercontent.com/ryanflannery/oxbar/master/images/theme-ryan.png)
+![xstatbar](https://raw.githubusercontent.com/ryanflannery/oxbar/master/images/theme-xstatbar.png)
 
 # usage
 
