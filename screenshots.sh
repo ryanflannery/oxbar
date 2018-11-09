@@ -10,39 +10,72 @@
 
 function generate_load
 {
-   echo "in generate load"
+   gitrepo="https://github.com/openbsd/src"
    cwd=`pwd`
-   tmp=`mktemp -d`
 
-   cd $tmp && git clone https://github.com/openbsd/src > /dev/null &
-   ubench -c &
+   # start w/ some quiet time
+   sleep 5
+
+   # start some cpu & network activity
+   ubench -c > /dev/null 2> /dev/null &
+   tmp=`mktemp -d`
+   cd $tmp && git clone $gitrepo > /dev/null 2> /dev/null &
+   sleep 20
+
+   # start some memory activity
+   ubench -m > /dev/null 2> /dev/null &
    sleep 25
-   ubench -m &
-   sleep 35
+
+   # 50 seconds in - kill cpu & memory tests
    pkill ubench
+   # kill network test
    pkill git
 
+   # 5 seconds of quiet
+   sleep 5
+
+   # remove git temp dir & return to old directory
    rm -rf $tmp
    cd $cwd
 }
 
 # kill all running instances
 pkill oxbar
+WOPTS="-w 2000 -S window.wname=oxshort"
 
 # islands
 feh --bg-fill ~/images/ice-mountain-lake.jpg
-./oxbar -F sample.oxbar.conf islands &
+./oxbar ${WOPTS} -F sample.oxbar.conf islands &
 generate_load
-import -window root  images/islands_root.png
-import -window oxbar images/islands_oxbar.png
+import -window oxshort images/theme-islands.png
 pkill oxbar
 
 # islands-colorful
 feh --bg-fill ~/images/ice-mountain-lake.jpg
-./oxbar -F sample.oxbar.conf islands-colorful &
+./oxbar ${WOPTS} -F sample.oxbar.conf islands-colorful &
 generate_load
-import -window root  images/islands-colorful_root.png
-import -window oxbar images/islands-colorful_oxbar.png
+import -window oxshort images/theme-islands-colorful.png
+pkill oxbar
+
+# minimal
+feh --bg-fill ~/images/ice-mountain-lake.jpg
+./oxbar ${WOPTS} -F sample.oxbar.conf minimal &
+generate_load
+import -window oxshort images/theme-minimal.png
+pkill oxbar
+
+# ryan
+feh --bg-fill ~/images/ice-mountain-lake.jpg
+./oxbar ${WOPTS} -w 2200 -F sample.oxbar.conf ryan &
+generate_load
+import -window oxshort images/theme-ryan.png
+pkill oxbar
+
+# xstatbar
+feh --bg-fill ~/images/ice-mountain-lake.jpg
+./oxbar ${WOPTS} -F sample.oxbar.conf xstatbar &
+generate_load
+import -window oxshort images/theme-xstatbar.png
 pkill oxbar
 
 # idea
