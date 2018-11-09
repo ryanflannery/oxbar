@@ -42,31 +42,32 @@ function generate_load
 # kill all running instances
 pkill oxbar
 WOPTS="-w 2000 -S window.wname=oxshort"
+WBG="-S window.bgcolor=fff"
 
 # islands
 feh --bg-fill ~/images/ice-mountain-lake.jpg
-./oxbar ${WOPTS} -F sample.oxbar.conf islands &
+./oxbar ${WOPTS} ${WBG} -F sample.oxbar.conf islands &
 generate_load
 import -window oxshort images/theme-islands.png
 pkill oxbar
 
 # islands-colorful
 feh --bg-fill ~/images/ice-mountain-lake.jpg
-./oxbar ${WOPTS} -F sample.oxbar.conf islands-colorful &
+./oxbar ${WOPTS} ${WBG} -F sample.oxbar.conf islands-colorful &
 generate_load
 import -window oxshort images/theme-islands-colorful.png
 pkill oxbar
 
 # minimal
 feh --bg-fill ~/images/ice-mountain-lake.jpg
-./oxbar ${WOPTS} -F sample.oxbar.conf minimal &
+./oxbar ${WOPTS} ${WBG} -F sample.oxbar.conf minimal &
 generate_load
 import -window oxshort images/theme-minimal.png
 pkill oxbar
 
 # ryan
 feh --bg-fill ~/images/ice-mountain-lake.jpg
-./oxbar ${WOPTS} -w 2200 -F sample.oxbar.conf ryan &
+./oxbar ${WOPTS} ${WBG} -w 2200 -F sample.oxbar.conf ryan &
 generate_load
 import -window oxshort images/theme-ryan.png
 pkill oxbar
