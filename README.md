@@ -50,8 +50,11 @@ you'll see what they all are.
 [View (raw) Image](images/default.png?raw=true)
 
 Other themes:
-![](images/islands_oxbar.png)
-![](images/islands-colorful_oxbar.png)
+![](images/themes-islands.png)
+![](images/themes-islands-colorful.png)
+![](images/themes-minimal.png)
+![](images/themes-ryan.png)
+![](images/themes-xstatbar.png)
 
 # usage
 
