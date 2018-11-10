@@ -79,7 +79,6 @@ Roughly in order or my priority...
 
    * gui: icons in the display could help condense it further
    * stats: add tracker for hw.sensors
-   * stats: add a wifi signal strength indicator
    * stats: add a weather component...i like weather
    * gui: support vertical rendering (a sidebar!)
    * when using compton, need '--shadow-exclude 'name = "oxbar"' to disable
