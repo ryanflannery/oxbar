@@ -13,7 +13,7 @@ my old xstatbar and its many shortcomings/hacks. Shaming works 'yo.
 oxbar is released under an
 [ISC license](https://github.com/ryanflannery/oxbar/blob/master/LICENSE)
 
-# current features
+# features
 
    * True transparency support with a compositing window manager
      (I recommend compton in ports over xcompmgr in base)
