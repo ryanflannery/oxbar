@@ -41,7 +41,7 @@ function generate_load
 
 # kill all running instances
 pkill oxbar
-WOPTS="-w 2000 -S window.wname=oxshort"
+WOPTS="-w 2200 -S window.wname=oxshort"
 WBG="-S window.bgcolor=fff"
 
 # islands
@@ -74,7 +74,7 @@ pkill oxbar
 
 # ryan
 feh --bg-fill ~/images/ice-mountain-lake.jpg
-./oxbar ${WOPTS} ${WBG} -w 2200 -F sample.oxbar.conf ryan &
+./oxbar ${WOPTS} ${WBG} -w 2350 -F sample.oxbar.conf ryan &
 generate_load
 import -window oxshort images/theme-ryan.png
 pkill oxbar

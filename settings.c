@@ -468,6 +468,11 @@ settings_set_one_keyvalue(struct settings *s, const char *key, const char *value
    KMS_STRING(time.fgcolor);
    KMS_STRING(time.format);
 
+   /* wifi */
+   KMS_STRING(wifi.hdcolor);
+   KMS_STRING(wifi.bgcolor);
+   KMS_STRING(wifi.fgcolor);
+
    return false;
 }
 
@@ -480,7 +485,7 @@ settings_set_keyvalue(struct settings *s, const char * const keyvalue)
       errx(1, "failed to parse key & value from '%s'", keyvalue);
 
    if (!settings_set_one_keyvalue(s, key, value))
-      errx(1, "unkown key '%s' in key-value pair '%s'", key, keyvalue);
+      errx(1, "unknown key '%s' in key-value pair '%s'", key, keyvalue);
 
    free(key);
    free(value);
