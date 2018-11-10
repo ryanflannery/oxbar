@@ -6,14 +6,15 @@
 #include "widgets/util.h"
 
 #include "widgets/battery.h"
-#include "widgets/volume.h"
-#include "widgets/nprocs.h"
-#include "widgets/memory.h"
 #include "widgets/cpus.h"
 #include "widgets/cpushort.h"
 #include "widgets/cpuslong.h"
+#include "widgets/memory.h"
 #include "widgets/net.h"
+#include "widgets/nprocs.h"
 #include "widgets/time.h"
+#include "widgets/volume.h"
+#include "widgets/wifi.h"
 
 /*
  * Global list of all known widget types and how to create them.
@@ -36,7 +37,8 @@ struct widget_recipe WIDGET_RECIPES[] = {
    {{"net",     WCLRS(), wnet_enabled,     wnet_draw,      NULL}, wnet_init,     wnet_free },
    {{"nprocs",  WCLRS(), wnprocs_enabled,  wnprocs_draw,   NULL}, generic_init,  generic_free },
    {{"time",    WCLRS(), wtime_enabled,    wtime_draw,     NULL}, generic_init,  generic_free },
-   {{"volume",  WCLRS(), wvolume_enabled,  wvolume_draw,   NULL}, generic_init,  generic_free }
+   {{"volume",  WCLRS(), wvolume_enabled,  wvolume_draw,   NULL}, generic_init,  generic_free },
+   {{"wifi",    WCLRS(), wwifi_enabled,    wwifi_draw,     NULL}, generic_init,  generic_free }
 };
 const size_t NWIDGET_RECIPES = sizeof(WIDGET_RECIPES) / sizeof(struct widget_recipe);
 
@@ -77,6 +79,8 @@ get_settings_component(const char * const name, struct settings *settings)
       return &settings->time;
    if (0 == strcmp(name, "volume"))
       return &settings->volume;
+   if (0 == strcmp(name, "wifi"))
+      return &settings->wifi;
 
    errx(1, "failed to find settings component for '%s'", name);
 }
@@ -161,6 +165,7 @@ widgets_init(struct gui *gui, struct settings *settings, struct oxstats *stats)
    widget_set_hdcolor("nprocs",    &settings->nprocs.hdcolor);
    widget_set_hdcolor("time",      &settings->time.hdcolor);
    widget_set_hdcolor("volume",    &settings->volume.hdcolor);
+   widget_set_hdcolor("wifi",      &settings->wifi.hdcolor);
 
    widget_set_bgcolor("battery",   &settings->battery.bgcolor);
    widget_set_bgcolor("cpus",      &settings->cpus.bgcolor);
@@ -171,6 +176,7 @@ widgets_init(struct gui *gui, struct settings *settings, struct oxstats *stats)
    widget_set_bgcolor("nprocs",    &settings->nprocs.bgcolor);
    widget_set_bgcolor("time",      &settings->time.bgcolor);
    widget_set_bgcolor("volume",    &settings->volume.bgcolor);
+   widget_set_bgcolor("wifi",      &settings->wifi.bgcolor);
 
    widget_set_fgcolor("battery",   &settings->battery.fgcolor);
    widget_set_fgcolor("cpus",      &settings->cpus.fgcolor);
@@ -181,6 +187,7 @@ widgets_init(struct gui *gui, struct settings *settings, struct oxstats *stats)
    widget_set_fgcolor("nprocs",    &settings->nprocs.fgcolor);
    widget_set_fgcolor("time",      &settings->time.fgcolor);
    widget_set_fgcolor("volume",    &settings->volume.fgcolor);
+   widget_set_fgcolor("wifi",      &settings->wifi.fgcolor);
 
    widgets_create(settings->widgets, gui, settings, stats);
 }

@@ -11,6 +11,7 @@ stats_init()
    net_init();
    nprocs_init();
    volume_init();
+   wifi_init();
 
    OXSTATS.battery   = &BATTERY;
    OXSTATS.cpus      = &CPUS;
@@ -18,6 +19,7 @@ stats_init()
    OXSTATS.network   = &NET;
    OXSTATS.nprocs    = &NPROCS;
    OXSTATS.volume    = &VOLUME;
+   OXSTATS.wifi      = &WIFI;
 
    /* do first update to initialize everything */
    stats_update();
@@ -32,6 +34,7 @@ stats_update()
    net_update();
    nprocs_update();
    volume_update();
+   wifi_update();
 }
 
 void
@@ -43,4 +46,5 @@ stats_close()
    net_close();
    nprocs_close();
    volume_close();
+   wifi_close();
 }

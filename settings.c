@@ -215,7 +215,7 @@ parse_header_style(header_style_t *style, const char * const value)
 static void
 settings_set_defaults(struct settings *s)
 {
-   s->widgets = strdup("nprocs cpuslong memory net > battery volume time");
+   s->widgets = strdup("nprocs cpuslong memory net > battery wifi volume time");
 
    s->font.desc = strdup("DejaVu sans mono 16px");
    s->font.fgcolor = strdup("93a1a1");
@@ -291,6 +291,10 @@ settings_set_defaults(struct settings *s)
    s->time.bgcolor = strdup("");
    s->time.fgcolor = strdup("");
    s->time.format  = strdup("%a %d %b %Y  %I:%M:%S %p");
+
+   s->wifi.hdcolor = strdup("ff0000");
+   s->wifi.bgcolor = strdup("");
+   s->wifi.fgcolor = strdup("");
 }
 
 /*

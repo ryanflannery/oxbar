@@ -11,11 +11,11 @@ LDFLAGS += -L/usr/X11R6/lib `pkg-config --libs pangocairo` -lxcb -lxcb-icccm -lu
 # objects (OBJS = this dir, SOBJS = stats/*, GOBJS = giu/*, WOBJS = widgets/*)
 OBJS  = settings.o widgets.o oxbar.o
 SOBJS = stats/battery.o stats/cpu.o stats/memory.o stats/net.o stats/nprocs.o \
-		  stats/volume.o stats/stats.o
+		  stats/stats.o stats/util.o stats/volume.o stats/wifi.o
 GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o gui/gui.o
-WOBJS = widgets/battery.o widgets/volume.o widgets/nprocs.o widgets/memory.o \
-		  widgets/cpus.o widgets/cpushort.o widgets/cpuslong.o widgets/net.o \
-		  widgets/time.o widgets/util.o
+WOBJS = widgets/battery.o widgets/cpus.o widgets/cpushort.o widgets/cpuslong.o \
+		  widgets/net.o widgets/nprocs.o widgets/memory.o widgets/time.o \
+		  widgets/util.o widgets/volume.o widgets/wifi.o
 
 .PHONY: clean install testruns cppcheck scan-build iwyu gprof loc gource
 

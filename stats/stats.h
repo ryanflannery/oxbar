@@ -7,6 +7,7 @@
 #include "net.h"
 #include "nprocs.h"
 #include "volume.h"
+#include "wifi.h"
 
 struct oxstats {
    struct battery_info  *battery;
@@ -15,6 +16,7 @@ struct oxstats {
    struct net_info      *network;
    struct nprocs_info   *nprocs;
    struct volume_info   *volume;
+   struct wifi_info     *wifi;
 };
 
 extern struct oxstats OXSTATS;

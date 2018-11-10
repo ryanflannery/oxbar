@@ -1,4 +1,3 @@
-gui/xcore.c:30:      /* TODO apparently in this case you just try & measure the size :( */
 gui/xcore.c:104:    * TODO Fix the below issue with cairo/xcb connection state
 gui/xcore.c:152:    * See the TODO at the top of xdisp_init() for why.
 gui/xcore.c:227: * TODO cleanup & separate wm hints ... and dragons
@@ -12,13 +11,14 @@ oxbar.c:7: * TODO more examples
 oxbar.c:8: * TODO polish error messages (err/errx calls)
 oxbar.c:9: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
 screenshots.sh:3:# TODO disclaimer (images not here bc yada, other tools yada, ...)
-settings.c:297: * TODO Create a settings_free() (or refactor to make easier)
+settings.c:301: * TODO Create a settings_free() (or refactor to make easier)
 stats/brightness.h:2: * TODO Build a working brightness widget (this is currently not used)
 stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
 stats/cpu.c:125:   /* TODO CPU cleanup routine should free/cleanup shiz */
 stats/memory.c:89:   /* TODO MEMORY cleanup routine should free/cleanup shiz */
 stats/volume.c:126:/* TODO GET VOLUME "IS MUTED?" WORKING
+stats/wifi.c:20: * TODO wifi stats collector only works on a 802.11 egress interface.
 stats/net.h:10:   /* TODO Raw # packets in/out isn't used anymore. Remove? */
-stats/net.c:95: * TODO Refactor network bytes logic
-stats/net.c:180:   /* TODO NET cleanup routine should free/cleanup shiz */
+stats/net.c:58: * TODO Refactor network bytes logic
+stats/net.c:143:   /* TODO NET cleanup routine should free/cleanup shiz */
 widgets/volume.c:22:   /* TODO Should volume widget ever handle this case!? I've never had it */

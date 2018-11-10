@@ -82,6 +82,7 @@
       <li><a href="#Network_Widget">Network Widget</a></li>
       <li><a href="#Time_Widget">Time Widget</a></li>
       <li><a href="#Volume_Widget">Volume Widget</a></li>
+      <li><a href="#Wifi_Widget">Wifi Widget</a></li>
     </ul>
     </a></li>
   <li><a href="#SPECIFYING_FONTS">SPECIFYING FONTS</a></li>
@@ -857,6 +858,27 @@ These properties configure the volume widget, showing the current volume levels.
     <div class="Pp"></div>
     Default value: &#x201C;859900&#x201D;</dd>
 </dl>
+<h2 class="Ss" title="Ss" id="Wifi_Widget"><a class="permalink" href="#Wifi_Widget">Wifi
+  Widget</a></h2>
+These properties configure the wifi widget, showing the signal strength of an
+  egress wifi interface.
+<dl class="Bl-tag Bl-compact">
+  <dt>wifi.hdcolor</dt>
+  <dd>The header color for this widget.
+    <div class="Pp"></div>
+    Default value: &#x201C;ff0000&#x201D;</dd>
+  <dt>wifi.bgcolor</dt>
+  <dd>The background color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to
+      <i class="Em" title="Em">gui.widget_bgcolor</i> if set, or
+      <i class="Em" title="Em">window.bgcolor</i> otherwise).</dd>
+  <dt>wifi.fgcolor</dt>
+  <dd>The foreground color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to <i class="Em" title="Em">font.fgcolor</i>
+      ).</dd>
+</dl>
 <h1 class="Sh" title="Sh" id="SPECIFYING_FONTS"><a class="permalink" href="#SPECIFYING_FONTS">SPECIFYING
   FONTS</a></h1>
 The font used by <code class="Nm" title="Nm">oxbar</code>, and styling for it,
@@ -1059,6 +1081,12 @@ This is the list of all available widgets.
     <div class="Pp"></div>
     Corresponding configurable properties:
       <i class="Em" title="Em">volume.*</i>.</dd>
+  <dt>wifi</dt>
+  <dd>This widget shows the signal strength of the egress wifi interface. It
+      simply renders the signal strength as a percentage.
+    <div class="Pp"></div>
+    Corresponding configurable properties:
+    <i class="Em" title="Em">wifi.*</i>.</dd>
 </dl>
 <h1 class="Sh" title="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
   ALSO</a></h1>

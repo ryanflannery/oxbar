@@ -2,8 +2,8 @@
 CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2
 LDFLAGS += -lm
 
-OBJS    = battery.o cpu.o memory.o net.o nprocs.o volume.o stats.o
-DRIVERS = battery.d cpu.d memory.d net.d nprocs.d volume.d
+OBJS    = battery.o cpu.o memory.o net.o nprocs.o volume.o wifi.o util.o stats.o
+DRIVERS = battery.d cpu.d memory.d net.d nprocs.d volume.d wifi.d
 
 .PHONY: all clean objects drivers
 .DEFAULT: all
@@ -17,7 +17,7 @@ drivers: $(DRIVERS)
 
 .for driv in $(DRIVERS)
 ${driv}: ${driv}.o ${driv:R}.o
-	$(CC) -o $@ $(LDFLAGS) ${driv}.o ${driv:R}.o
+	$(CC) -o $@ $(LDFLAGS) ${driv}.o ${driv:R}.o util.o
 .endfor
 
 clean:

@@ -12,6 +12,7 @@
 #include "widgets/nprocs.h"
 #include "widgets/time.h"
 #include "widgets/volume.h"
+#include "widgets/wifi.h"
 
 struct settings {
 
@@ -35,6 +36,7 @@ struct settings {
    struct widget_cpu_settings       cpus;
    struct widget_net_settings       net;
    struct widget_time_settings      time;
+   struct widget_wifi_settings      wifi;
 };
 
 void settings_init(struct settings *s, int argc, char *argv[]);

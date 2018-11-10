@@ -927,6 +927,31 @@ Progress color of the progress bar chart.
 Default value:
 .Dq 859900
 .El
+.\" --- Wifi Widget -----------------------------------------------------------
+.Ss Wifi Widget
+These properties configure the wifi widget, showing the signal strength of an
+egress wifi interface.
+.Bl -tag -compact -width gui.widget_spacing
+.It wifi.hdcolor
+The header color for this widget.
+.Pp
+Default value:
+.Dq ff0000
+.It wifi.bgcolor
+The background color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em gui.widget_bgcolor
+if set, or
+.Em window.bgcolor
+otherwise).
+.It wifi.fgcolor
+The foreground color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em font.fgcolor
+).
+.El
 .\" === SPECIFYING FONTS ======================================================
 .Sh SPECIFYING FONTS
 The font used by
@@ -1152,6 +1177,12 @@ setting followed by a textual representation of that percentage.
 .Pp
 Corresponding configurable properties:
 .Em volume.* .
+.It wifi
+This widget shows the signal strength of the egress wifi interface.
+It simply renders the signal strength as a percentage.
+.Pp
+Corresponding configurable properties:
+.Em wifi.* .
 .El
 .\" === SEE ALSO ==============================================================
 .Sh SEE ALSO
