@@ -27,6 +27,7 @@ oxbar is released under an
       * Number of processes (current total # processes only as of now)
       * Memory usage & breakdown (current only as of now)
       * CPUs usage & breakdown w/ charts
+      * WiFi signal strength
       * Current date/time (is that a status?)
       * Others forthcoming
 
