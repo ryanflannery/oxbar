@@ -45,16 +45,29 @@ you'll see what they all are.
 
 # screenshots
 
-![](images/default.png)
+oxbar's default look:
+![default](images/default.png?raw=true)
 
-[View (raw) Image](images/default.png?raw=true)
+Other themes, all included in the file
+[sample.oxbar.conf](sample.oxbar.conf):
 
-Other themes:
-![xstatbar](https://raw.githubusercontent.com/ryanflannery/oxbar/master/images/theme-islands.png)
-![xstatbar](https://raw.githubusercontent.com/ryanflannery/oxbar/master/images/theme-islands-colorful.png)
-![xstatbar](https://raw.githubusercontent.com/ryanflannery/oxbar/master/images/theme-minimal.png)
-![xstatbar](https://raw.githubusercontent.com/ryanflannery/oxbar/master/images/theme-ryan.png)
-![xstatbar](https://raw.githubusercontent.com/ryanflannery/oxbar/master/images/theme-xstatbar.png)
+**islands**: each widget is an island, with true transparency between
+![islands](images/theme-islands.png?raw=true)
+
+**islands-colorful**: like islands, but each widget is a different color
+![islands-colorful](images/theme-islands-colorful.png?raw=true)
+
+**minimal**: a dark, text only display
+![minimal](images/theme-minimal.png?raw=true)
+
+**pastel-dense**: a pastel based theme with widgets tightly packed
+![pastel-dense](images/theme-pastel-dense.png?raw=true)
+
+**ryan**: what my setup looks like
+![ryan](images/theme-ryan.png?raw=true)
+
+**xstatbar**: looks just like it's predecessor
+![xstatbar](images/theme-xstatbar.png?raw=true)
 
 # usage
 

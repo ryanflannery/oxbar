@@ -65,6 +65,13 @@ generate_load
 import -window oxshort images/theme-minimal.png
 pkill oxbar
 
+# pastel-dense
+feh --bg-fill ~/images/ice-mountain-lake.jpg
+./oxbar ${WOPTS} ${WBG} -F sample.oxbar.conf pastel-dense &
+generate_load
+import -window oxshort images/theme-pastel-dense.png
+pkill oxbar
+
 # ryan
 feh --bg-fill ~/images/ice-mountain-lake.jpg
 ./oxbar ${WOPTS} ${WBG} -w 2200 -F sample.oxbar.conf ryan &
