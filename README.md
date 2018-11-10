@@ -13,28 +13,14 @@ my old xstatbar and its many shortcomings/hacks. Shaming works 'yo.
 oxbar is released under an
 [ISC license](https://github.com/ryanflannery/oxbar/blob/master/LICENSE)
 
-# status
-
-oxbar is still under active development, but is now stable and usable. There's
-little documentation still (a minimal `man` page but a usable `-h` to get
-started, and a sample configuration that explains some options).
-Better documentation is forthcoming, once development settles. Likely soon.
-
-It supports all the command line flags `xstatbar` did and much more... most
-aspects of the widgets can be configured through `-S widget.name=value` flags.
-If you take a look at
-[settings.c](https://github.com/ryanflannery/oxbar/blob/master/settings.c)
-you'll see what they all are.
-
 # current features
 
    * True transparency support with a compositing window manager
      (I recommend compton in ports over xcompmgr in base)
-   * FreeType fonts rendered beautifully & easily w/ pango
-   * Configurable display (all colors, text, spacing, etc)
+   * FreeType fonts styled & rendered easily
+   * Fully configurable display via the command line or config file
    * Left/Right/Center aligned widgets (and any combination of those)
-   * Widgets can be configured on the command line
-   * Configuration file is concise & can support multiple different displays/themes
+   * Configuration file support multiple themes that can be chosen at runtime
    * Types of stats supported:
       * Battery/AC status, simple progress bar, time remaining
       * Volume level w/ progress bar (mute status forthcoming )
@@ -42,6 +28,7 @@ you'll see what they all are.
       * Memory usage & breakdown (current only as of now)
       * CPUs usage & breakdown w/ charts
       * Current date/time (is that a status?)
+      * Others forthcoming
 
 # screenshots
 
@@ -71,27 +58,27 @@ Other themes, all included in the file
 
 # usage
 
-See `oxbar -h` for the basics and the sample configuration file included for
-more examples. Otherwise wait until I can complete the man page.
+Full man page available here:
+[oxbar(1)](http://htmlpreview.github.io/?https://raw.githubusercontent.com/ryanflannery/oxbar/master/man/oxbar.html).
 
-## i liked xstatbar's look
+`oxbar -H` also has a brief description of each command line flag.
+See the sample configuration [sample.oxbar.conf](sample.oxbar.conf) for
+examples, like the themes above.
+
+# i liked xstatbar's look
 
 You can achieve that using the included sample configuration file, saved as
 `~/.oxbar.conf`, and run oxbar via:
 ```bash
 oxbar xstatbar
 ```
-
-The only thing lacking is each individual cpu's states being shown. That is
-forthcoming.
-
 # outstanding stuff, prioritized
 
 Roughly in order or my priority...
 
-   * document! man page and -h flags
    * gui: icons in the display could help condense it further
    * stats: add tracker for hw.sensors
+   * stats: add a wifi signal strength indicator
    * stats: add a weather component...i like weather
    * gui: support vertical rendering (a sidebar!)
    * when using compton, need '--shadow-exclude 'name = "oxbar"' to disable
