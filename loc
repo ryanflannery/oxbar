@@ -3,7 +3,7 @@ Lines in core oxbar
      227 ./oxbar.c
      238 ./widgets.c
       42 ./widgets/battery.c
-      51 ./widgets/volume.c
+      54 ./widgets/volume.c
       65 ./widgets/memory.c
       21 ./widgets/nprocs.c
       64 ./widgets/net.c
@@ -22,11 +22,11 @@ Lines in core oxbar
       90 ./stats/memory.c
       31 ./stats/nprocs.c
       50 ./stats/stats.c
-     223 ./stats/volume.c
+      98 ./stats/volume.c
       67 ./stats/wifi.c
      144 ./stats/net.c
       48 ./stats/util.c
-    3484 total
+    3362 total
 Lines in tests and drivers
      285 ./gui/xcore.t.cc
       39 ./gui/chart.d.c

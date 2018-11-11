@@ -6,7 +6,7 @@
 struct volume_info {
    bool  is_setup;
    bool  muted;
-   float left_pct, right_pct;
+   float left, right;
 };
 
 extern struct volume_info VOLUME;

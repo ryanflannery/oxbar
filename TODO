@@ -10,7 +10,6 @@ stats/brightness.h:2: * TODO Build a working brightness widget (this is currentl
 stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
 stats/cpu.c:125:   /* TODO CPU cleanup routine should free/cleanup shiz */
 stats/memory.c:89:   /* TODO MEMORY cleanup routine should free/cleanup shiz */
-stats/volume.c:126:/* TODO GET VOLUME "IS MUTED?" WORKING
 stats/wifi.c:20: * TODO wifi stats collector only works on a 802.11 egress interface.
 stats/net.h:10:   /* TODO Raw # packets in/out isn't used anymore. Remove? */
 stats/net.c:58: * TODO Refactor network bytes logic

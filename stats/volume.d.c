@@ -17,8 +17,8 @@ main()
       volume_update();
       printf("%8s\t%8.1f\t%8.1f\n",
             VOLUME.muted ? "TRUE" : "false",
-            VOLUME.left_pct,
-            VOLUME.right_pct);
+            VOLUME.left,
+            VOLUME.right);
 
       sleep(1);
    }

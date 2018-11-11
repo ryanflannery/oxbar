@@ -13,211 +13,86 @@
 
 struct volume_info VOLUME;
 
-/* old */
-static int volume_dev_fd;
-static int volume_master_idx;
-static int volume_max;
-static int volume_nchan;
-static int volume_left;
-static int volume_right;
-
-int
-volume_check_dev(int fd, int class, char *name)
-{
-   mixer_devinfo_t devinfo;
-
-   if (class < 0 || name == NULL)
-      return -1;
-
-   devinfo.index = 0;
-   while (ioctl(fd, AUDIO_MIXER_DEVINFO, &devinfo) >= 0) {
-      if ((devinfo.type == AUDIO_MIXER_VALUE)
-      &&  (devinfo.mixer_class == class)
-      &&  (strncmp(devinfo.label.name, name, MAX_AUDIO_DEV_LEN) == 0))
-         return (devinfo.index);
-
-      devinfo.index++;
-   }
-
-   return -1;
-}
+static int mixer_fd;
+static int outputs_class = -1;
+static int outputs_master_idx = -1;
+static int outputs_mute_idx = -1;
 
 void
 volume_init()
 {
    mixer_devinfo_t devinfo;
-   int oclass_idx, iclass_idx, mclass_idx;
 
-   VOLUME.is_setup = false;
+   /* determine mixer device & open it */
+   char *device = getenv("MIXERDEVICE");
+   if (NULL == device)
+      device = "/dev/mixer";
 
-   /* open mixer */
-   const char *file = getenv("MIXERDEVICE");
-   if (file == NULL)
-      file = "/dev/mixer";
+   if (0 >= (mixer_fd = open(device, O_RDWR)))
+      err(1, "failed to open %s", device);
 
-   if ((volume_dev_fd = open(file, O_RDWR)) < 0)
-      err(1, "%s: failed to open /dev/mixer", __FUNCTION__);
-
-   /* find the outputs and inputs classes */
-   oclass_idx = iclass_idx = mclass_idx = -1;
+   /* find outputs.master volume and mute devices */
    devinfo.index = 0;
-   while (ioctl(volume_dev_fd, AUDIO_MIXER_DEVINFO, &devinfo) >= 0) {
-      if (devinfo.type != AUDIO_MIXER_CLASS) {
-         devinfo.index++;
-         continue;
-	   }
+   while (-1 != ioctl(mixer_fd, AUDIO_MIXER_DEVINFO, &devinfo)) {
+      if (0 == strncmp(devinfo.label.name, AudioCoutputs, MAX_AUDIO_DEV_LEN))
+         outputs_class = devinfo.mixer_class;
 
-      if (strncmp(devinfo.label.name, AudioCoutputs, MAX_AUDIO_DEV_LEN) == 0)
-         oclass_idx = devinfo.index;
-      if (strncmp(devinfo.label.name, AudioCinputs, MAX_AUDIO_DEV_LEN) == 0)
-         iclass_idx = devinfo.index;
-      /*
-      if (strncmp(devinfo.label.name, AudioNmute, MAX_AUDIO_DEV_LEN) == 0) {
-         printf("mute at idx = %d type = %d\n", devinfo.index, devinfo.type);
-         mclass_idx = devinfo.index;
-      }
-      */
+      if (0 == strncmp(devinfo.label.name, AudioNmaster, MAX_AUDIO_DEV_LEN)
+      && devinfo.mixer_class == outputs_class)
+         outputs_master_idx = devinfo.index;
 
-      if (oclass_idx != -1 && iclass_idx != -1) /* && mclass_idx != -1)*/
-         break;
+      if (0 == strncmp(devinfo.label.name, AudioNmute, MAX_AUDIO_DEV_LEN)
+      && devinfo.mixer_class == outputs_class)
+         outputs_mute_idx = devinfo.index;
 
       devinfo.index++;
    }
-   /*volume_mute_idx = mclass_idx;*/
 
-   /* find the master device */
-   volume_master_idx = volume_check_dev(volume_dev_fd, oclass_idx, AudioNmaster);
-   if (volume_master_idx == -1)
-      volume_master_idx = volume_check_dev(volume_dev_fd, iclass_idx, AudioNdac);
-   if (volume_master_idx == -1)
-      volume_master_idx = volume_check_dev(volume_dev_fd, oclass_idx, AudioNdac);
-   if (volume_master_idx == -1)
-      volume_master_idx = volume_check_dev(volume_dev_fd, oclass_idx, AudioNoutput);
+   /* did we find them? */
+   if (-1 == outputs_class
+   ||  -1 == outputs_master_idx
+   || -1 == outputs_mute_idx)
+      VOLUME.is_setup = false;
+   else
+      VOLUME.is_setup = true;
 
-   if (volume_master_idx == -1) {
-      warnx("volume: failed to find \"master\" mixer device");
-      return;
-   }
-
-   devinfo.index = volume_master_idx;
-   if (ioctl(volume_dev_fd, AUDIO_MIXER_DEVINFO, &devinfo) == -1) {
-      warn("AUDIO_MIXER_DEVINFO");
-      return;
-   }
-
-   volume_max = AUDIO_MAX_GAIN;
-   volume_nchan = devinfo.un.v.num_channels;
-
-   /* finished... now close the device and reopen as read only */
-   close(volume_dev_fd);
-   volume_dev_fd = open("/dev/mixer", O_RDONLY);
-   if (volume_dev_fd < 0) {
-      warn("volume: failed to re-open /dev/mixer");
-      return;
-   }
-
-   VOLUME.muted = false;
-   VOLUME.left_pct = -1.0;
-   VOLUME.right_pct = -1.0;
-
-   VOLUME.is_setup = true;
+   /* reopen mixer device readonly */
+   close(mixer_fd);
+   if (0 >= (mixer_fd = open(device, O_RDONLY)))
+      err(1, "failed to open %s", device);
 }
-
-/* TODO GET VOLUME "IS MUTED?" WORKING
- * There's a great deal of commented-out code here. This is mostly around
- * trying to figure out how to determine "mute" status, which is something
- * I would really like.
- *
- * I've been digging through mixerctl(1) code and it nicely shows how to
- * recursively iterate through all devices and check their stats. I haven't
- * been able to extract from that how to determine mute status though.
- *
- * Jacob Meuser gave some great advice in the thread below about how best to
- * query all devices and extract such stats. What I need to do is dedicate
- * an evening to just dive-into and figure this.
- * See: https://marc.info/?l=openbsd-ports&m=125177906413076&w=2
-void
-volume_update_mute()
-{
-   static mixer_devinfo_t vinfo;
-
-   if (!VOLUME.is_setup)
-      return;
-
-   vinfo.index = volume_master_idx;
-   vinfo.type  = AUDIO_MIXER_ENUM;
-   if (ioctl(volume_dev_fd, AUDIO_MIXER_DEVINFO, &vinfo) < 0)
-   {
-      warn("volume update: AUDIO_MIXER_DEVINFO failed");
-      return;
-   }
-
-   printf("vinfo.type = %d\n", vinfo.type);
-   if (vinfo.type != AUDIO_MIXER_ENUM) {
-      printf("not enum :(\n");
-   } else {
-      printf("is enum )\n");
-   }
-
-   printf("%s\n", vinfo.label.name);
-   printf("%s\n", vinfo.un.e.member.label.name);
-   VOLUME.muted = false;
-}
- */
 
 void
 volume_update()
 {
-   static mixer_ctrl_t vinfo;
+   mixer_ctrl_t vinfo;
 
-   if (!VOLUME.is_setup)
-      return;
-
-   /* query info */
-   vinfo.dev = volume_master_idx;
+   /* update volume */
+   vinfo.dev  = outputs_master_idx;
    vinfo.type = AUDIO_MIXER_VALUE;
-   if (ioctl(volume_dev_fd, AUDIO_MIXER_READ, &vinfo) < 0)
-      err(1, "%s: AUDIO_MIXER_READ failed", __FUNCTION__);
 
-   /* record in global struct */
-   if (1 == vinfo.un.value.num_channels)
-      volume_left = volume_right = vinfo.un.value.level[AUDIO_MIXER_LEVEL_MONO];
+   if (-1 == ioctl(mixer_fd, AUDIO_MIXER_READ, &vinfo))
+      err(1, "AUDIO_MIXER_READ failed (volume)");
    else {
-      volume_left  = vinfo.un.value.level[AUDIO_MIXER_LEVEL_LEFT];
-      volume_right = vinfo.un.value.level[AUDIO_MIXER_LEVEL_RIGHT];
+      VOLUME.left  = (float)vinfo.un.value.level[AUDIO_MIXER_LEVEL_LEFT]
+                   / (float)AUDIO_MAX_GAIN * 100.0;
+      VOLUME.right = (float)vinfo.un.value.level[AUDIO_MIXER_LEVEL_RIGHT]
+                   / (float)AUDIO_MAX_GAIN * 100.0;
    }
 
-   /* create percents */
-   VOLUME.left_pct  = roundf(100.0 * (float)volume_left / (float)volume_max);
-   VOLUME.right_pct = roundf(100.0 * (float)volume_right / (float)volume_max);
+   /* update mute */
+   vinfo.dev  = outputs_mute_idx;
+   vinfo.type = AUDIO_MIXER_ENUM;
 
-   /* mute status --- wtf!? */
-   /*
-   mixer_devinfo_t dinfo;
-   dinfo.index = volume_mute_idx;
-   dinfo.type = AUDIO_MIXER_VALUE;
-   if (ioctl(volume_dev_fd, AUDIO_MIXER_DEVINFO, &dinfo) < 0)
-   {
-      warn("volume update: AUDIO_MIXER_DEVINFO failed");
-      return;
-   }
-   printf("%d ? %d\n", volume_mute_idx, dinfo.index);
-   printf("%d ? %d\n", AUDIO_MIXER_VALUE, dinfo.type);
-   printf("%d\n", dinfo.un.v.num_channels);
-   printf("%d\n", dinfo.un.v.delta);
-   printf("%s\n", dinfo.un.v.units.name);
-
-   printf("%d %d\n", dinfo.un.e.member[0].ord, dinfo.un.e.member[1].ord);
-   printf("%s\n", dinfo.un.e.member[0].label.name);
-   printf("%s\n", dinfo.un.e.member[1].label.name);
-   */
+   if (-1 == ioctl(mixer_fd, AUDIO_MIXER_READ, &vinfo))
+      err(1, "AUDIO_MIXER_READ failed (mute)");
+   else
+      VOLUME.muted = vinfo.un.ord == 1;
 }
 
 void
 volume_close()
 {
-   if (!VOLUME.is_setup)
-      return;
-
-   close(volume_dev_fd);
+   if (VOLUME.is_setup)
+      close(mixer_fd);
 }
