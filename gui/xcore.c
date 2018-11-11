@@ -100,26 +100,7 @@ get_root_visual(xcb_screen_t *screen)
 struct xdisp*
 xdisp_init()
 {
-   /*
-    * TODO Fix the below issue with cairo/xcb connection state
-    * Using a poor man's (non-thread-safe) singleton here.
-    * I'm doing this in haste because of an issue with cairo/xcb binding
-    * described in [1]. Basically, after creating a cairo xcb surface with
-    * one xcb connection, all future such surfaces, if given the same pointer
-    * to an xcb connection, must have the same values. Those values can change
-    * if, for example, you close and then re-open the conncetion, which
-    * is what the xfont_init() method basically does.
-    * This also mean, unfortunately, that I can't clean this up. Note reference
-    * counting doesn't work (as has been suggested by others).
-    *
-    * For now I'm doing this as a solution. The threads in oxbar are fine with
-    * this, for now, but should try to re-address later.
-    *
-    * [1] https://lists.cairographics.org/archives/cairo/2018-November/028791.html
-    */
    static struct xdisp *x = NULL;
-   if (NULL != x)
-      return x;
 
    if (NULL == (x = malloc(sizeof(struct xdisp))))
       err(1, "%s: malloc failed", __FUNCTION__);
@@ -146,13 +127,8 @@ xdisp_init()
 void
 xdisp_free(__attribute__((unused)) struct xdisp *x)
 {
-   /*
-    * Yes, this should be done, and used to be.
-    * No, it can't be done now.
-    * See the TODO at the top of xdisp_init() for why.
    xcb_disconnect(x->con);
    free(x);
-   */
 }
 
 /* xcb window wrapper */
@@ -345,6 +321,7 @@ void
 xwin_free(struct xwin *w)
 {
    cairo_destroy(w->cairo);
+   cairo_device_finish(cairo_surface_get_device(w->surface));
    cairo_surface_destroy(w->surface);
    xcb_destroy_window(w->xdisp->con, w->window);
    free(w);

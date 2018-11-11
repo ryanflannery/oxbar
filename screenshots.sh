@@ -1,6 +1,9 @@
 #!/bin/sh
 
-# TODO disclaimer (images not here bc yada, other tools yada, ...)
+# NOTE: This references some images in my personal directory that are used
+# as background images for some of the screenshots. They are not included
+# with the git repository as they are not mine and I don't have permission
+# to redistribute.
 
 # oxbar -F sample.oxbar.conf -w 1700 [theme] &           # run oxbar
 # feh --bg-fill /home/ryan/images/ice-mountain-lake.jpg  # set background
@@ -85,54 +88,3 @@ feh --bg-fill ~/images/ice-mountain-lake.jpg
 generate_load
 import -screen -window oxshort images/theme-xstatbar.png
 pkill oxbar
-
-# idea
-# TOP LEVEL / WHAT I WANT
-# - run a script to generate all screenshots
-# - should include full version + oxbar-only version
-# - oxbar only version should be large-ish
-# - output should be list of images
-# - list of images should be easily testable with a simple `feh *.png`
-#
-# How do i do that?
-# RUN THROUGH CONFIGS / THEMES
-# - set background + run theme (these are coupled)
-# - launch apps to make charts busy
-# - wait 60 seconds
-# - take screenshot(s)
-#
-# Config is
-# list of < theme , background > pairs
-#configs="
-#minimal           foo
-#islands           bar
-#islands-colorful  baz
-#xstatbar          fooxstat
-#pastel-dense      foopastel
-#ryan              fooryan
-#"
-#
-#theme="null"
-#bgimage="null"
-#
-#parseconfig()
-#{
-#   theme="$1"
-#   bgimage="$2"
-#}
-#
-#IFS='
-#'
-#for i in $configs
-#do
-#   echo "line: \"$i\""
-#   IFS=' '
-#   parseconfig $i
-#   echo "theme = '$theme' bgimage = '$bgimage'"
-#   oxbar -F sample.oxbar.conf $theme &
-#   sleep 2
-#   import -window oxbar $theme.png
-#   pkill oxbar
-#   IFS='
-#   '
-#done
