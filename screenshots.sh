@@ -48,42 +48,42 @@ WBG="-S window.bgcolor=fff"
 feh --bg-fill ~/images/ice-mountain-lake.jpg
 ./oxbar ${WOPTS} ${WBG} -F sample.oxbar.conf islands &
 generate_load
-import -window oxshort images/theme-islands.png
+import -screen -window oxshort images/theme-islands.png
 pkill oxbar
 
 # islands-colorful
 feh --bg-fill ~/images/ice-mountain-lake.jpg
 ./oxbar ${WOPTS} ${WBG} -F sample.oxbar.conf islands-colorful &
 generate_load
-import -window oxshort images/theme-islands-colorful.png
+import -screen -window oxshort images/theme-islands-colorful.png
 pkill oxbar
 
 # minimal
 feh --bg-fill ~/images/ice-mountain-lake.jpg
 ./oxbar ${WOPTS} ${WBG} -F sample.oxbar.conf minimal &
 generate_load
-import -window oxshort images/theme-minimal.png
+import -screen -window oxshort images/theme-minimal.png
 pkill oxbar
 
 # pastel-dense
 feh --bg-fill ~/images/ice-mountain-lake.jpg
 ./oxbar ${WOPTS} ${WBG} -F sample.oxbar.conf pastel-dense &
 generate_load
-import -window oxshort images/theme-pastel-dense.png
+import -screen -window oxshort images/theme-pastel-dense.png
 pkill oxbar
 
 # ryan
 feh --bg-fill ~/images/ice-mountain-lake.jpg
 ./oxbar ${WOPTS} ${WBG} -w 2350 -F sample.oxbar.conf ryan &
 generate_load
-import -window oxshort images/theme-ryan.png
+import -screen -window oxshort images/theme-ryan.png
 pkill oxbar
 
 # xstatbar
 feh --bg-fill ~/images/ice-mountain-lake.jpg
 ./oxbar ${WOPTS} -F sample.oxbar.conf xstatbar &
 generate_load
-import -window oxshort images/theme-xstatbar.png
+import -screen -window oxshort images/theme-xstatbar.png
 pkill oxbar
 
 # idea

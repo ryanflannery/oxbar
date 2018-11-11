@@ -79,6 +79,7 @@ oxbar xstatbar
 
 Roughly in order or my priority...
 
+   * currently network & wifi widget only work for egress interface
    * gui: icons in the display could help condense it further
    * stats: add tracker for hw.sensors
    * stats: add a weather component...i like weather
