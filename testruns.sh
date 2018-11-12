@@ -61,8 +61,9 @@ kill $pid
 ./oxbar -F sample.oxbar.conf FooBar       # should fail
 ./oxbar -F sample.oxbar.conf top
 ./oxbar -F sample.oxbar.conf bottom
-./oxbar -F sample.oxbar.conf minimal
 ./oxbar -F sample.oxbar.conf islands
 ./oxbar -F sample.oxbar.conf islands-colorful
+./oxbar -F sample.oxbar.conf minimal
+./oxbar -F sample.oxbar.conf ryan
 ./oxbar -F sample.oxbar.conf pastel-dense
 ./oxbar -F sample.oxbar.conf xstatbar

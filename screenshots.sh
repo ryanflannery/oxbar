@@ -77,7 +77,7 @@ pkill oxbar
 
 # ryan
 feh --bg-fill ~/images/ice-mountain-lake.jpg
-./oxbar ${WOPTS} ${WBG} -w 2350 -F sample.oxbar.conf ryan &
+./oxbar ${WOPTS} ${WBG} -w 2600 -F sample.oxbar.conf ryan &
 generate_load
 import -screen -window oxshort images/theme-ryan.png
 pkill oxbar
