@@ -84,7 +84,7 @@ pkill oxbar
 
 # ryan
 feh --bg-fill ~/images/spiff.jpg
-./oxbar ${WOPTS} -w 2600 -F sample.oxbar.conf ryan &
+./oxbar ${WOPTS} -w 2500 -F sample.oxbar.conf ryan &
 generate_load
 import -screen -window oxshort images/theme-ryan.png
 pkill oxbar
