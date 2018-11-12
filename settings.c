@@ -215,7 +215,7 @@ parse_header_style(header_style_t *style, const char * const value)
 static void
 settings_set_defaults(struct settings *s)
 {
-   s->widgets = strdup("nprocs cpuslong memory net > battery wifi volume time");
+   s->widgets = strdup("nprocs cpus memory net > battery wifi bright volume time");
 
    s->font.desc = strdup("DejaVu sans mono 16px");
    s->font.fgcolor = strdup("93a1a1");
@@ -246,6 +246,13 @@ settings_set_defaults(struct settings *s)
    s->battery.chart_width        = 7;
    s->battery.chart_bgcolor      = strdup("dc322f");
    s->battery.chart_pgcolor      = strdup("859900");
+
+   s->bright.hdcolor             = strdup("8900b5");
+   s->bright.bgcolor             = strdup("");
+   s->bright.fgcolor             = strdup("");
+   s->bright.chart_width         = 7;
+   s->bright.chart_bgcolor       = strdup("dc322f");
+   s->bright.chart_pgcolor       = strdup("859900");
 
    s->cpus.hdcolor               = strdup("6c71c4");
    s->cpus.bgcolor               = strdup("");
@@ -416,6 +423,14 @@ settings_set_one_keyvalue(struct settings *s, const char *key, const char *value
    KMS_INT(battery.chart_width);
    KMS_STRING(battery.chart_bgcolor);
    KMS_STRING(battery.chart_pgcolor);
+
+   /* bright */
+   KMS_STRING(bright.hdcolor);
+   KMS_STRING(bright.bgcolor);
+   KMS_STRING(bright.fgcolor);
+   KMS_INT(bright.chart_width);
+   KMS_STRING(bright.chart_bgcolor);
+   KMS_STRING(bright.chart_pgcolor);
 
    /* cpus */
    KMS_STRING(cpus.hdcolor);

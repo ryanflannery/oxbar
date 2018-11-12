@@ -24,7 +24,8 @@ oxbar is released under an
    * Left/Right/Center aligned widgets (and any combination of those)
    * Configuration file support multiple themes that can be chosen at runtime
    * Types of stats supported:
-      * Battery/AC status, simple progress bar, time remaining
+      * Battery/AC status, progress bar, time remaining
+      * Brightness level w/ progress bar (queryied via Xrandr(3))
       * Volume level w/ progress bar (mute status forthcoming )
       * Number of processes (current total # processes only as of now)
       * Memory usage & breakdown (current only as of now)

@@ -76,6 +76,7 @@
       <li><a href="#Window_Properties">Window Properties</a></li>
       <li><a href="#GUI_Properties">GUI Properties</a></li>
       <li><a href="#Battery_Widget">Battery Widget</a></li>
+      <li><a href="#Brightness_Widget">Brightness Widget</a></li>
       <li><a href="#CPUs_Widget">CPUs Widget</a></li>
       <li><a href="#Memory_Widget">Memory Widget</a></li>
       <li><a href="#Number_Processes_Widget">Number Processes Widget</a></li>
@@ -560,8 +561,8 @@ The &#x201C;GUI&#x201D; of <code class="Nm" title="Nm">oxbar</code> is just an
       <a class="Sx" title="Sx" href="#SPECIFYING_WIDGETS">SPECIFYING WIDGETS</a>
       for full details.
     <div class="Pp"></div>
-    Default value: &#x201C;nprocs cpuslong memory net &gt; battery volume
-      time&#x201D;</dd>
+    Default value: &#x201C;nprocs cpus memory net &gt; battery wifi bright
+      volume time&#x201D;</dd>
   <dt>gui.margin</dt>
   <dd>The margins, in pixels, surrounding each widget. The margins can be
       specified for the <i class="Em" title="Em">top</i>,
@@ -647,6 +648,27 @@ These properties configure the battery widget, showing charging &amp; capacity
   <dd>Progress color of the progress bar chart.
     <div class="Pp"></div>
     Default value: &#x201C;859900&#x201D;</dd>
+</dl>
+<h2 class="Ss" title="Ss" id="Brightness_Widget"><a class="permalink" href="#Brightness_Widget">Brightness
+  Widget</a></h2>
+These properties configure the bright widget, showing the x display brightness
+  level as determined by querying <a class="Xr" title="Xr">Xrandr(3)</a>.
+<dl class="Bl-tag">
+  <dt>bright.hdcolor</dt>
+  <dd>The header color for this widget.
+    <div class="Pp"></div>
+    Default value: &#x201C;8900b5&#x201D;</dd>
+  <dt>bright.bgcolor</dt>
+  <dd>The background color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to
+      <i class="Em" title="Em">gui.widget_bgcolor</i> if set, or
+      <i class="Em" title="Em">window.bgcolor</i> otherwise).</dd>
+  <dt>bright.fgcolor</dt>
+  <dd>The foreground color for this widget.
+    <div class="Pp"></div>
+    Default value: unset (fallback to <i class="Em" title="Em">font.fgcolor</i>
+      ).</dd>
 </dl>
 <h2 class="Ss" title="Ss" id="CPUs_Widget"><a class="permalink" href="#CPUs_Widget">CPUs
   Widget</a></h2>
@@ -1023,6 +1045,12 @@ This is the list of all available widgets.
     <div class="Pp"></div>
     Corresponding configurable properties:
       <i class="Em" title="Em">battery.*</i>.</dd>
+  <dt>bright</dt>
+  <dd>This widget shows the brightness of the current X display, as a
+      percentage, determined by querying <a class="Xr" title="Xr">Xrandr(3)</a>.
+    <div class="Pp"></div>
+    Corresponding configurable properties:
+      <i class="Em" title="Em">bright.*</i>.</dd>
   <dt>cpu</dt>
   <dd>This widget shows an overview, with charts, of CPU utilization. For each
       CPU it shows a historical histogram (spanning the last 60 seconds)

@@ -2,6 +2,7 @@
 #define STATS_H
 
 #include "battery.h"
+#include "brightness.h"
 #include "cpu.h"
 #include "memory.h"
 #include "net.h"
@@ -10,13 +11,14 @@
 #include "wifi.h"
 
 struct oxstats {
-   struct battery_info  *battery;
-   struct cpus          *cpus;
-   struct memory_info   *memory;
-   struct net_info      *network;
-   struct nprocs_info   *nprocs;
-   struct volume_info   *volume;
-   struct wifi_info     *wifi;
+   struct battery_info    *battery;
+   struct brightness_info *brightness;
+   struct cpus            *cpus;
+   struct memory_info     *memory;
+   struct net_info        *network;
+   struct nprocs_info     *nprocs;
+   struct volume_info     *volume;
+   struct wifi_info       *wifi;
 };
 
 extern struct oxstats OXSTATS;

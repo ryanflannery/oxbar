@@ -1,9 +1,9 @@
 # build flags
-CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2
-LDFLAGS += -lm
+CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2 -I/usr/X11R6/include
+LDFLAGS += -lm -L/usr/X11R6/lib -lxcb -lxcb-randr
 
-OBJS    = battery.o cpu.o memory.o net.o nprocs.o volume.o wifi.o util.o stats.o
-DRIVERS = battery.d cpu.d memory.d net.d nprocs.d volume.d wifi.d
+OBJS    = battery.o brightness.o cpu.o memory.o net.o nprocs.o volume.o wifi.o util.o stats.o
+DRIVERS = battery.d brightness.d cpu.d memory.d net.d nprocs.d volume.d wifi.d
 
 .PHONY: all clean objects drivers
 .DEFAULT: all

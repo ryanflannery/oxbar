@@ -549,7 +549,7 @@ See the section
 for full details.
 .Pp
 Default value:
-.Dq nprocs cpuslong memory net > battery volume time
+.Dq nprocs cpus memory net > battery wifi bright volume time
 .It gui.margin
 The margins, in pixels, surrounding each widget.
 The margins can be specified for the
@@ -663,6 +663,47 @@ Background color of the progress bar chart.
 Default value:
 .Dq dc322f
 .It battery.chart_pgcolor
+Progress color of the progress bar chart.
+.Pp
+Default value:
+.Dq 859900
+.El
+.\" --- Bright Widget ---------------------------------------------------------
+.Ss Brightness Widget
+These properties configure the bright widget, showing the x display brightness
+level as determined by querying
+.Xr Xrandr 3 .
+.Bl -tag -width gui.widget_spacing
+.It bright.hdcolor
+The header color for this widget.
+.Pp
+Default value:
+.Dq 8900b5
+.It bright.bgcolor
+The background color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em gui.widget_bgcolor
+if set, or
+.Em window.bgcolor
+otherwise).
+.It bright.fgcolor
+The foreground color for this widget.
+.Pp
+Default value: unset (fallback to
+.Em font.fgcolor
+).
+.It bright.chart_width
+Width (in pixels) of the progress bar.
+.Pp
+Default value:
+.Dq 7
+.It bright.chart_bgcolor
+Background color of the progress bar chart.
+.Pp
+Default value:
+.Dq dc322f
+.It bright.chart_pgcolor
 Progress color of the progress bar chart.
 .Pp
 Default value:
@@ -1115,6 +1156,13 @@ corresponding text value for that percentage.
 .Pp
 Corresponding configurable properties:
 .Em battery.* .
+.It bright
+This widget shows the brightness of the current X display, as a percentage,
+determined by querying
+.Xr Xrandr 3 .
+.Pp
+Corresponding configurable properties:
+.Em bright.* .
 .It cpu
 This widget shows an overview, with charts, of CPU utilization.
 For each CPU it shows a historical histogram (spanning the last 60 seconds)

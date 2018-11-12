@@ -6,6 +6,7 @@
 #include "widgets/util.h"
 
 #include "widgets/battery.h"
+#include "widgets/bright.h"
 #include "widgets/cpus.h"
 #include "widgets/cpushort.h"
 #include "widgets/cpuslong.h"
@@ -29,16 +30,17 @@ struct widget_recipe {
 /* define all widget recipes */
 #define WCLRS() NULL, NULL, NULL
 struct widget_recipe WIDGET_RECIPES[] = {
-   {{"battery", WCLRS(), wbattery_enabled, wbattery_draw,  NULL}, generic_init,  generic_free },
-   {{"cpus",    WCLRS(), wcpu_enabled,     wcpu_draw,      NULL}, wcpu_init,     wcpu_free },
-   {{"cpuslong",WCLRS(), wcpulong_enabled, wcpulong_draw,  NULL}, wcpu_init,     wcpu_free },
-   {{"cpushort",WCLRS(), wcpushort_enabled,wcpushort_draw, NULL}, wcpu_init,     wcpu_free },
-   {{"memory",  WCLRS(), wmemory_enabled,  wmemory_draw,   NULL}, wmemory_init,  wmemory_free },
-   {{"net",     WCLRS(), wnet_enabled,     wnet_draw,      NULL}, wnet_init,     wnet_free },
-   {{"nprocs",  WCLRS(), wnprocs_enabled,  wnprocs_draw,   NULL}, generic_init,  generic_free },
-   {{"time",    WCLRS(), wtime_enabled,    wtime_draw,     NULL}, generic_init,  generic_free },
-   {{"volume",  WCLRS(), wvolume_enabled,  wvolume_draw,   NULL}, generic_init,  generic_free },
-   {{"wifi",    WCLRS(), wwifi_enabled,    wwifi_draw,     NULL}, generic_init,  generic_free }
+   {{"battery",  WCLRS(), wbattery_enabled, wbattery_draw,  NULL}, generic_init,  generic_free },
+   {{"bright",   WCLRS(), wbright_enabled,  wbright_draw,   NULL}, generic_init,  generic_free },
+   {{"cpus",     WCLRS(), wcpu_enabled,     wcpu_draw,      NULL}, wcpu_init,     wcpu_free },
+   {{"cpuslong", WCLRS(), wcpulong_enabled, wcpulong_draw,  NULL}, wcpu_init,     wcpu_free },
+   {{"cpushort", WCLRS(), wcpushort_enabled,wcpushort_draw, NULL}, wcpu_init,     wcpu_free },
+   {{"memory",   WCLRS(), wmemory_enabled,  wmemory_draw,   NULL}, wmemory_init,  wmemory_free },
+   {{"net",      WCLRS(), wnet_enabled,     wnet_draw,      NULL}, wnet_init,     wnet_free },
+   {{"nprocs",   WCLRS(), wnprocs_enabled,  wnprocs_draw,   NULL}, generic_init,  generic_free },
+   {{"time",     WCLRS(), wtime_enabled,    wtime_draw,     NULL}, generic_init,  generic_free },
+   {{"volume",   WCLRS(), wvolume_enabled,  wvolume_draw,   NULL}, generic_init,  generic_free },
+   {{"wifi",     WCLRS(), wwifi_enabled,    wwifi_draw,     NULL}, generic_init,  generic_free }
 };
 const size_t NWIDGET_RECIPES = sizeof(WIDGET_RECIPES) / sizeof(struct widget_recipe);
 
@@ -63,6 +65,8 @@ get_settings_component(const char * const name, struct settings *settings)
 {
    if (0 == strcmp(name, "battery"))
       return &settings->battery;
+   if (0 == strcmp(name, "bright"))
+      return &settings->bright;
    if (0 == strcmp(name, "cpus"))
       return &settings->cpus;
    if (0 == strcmp(name, "cpuslong"))
@@ -157,6 +161,7 @@ widgets_init(struct gui *gui, struct settings *settings, struct oxstats *stats)
 {
    /* connect hdcolor, bgcolor, and fgcolor components to their globals */
    widget_set_hdcolor("battery",   &settings->battery.hdcolor);
+   widget_set_hdcolor("bright",    &settings->bright.hdcolor);
    widget_set_hdcolor("cpus",      &settings->cpus.hdcolor);
    widget_set_hdcolor("cpushort",  &settings->cpus.hdcolor);
    widget_set_hdcolor("cpuslong",  &settings->cpus.hdcolor);
@@ -168,6 +173,7 @@ widgets_init(struct gui *gui, struct settings *settings, struct oxstats *stats)
    widget_set_hdcolor("wifi",      &settings->wifi.hdcolor);
 
    widget_set_bgcolor("battery",   &settings->battery.bgcolor);
+   widget_set_bgcolor("bright",    &settings->bright.bgcolor);
    widget_set_bgcolor("cpus",      &settings->cpus.bgcolor);
    widget_set_bgcolor("cpushort",  &settings->cpus.bgcolor);
    widget_set_bgcolor("cpuslong",  &settings->cpus.bgcolor);
@@ -179,6 +185,7 @@ widgets_init(struct gui *gui, struct settings *settings, struct oxstats *stats)
    widget_set_bgcolor("wifi",      &settings->wifi.bgcolor);
 
    widget_set_fgcolor("battery",   &settings->battery.fgcolor);
+   widget_set_fgcolor("bright",    &settings->bright.fgcolor);
    widget_set_fgcolor("cpus",      &settings->cpus.fgcolor);
    widget_set_fgcolor("cpushort",  &settings->cpus.fgcolor);
    widget_set_fgcolor("cpuslong",  &settings->cpus.fgcolor);

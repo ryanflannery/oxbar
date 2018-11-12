@@ -6,6 +6,7 @@
 #include "gui/xcore.h"
 
 #include "widgets/battery.h"
+#include "widgets/bright.h"
 #include "widgets/cpus.h"
 #include "widgets/memory.h"
 #include "widgets/net.h"
@@ -30,6 +31,7 @@ struct settings {
 
    /* per-widget settings */
    struct widget_battery_settings   battery;
+   struct widget_bright_settings   bright;
    struct widget_volume_settings    volume;
    struct widget_nprocs_settings    nprocs;
    struct widget_memory_settings    memory;

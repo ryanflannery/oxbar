@@ -5,8 +5,7 @@ oxbar.c:3: * TODO don't bomb on more than one egress interface / configurable (X
 oxbar.c:4: * TODO don't use -1 for y/w/h magic - use 0 and use unsigned types (XXX MAN)
 oxbar.c:5: * TODO polish error messages (err/errx calls)
 oxbar.c:6: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
-settings.c:301: * TODO Create a settings_free() (or refactor to make easier)
-stats/brightness.h:2: * TODO Build a working brightness widget (this is currently not used)
+settings.c:308: * TODO Create a settings_free() (or refactor to make easier)
 stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
 stats/cpu.c:125:   /* TODO CPU cleanup routine should free/cleanup shiz */
 stats/memory.c:89:   /* TODO MEMORY cleanup routine should free/cleanup shiz */
