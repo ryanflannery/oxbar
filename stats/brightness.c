@@ -83,6 +83,9 @@ brightness_init()
 void
 brightness_update()
 {
+   if (!BRIGHTNESS.is_setup)
+      return;
+
    xcb_randr_get_output_property_cookie_t          prop_cookie;
    xcb_randr_get_output_property_reply_t          *prop_reply;
 
