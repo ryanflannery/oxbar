@@ -36,8 +36,8 @@ oxbar is released under an
 
 # screenshots
 
-oxbar's default look:
-![default](images/default.png?raw=true)
+oxbar's default look (with no options):
+![default](images/theme-default.png?raw=true)
 
 Other themes, all included in the file
 [sample.oxbar.conf](sample.oxbar.conf):

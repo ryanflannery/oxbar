@@ -47,6 +47,13 @@ pkill oxbar
 WOPTS="-w 2200 -S window.wname=oxshort"
 WBG="-S window.bgcolor=fff"
 
+# default
+feh --bg-fill ~/images/spiff.jpg
+./oxbar ${WOPTS} &
+generate_load
+import -screen -window oxshort images/theme-default.png
+pkill oxbar
+
 # islands
 feh --bg-fill ~/images/ice-mountain-lake.jpg
 ./oxbar ${WOPTS} ${WBG} -F sample.oxbar.conf islands &
@@ -76,8 +83,8 @@ import -screen -window oxshort images/theme-pastel-dense.png
 pkill oxbar
 
 # ryan
-feh --bg-fill ~/images/ice-mountain-lake.jpg
-./oxbar ${WOPTS} ${WBG} -w 2600 -F sample.oxbar.conf ryan &
+feh --bg-fill ~/images/spiff.jpg
+./oxbar ${WOPTS} -w 2600 -F sample.oxbar.conf ryan &
 generate_load
 import -screen -window oxshort images/theme-ryan.png
 pkill oxbar
