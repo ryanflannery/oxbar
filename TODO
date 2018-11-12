@@ -1,15 +1,15 @@
-gui/xcore.c:203: * TODO cleanup & separate wm hints ... and dragons
-gui/xdraw.h:24: * TODO This abstraction should also permit vertical rendering (for a vertical
+gui/xcore.c:220: * TODO cleanup & separate wm hints ... and dragons
+gui/xdraw.h:40: * TODO This abstraction should also permit vertical rendering (for a vertical
 gui/xcore.t.cc:9:/* TODO either fix googletest's [ASSERT|EXPECT]_EXIT* on openbsd or switch */
-oxbar.c:3: * TODO don't bomb on more than one egress interface / configurable (XXX MAN)
-oxbar.c:4: * TODO don't use -1 for y/w/h magic - use 0 and use unsigned types (XXX MAN)
-oxbar.c:5: * TODO polish error messages (err/errx calls)
-oxbar.c:6: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
-settings.c:308: * TODO Create a settings_free() (or refactor to make easier)
-stats/cpu.c:37:   /* TODO Remove duplicate logic in CPU update logic
-stats/cpu.c:125:   /* TODO CPU cleanup routine should free/cleanup shiz */
-stats/memory.c:89:   /* TODO MEMORY cleanup routine should free/cleanup shiz */
-stats/wifi.c:20: * TODO wifi stats collector only works on a 802.11 egress interface.
-stats/net.h:10:   /* TODO Raw # packets in/out isn't used anymore. Remove? */
-stats/net.c:58: * TODO Refactor network bytes logic
-stats/net.c:143:   /* TODO NET cleanup routine should free/cleanup shiz */
+oxbar.c:19: * TODO don't bomb on more than one egress interface / configurable (XXX MAN)
+oxbar.c:20: * TODO don't use -1 for y/w/h magic - use 0 and use unsigned types (XXX MAN)
+oxbar.c:21: * TODO polish error messages (err/errx calls)
+oxbar.c:22: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
+settings.c:324: * TODO Create a settings_free() (or refactor to make easier)
+stats/cpu.c:53:   /* TODO Remove duplicate logic in CPU update logic
+stats/cpu.c:141:   /* TODO CPU cleanup routine should free/cleanup shiz */
+stats/memory.c:105:   /* TODO MEMORY cleanup routine should free/cleanup shiz */
+stats/net.h:26:   /* TODO Raw # packets in/out isn't used anymore. Remove? */
+stats/wifi.c:36: * TODO wifi stats collector only works on a 802.11 egress interface.
+stats/net.c:74: * TODO Refactor network bytes logic
+stats/net.c:159:   /* TODO NET cleanup routine should free/cleanup shiz */
