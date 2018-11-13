@@ -7,7 +7,7 @@ bool
 wnprocs_enabled(void *wstate)
 {
    struct generic_wstate *w = wstate;
-   return w->stats->nprocs->is_setup;
+   return w->stats->nprocs.is_setup;
 }
 
 void
@@ -17,5 +17,5 @@ wnprocs_draw(void *wstate, struct xctx *ctx)
    struct widget_nprocs_settings *settings = w->settings;
 
    xdraw_printf(ctx, settings->fgcolor,
-      "#Procs: %d", w->stats->nprocs->nprocs);
+      "#Procs: %d", w->stats->nprocs.nprocs);
 }

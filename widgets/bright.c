@@ -7,7 +7,7 @@ bool
 wbright_enabled(void *wstate)
 {
    struct generic_wstate *w = wstate;
-   return w->stats->brightness->is_setup;
+   return w->stats->brightness.is_setup;
 }
 
 void
@@ -22,8 +22,8 @@ wbright_draw(void *wstate, struct xctx *ctx)
          settings->chart_bgcolor,
          settings->chart_pgcolor,
          settings->chart_width,
-         w->stats->brightness->brightness);
+         w->stats->brightness.brightness);
 
    xdraw_printf(ctx, settings->fgcolor,
-         "% 3.0f%%", w->stats->brightness->brightness);
+         "% 3.0f%%", w->stats->brightness.brightness);
 }

@@ -17,23 +17,25 @@
 #include <err.h>
 #include <stdio.h>
 #include <unistd.h>
+
 #include "nprocs.h"
 
 int
 main()
 {
-   nprocs_init();
-   if (!NPROCS.is_setup)
+   struct nprocs_stats s;
+   nprocs_init(&s);
+   if (!s.is_setup)
       errx(1, "failed to setup core!");
 
    printf("%8s\n", "procs");
 
    while (1)
    {
-      nprocs_update();
-      printf("%8d\n", NPROCS.nprocs);
+      nprocs_update(&s);
+      printf("%8d\n", s.nprocs);
       sleep(1);
    }
 
-   nprocs_close();
+   nprocs_close(&s);
 }

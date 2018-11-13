@@ -65,5 +65,5 @@ kill $pid
 ./oxbar -F sample.oxbar.conf islands-colorful
 ./oxbar -F sample.oxbar.conf minimal
 ./oxbar -F sample.oxbar.conf ryan
-./oxbar -F sample.oxbar.conf pastel-dense
+./oxbar -F sample.oxbar.conf pastels
 ./oxbar -F sample.oxbar.conf xstatbar

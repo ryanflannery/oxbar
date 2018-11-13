@@ -11,7 +11,7 @@ wcpu_init(struct oxstats *stats, void *settings)
 
    w->settings = settings;
    w->stats    = stats;
-   w->ncpus    = stats->cpus->ncpu; /* XXX this can change at run-time! */
+   w->ncpus    = stats->cpus.ncpu; /* XXX this can change at run-time! */
 
    const char *colors[] = {
       w->settings->chart_color_system,
@@ -49,7 +49,7 @@ bool
 wcpu_enabled(void *wstate)
 {
    struct widget_cpu_state *w = wstate;
-   return w->stats->cpus->is_setup;
+   return w->stats->cpus.is_setup;
 }
 
 void
@@ -62,17 +62,17 @@ wcpu_draw(void *wstate, struct xctx *ctx)
    size_t cpu;
    for (cpu = 0; cpu < w->ncpus; cpu++) {
       chart_update(w->cpu_charts[cpu], (double[]) {
-            w->stats->cpus->cpus[cpu].percentages[CP_SYS],
-            w->stats->cpus->cpus[cpu].percentages[CP_INTR],
-            w->stats->cpus->cpus[cpu].percentages[CP_USER],
-            w->stats->cpus->cpus[cpu].percentages[CP_NICE],
-            w->stats->cpus->cpus[cpu].percentages[CP_SPIN],
-            w->stats->cpus->cpus[cpu].percentages[CP_IDLE]
+            w->stats->cpus.cpus[cpu].percentages[CP_SYS],
+            w->stats->cpus.cpus[cpu].percentages[CP_INTR],
+            w->stats->cpus.cpus[cpu].percentages[CP_USER],
+            w->stats->cpus.cpus[cpu].percentages[CP_NICE],
+            w->stats->cpus.cpus[cpu].percentages[CP_SPIN],
+            w->stats->cpus.cpus[cpu].percentages[CP_IDLE]
             });
 
       xdraw_chart(ctx, w->cpu_charts[cpu]);
       xdraw_printf(ctx, fgcolor, "%3.0f%%",
-            w->stats->cpus->cpus[cpu].percentages[CP_IDLE]);
+            w->stats->cpus.cpus[cpu].percentages[CP_IDLE]);
 
       if (cpu != w->ncpus - 1) xdraw_printf(ctx, "000000", " ");
    }

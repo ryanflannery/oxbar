@@ -14,27 +14,27 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <err.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
 #include <sys/param.h>
 #include <sys/swap.h>
 #include <sys/sysctl.h>
 #include <sys/vmmeter.h>
 #include <uvm/uvmexp.h>
 
+#include <err.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+
 #include "memory.h"
 
-struct memory_info MEMORY;
-int   sys_pageshift;
+static int sys_pageshift;
 
 void
-memory_init()
+memory_init(struct memory_stats *stats)
 {
    int pgsize;
 
-   /* setup page-shift */
+   /* determine page-shift (needed for updates) */
    pgsize = getpagesize();
    sys_pageshift = 0;
    while (pgsize > 1) {
@@ -43,19 +43,11 @@ memory_init()
    }
    sys_pageshift -= 10;
 
-   /* default values: raw */
-   MEMORY.active = MEMORY.free = MEMORY.total = 0;
-   MEMORY.swap_used = MEMORY.swap_total = 0;
-
-   /* default values: percentages */
-   MEMORY.active_pct = MEMORY.free_pct = 0.0;
-   MEMORY.swap_used_pct = 0.0;
-
-   MEMORY.is_setup = true;
+   stats->is_setup = true;
 }
 
 void
-memory_update()
+memory_update(struct memory_stats *stats)
 {
    struct vmtotal vminfo;
    struct swapent *swapdev;
@@ -68,15 +60,15 @@ memory_update()
    if (sysctl(mib, 2, &vminfo, &size, NULL, 0) < 0)
       err(1, "sysinfo update: VM.METER failed");
 
-   MEMORY.active  = vminfo.t_arm    << sys_pageshift;
-   MEMORY.free    = vminfo.t_free   << sys_pageshift;
-   MEMORY.total   = vminfo.t_rm     << sys_pageshift;
-   total_mem = MEMORY.active + MEMORY.free + MEMORY.total;
+   stats->active  = vminfo.t_arm    << sys_pageshift;
+   stats->free    = vminfo.t_free   << sys_pageshift;
+   stats->total   = vminfo.t_rm     << sys_pageshift;
+   total_mem = stats->active + stats->free + stats->total;
 
    /* update mem percents */
-   MEMORY.active_pct = (float)MEMORY.active / (float)total_mem * 100.0;
-   MEMORY.free_pct   = (float)MEMORY.free   / (float)total_mem * 100.0;
-   MEMORY.total_pct  = (float)MEMORY.total  / (float)total_mem * 100.0;
+   stats->active_pct = (float)stats->active / (float)total_mem * 100.0;
+   stats->free_pct   = (float)stats->free   / (float)total_mem * 100.0;
+   stats->total_pct  = (float)stats->total  / (float)total_mem * 100.0;
 
    /* update swap usage */
    if (0 != (nswaps = swapctl(SWAP_NSWAP, 0, 0))) {
@@ -88,19 +80,20 @@ memory_update()
       int isize = 0;
       for (isize = 0; isize < nswaps; isize++) {
          if (swapdev[isize].se_flags & SWF_ENABLE) {
-            MEMORY.swap_used  = swapdev[isize].se_inuse / (1024 / DEV_BSIZE);
-            MEMORY.swap_total = swapdev[isize].se_nblks / (1024 / DEV_BSIZE);
+            stats->swap_used  = swapdev[isize].se_inuse / (1024 / DEV_BSIZE);
+            stats->swap_total = swapdev[isize].se_nblks / (1024 / DEV_BSIZE);
         }
       }
       free(swapdev);
    }
 
    /* update swap percents and strings */
-   MEMORY.swap_used_pct = (float)MEMORY.swap_used / (float)MEMORY.swap_total * 100.0;
+   stats->swap_used_pct = (float)stats->swap_used / (float)stats->swap_total
+                        * 100.0;
 }
 
 void
-memory_close()
+memory_close(__attribute__((unused)) struct memory_stats *stats)
 {
-   /* TODO MEMORY cleanup routine should free/cleanup shiz */
+   /* nothing to do here */
 }

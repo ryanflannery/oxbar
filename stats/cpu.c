@@ -14,38 +14,37 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <sys/types.h>
+#include <sys/sysctl.h>
+
 #include <err.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/sysctl.h>
-#include <sys/types.h>
 
 #include "cpu.h"
 
-struct cpus CPUS;
-
 void
-cpu_init()
+cpu_init(struct cpu_stats *stats)
 {
    size_t size;
    int mib[] = { CTL_HW, HW_NCPUONLINE };
 
    /* get number of cpu's */
-   size = sizeof(CPUS.ncpu);
-   if (sysctl(mib, 2, &(CPUS.ncpu), &size, NULL, 0) == -1)
-      err(1, "sysinfo init: sysctl HW.NCPU failed");
+   size = sizeof(stats->ncpu);
+   if (sysctl(mib, 2, &(stats->ncpu), &size, NULL, 0) == -1)
+      err(1, "HW.NCPU");
 
    /* allocate array of cpu states */
-   CPUS.cpus = calloc(CPUS.ncpu, sizeof(struct cpu_states));
-   if (NULL == CPUS.cpus)
-      err(1, "core_init: calloc failed for %d cpus", CPUS.ncpu);
+   stats->cpus = calloc(stats->ncpu, sizeof(struct cpu_states));
+   if (NULL == stats->cpus)
+      err(1, "callc failed for %d cpus", stats->ncpu);
 
-   CPUS.is_setup = true;
+   stats->is_setup = true;
 }
 
 void
-cpu_update()
+cpu_update(struct cpu_stats *stats)
 {
    static int  mib[] = { CTL_KERN, 0, 0 };
    int         state;
@@ -62,10 +61,10 @@ cpu_update()
     */
 
    /* get RAW cpu ticks & update percentages */
-   if (CPUS.ncpu > 1) {
+   if (stats->ncpu > 1) {
       mib[1] = KERN_CPTIME2;
       int cpu = 0;
-      for (cpu = 0; cpu < CPUS.ncpu; cpu++) {
+      for (cpu = 0; cpu < stats->ncpu; cpu++) {
          /* update raw */
          mib[2] = cpu;
          u_int64_t current_ticks[CPUSTATES];
@@ -77,13 +76,13 @@ cpu_update()
          u_int64_t nticks = 0;
          u_int64_t diffs[CPUSTATES] = { 0 };
          for (state = 0; state < CPUSTATES; state++) {
-            if (current_ticks[state] < CPUS.cpus[cpu].raw_ticks[state]) {
+            if (current_ticks[state] < stats->cpus[cpu].raw_ticks[state]) {
                diffs[state] = INT64_MAX
-                            - CPUS.cpus[cpu].raw_ticks[state]
+                            - stats->cpus[cpu].raw_ticks[state]
                             + current_ticks[state];
             } else {
                diffs[state] = current_ticks[state]
-                            - CPUS.cpus[cpu].raw_ticks[state];
+                            - stats->cpus[cpu].raw_ticks[state];
             }
             nticks += diffs[state];
          }
@@ -92,12 +91,13 @@ cpu_update()
 
          /* calculate percents */
          for (state = 0; state < CPUSTATES; state++) {
-            CPUS.cpus[cpu].percentages[state] = ((diffs[state] * 1000 + (nticks / 2)) / nticks) / 10;
+            stats->cpus[cpu].percentages[state] = ((diffs[state] * 1000
+                                                + (nticks / 2)) / nticks) / 10;
          }
 
          /* copy current back into CPUS state */
          for (state = 0; state < CPUSTATES; state++)
-            CPUS.cpus[cpu].raw_ticks[state] = current_ticks[state];
+            stats->cpus[cpu].raw_ticks[state] = current_ticks[state];
       }
    } else {
       /* update raw */
@@ -111,13 +111,13 @@ cpu_update()
       long nticks = 0;
       long diffs[CPUSTATES] = { 0 };
       for (state = 0; state < CPUSTATES; state++) {
-         if (current_ticks[state] < (long)CPUS.cpus[0].raw_ticks[state]) {
+         if (current_ticks[state] < (long)stats->cpus[0].raw_ticks[state]) {
             diffs[state] = INT64_MAX
-                         - CPUS.cpus[0].raw_ticks[state]
+                         - stats->cpus[0].raw_ticks[state]
                          + current_ticks[state];
          } else {
             diffs[state] = current_ticks[state]
-                         - CPUS.cpus[0].raw_ticks[state];
+                         - stats->cpus[0].raw_ticks[state];
          }
          nticks += diffs[state];
       }
@@ -126,17 +126,18 @@ cpu_update()
 
       /* update percents */
          for (state = 0; state < CPUSTATES; state++) {
-            CPUS.cpus[0].percentages[state] = ((diffs[state] * 1000 + (nticks / 2)) / nticks) / 10;
+            stats->cpus[0].percentages[state] = ((diffs[state] * 1000
+                                              + (nticks / 2)) / nticks) / 10;
          }
 
       /* copy current back into CPUS state */
       for (state = 0; state < CPUSTATES; state++)
-         CPUS.cpus[0].raw_ticks[state] = current_ticks[state];
+         stats->cpus[0].raw_ticks[state] = current_ticks[state];
    }
 }
 
 void
-cpu_close()
+cpu_close(struct cpu_stats *stats)
 {
-   /* TODO CPU cleanup routine should free/cleanup shiz */
+   free(stats->cpus);
 }

@@ -6,10 +6,6 @@ oxbar.c:20: * TODO don't use -1 for y/w/h magic - use 0 and use unsigned types (
 oxbar.c:21: * TODO polish error messages (err/errx calls)
 oxbar.c:22: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
 settings.c:324: * TODO Create a settings_free() (or refactor to make easier)
-stats/cpu.c:53:   /* TODO Remove duplicate logic in CPU update logic
-stats/cpu.c:141:   /* TODO CPU cleanup routine should free/cleanup shiz */
-stats/memory.c:105:   /* TODO MEMORY cleanup routine should free/cleanup shiz */
-stats/net.h:26:   /* TODO Raw # packets in/out isn't used anymore. Remove? */
-stats/wifi.c:36: * TODO wifi stats collector only works on a 802.11 egress interface.
-stats/net.c:74: * TODO Refactor network bytes logic
-stats/net.c:159:   /* TODO NET cleanup routine should free/cleanup shiz */
+stats/cpu.c:52:   /* TODO Remove duplicate logic in CPU update logic
+stats/wifi.c:38:/* TODO allow wifi interface to be configured? defaults to egress now */
+stats/net.c:77: * TODO Refactor network bytes logic

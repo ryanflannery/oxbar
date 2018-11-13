@@ -14,34 +14,32 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <sys/types.h>
+#include <sys/sysctl.h>
+
 #include <err.h>
 #include <stdio.h>
-#include <sys/sysctl.h>
 
 #include "nprocs.h"
 
-struct nprocs_info NPROCS;
-
 void
-nprocs_init()
+nprocs_init(struct nprocs_stats *stats)
 {
-   NPROCS.nprocs = 0;
-   NPROCS.is_setup = true;
+   stats->is_setup = true;
 }
 
 void
-nprocs_update()
+nprocs_update(struct nprocs_stats *stats)
 {
    static int mib[] = { CTL_KERN, KERN_NPROCS };
-   static size_t size = sizeof(NPROCS.nprocs);
+   static size_t size = sizeof(stats->nprocs);
 
-   /* update number of processes */
-   if (sysctl(mib, 2, &NPROCS.nprocs, &size, NULL, 0) == -1)
-      warn("%s: sysctl KERN.NPROCS", __FUNCTION__);
+   if (-1 == sysctl(mib, 2, &stats->nprocs, &size, NULL, 0))
+      err(1, "KERN.NPROCS");
 }
 
 void
-nprocs_close()
+nprocs_close(__attribute__((unused)) struct nprocs_stats *stats)
 {
    /* nothing to do */
 }

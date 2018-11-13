@@ -19,16 +19,14 @@
 
 #include <stdbool.h>
 
-struct volume_info {
+struct volume_stats {
    bool  is_setup;
    bool  muted;
    float left, right;
 };
 
-extern struct volume_info VOLUME;
-
-void volume_init();
-void volume_update();
-void volume_close();
+void volume_init(struct volume_stats*);
+void volume_update(struct volume_stats*);
+void volume_close(struct volume_stats*);
 
 #endif

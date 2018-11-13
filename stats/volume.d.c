@@ -17,27 +17,29 @@
 #include <err.h>
 #include <stdio.h>
 #include <unistd.h>
+
 #include "volume.h"
 
 int
 main()
 {
-   volume_init();
-   if (!VOLUME.is_setup)
+   struct volume_stats s;
+   volume_init(&s);
+   if (!s.is_setup)
       errx(1, "failed to setup volume!");
 
    printf("%8s\t%8s\t%8s\n", "mute?", "left", "right");
 
    while (1)
    {
-      volume_update();
+      volume_update(&s);
       printf("%8s\t%8.1f\t%8.1f\n",
-            VOLUME.muted ? "TRUE" : "false",
-            VOLUME.left,
-            VOLUME.right);
+            s.muted ? "TRUE" : "false",
+            s.left,
+            s.right);
 
       sleep(1);
    }
 
-   volume_close();
+   volume_close(&s);
 }

@@ -231,7 +231,7 @@ parse_header_style(header_style_t *style, const char * const value)
 static void
 settings_set_defaults(struct settings *s)
 {
-   s->widgets = strdup("nprocs cpus memory net > battery wifi bright volume time");
+   s->widgets = strdup("nprocs cpu memory net > battery wifi bright volume time");
 
    s->font.desc = strdup("DejaVu sans mono 16px");
    s->font.fgcolor = strdup("93a1a1");

@@ -14,60 +14,63 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <err.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <string.h>
-#include <strings.h>
 #include <sys/ioctl.h>
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/sysctl.h>
+
 #include <net/if.h>
 #include <net/if_dl.h>
 #include <net/route.h>
 #include <netinet/in.h>
 #include <netinet/ip_var.h>
 
+#include <err.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <string.h>
+#include <strings.h>
+
 #include "net.h"
 #include "util.h"
 
-struct net_info NET;
-
 void
-net_init()
+net_init(struct net_stats *stats)
 {
-   NET.iface = get_egress();
-   NET.raw_ip_packets_in = NET.raw_ip_packets_out = 0;
-   NET.new_ip_packets_in = NET.new_ip_packets_out = 0;
-   NET.is_setup = true;
-   net_update();
+   stats->iface = get_egress();
+   stats->raw_ip_packets_in = stats->raw_ip_packets_out = 0;
+   stats->raw_bytes_in = stats->raw_bytes_out = 0;
+   stats->is_setup = true;
 }
 
 void
-net_update_packets()
+net_update_packets(struct net_stats *stats)
 {
-   static struct ipstat stats;
+   static struct ipstat current;
    static int mib[] = { CTL_NET, PF_INET, IPPROTO_IP, IPCTL_STATS };
-   static size_t len = sizeof(stats);
+   static size_t len = sizeof(current);
 
-   if (-1 == sysctl(mib, sizeof(mib) / sizeof(mib[0]), &stats, &len, NULL, 0))
-      err(1, "sysctl CTL_NET.PF_INET.IPPROTO_IP.IPCTL_STATS failed");
+   if (-1 == sysctl(mib, sizeof(mib) / sizeof(mib[0]), &current, &len, NULL, 0))
+      err(1, "CTL_NET.PF_INET.IPPROTO_IP.IPCTL_STATS");
 
-   if (stats.ips_total < NET.raw_ip_packets_in)
-      NET.new_ip_packets_in  = ULONG_MAX - NET.raw_ip_packets_in + stats.ips_total;
-   else
-      NET.new_ip_packets_in  = stats.ips_total - NET.raw_ip_packets_in;
+   if (current.ips_total < stats->raw_ip_packets_in) {
+      stats->new_ip_packets_in = ULONG_MAX - stats->raw_ip_packets_in
+                               + current.ips_total;
+   } else
+      stats->new_ip_packets_in = current.ips_total - stats->raw_ip_packets_in;
 
-   if (stats.ips_localout < NET.raw_ip_packets_out)
-      NET.new_ip_packets_out = ULONG_MAX - NET.raw_ip_packets_out + stats.ips_localout;
-   else
-      NET.new_ip_packets_out = stats.ips_localout - NET.raw_ip_packets_out;
+   if (current.ips_localout < stats->raw_ip_packets_out) {
+      stats->new_ip_packets_out = ULONG_MAX - stats->raw_ip_packets_out
+                                + current.ips_localout;
+   } else {
+      stats->new_ip_packets_out = current.ips_localout
+                                - stats->raw_ip_packets_out;
+   }
 
-   NET.raw_ip_packets_in  = stats.ips_total;
-   NET.raw_ip_packets_out = stats.ips_localout;
+   stats->raw_ip_packets_in  = current.ips_total;
+   stats->raw_ip_packets_out = current.ips_localout;
 }
 
 /*
@@ -88,8 +91,9 @@ get_rtaddrs(int addrs, struct sockaddr *sa, struct sockaddr **rti_info)
          rti_info[i] = NULL;
    }
 }
+
 void
-net_update_bytes()
+net_update_bytes(struct net_stats *stats)
 {
    struct rt_msghdr *rtm;
    static int mib[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
@@ -132,29 +136,30 @@ net_update_bytes()
             else if (sdl->sdl_nlen > 0)
                memcpy(name, sdl->sdl_data, sdl->sdl_nlen);
 
-            if (strcmp(NET.iface, name))
+            if (strcmp(stats->iface, name))
                break;
 
-            NET.new_bytes_in  = ifd->ifi_ibytes - NET.raw_bytes_in;
-            NET.new_bytes_out = ifd->ifi_obytes - NET.raw_bytes_out;
-            NET.raw_bytes_in  = ifd->ifi_ibytes;
-            NET.raw_bytes_out = ifd->ifi_obytes;
+            stats->new_bytes_in  = ifd->ifi_ibytes - stats->raw_bytes_in;
+            stats->new_bytes_out = ifd->ifi_obytes - stats->raw_bytes_out;
+            stats->raw_bytes_in  = ifd->ifi_ibytes;
+            stats->raw_bytes_out = ifd->ifi_obytes;
             break;
          case RTM_NEWADDR:
             break;
       }
    }
+   free(buf);
 }
 
 void
-net_update()
+net_update(struct net_stats *stats)
 {
-   net_update_packets();
-   net_update_bytes();
+   net_update_packets(stats);
+   net_update_bytes(stats);
 }
 
 void
-net_close()
+net_close(__attribute__((unused)) struct net_stats *stats)
 {
-   /* TODO NET cleanup routine should free/cleanup shiz */
+   /* nothing to do */
 }

@@ -19,16 +19,13 @@
 
 #include <stdbool.h>
 
-struct nprocs_info {
+struct nprocs_stats {
    bool  is_setup;
-
    int   nprocs;     /* total # of processes */
 };
 
-extern struct nprocs_info NPROCS;
-
-void nprocs_init();
-void nprocs_update();
-void nprocs_close();
+void nprocs_init(struct nprocs_stats*);
+void nprocs_update(struct nprocs_stats*);
+void nprocs_close(struct nprocs_stats*);
 
 #endif

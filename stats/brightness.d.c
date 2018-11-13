@@ -17,23 +17,25 @@
 #include <err.h>
 #include <stdio.h>
 #include <unistd.h>
+
 #include "brightness.h"
 
 int
 main()
 {
-   brightness_init();
-   if (!BRIGHTNESS.is_setup)
+   struct brightness_stats s;
+   brightness_init(&s);
+   if (!s.is_setup)
       errx(1, "failed to setup brightness!");
 
    printf("bright%%\n");
 
    while (1)
    {
-      brightness_update();
-      printf("%5.1f\n", BRIGHTNESS.brightness);
+      brightness_update(&s);
+      printf("%5.1f\n", s.brightness);
       sleep(1);
    }
 
-   brightness_close();
+   brightness_close(&s);
 }

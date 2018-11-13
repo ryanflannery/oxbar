@@ -26,8 +26,6 @@
 
 #include "brightness.h"
 
-struct brightness_info BRIGHTNESS;
-
 static xcb_connection_t        *x;
 static xcb_generic_error_t     *error;
 static xcb_intern_atom_cookie_t cookie;
@@ -47,9 +45,9 @@ static int32_t max_backlight;
 static int32_t min_backlight;
 
 void
-brightness_init()
+brightness_init(struct brightness_stats *stats)
 {
-   BRIGHTNESS.is_setup = false;
+   stats->is_setup = false;
    xcb_randr_get_output_property_cookie_t          prop_cookie;
    xcb_randr_get_output_property_reply_t          *prop_reply;
 
@@ -91,17 +89,17 @@ brightness_init()
    min_backlight = values[0];
    max_backlight = values[1];
    uint8_t value = *xcb_randr_get_output_property_data(prop_reply);
-   BRIGHTNESS.brightness = ((float)value - (float)min_backlight)
-                         / ((float)max_backlight - (float)min_backlight) * 100.0;
+   stats->brightness = ((float)value - (float)min_backlight)
+                     / ((float)max_backlight - (float)min_backlight) * 100.0;
 
    free(prop_reply);
-   BRIGHTNESS.is_setup = true;
+   stats->is_setup = true;
 }
 
 void
-brightness_update()
+brightness_update(struct brightness_stats *stats)
 {
-   if (!BRIGHTNESS.is_setup)
+   if (!stats->is_setup)
       return;
 
    xcb_randr_get_output_property_cookie_t          prop_cookie;
@@ -117,15 +115,17 @@ brightness_update()
       warnx("xcb randr backlight query failed\n");
 
    uint8_t value = *xcb_randr_get_output_property_data(prop_reply);
-   BRIGHTNESS.brightness = ((float)value - (float)min_backlight)
-                         / ((float)max_backlight - (float)min_backlight) * 100.0;
+   stats->brightness = ((float)value - (float)min_backlight)
+                     / ((float)max_backlight - (float)min_backlight) * 100.0;
    free(prop_reply);
 }
 
 void
-brightness_close()
+brightness_close(struct brightness_stats *stats)
 {
-   free(query_reply);
-   free(resources_reply);
-   xcb_disconnect(x);
+   if (stats->is_setup) {
+      free(query_reply);
+      free(resources_reply);
+      xcb_disconnect(x);
+   }
 }

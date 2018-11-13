@@ -14,6 +14,10 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/audioio.h>
+
 #include <err.h>
 #include <fcntl.h>
 #include <math.h>
@@ -21,13 +25,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/audioio.h>
 
 #include "volume.h"
-
-struct volume_info VOLUME;
 
 static int mixer_fd;
 static int outputs_class = -1;
@@ -35,9 +34,10 @@ static int outputs_master_idx = -1;
 static int outputs_mute_idx = -1;
 
 void
-volume_init()
+volume_init(struct volume_stats *stats)
 {
    mixer_devinfo_t devinfo;
+   stats->is_setup = false;
 
    /* determine mixer device & open it */
    char *device = getenv("MIXERDEVICE");
@@ -45,7 +45,7 @@ volume_init()
       device = "/dev/mixer";
 
    if (0 >= (mixer_fd = open(device, O_RDWR)))
-      err(1, "failed to open %s", device);
+      return;
 
    /* find outputs.master volume and mute devices */
    devinfo.index = 0;
@@ -67,21 +67,27 @@ volume_init()
    /* did we find them? */
    if (-1 == outputs_class
    ||  -1 == outputs_master_idx
-   || -1 == outputs_mute_idx)
-      VOLUME.is_setup = false;
-   else
-      VOLUME.is_setup = true;
+   ||  -1 == outputs_mute_idx) {
+      close(mixer_fd);
+      stats->is_setup = false;
+      return;
+   }
 
    /* reopen mixer device readonly */
    close(mixer_fd);
    if (0 >= (mixer_fd = open(device, O_RDONLY)))
-      err(1, "failed to open %s", device);
+      err(1, "failed to re-open %s readonly", device);
+
+   stats->is_setup = true;
 }
 
 void
-volume_update()
+volume_update(struct volume_stats *stats)
 {
    mixer_ctrl_t vinfo;
+
+   if (!stats->is_setup)
+      return;
 
    /* update volume */
    vinfo.dev  = outputs_master_idx;
@@ -90,9 +96,9 @@ volume_update()
    if (-1 == ioctl(mixer_fd, AUDIO_MIXER_READ, &vinfo))
       err(1, "AUDIO_MIXER_READ failed (volume)");
    else {
-      VOLUME.left  = (float)vinfo.un.value.level[AUDIO_MIXER_LEVEL_LEFT]
+      stats->left  = (float)vinfo.un.value.level[AUDIO_MIXER_LEVEL_LEFT]
                    / (float)AUDIO_MAX_GAIN * 100.0;
-      VOLUME.right = (float)vinfo.un.value.level[AUDIO_MIXER_LEVEL_RIGHT]
+      stats->right = (float)vinfo.un.value.level[AUDIO_MIXER_LEVEL_RIGHT]
                    / (float)AUDIO_MAX_GAIN * 100.0;
    }
 
@@ -103,12 +109,12 @@ volume_update()
    if (-1 == ioctl(mixer_fd, AUDIO_MIXER_READ, &vinfo))
       err(1, "AUDIO_MIXER_READ failed (mute)");
    else
-      VOLUME.muted = vinfo.un.ord == 1;
+      stats->muted = vinfo.un.ord == 1;
 }
 
 void
-volume_close()
+volume_close(struct volume_stats *stats)
 {
-   if (VOLUME.is_setup)
+   if (stats->is_setup)
       close(mixer_fd);
 }

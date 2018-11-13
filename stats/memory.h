@@ -19,7 +19,7 @@
 
 #include <stdbool.h>
 
-struct memory_info {
+struct memory_stats {
    bool  is_setup;
 
    /* raw (byte) values */
@@ -31,10 +31,8 @@ struct memory_info {
    float swap_used_pct;
 };
 
-extern struct memory_info MEMORY;
-
-void memory_init();
-void memory_update();
-void memory_close();
+void memory_init(struct memory_stats*);
+void memory_update(struct memory_stats*);
+void memory_close(struct memory_stats*);
 
 #endif

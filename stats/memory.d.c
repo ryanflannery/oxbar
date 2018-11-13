@@ -17,13 +17,15 @@
 #include <err.h>
 #include <stdio.h>
 #include <unistd.h>
+
 #include "memory.h"
 
 int
 main()
 {
-   memory_init();
-   if (!MEMORY.is_setup)
+   struct memory_stats s;
+   memory_init(&s);
+   if (!s.is_setup)
       errx(1, "failed to setup memory!");
 
    printf("%8s %7s ",   "Active",   "%");
@@ -35,24 +37,24 @@ main()
 
    while (1)
    {
-      memory_update();
+      memory_update(&s);
       printf("%8d %7.1f ",
-            MEMORY.active,
-            MEMORY.active_pct);
+            s.active,
+            s.active_pct);
       printf("%8d %7.1f ",
-            MEMORY.total,
-            MEMORY.total_pct);
+            s.total,
+            s.total_pct);
       printf("%8d %7.1f ",
-            MEMORY.free,
-            MEMORY.free_pct);
+            s.free,
+            s.free_pct);
       printf("%8d %7.1f ",
-            MEMORY.swap_used,
-            MEMORY.swap_used_pct);
+            s.swap_used,
+            s.swap_used_pct);
       printf("%8d\n",
-            MEMORY.swap_total);
+            s.swap_total);
 
       sleep(1);
    }
 
-   memory_close();
+   memory_close(&s);
 }

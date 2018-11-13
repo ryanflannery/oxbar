@@ -19,15 +19,13 @@
 
 #include <stdbool.h>
 
-struct brightness_info {
+struct brightness_stats {
    bool  is_setup;
    float brightness;
 };
 
-extern struct brightness_info BRIGHTNESS;
-
-void brightness_init();
-void brightness_update();
-void brightness_close();
+void brightness_init(struct brightness_stats*);
+void brightness_update(struct brightness_stats*);
+void brightness_close(struct brightness_stats*);
 
 #endif

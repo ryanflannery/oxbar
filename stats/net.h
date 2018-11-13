@@ -17,34 +17,29 @@
 #ifndef NET_H
 #define NET_H
 
-#include <stdbool.h>
 #include <sys/types.h>
 
-struct net_info {
-   bool  is_setup;
+#include <stdbool.h>
 
-   /* TODO Raw # packets in/out isn't used anymore. Remove? */
+struct net_stats {
+   bool  is_setup;
 
    /* iface name (first in the 'egress' group) */
    char *iface;
 
-   /* raw counters (these can rollover) */
-   u_long   raw_ip_packets_in;
-   u_long   raw_ip_packets_out;
-   uint64_t raw_bytes_in;
-   uint64_t raw_bytes_out;
+   /* raw packet & byte counters (these can rollover) */
+   u_long   raw_ip_packets_in, raw_ip_packets_out;
+   uint64_t raw_bytes_in,      raw_bytes_out;
 
-   /* diff since last update */
+   /* diff since last update (handles rollover) */
    u_long   new_ip_packets_in;
    u_long   new_ip_packets_out;
    uint64_t new_bytes_in;
    uint64_t new_bytes_out;
 };
 
-extern struct net_info NET;
-
-void net_init();
-void net_update();
-void net_close();
+void net_init(struct net_stats*);
+void net_update(struct net_stats*);
+void net_close(struct net_stats*);
 
 #endif

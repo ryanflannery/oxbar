@@ -22,22 +22,23 @@
 int
 main()
 {
-   battery_init();
-   if (!BATTERY.is_setup)
+   struct battery_stats s;
+   battery_init(&s);
+   if (!s.is_setup)
       errx(1, "failed to setup battery!");
 
    printf("%8s\t%8s\t%8s\n", "plugged?", "%", "minutes");
 
    while (1)
    {
-      battery_update();
+      battery_update(&s);
       printf("%8s\t%8.1f\t%8d\n",
-            BATTERY.plugged_in ? "TRUE" : "false",
-            BATTERY.charge_pct,
-            BATTERY.minutes_remaining);
+            s.plugged_in ? "TRUE" : "false",
+            s.charge_pct,
+            s.minutes_remaining);
 
       sleep(1);
    }
 
-   battery_close();
+   battery_close(&s);
 }

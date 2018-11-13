@@ -7,7 +7,7 @@ bool
 wwifi_enabled(void *wstate)
 {
    struct generic_wstate *w = wstate;
-   return w->stats->wifi->is_setup;
+   return w->stats->wifi.is_setup;
 }
 
 void
@@ -18,5 +18,5 @@ wwifi_draw(void *wstate, struct xctx *ctx)
    xdraw_printf(ctx,
          settings->fgcolor,
          "Wifi: %u%%",
-         w->stats->wifi->signal_strength);
+         w->stats->wifi.signal_strength);
 }

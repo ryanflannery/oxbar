@@ -27,14 +27,14 @@
 #include "wifi.h"
 
 struct oxstats {
-   struct battery_info    *battery;
-   struct brightness_info *brightness;
-   struct cpus            *cpus;
-   struct memory_info     *memory;
-   struct net_info        *network;
-   struct nprocs_info     *nprocs;
-   struct volume_info     *volume;
-   struct wifi_info       *wifi;
+   struct battery_stats    battery;
+   struct brightness_stats brightness;
+   struct cpu_stats        cpus;
+   struct memory_stats     memory;
+   struct net_stats        network;
+   struct nprocs_stats     nprocs;
+   struct volume_stats     volume;
+   struct wifi_stats       wifi;
 };
 
 extern struct oxstats OXSTATS;
