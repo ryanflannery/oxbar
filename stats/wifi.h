@@ -29,7 +29,7 @@ struct wifi_info {
    bool  is_setup;
    int   socket;
    char *ifname;
-	struct ieee80211_bssid bssid;
+   struct ieee80211_bssid bssid;
    unsigned int signal_strength;
 };
 

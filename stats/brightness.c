@@ -66,12 +66,12 @@ brightness_init()
       warnx("no xcb atom for Backlight");
 
    si = xcb_setup_roots_iterator(xcb_get_setup(x));;
-	screen = si.data;
-	window = screen->root;
+   screen = si.data;
+   window = screen->root;
 
-	resources_cookie = xcb_randr_get_screen_resources_current(x, window);
-	resources_reply = xcb_randr_get_screen_resources_current_reply(x, resources_cookie, &error);
-	outputs = xcb_randr_get_screen_resources_current_outputs(resources_reply);
+   resources_cookie = xcb_randr_get_screen_resources_current(x, window);
+   resources_reply = xcb_randr_get_screen_resources_current_reply(x, resources_cookie, &error);
+   outputs = xcb_randr_get_screen_resources_current_outputs(resources_reply);
 
    prop_cookie = xcb_randr_get_output_property(x, outputs[0], atom, XCB_ATOM_NONE, 0, 4, 0, 0);
    prop_reply = xcb_randr_get_output_property_reply(x, prop_cookie, &error);

@@ -278,18 +278,18 @@ setup_wm_hints(const struct xdisp *x, struct xwin *w)
    struts[top_start_x] = w->settings->x;
    struts[top_end_x] = w->settings->x + w->settings->w;
 
-	xcb_change_property(x->con, XCB_PROP_MODE_REPLACE, w->window,
+   xcb_change_property(x->con, XCB_PROP_MODE_REPLACE, w->window,
          xatoms[NET_WM_XINFO_TYPE], XCB_ATOM_ATOM, 32, 1,
          &xatoms[NET_WM_XINFO_TYPE_DOCK]);
-	xcb_change_property(x->con, XCB_PROP_MODE_APPEND, w->window,
+   xcb_change_property(x->con, XCB_PROP_MODE_APPEND, w->window,
          xatoms[NET_WM_STATE], XCB_ATOM_ATOM, 32, 2,
          &xatoms[NET_WM_STATE_STICKY]);
-	xcb_change_property(x->con, XCB_PROP_MODE_REPLACE, w->window,
+   xcb_change_property(x->con, XCB_PROP_MODE_REPLACE, w->window,
          xatoms[NET_WM_DESKTOP], XCB_ATOM_CARDINAL, 32, 1,
          (const uint32_t []){ -1 } );
-	xcb_change_property(x->con, XCB_PROP_MODE_REPLACE, w->window,
+   xcb_change_property(x->con, XCB_PROP_MODE_REPLACE, w->window,
          xatoms[NET_WM_STRUT_PARTIAL], XCB_ATOM_CARDINAL, 32, 12, struts);
-	xcb_change_property(x->con, XCB_PROP_MODE_REPLACE, w->window,
+   xcb_change_property(x->con, XCB_PROP_MODE_REPLACE, w->window,
          xatoms[NET_WM_STRUT], XCB_ATOM_CARDINAL, 32, 4, struts);
 }
 
@@ -409,4 +409,3 @@ hex2rgba(const char *s, double *r, double *g, double *b, double *a)
    *b = (double)ib / scale;
    *a = (double)ia / scale;
 }
-

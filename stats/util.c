@@ -27,13 +27,13 @@
 char*
 get_egress()
 {
-	struct ifgroupreq	 ifgr;
-	struct ifg_req		*ifg;
-	unsigned int		 len;
+   struct ifgroupreq  ifgr;
+   struct ifg_req    *ifg;
+   unsigned int       len;
    int ioctlfd;
    char *name;
 
-	memset(&ifgr, 0, sizeof(ifgr));
+   memset(&ifgr, 0, sizeof(ifgr));
    strlcpy(ifgr.ifgr_name, "egress", sizeof(ifgr.ifgr_name));
 
    if ((ioctlfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
@@ -61,4 +61,3 @@ get_egress()
    free(ifgr.ifgr_groups);
    return name;
 }
-

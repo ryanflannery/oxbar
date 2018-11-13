@@ -46,12 +46,12 @@ wifi_init()
    WIFI.ifname = get_egress();
 
    /* open an inet socket and get ready to query the bssid of it (if avail) */
-	WIFI.socket = socket(AF_INET, SOCK_DGRAM, 0);
-	memset(&WIFI.bssid, 0, sizeof(WIFI.bssid));
-	strlcpy(WIFI.bssid.i_name, WIFI.ifname, sizeof(WIFI.bssid.i_name));
+   WIFI.socket = socket(AF_INET, SOCK_DGRAM, 0);
+   memset(&WIFI.bssid, 0, sizeof(WIFI.bssid));
+   strlcpy(WIFI.bssid.i_name, WIFI.ifname, sizeof(WIFI.bssid.i_name));
 
    /* attempt to grab the bssid of egress if */
-	ibssid = ioctl(WIFI.socket, SIOCG80211BSSID, &WIFI.bssid);
+   ibssid = ioctl(WIFI.socket, SIOCG80211BSSID, &WIFI.bssid);
    if (0 == ibssid)
       WIFI.is_setup = true;   /* egress is a 802.11 if, we're good */
    else

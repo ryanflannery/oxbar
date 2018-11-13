@@ -50,10 +50,10 @@ void
 net_update_packets()
 {
    static struct ipstat stats;
-	static int mib[] = { CTL_NET, PF_INET, IPPROTO_IP, IPCTL_STATS };
-	static size_t len = sizeof(stats);
+   static int mib[] = { CTL_NET, PF_INET, IPPROTO_IP, IPCTL_STATS };
+   static size_t len = sizeof(stats);
 
-	if (-1 == sysctl(mib, sizeof(mib) / sizeof(mib[0]), &stats, &len, NULL, 0))
+   if (-1 == sysctl(mib, sizeof(mib) / sizeof(mib[0]), &stats, &len, NULL, 0))
       err(1, "sysctl CTL_NET.PF_INET.IPPROTO_IP.IPCTL_STATS failed");
 
    if (stats.ips_total < NET.raw_ip_packets_in)
@@ -77,22 +77,22 @@ net_update_packets()
 static void
 get_rtaddrs(int addrs, struct sockaddr *sa, struct sockaddr **rti_info)
 {
-	int i;
+   int i;
 
-	for (i = 0; i < RTAX_MAX; i++) {
-		if (addrs & (1 << i)) {
-			rti_info[i] = sa;
-			sa = (struct sockaddr *)((char *)(sa) +
-			    roundup(sa->sa_len, sizeof(long)));
-		} else
-			rti_info[i] = NULL;
-	}
+   for (i = 0; i < RTAX_MAX; i++) {
+      if (addrs & (1 << i)) {
+         rti_info[i] = sa;
+         sa = (struct sockaddr *)((char *)(sa)
+            + roundup(sa->sa_len, sizeof(long)));
+      } else
+         rti_info[i] = NULL;
+   }
 }
 void
 net_update_bytes()
 {
    struct rt_msghdr *rtm;
-	static int mib[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
+   static int mib[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
    size_t sizeneeded = 0;
    char *buf = NULL;
 
