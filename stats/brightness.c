@@ -26,6 +26,7 @@
 
 #include "brightness.h"
 
+/* all the xcb/xrandr private local state */
 static xcb_connection_t        *x;
 static xcb_generic_error_t     *error;
 static xcb_intern_atom_cookie_t cookie;
@@ -43,6 +44,10 @@ static xcb_randr_query_output_property_reply_t        *query_reply;
 
 static int32_t max_backlight;
 static int32_t min_backlight;
+/*
+ * if http had been designed like the x11 protocol, the internet wouldn't have
+ * happened...
+ */
 
 void
 brightness_init(struct brightness_stats *stats)

@@ -22,6 +22,11 @@
 #include "gui.h"
 #include "xdraw.h"
 
+/* private functions */
+static void free_widget_list(struct widget_list*);
+static void draw_widget(struct gui*, struct xctx*, struct widget*);
+static void draw_widget_list(struct gui*, struct widget_list*,xctx_direction_t);
+
 struct gui*
 gui_init(struct xfont *xfont, struct xwin *xwin, struct gui_settings *settings)
 {

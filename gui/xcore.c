@@ -25,7 +25,14 @@
 
 #include "xcore.h"
 
-static xcb_visualtype_t* get_root_visual(xcb_screen_t *screen);
+/* private functions */
+static xcb_screen_t     *get_root_screen(xcb_connection_t*, int);
+static xcb_visualtype_t *get_root_visual(xcb_screen_t*);
+static void              create_xcb_window(struct xwin*, const struct xdisp*,
+                                           const char*, int16_t, int16_t,
+                                           uint16_t, uint16_t);
+static void              setup_wm_hints(const struct xdisp*, struct xwin*);
+static void              setup_cairo(const struct xdisp*, struct xwin*);
 
 /* pango wrapper */
 

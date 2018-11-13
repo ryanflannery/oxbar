@@ -352,31 +352,31 @@ settings_free(struct settings *s)
  * They check if "s->#name" matches key, and if so set s->name = value, for
  * different types of values (strings, ints, then other complex types).
  */
-#define KMS_STRING(name) \
-   if (0 == strcmp( (key), (#name) )) { \
-      if (NULL == (s->name = strdup(value))) \
-         err(1, "%s: strdup failed for key %s", __FUNCTION__, (key)); \
-      return true; \
+#define KMS_STRING(name)                                                      \
+   if (0 == strcmp( (key), (#name) )) {                                       \
+      if (NULL == (s->name = strdup(value)))                                  \
+         err(1, "%s: strdup failed for key %s", __FUNCTION__, (key));         \
+      return true;                                                            \
    }
 
-#define KMS_INT(name) \
-   if (0 == strcmp( (key), (#name) )) { \
-      s->name = strtonum((value), -1, INT_MAX, &errstr); \
-      if (errstr) \
+#define KMS_INT(name)                                                         \
+   if (0 == strcmp( (key), (#name) )) {                                       \
+      s->name = strtonum((value), -1, INT_MAX, &errstr);                      \
+      if (errstr)                                                             \
          errx(1, "%s: bad value %s for key %s: %s", __FUNCTION__, (value), (key), errstr); \
-      return true; \
+      return true;                                                            \
    }
 
-#define KMS_PADDING(name) \
-   if (0 == strcmp( (key), (#name) )) { \
-      parse_padding(&s->name, (value)); \
-      return true; \
+#define KMS_PADDING(name)                                                     \
+   if (0 == strcmp( (key), (#name) )) {                                       \
+      parse_padding(&s->name, (value));                                       \
+      return true;                                                            \
    }
 
-#define KMS_HEADER_STYLE(name) \
-   if (0 == strcmp( (key), (#name) )) { \
-      parse_header_style(&s->name, (value)); \
-      return true; \
+#define KMS_HEADER_STYLE(name)                                                \
+   if (0 == strcmp( (key), (#name) )) {                                       \
+      parse_header_style(&s->name, (value));                                  \
+      return true;                                                            \
    }
 
 /*

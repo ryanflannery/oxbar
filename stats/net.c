@@ -36,6 +36,11 @@
 #include "net.h"
 #include "util.h"
 
+/* private functions */
+static void net_update_packets(struct net_stats*);
+static void get_rtaddrs(int, struct sockaddr*, struct sockaddr**);
+static void net_update_bytes(struct net_stats*);
+
 void
 net_init(struct net_stats *stats)
 {
@@ -45,7 +50,7 @@ net_init(struct net_stats *stats)
    stats->is_setup = true;
 }
 
-void
+static void
 net_update_packets(struct net_stats *stats)
 {
    static struct ipstat current;
@@ -92,7 +97,7 @@ get_rtaddrs(int addrs, struct sockaddr *sa, struct sockaddr **rti_info)
    }
 }
 
-void
+static void
 net_update_bytes(struct net_stats *stats)
 {
    struct rt_msghdr *rtm;

@@ -14,9 +14,10 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <sys/ioctl.h>
+
 #include <net/if.h>
 #include <net/if_dl.h>
-#include <sys/ioctl.h>
 
 #include <err.h>
 #include <stdlib.h>
