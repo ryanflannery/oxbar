@@ -1,5 +1,4 @@
 # oxbar
-
 oxbar is a X11 status bar for OpenBSD showing various system stats.
 It has a configurable display and works out-of-the-box on most modern window
 managers in an intuitive fashion.
@@ -15,27 +14,27 @@ oxbar is released under an
 
 ![screenshot](images/fullscreen.png?raw=true)
 
+
 # features
+* True transparency support with a compositing window manager
+   * I recommend compton (in ports) over xcompmgr (in base)
+* FreeType fonts styled & rendered easily, with all font options
+* Fully configurable display via the command line or config file
+* Left/Right/Center aligned widgets, and any combination of those
+* Configuration file support multiple themes that can be chosen at runtime
+* Types of stats supported:
+   * Battery/AC status, progress bar, time remaining
+   * Brightness level w/ progress bar (via Xrandr(3))
+   * Volume level w/ progress bar
+   * Number of processes
+   * Memory usage & breakdown
+   * CPUs usage & breakdown w/ or w/out charts
+   * WiFi signal strength
+   * Current date/time (is that a status?)
+   * Others forthcoming
 
-   * True transparency support with a compositing window manager
-     (I recommend compton in ports over xcompmgr in base)
-   * FreeType fonts styled & rendered easily
-   * Fully configurable display via the command line or config file
-   * Left/Right/Center aligned widgets (and any combination of those)
-   * Configuration file support multiple themes that can be chosen at runtime
-   * Types of stats supported:
-      * Battery/AC status, progress bar, time remaining
-      * Brightness level w/ progress bar (queryied via Xrandr(3))
-      * Volume level w/ progress bar
-      * Number of processes (current total # processes only as of now)
-      * Memory usage & breakdown (current only as of now)
-      * CPUs usage & breakdown w/ charts
-      * WiFi signal strength
-      * Current date/time (is that a status?)
-      * Others forthcoming
 
-# screenshots
-
+# more screenshots
 oxbar's default look (with no options):
 ![default](images/theme-default.png?raw=true)
 
@@ -60,8 +59,8 @@ Other themes, all included in the file
 **xstatbar**: looks just like it's predecessor
 ![xstatbar](images/theme-xstatbar.png?raw=true)
 
-# usage
 
+# usage
 Full man page available here:
 [oxbar(1)](http://htmlpreview.github.io/?https://raw.githubusercontent.com/ryanflannery/oxbar/master/man/oxbar.html).
 
@@ -70,20 +69,21 @@ See the sample configuration [sample.oxbar.conf](sample.oxbar.conf) for
 examples, like the themes above.
 
 # i liked xstatbar's look
-
 You can achieve that using the included sample configuration file, saved as
 `~/.oxbar.conf`, and run oxbar via:
 ```bash
 oxbar xstatbar
 ```
+
+
 # outstanding stuff, prioritized
-
 Roughly in order or my priority...
+* allow configuring wifi & net interfaces (currently just uses `egress`)
+* gui: icons in the display could help condense it further
+* stats: add collector for hw.sensors & a related widget
+* stats: add a weather component...i like weather
+* gui: support vertical rendering (a sidebar!)
+* when using compton, need '--shadow-exclude 'name = "oxbar"' to disable
+  shadow - how can i automate that?
 
-   * currently network & wifi widget only work for egress interface
-   * gui: icons in the display could help condense it further
-   * stats: add tracker for hw.sensors
-   * stats: add a weather component...i like weather
-   * gui: support vertical rendering (a sidebar!)
-   * when using compton, need '--shadow-exclude 'name = "oxbar"' to disable
-     shadow - how can i automate that?
+See the [TODO](TODO) file for various TODO's present throughout the code.
