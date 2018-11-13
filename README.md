@@ -26,7 +26,7 @@ oxbar is released under an
    * Types of stats supported:
       * Battery/AC status, progress bar, time remaining
       * Brightness level w/ progress bar (queryied via Xrandr(3))
-      * Volume level w/ progress bar (mute status forthcoming )
+      * Volume level w/ progress bar
       * Number of processes (current total # processes only as of now)
       * Memory usage & breakdown (current only as of now)
       * CPUs usage & breakdown w/ charts
