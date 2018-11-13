@@ -51,8 +51,8 @@ Other themes, all included in the file
 **minimal**: a dark, text only display
 ![minimal](images/theme-minimal.png?raw=true)
 
-**pastel-dense**: a pastel based theme with widgets tightly packed
-![pastel-dense](images/theme-pastel-dense.png?raw=true)
+**pastels**: a pastel based theme with widgets tightly packed
+![pastels](images/theme-pastels.png?raw=true)
 
 **ryan**: what my setup looks like
 ![ryan](images/theme-ryan.png?raw=true)
