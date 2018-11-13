@@ -56,8 +56,10 @@ brightness_init()
    x = xcb_connect(NULL, NULL);
    cookie = xcb_intern_atom(x, 0, strlen("Backlight"), "Backlight");
    reply = xcb_intern_atom_reply(x, cookie, NULL);
-   if (!reply)
+   if (!reply) {
       warnx("xcb atom reply failed for Backlight");
+      return;
+   }
 
    atom = reply->atom;
    free(reply);
