@@ -6,12 +6,12 @@
 #include "../stats/stats.h"
 
 struct widget_nprocs_settings {
-   char *hdcolor;
-   char *bgcolor;
-   char *fgcolor;
+	char *hdcolor;
+	char *bgcolor;
+	char *fgcolor;
 };
 
 bool  wnprocs_enabled(void *wstate);
-void  wnprocs_draw(void *wstate, struct xctx *);
+void  wnprocs_draw(void *wstate, struct xctx*);
 
 #endif

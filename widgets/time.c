@@ -7,18 +7,18 @@
 bool
 wtime_enabled(__attribute__((unused)) void *wstate)
 {
-   return true;
+	return true;
 }
 
 void
 wtime_draw(void *wstate, struct xctx *ctx)
 {
-   struct generic_wstate *w = wstate;
-   struct widget_time_settings *settings = w->settings;
+	struct generic_wstate *w = wstate;
+	struct widget_time_settings *settings = w->settings;
 #define GUI_TIME_MAXLEN 100
-   static char buffer[GUI_TIME_MAXLEN];
+	static char buffer[GUI_TIME_MAXLEN];
 
-   time_t now = time(NULL);
-   strftime(buffer, GUI_TIME_MAXLEN, settings->format, localtime(&now));
-   xdraw_printf(ctx, settings->fgcolor, buffer);
+	time_t now = time(NULL);
+	strftime(buffer, GUI_TIME_MAXLEN, settings->format, localtime(&now));
+	xdraw_printf(ctx, settings->fgcolor, buffer);
 }

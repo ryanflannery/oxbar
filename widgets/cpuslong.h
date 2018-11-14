@@ -7,6 +7,6 @@
 #include "../stats/stats.h"
 
 bool  wcpulong_enabled(void *wstate);
-void  wcpulong_draw(void *wstate, struct xctx *);
+void  wcpulong_draw(void *wstate, struct xctx*);
 
 #endif

@@ -6,15 +6,15 @@
 #include "../stats/stats.h"
 
 struct widget_bright_settings {
-   char *hdcolor;
-   char *bgcolor;
-   char *fgcolor;
-   int   chart_width;
-   char *chart_bgcolor;
-   char *chart_pgcolor;
+	char *hdcolor;
+	char *bgcolor;
+	char *fgcolor;
+	int   chart_width;
+	char *chart_bgcolor;
+	char *chart_pgcolor;
 };
 
 bool  wbright_enabled(void *wstate);
-void  wbright_draw(void *wstate, struct xctx *);
+void  wbright_draw(void *wstate, struct xctx*);
 
 #endif

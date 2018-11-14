@@ -6,15 +6,15 @@
 #include "../stats/stats.h"
 
 struct widget_volume_settings {
-   char *hdcolor;
-   char *bgcolor;
-   char *fgcolor;
-   int   chart_width;
-   char *chart_bgcolor;
-   char *chart_pgcolor;
+	char *hdcolor;
+	char *bgcolor;
+	char *fgcolor;
+	int   chart_width;
+	char *chart_bgcolor;
+	char *chart_pgcolor;
 };
 
 bool  wvolume_enabled(void *wstate);
-void  wvolume_draw(void *wstate, struct xctx *);
+void  wvolume_draw(void *wstate, struct xctx*);
 
 #endif

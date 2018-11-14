@@ -6,6 +6,6 @@
 #include "../stats/stats.h"
 
 bool  wcpushort_enabled(void *wstate);
-void  wcpushort_draw(void *wstate, struct xctx *);
+void  wcpushort_draw(void *wstate, struct xctx*);
 
 #endif

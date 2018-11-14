@@ -6,17 +6,17 @@
 bool
 wwifi_enabled(void *wstate)
 {
-   struct generic_wstate *w = wstate;
-   return w->stats->wifi.is_setup;
+	struct generic_wstate *w = wstate;
+	return w->stats->wifi.is_setup;
 }
 
 void
 wwifi_draw(void *wstate, struct xctx *ctx)
 {
-   struct generic_wstate *w = wstate;
-   struct widget_wifi_settings *settings = w->settings;
-   xdraw_printf(ctx,
-         settings->fgcolor,
-         "Wifi:% 3.0f%%",
-         w->stats->wifi.signal_strength);
+	struct generic_wstate *w = wstate;
+	struct widget_wifi_settings *settings = w->settings;
+	xdraw_printf(ctx,
+		settings->fgcolor,
+		"Wifi:% 3.0f%%",
+		w->stats->wifi.signal_strength);
 }

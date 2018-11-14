@@ -6,13 +6,13 @@
 #include "../stats/stats.h"
 
 struct widget_time_settings {
-   char *hdcolor;
-   char *bgcolor;
-   char *fgcolor;
-   char *format;
+	char *hdcolor;
+	char *bgcolor;
+	char *fgcolor;
+	char *format;
 };
 
 bool  wtime_enabled(void *wstate);
-void  wtime_draw(void *wstate, struct xctx *);
+void  wtime_draw(void *wstate, struct xctx*);
 
 #endif
