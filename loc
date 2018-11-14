@@ -1,6 +1,6 @@
 Lines in core oxbar
-     714 ./settings.c
-     242 ./oxbar.c
+     725 ./settings.c
+     235 ./oxbar.c
      270 ./widgets.c
       42 ./widgets/battery.c
       50 ./widgets/volume.c
@@ -28,7 +28,7 @@ Lines in core oxbar
      173 ./stats/net.c
      136 ./stats/brightness.c
       64 ./stats/util.c
-    3770 total
+    3774 total
 Lines in tests and drivers
      285 ./gui/xcore.t.cc
       54 ./gui/chart.d.c
@@ -45,11 +45,11 @@ Lines in tests and drivers
       46 ./stats/brightness.d.c
     1016 total
 Lines in build setup
-     111 ./Makefile
+     113 ./Makefile
      227 ./sample.oxbar.conf
       27 ./man/Makefile
       69 ./testruns.sh
       18 ./widgets/Makefile
       55 ./gui/Makefile
       26 ./stats/Makefile
-     533 total
+     535 total

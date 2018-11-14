@@ -43,7 +43,7 @@ struct widget {
 /* pad that wraps all user-customizable settings for a gui */
 struct gui_settings {
    char          *widget_bgcolor;
-   int            widget_spacing;
+   int            spacing;
    struct padding padding;
    struct padding margin;
    header_style_t header_style;

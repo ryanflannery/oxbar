@@ -60,7 +60,7 @@ static const char * const SWITCHES = "HF:x:y:w:h:f:m:p:s:t:c:W:S:";
 static void
 print_usage()
 {
-   printf(
+	printf(
 "usage: oxbar [-H] [-F config] [-x xloc] [-y yloc] [-w width] [-h height]\n"
 "             [-f font] [-m margins] [-p paddings] [-s spacing]\n"
 "             [-c header-style] [-t time_format] [-W widgets]\n"
@@ -87,8 +87,8 @@ print_usage()
 "   -t time_format   The format to display date/time in (see strftime(3))\n"
 "   -W widgets       The list of widgets to display\n"
 "   -S key=value     Set any configurable value in oxbar (see oxbar(1))\n"
-         );
-   exit(1);
+	);
+	exit(1);
 }
 
 /*
@@ -99,21 +99,21 @@ print_usage()
 static char*
 get_default_config()
 {
-   struct passwd *pw;
-   char          *home;
-   char          *config_file;
+	struct passwd *pw;
+	char          *home;
+	char          *config_file;
 
-   if (NULL == (home = getenv("HOME")) || '\0' == *home) {
-      if (NULL == (pw = getpwuid(getuid())))
-         errx(1, "failed to determine home directory");
+	if (NULL == (home = getenv("HOME")) || '\0' == *home) {
+		if (NULL == (pw = getpwuid(getuid())))
+			errx(1, "failed to determine home directory");
 
-      home = pw->pw_dir;
-   }
+		home = pw->pw_dir;
+	}
 
-   if (-1 == asprintf(&config_file, "%s/.oxbar.conf", home))
-      err(1, "failed to build config file path using '%s'", home);
+	if (-1 == asprintf(&config_file, "%s/.oxbar.conf", home))
+		err(1, "failed to build config file path using '%s'", home);
 
-   return config_file;
+	return config_file;
 }
 
 /*
@@ -130,31 +130,31 @@ static void
 get_config_and_theme(int argc, char * const argv[],
       char **config_file, char **theme)
 {
-   int ch;
-   opterr = 0; /* disable getopt(3) errors on unknown parameters */
+	int ch;
+	opterr = 0; /* disable getopt(3) errors on unknown parameters */
 
-   /* get the config file (if specified) */
-   while (-1 != (ch = getopt(argc, argv, SWITCHES))) {
-      if ('F' == ch) {
-         if (NULL == (*config_file = strdup(optarg)))
-            err(1, "failed to strdup config file '%s'", optarg);
-      }
-   }
+	/* get the config file (if specified) */
+	while (-1 != (ch = getopt(argc, argv, SWITCHES))) {
+		if ('F' == ch) {
+			if (NULL == (*config_file = strdup(optarg)))
+				err(1, "strdup config file '%s'", optarg);
+		}
+	}
 
-   /* get the theme (if specified) */
-   argc -= optind;
-   argv += optind;
+	/* get the theme (if specified) */
+	argc -= optind;
+	argv += optind;
 
-   if (1 == argc) {
-      /* we have a theme - set it */
-      if (NULL == (*theme = strdup(argv[argc - 1])))
-         err(1, "failed to strdup theme '%s'", argv[argc - 1]);
-   }
+	if (1 == argc) {
+		/* we have a theme - set it */
+		if (NULL == (*theme = strdup(argv[argc - 1])))
+			err(1, "failed to strdup theme '%s'", argv[argc - 1]);
+	}
 
-   /* reest getopt(3) */
-   opterr = 1;
-   optreset = 1;
-   optind = 1;
+	/* reest getopt(3) */
+	opterr = 1;
+	optreset = 1;
+	optind = 1;
 }
 
 /*
@@ -165,16 +165,20 @@ get_config_and_theme(int argc, char * const argv[],
 static bool
 parse_keyvalue(const char * const keyval, char **key, char **value)
 {
-   char tk[101] = { 0 };
-   char tv[101] = { 0 };
+	static const char *pattern1 = " %100[^= ] = "
+	                              "\"%100[ a-zA-Z0-9<>|#%:-]\"";
+	static const char *pattern2 = " %100[^= ] = "
+		                      "%100[a-zA-Z0-9<>|#%:-]";
+	char tkey[101] = { 0 };
+	char tvalue[101] = { 0 };
 
-   if (2 != sscanf(keyval, " %100[^= ] = \"%100[ a-zA-Z0-9<>|#%:-]\"", tk, tv))
-      if (2 != sscanf(keyval, " %100[^= ] = %100[a-zA-Z0-9<>|#%:-]", tk, tv))
-         return false;
+	if (2 != sscanf(keyval, pattern1, tkey, tvalue)
+	&&  2 != sscanf(keyval, pattern2, tkey, tvalue))
+		return false;
 
-   *key = strdup(tk);
-   *value = strdup(tv);
-   return true;
+	*key = strdup(tkey);
+	*value = strdup(tvalue);
+	return true;
 }
 
 /*
@@ -186,37 +190,38 @@ parse_keyvalue(const char * const keyval, char **key, char **value)
 static void
 parse_padding(struct padding *padding, const char * const value)
 {
-   double top, right, bottom, left;
-   switch (sscanf(value, "%lf %lf %lf %lf", &top, &right, &bottom, &left)) {
-   case 1:
-      padding->top    = top;
-      padding->right  = top;
-      padding->bottom = top;
-      padding->left   = top;
-      break;
-   case 4:
-      padding->top    = top;
-      padding->right  = right;
-      padding->bottom = bottom;
-      padding->left   = left;
-      break;
-   default:
-      errx(1, "invalid padding string '%s' encountered", value);
-   }
+	static const char *pattern = "%lf %lf %lf %lf";
+	double top, right, bottom, left;
+	switch (sscanf(value, pattern, &top, &right, &bottom, &left)) {
+	case 1:
+		padding->top    = top;
+		padding->right  = top;
+		padding->bottom = top;
+		padding->left   = top;
+		break;
+	case 4:
+		padding->top    = top;
+		padding->right  = right;
+		padding->bottom = bottom;
+		padding->left   = left;
+		break;
+	default:
+		errx(1, "invalid padding string '%s' encountered", value);
+	}
 }
 
 /* This parses a string into a header_style_t. No allocations done here. */
 static void
 parse_header_style(header_style_t *style, const char * const value)
 {
-   if (0 == strcasecmp("none", value))
-      *style = NONE;
-   else if (0 == strcasecmp("above", value))
-      *style = ABOVE;
-   else if (0 == strcasecmp("below", value))
-      *style = BELOW;
-   else
-      errx(1, "failed to parse header-style '%s'", value);
+	if (0 == strcasecmp("none", value))
+		*style = NONE;
+	else if (0 == strcasecmp("above", value))
+		*style = ABOVE;
+	else if (0 == strcasecmp("below", value))
+		*style = BELOW;
+	else
+		errx(1, "failed to parse header-style '%s'", value);
 }
 
 /*
@@ -231,93 +236,94 @@ parse_header_style(header_style_t *style, const char * const value)
 static void
 settings_set_defaults(struct settings *s)
 {
-   s->widgets = strdup("nprocs cpu memory net > battery wifi bright volume time");
+	s->widgets = strdup("nprocs cpu memory net > battery wifi "
+	                    "bright volume time");
 
-   s->font.desc = strdup("DejaVu sans mono 16px");
-   s->font.fgcolor = strdup("93a1a1");
+	s->font.desc = strdup("DejaVu sans mono 16px");
+	s->font.fgcolor = strdup("93a1a1");
 
-   s->window.x = 0;
-   s->window.y = 0;
-   s->window.w = -1;
-   s->window.h = -1;
-   s->window.wname = strdup("oxbar");
-   s->window.bgcolor = strdup("0a0a0a");
+	s->window.x = 0;
+	s->window.y = 0;
+	s->window.w = -1;
+	s->window.h = -1;
+	s->window.wname = strdup("oxbar");
+	s->window.bgcolor = strdup("0a0a0a");
 
-   s->gui.widget_bgcolor = strdup("");
-   s->gui.widget_spacing = 20;
-   s->gui.padding.top    = 5;
-   s->gui.padding.bottom = 5;
-   s->gui.padding.left   = 5;
-   s->gui.padding.right  = 5;
-   s->gui.margin.top    = 2;
-   s->gui.margin.bottom = 2;
-   s->gui.margin.left   = 2;
-   s->gui.margin.right  = 2;
-   s->gui.header_style = BELOW;
+	s->gui.widget_bgcolor = strdup("");
+	s->gui.spacing = 20;
+	s->gui.padding.top    = 5;
+	s->gui.padding.bottom = 5;
+	s->gui.padding.left   = 5;
+	s->gui.padding.right  = 5;
+	s->gui.margin.top    = 2;
+	s->gui.margin.bottom = 2;
+	s->gui.margin.left   = 2;
+	s->gui.margin.right  = 2;
+	s->gui.header_style = BELOW;
 
-   s->battery.hdcolor            = strdup("b58900");
-   s->battery.bgcolor            = strdup("");
-   s->battery.fgcolor            = strdup("");
-   s->battery.fgcolor_unplugged  = strdup("dc322f");
-   s->battery.chart_width        = 7;
-   s->battery.chart_bgcolor      = strdup("dc322f");
-   s->battery.chart_pgcolor      = strdup("859900");
+	s->battery.hdcolor            = strdup("b58900");
+	s->battery.bgcolor            = strdup("");
+	s->battery.fgcolor            = strdup("");
+	s->battery.fgcolor_unplugged  = strdup("dc322f");
+	s->battery.chart_width        = 7;
+	s->battery.chart_bgcolor      = strdup("dc322f");
+	s->battery.chart_pgcolor      = strdup("859900");
 
-   s->bright.hdcolor             = strdup("8900b5");
-   s->bright.bgcolor             = strdup("");
-   s->bright.fgcolor             = strdup("");
-   s->bright.chart_width         = 7;
-   s->bright.chart_bgcolor       = strdup("dc322f");
-   s->bright.chart_pgcolor       = strdup("859900");
+	s->bright.hdcolor             = strdup("8900b5");
+	s->bright.bgcolor             = strdup("");
+	s->bright.fgcolor             = strdup("");
+	s->bright.chart_width         = 7;
+	s->bright.chart_bgcolor       = strdup("dc322f");
+	s->bright.chart_pgcolor       = strdup("859900");
 
-   s->cpus.hdcolor               = strdup("6c71c4");
-   s->cpus.bgcolor               = strdup("");
-   s->cpus.fgcolor               = strdup("");
-   s->cpus.chart_bgcolor         = strdup("333333");
-   s->cpus.chart_color_system    = strdup("ff0000");
-   s->cpus.chart_color_interrupt = strdup("ffff00");
-   s->cpus.chart_color_user      = strdup("3333ff");
-   s->cpus.chart_color_nice      = strdup("ff00ff");
-   s->cpus.chart_color_spin      = strdup("00ffff");
-   s->cpus.chart_color_idle      = strdup("859900");
+	s->cpus.hdcolor               = strdup("6c71c4");
+	s->cpus.bgcolor               = strdup("");
+	s->cpus.fgcolor               = strdup("");
+	s->cpus.chart_bgcolor         = strdup("333333");
+	s->cpus.chart_color_system    = strdup("ff0000");
+	s->cpus.chart_color_interrupt = strdup("ffff00");
+	s->cpus.chart_color_user      = strdup("3333ff");
+	s->cpus.chart_color_nice      = strdup("ff00ff");
+	s->cpus.chart_color_spin      = strdup("00ffff");
+	s->cpus.chart_color_idle      = strdup("859900");
 
-   s->memory.hdcolor             = strdup("d33682");
-   s->memory.bgcolor             = strdup("");
-   s->memory.fgcolor             = strdup("");
-   s->memory.chart_bgcolor       = strdup("333333");
-   s->memory.chart_color_free    = strdup("859900");
-   s->memory.chart_color_total   = strdup("bbbb00");
-   s->memory.chart_color_active  = strdup("dc322f");
+	s->memory.hdcolor             = strdup("d33682");
+	s->memory.bgcolor             = strdup("");
+	s->memory.fgcolor             = strdup("");
+	s->memory.chart_bgcolor       = strdup("333333");
+	s->memory.chart_color_free    = strdup("859900");
+	s->memory.chart_color_total   = strdup("bbbb00");
+	s->memory.chart_color_active  = strdup("dc322f");
 
-   s->nprocs.hdcolor = strdup("dc322f");
-   s->nprocs.bgcolor = strdup("");
-   s->nprocs.fgcolor = strdup("");
+	s->nprocs.hdcolor = strdup("dc322f");
+	s->nprocs.bgcolor = strdup("");
+	s->nprocs.fgcolor = strdup("");
 
-   s->net.hdcolor                        = strdup("268bd2");
-   s->net.bgcolor                        = strdup("");
-   s->net.fgcolor                        = strdup("");
-   s->net.inbound_chart_color_bgcolor    = strdup("859900");
-   s->net.inbound_chart_color_pgcolor    = strdup("157ad2");
-   s->net.inbound_text_fgcolor           = strdup("157ad2");
-   s->net.outbound_chart_color_bgcolor   = strdup("859900");
-   s->net.outbound_chart_color_pgcolor   = strdup("dc322f");
-   s->net.outbound_text_fgcolor          = strdup("dc322f");
+	s->net.hdcolor                        = strdup("268bd2");
+	s->net.bgcolor                        = strdup("");
+	s->net.fgcolor                        = strdup("");
+	s->net.inbound_chart_color_bgcolor    = strdup("859900");
+	s->net.inbound_chart_color_pgcolor    = strdup("157ad2");
+	s->net.inbound_text_fgcolor           = strdup("157ad2");
+	s->net.outbound_chart_color_bgcolor   = strdup("859900");
+	s->net.outbound_chart_color_pgcolor   = strdup("dc322f");
+	s->net.outbound_text_fgcolor          = strdup("dc322f");
 
-   s->volume.hdcolor       = strdup("cb4b16");
-   s->volume.bgcolor       = strdup("");
-   s->volume.fgcolor       = strdup("");
-   s->volume.chart_width   = 7;
-   s->volume.chart_bgcolor = strdup("dc322f");
-   s->volume.chart_pgcolor = strdup("859900");
+	s->volume.hdcolor       = strdup("cb4b16");
+	s->volume.bgcolor       = strdup("");
+	s->volume.fgcolor       = strdup("");
+	s->volume.chart_width   = 7;
+	s->volume.chart_bgcolor = strdup("dc322f");
+	s->volume.chart_pgcolor = strdup("859900");
 
-   s->time.hdcolor = strdup("859900");
-   s->time.bgcolor = strdup("");
-   s->time.fgcolor = strdup("");
-   s->time.format  = strdup("%a %d %b %Y  %I:%M:%S %p");
+	s->time.hdcolor = strdup("859900");
+	s->time.bgcolor = strdup("");
+	s->time.fgcolor = strdup("");
+	s->time.format  = strdup("%a %d %b %Y  %I:%M:%S %p");
 
-   s->wifi.hdcolor = strdup("ff0000");
-   s->wifi.bgcolor = strdup("");
-   s->wifi.fgcolor = strdup("");
+	s->wifi.hdcolor = strdup("ff0000");
+	s->wifi.bgcolor = strdup("");
+	s->wifi.fgcolor = strdup("");
 }
 
 /*
@@ -397,219 +403,218 @@ settings_free(struct settings *s)
  * matching key is found, it returns false.
  */
 static bool
-settings_set_one_keyvalue(struct settings *s, const char *key, const char *value)
+settings_set_one_keyvalue(struct settings *s,
+                          const char *key, const char *value)
 {
-   const char *errstr;
+	const char *errstr;
 
-   /* globals */
-   KMS_STRING(widgets);
+	/* globals */
+	KMS_STRING(widgets);
 
-   /* font */
-   KMS_STRING(font.desc);
-   KMS_STRING(font.fgcolor);
+	/* font */
+	KMS_STRING(font.desc);
+	KMS_STRING(font.fgcolor);
 
-   /* window */
-   KMS_INT(window.x);
-   KMS_INT(window.y);
-   KMS_INT(window.w);
-   KMS_INT(window.h);
-   KMS_STRING(window.wname);
-   KMS_STRING(window.bgcolor);
+	/* window */
+	KMS_INT(window.x);
+	KMS_INT(window.y);
+	KMS_INT(window.w);
+	KMS_INT(window.h);
+	KMS_STRING(window.wname);
+	KMS_STRING(window.bgcolor);
 
-   /* gui */
-   KMS_STRING(gui.widget_bgcolor);
-   KMS_INT(gui.widget_spacing);
-   KMS_PADDING(gui.padding);
-   KMS_INT(gui.padding.top);
-   KMS_INT(gui.padding.right);
-   KMS_INT(gui.padding.bottom);
-   KMS_INT(gui.padding.left);
-   KMS_PADDING(gui.margin);
-   KMS_INT(gui.margin.top);
-   KMS_INT(gui.margin.right);
-   KMS_INT(gui.margin.bottom);
-   KMS_INT(gui.margin.left);
-   KMS_HEADER_STYLE(gui.header_style);
+	/* gui */
+	KMS_STRING(gui.widget_bgcolor);
+	KMS_INT(gui.spacing);
+	KMS_PADDING(gui.padding);
+	KMS_INT(gui.padding.top);
+	KMS_INT(gui.padding.right);
+	KMS_INT(gui.padding.bottom);
+	KMS_INT(gui.padding.left);
+	KMS_PADDING(gui.margin);
+	KMS_INT(gui.margin.top);
+	KMS_INT(gui.margin.right);
+	KMS_INT(gui.margin.bottom);
+	KMS_INT(gui.margin.left);
+	KMS_HEADER_STYLE(gui.header_style);
 
-   /* battery */
-   KMS_STRING(battery.hdcolor);
-   KMS_STRING(battery.bgcolor);
-   KMS_STRING(battery.fgcolor);
-   KMS_STRING(battery.fgcolor_unplugged);
-   KMS_INT(battery.chart_width);
-   KMS_STRING(battery.chart_bgcolor);
-   KMS_STRING(battery.chart_pgcolor);
+	/* battery */
+	KMS_STRING(battery.hdcolor);
+	KMS_STRING(battery.bgcolor);
+	KMS_STRING(battery.fgcolor);
+	KMS_STRING(battery.fgcolor_unplugged);
+	KMS_INT(battery.chart_width);
+	KMS_STRING(battery.chart_bgcolor);
+	KMS_STRING(battery.chart_pgcolor);
 
-   /* bright */
-   KMS_STRING(bright.hdcolor);
-   KMS_STRING(bright.bgcolor);
-   KMS_STRING(bright.fgcolor);
-   KMS_INT(bright.chart_width);
-   KMS_STRING(bright.chart_bgcolor);
-   KMS_STRING(bright.chart_pgcolor);
+	/* bright */
+	KMS_STRING(bright.hdcolor);
+	KMS_STRING(bright.bgcolor);
+	KMS_STRING(bright.fgcolor);
+	KMS_INT(bright.chart_width);
+	KMS_STRING(bright.chart_bgcolor);
+	KMS_STRING(bright.chart_pgcolor);
 
-   /* cpus */
-   KMS_STRING(cpus.hdcolor);
-   KMS_STRING(cpus.bgcolor);
-   KMS_STRING(cpus.fgcolor);
-   KMS_STRING(cpus.chart_bgcolor);
-   KMS_STRING(cpus.chart_color_system);
-   KMS_STRING(cpus.chart_color_interrupt);
-   KMS_STRING(cpus.chart_color_user);
-   KMS_STRING(cpus.chart_color_nice);
-   KMS_STRING(cpus.chart_color_spin);
-   KMS_STRING(cpus.chart_color_idle);
+	/* cpus */
+	KMS_STRING(cpus.hdcolor);
+	KMS_STRING(cpus.bgcolor);
+	KMS_STRING(cpus.fgcolor);
+	KMS_STRING(cpus.chart_bgcolor);
+	KMS_STRING(cpus.chart_color_system);
+	KMS_STRING(cpus.chart_color_interrupt);
+	KMS_STRING(cpus.chart_color_user);
+	KMS_STRING(cpus.chart_color_nice);
+	KMS_STRING(cpus.chart_color_spin);
+	KMS_STRING(cpus.chart_color_idle);
 
-   /* memory */
-   KMS_STRING(memory.hdcolor);
-   KMS_STRING(memory.bgcolor);
-   KMS_STRING(memory.fgcolor);
-   KMS_STRING(memory.chart_bgcolor);
-   KMS_STRING(memory.chart_color_free);
-   KMS_STRING(memory.chart_color_total);
-   KMS_STRING(memory.chart_color_active);
+	/* memory */
+	KMS_STRING(memory.hdcolor);
+	KMS_STRING(memory.bgcolor);
+	KMS_STRING(memory.fgcolor);
+	KMS_STRING(memory.chart_bgcolor);
+	KMS_STRING(memory.chart_color_free);
+	KMS_STRING(memory.chart_color_total);
+	KMS_STRING(memory.chart_color_active);
 
-   /* network */
-   KMS_STRING(net.hdcolor);
-   KMS_STRING(net.bgcolor);
-   KMS_STRING(net.fgcolor);
-   KMS_STRING(net.inbound_chart_color_bgcolor);
-   KMS_STRING(net.inbound_chart_color_pgcolor);
-   KMS_STRING(net.inbound_text_fgcolor);
-   KMS_STRING(net.outbound_chart_color_bgcolor);
-   KMS_STRING(net.outbound_chart_color_pgcolor);
-   KMS_STRING(net.outbound_text_fgcolor);
+	/* network */
+	KMS_STRING(net.hdcolor);
+	KMS_STRING(net.bgcolor);
+	KMS_STRING(net.fgcolor);
+	KMS_STRING(net.inbound_chart_color_bgcolor);
+	KMS_STRING(net.inbound_chart_color_pgcolor);
+	KMS_STRING(net.inbound_text_fgcolor);
+	KMS_STRING(net.outbound_chart_color_bgcolor);
+	KMS_STRING(net.outbound_chart_color_pgcolor);
+	KMS_STRING(net.outbound_text_fgcolor);
 
-   /* nprocs */
-   KMS_STRING(nprocs.hdcolor);
-   KMS_STRING(nprocs.bgcolor);
-   KMS_STRING(nprocs.fgcolor);
+	/* nprocs */
+	KMS_STRING(nprocs.hdcolor);
+	KMS_STRING(nprocs.bgcolor);
+	KMS_STRING(nprocs.fgcolor);
 
-   /* volume */
-   KMS_STRING(volume.hdcolor);
-   KMS_STRING(volume.bgcolor);
-   KMS_STRING(volume.fgcolor);
-   KMS_INT(volume.chart_width);
-   KMS_STRING(volume.chart_bgcolor);
-   KMS_STRING(volume.chart_pgcolor);
+	/* volume */
+	KMS_STRING(volume.hdcolor);
+	KMS_STRING(volume.bgcolor);
+	KMS_STRING(volume.fgcolor);
+	KMS_INT(volume.chart_width);
+	KMS_STRING(volume.chart_bgcolor);
+	KMS_STRING(volume.chart_pgcolor);
 
-   /* time */
-   KMS_STRING(time.hdcolor);
-   KMS_STRING(time.bgcolor);
-   KMS_STRING(time.fgcolor);
-   KMS_STRING(time.format);
+	/* time */
+	KMS_STRING(time.hdcolor);
+	KMS_STRING(time.bgcolor);
+	KMS_STRING(time.fgcolor);
+	KMS_STRING(time.format);
 
-   /* wifi */
-   KMS_STRING(wifi.hdcolor);
-   KMS_STRING(wifi.bgcolor);
-   KMS_STRING(wifi.fgcolor);
+	/* wifi */
+	KMS_STRING(wifi.hdcolor);
+	KMS_STRING(wifi.bgcolor);
+	KMS_STRING(wifi.fgcolor);
 
-   return false;
+	return false;
 }
 
 /* Given a settings and a "key=value", set the appropriate settings member */
 static void
 settings_set_keyvalue(struct settings *s, const char * const keyvalue)
 {
-   char *key, *value;
-   if (!parse_keyvalue(keyvalue, &key, &value))
-      errx(1, "failed to parse key & value from '%s'", keyvalue);
+	char *key, *value;
+	if (!parse_keyvalue(keyvalue, &key, &value))
+		errx(1, "failed to parse key & value from '%s'", keyvalue);
 
-   if (!settings_set_one_keyvalue(s, key, value))
-      errx(1, "unknown key '%s' in key-value pair '%s'", key, keyvalue);
+	if (!settings_set_one_keyvalue(s, key, value))
+		errx(1, "unknown key in in '%s'", keyvalue);
 
-   free(key);
-   free(value);
+	free(key);
+	free(value);
 }
 
 /* Parses an argc/argv pair and updates a settings appropriately */
 static void
 settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
 {
-   const char *errstr;
-   char *keyvalue;
-   int ch;
+	const char *errstr;
+	char *keyvalue;
+	int ch;
 
-   while (-1 != (ch = getopt(argc, argv, SWITCHES))) {
-      switch (ch) {
-      case 'c':
-         parse_header_style(&s->gui.header_style, optarg);
-         break;
-      case 'f':
-         free(s->font.desc);
-         s->font.desc= strdup(optarg);
-         if (NULL == s->font.desc)
-            err(1, "failed to copy font string from -f '%s'", optarg);
-         break;
-      case 'm':
-         parse_padding(&s->gui.margin, optarg);
-         break;
-      case 'p':
-         parse_padding(&s->gui.padding, optarg);
-         break;
-      case 's':
-         s->gui.widget_spacing = strtonum(optarg, 0, INT_MAX, &errstr);
-         if (errstr)
-            errx(1, "illegal widget spacing in -s '%s': %s", optarg, errstr);
-         break;
-      case 'S':
-         if (NULL == (keyvalue = strdup(optarg)))
-            err(1, "failed to copy settings string from -S '%s'", optarg);
+	while (-1 != (ch = getopt(argc, argv, SWITCHES))) {
+		switch (ch) {
+		case 'c':
+			parse_header_style(&s->gui.header_style, optarg);
+			break;
+		case 'f':
+			free(s->font.desc);
+			s->font.desc= strdup(optarg);
+			if (NULL == s->font.desc)
+				err(1, "strdup failed for '%s'", optarg);
+			break;
+		case 'F':
+			/* Already handled this in settings_init() */
+			break;
+		case 'h':
+			s->window.h = strtonum(optarg, -1, INT_MAX, &errstr);
+			if (errstr)
+				errx(1, "bad height '%s': %s", optarg, errstr);
+			break;
+		case 'H':
+			print_usage();
+			break;
+		case 'm':
+			parse_padding(&s->gui.margin, optarg);
+			break;
+		case 'p':
+			parse_padding(&s->gui.padding, optarg);
+			break;
+		case 's':
+			s->gui.spacing = strtonum(optarg, 0, INT_MAX, &errstr);
+			if (errstr)
+				errx(1, "bad spacing '%s': %s", optarg, errstr);
+			break;
+		case 'S':
+			if (NULL == (keyvalue = strdup(optarg)))
+				err(1, "strdup failed for '%s'", optarg);
 
-         settings_set_keyvalue(s, keyvalue);
-         free(keyvalue);
-         break;
-      case 't':
-         free(s->time.format);
-         s->time.format = strdup(optarg);
-         if (NULL == s->time.format)
-            err(1, "failed to copy time format from -t '%s'", optarg);
-         break;
-      case 'F':
-         /* We already handled this in settings_init() - skip here */
-         break;
-      case 'h':
-         s->window.h = strtonum(optarg, -1, INT_MAX, &errstr);
-         if (errstr)
-            errx(1, "illegal height value in -h '%s': %s", optarg, errstr);
-         break;
-      case 'H':
-         print_usage();
-         break;
-      case 'w':
-         s->window.w = strtonum(optarg, -1, INT_MAX, &errstr);
-         if (errstr)
-            errx(1, "illegal width value in -w '%s': %s", optarg, errstr);
-         break;
-      case 'W':
-         free(s->widgets);
-         s->widgets = strdup(optarg);
-         if (NULL == s->widgets)
-            err(1, "failed to copy widget string in -W '%s'", optarg);
-         break;
-      case 'x':
-         s->window.x = strtonum(optarg, 0, INT_MAX, &errstr);
-         if (errstr)
-            errx(1, "illegal x offset in -x '%s': %s", optarg, errstr);
-         break;
-      case 'y':
-         s->window.y = strtonum(optarg, -1, INT_MAX, &errstr);
-         if (errstr)
-            errx(1, "illegal y offset in -y '%s': %s", optarg, errstr);
-         break;
-      default:
-         print_usage();
-      }
-   }
+			settings_set_keyvalue(s, keyvalue);
+			free(keyvalue);
+			break;
+		case 't':
+			free(s->time.format);
+			if (NULL == (s->time.format = strdup(optarg)))
+				err(1, "strdup failed for '%s'", optarg);
+			break;
+		case 'w':
+			s->window.w = strtonum(optarg, -1, INT_MAX, &errstr);
+			if (errstr)
+				errx(1, "bad width '%s': %s", optarg, errstr);
+			break;
+		case 'W':
+			free(s->widgets);
+			if (NULL == (s->widgets = strdup(optarg)))
+				err(1, "strdup failed for '%s'", optarg);
+			break;
+		case 'x':
+			s->window.x = strtonum(optarg, 0, INT_MAX, &errstr);
+			if (errstr)
+				errx(1, "bad x '%s': %s", optarg, errstr);
+			break;
+		case 'y':
+			s->window.y = strtonum(optarg, -1, INT_MAX, &errstr);
+			if (errstr)
+				errx(1, "bad y '%s': %s", optarg, errstr);
+			break;
+		default:
+			print_usage();
+		}
+	}
 
-   argc -= optind;
+	argc -= optind;
 
-   /*
-    * XXX We should have at most 1 - the theme (which is always at the end),
-    * and that theme is extracted below in the settings_init() method.
-    */
-   if (1 < argc)
-      print_usage();
+	/*
+	* XXX We should have at most 1 - the theme (which is always at the end),
+	* and that theme is extracted below in the settings_init() method.
+	*/
+	if (1 < argc)
+		print_usage();
 }
 
 /*
@@ -624,67 +629,73 @@ settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
 void
 settings_reload_config(struct settings *s)
 {
-   char   theme_name[100];
-   size_t length, linenum = 0;
-   char  *line;
-   FILE  *fin;
-   bool   parse_lines = true;
-   bool   found_theme = false;
+	char   theme_name[100];
+	size_t length, linenum = 0;
+	char  *line;
+	FILE  *fin;
+	bool   parse_lines = true;
+	bool   found_theme = false;
 
-   fin = fopen(s->config_file, "r");
-   if (NULL == fin) {
-      if (NULL == s->theme)
-         return;
-      else
-         errx(1, "you specified theme '%s' but i can't read '%s'",
-               s->theme, s->config_file);
-   }
+	fin = fopen(s->config_file, "r");
+	if (NULL == fin) {
+		if (NULL == s->theme)
+			return;
+		else
+			errx(1, "specified theme '%s' but i can't read '%s'",
+			     s->theme, s->config_file);
+	}
 
-   /* start reading & parsing file */
-   while (!feof(fin)) {
+	/* start reading & parsing file */
+	while (!feof(fin)) {
 
-      /* read next line */
-      if (NULL == (line = fparseln(fin, &length, &linenum, NULL, 0))) {
-         if (ferror(fin))
-            err(1, "failed to parse line %zd in %s", linenum, s->config_file);
-         else
-            break;
-      }
+		/* read next line */
+		line = fparseln(fin, &length, &linenum, NULL, 0);
+		if (NULL == line) {
+			if (ferror(fin)) {
+				err(1, "failed to parse line %zd in %s",
+				    linenum, s->config_file);
+			} else
+				break;
+		}
 
-      /* skip blank lines */
-      char *copy = line;
-      copy += strspn(copy, " \t\n");
-      if ('\0' == copy[0]) {
-         free(line);
-         continue;
-      }
+		/* skip blank lines */
+		char *copy = line;
+		copy += strspn(copy, " \t\n");
+		if ('\0' == copy[0]) {
+			free(line);
+			continue;
+		}
 
-      /* do we have a new 'theme' section starting? */
-      if (1 == sscanf(line, " [%100[-a-zA-Z0-9]] ", theme_name)) {
-         /* yes - either read it (if it matches loaded theme) or skip it */
-         if (NULL != s->theme && 0 == strcmp(theme_name, s->theme)) {
-            found_theme = true;
-            parse_lines = true;
-         } else
-            parse_lines = false;
-      } else {
-         /* not a theme line - go ahead and parse the line IF we're either at
-          * the start of the file or we've entered a theme section matching
-          * the theme specified on the command line
-          */
-         if (parse_lines)
-            settings_set_keyvalue(s, line);
-      }
+		/* do we have a new 'theme' section starting? */
+		if (1 == sscanf(line, " [%100[-a-zA-Z0-9]] ", theme_name)) {
+			/* yes - does it match specified theme? */
+			if (NULL != s->theme
+			&&  0 == strcmp(theme_name, s->theme)) {
+				found_theme = true;
+				parse_lines = true;
+			} else
+				parse_lines = false;
+		} else {
+			/*
+			 * not a theme line - go ahead and parse the line IF
+			 * we're either at the start of the file (before any
+			 * theme) or we've entered a theme section matching
+			 * the theme specified on the command line
+			 */
+			if (parse_lines)
+				settings_set_keyvalue(s, line);
+		}
 
-      free(line);
-   }
+		free(line);
+	}
 
-   fclose(fin);
+	fclose(fin);
 
-   /* if we never found a theme, but had one specified, that's an error */
-   if (NULL != s->theme && !found_theme)
-      errx(1, "failed to find a theme named '%s' in %s",
-            s->theme, s->config_file);
+	/* if we never found a theme, but had one specified, that's an error */
+	if (NULL != s->theme && !found_theme)
+		errx(1, "failed to find a theme named '%s' in %s",
+
+	s->theme, s->config_file);
 }
 
 /*
@@ -695,20 +706,20 @@ settings_reload_config(struct settings *s)
 void
 settings_init(struct settings *settings, int argc, char *argv[])
 {
-   char *config_file = NULL;
-   char *theme = NULL;
+	char *config_file = NULL;
+	char *theme = NULL;
 
-   /* first determine config file and theme */
-   get_config_and_theme(argc, argv, &config_file, &theme);
-   if (NULL == config_file)
-      config_file = get_default_config();
+	/* first determine config file and theme */
+	get_config_and_theme(argc, argv, &config_file, &theme);
+	if (NULL == config_file)
+		config_file = get_default_config();
 
-   /* store the config file & theme in the settings object */
-   settings->config_file = config_file;
-   settings->theme = theme;
+	/* store the config file & theme in the settings object */
+	settings->config_file = config_file;
+	settings->theme = theme;
 
-   /* load defaults, then load config, and then parse command line */
-   settings_set_defaults(settings);
-   settings_reload_config(settings);
-   settings_parse_cmdline(settings, argc, argv);
+	/* load defaults, then load config, and then parse command line */
+	settings_set_defaults(settings);
+	settings_reload_config(settings);
+	settings_parse_cmdline(settings, argc, argv);
 }

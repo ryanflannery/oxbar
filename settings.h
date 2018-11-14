@@ -32,29 +32,28 @@
 #include "widgets/wifi.h"
 
 struct settings {
+	/* these aren't directly 'set-able' settings - more meta-settings */
+	char *config_file;   /* file to read settings from */
+	char *theme;         /* theme name specified on command line (if any) */
 
-   /* these aren't directly 'set-able' settings - more meta-settings */
-   char *config_file;   /* file to read settings from */
-   char *theme;         /* theme name specified on command line (if any) */
+	/* this is setable but doesn't belong to any proper component below */
+	char *widgets;       /* widget list with formatting */
 
-   /* this is setable but doesn't belong to any proper component below */
-   char *widgets;       /* widget list with formatting */
+	/* core display settings */
+	struct xfont_settings   font;
+	struct xwin_settings    window;
+	struct gui_settings     gui;
 
-   /* core display settings */
-   struct xfont_settings   font;
-   struct xwin_settings    window;
-   struct gui_settings     gui;
-
-   /* per-widget settings */
-   struct widget_battery_settings   battery;
-   struct widget_bright_settings   bright;
-   struct widget_volume_settings    volume;
-   struct widget_nprocs_settings    nprocs;
-   struct widget_memory_settings    memory;
-   struct widget_cpu_settings       cpus;
-   struct widget_net_settings       net;
-   struct widget_time_settings      time;
-   struct widget_wifi_settings      wifi;
+	/* per-widget settings */
+	struct widget_battery_settings   battery;
+	struct widget_bright_settings   bright;
+	struct widget_volume_settings    volume;
+	struct widget_nprocs_settings    nprocs;
+	struct widget_memory_settings    memory;
+	struct widget_cpu_settings       cpus;
+	struct widget_net_settings       net;
+	struct widget_time_settings      time;
+	struct widget_wifi_settings      wifi;
 };
 
 void settings_init(struct settings *s, int argc, char *argv[]);

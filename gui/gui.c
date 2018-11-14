@@ -107,7 +107,7 @@ draw_widget_list(
       if (wle->widget->enabled(wle->widget->state)) {
          draw_widget(gui, temp, wle->widget);
          if (NULL != TAILQ_NEXT(wle, widget_entry))
-            xctx_advance(temp, AFTER_RENDER, gui->s->widget_spacing, 0);
+            xctx_advance(temp, AFTER_RENDER, gui->s->spacing, 0);
       }
    }
 
