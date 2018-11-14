@@ -60,6 +60,19 @@ Other themes, all included in the file
 ![xstatbar](images/theme-xstatbar.png?raw=true)
 
 
+# installing
+There is no port/package (yet), as oxbar is still under active development.
+To build & install, you'll need to first install 2 dependencies, pango and
+cairo, and then clone this repo and run `make install`.
+
+Roughly:
+```bash
+ $ pkg_add pango cairo           # install dependencies
+ $ make install                  # install globally
+ $ PREFIX=~/local make install   # install local to a user
+```
+
+
 # usage
 Full man page available here:
 [oxbar(1)](http://htmlpreview.github.io/?https://raw.githubusercontent.com/ryanflannery/oxbar/master/man/oxbar.html).
@@ -67,6 +80,7 @@ Full man page available here:
 `oxbar -H` also has a brief description of each command line flag.
 See the sample configuration [sample.oxbar.conf](sample.oxbar.conf) for
 examples, like the themes above.
+
 
 # i liked xstatbar's look
 You can achieve that using the included sample configuration file, saved as
