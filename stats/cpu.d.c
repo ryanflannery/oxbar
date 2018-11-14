@@ -15,30 +15,31 @@
  */
 
 #include <err.h>
+#include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
 
 #include "cpu.h"
+
+volatile sig_atomic_t sig_stop = 0;
+void stop(int __attribute__((unused)) sig) { sig_stop = 1; }
 
 int
 main()
 {
    struct cpu_stats s;
    int i;
+   signal(SIGINT, stop);
+
    cpu_init(&s);
    if (!s.is_setup)
       errx(1, "failed to setup cpus!");
 
-   printf("# cpus = %d\n\n", s.ncpu);
-
+   printf("#cpus: %d\n\n", s.ncpu);
    printf("%4s: %7s %7s %7s %7s %7s %7s",
          "cpuX", "user", "nice", "system", "spin", "intrpt", "idle\n");
 
-   cpu_update(&s);
-   cpu_update(&s);
-
-   while (1)
-   {
+   while (!sig_stop) {
       cpu_update(&s);
       for (i = 0; i < s.ncpu; i++) {
          printf("cpu%1d: %6.1f%% %6.1f%% %6.1f%% %6.1f%% %6.1f%% %6.1f%%\n",

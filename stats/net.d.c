@@ -17,15 +17,21 @@
 #include <err.h>
 #include <inttypes.h>
 #include <math.h>
+#include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
 
 #include "net.h"
 
+volatile sig_atomic_t sig_stop = 0;
+void stop(int __attribute__((unused)) sig) { sig_stop = 1; }
+
 int
 main()
 {
    struct net_stats s;
+   signal(SIGINT, stop);
+
    net_init(&s);
    if (!s.is_setup)
       errx(1, "failed to setup core!");
@@ -35,8 +41,7 @@ main()
          "#p in", "#p out", "#new in", "#new out",
          "#b in", "#b out", "#b new in", "#b new out");
 
-   while (1)
-   {
+   while (!sig_stop) {
       net_update(&s);
       printf("%10lu %10lu %10lu %10lu %10llu %10llu %10llu %10llu\n",
             s.packets_in,     s.packets_out,
@@ -45,7 +50,6 @@ main()
             s.bytes_in_new,   s.bytes_out_new);
       sleep(1);
    }
-
 
    net_close(&s);
 }

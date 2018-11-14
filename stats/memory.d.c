@@ -15,15 +15,21 @@
  */
 
 #include <err.h>
+#include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
 
 #include "memory.h"
 
+volatile sig_atomic_t sig_stop = 0;
+void stop(int __attribute__((unused)) sig) { sig_stop = 1; }
+
 int
 main()
 {
    struct memory_stats s;
+   signal(SIGINT, stop);
+
    memory_init(&s);
    if (!s.is_setup)
       errx(1, "failed to setup memory!");
@@ -34,25 +40,13 @@ main()
    printf("%8s %7s ",   "Swap U",   "%");
    printf("%8s\n",      "Swap T");
 
-
-   while (1)
-   {
+   while (!sig_stop) {
       memory_update(&s);
-      printf("%8d %7.1f ",
-            s.active,
-            s.active_pct);
-      printf("%8d %7.1f ",
-            s.total,
-            s.total_pct);
-      printf("%8d %7.1f ",
-            s.free,
-            s.free_pct);
-      printf("%8d %7.1f ",
-            s.swap_used,
-            s.swap_used_pct);
-      printf("%8d\n",
-            s.swap_total);
-
+      printf("%8d %7.1f ", s.active,      s.active_pct);
+      printf("%8d %7.1f ", s.total,       s.total_pct);
+      printf("%8d %7.1f ", s.free,        s.free_pct);
+      printf("%8d %7.1f ", s.swap_used,   s.swap_used_pct);
+      printf("%8d\n",      s.swap_total);
       sleep(1);
    }
 

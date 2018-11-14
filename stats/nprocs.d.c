@@ -15,23 +15,28 @@
  */
 
 #include <err.h>
+#include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
 
 #include "nprocs.h"
 
+volatile sig_atomic_t sig_stop = 0;
+void stop(int __attribute__((unused)) sig) { sig_stop = 1; }
+
 int
 main()
 {
    struct nprocs_stats s;
+   signal(SIGINT, stop);
+
    nprocs_init(&s);
    if (!s.is_setup)
       errx(1, "failed to setup core!");
 
    printf("%8s\n", "procs");
 
-   while (1)
-   {
+   while (!sig_stop) {
       nprocs_update(&s);
       printf("%8d\n", s.nprocs);
       sleep(1);

@@ -15,14 +15,21 @@
  */
 
 #include <err.h>
+#include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
+
 #include "wifi.h"
+
+volatile sig_atomic_t sig_stop = 0;
+void stop(int __attribute__((unused)) sig) { sig_stop = 1; }
 
 int
 main()
 {
    struct wifi_stats s;
+   signal(SIGINT, stop);
+
    wifi_init(&s);
    if (!s.is_setup)
       errx(1, "failed to setup wifi!");
@@ -30,11 +37,9 @@ main()
    printf("iface: '%s'\n\n", s.iface);
    printf("strength%%\n");
 
-   while (1)
-   {
+   while (!sig_stop) {
       wifi_update(&s);
       printf("%4.1f%%\n", s.signal_strength);
-
       sleep(1);
    }
 

@@ -15,23 +15,28 @@
  */
 
 #include <err.h>
+#include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
 
 #include "brightness.h"
 
+volatile sig_atomic_t sig_stop = 0;
+void stop(int __attribute__((unused)) sig) { sig_stop = 1; }
+
 int
 main()
 {
    struct brightness_stats s;
+   signal(SIGINT, stop);
+
    brightness_init(&s);
    if (!s.is_setup)
       errx(1, "failed to setup brightness!");
 
    printf("bright%%\n");
 
-   while (1)
-   {
+   while (!sig_stop) {
       brightness_update(&s);
       printf("%5.1f\n", s.brightness);
       sleep(1);
