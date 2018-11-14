@@ -43,8 +43,10 @@ wifi_init(struct wifi_stats *stats)
    if (NULL == (stats->iface = get_egress()))
       return;
 
-   if (-1 == (wifi_socket = socket(AF_INET, SOCK_DGRAM, 0)))
+   if (-1 == (wifi_socket = socket(AF_INET, SOCK_DGRAM, 0))) {
+      free(stats->iface);
       return;
+   }
 
    memset(&bssid, 0, sizeof(bssid));
    strlcpy(bssid.i_name, stats->iface, sizeof(bssid.i_name));
@@ -52,8 +54,10 @@ wifi_init(struct wifi_stats *stats)
    ibssid = ioctl(wifi_socket, SIOCG80211BSSID, &bssid);
    if (0 == ibssid)
       stats->is_setup = true;   /* egress is a 802.11 if, we're good */
-   else
+   else {
       stats->is_setup = false;  /* that's not the case - bail */
+      free(stats->iface);
+   }
 }
 
 void
@@ -74,6 +78,8 @@ wifi_update(struct wifi_stats *stats)
 void
 wifi_close(struct wifi_stats *stats)
 {
-   if (stats->is_setup)
+   if (stats->is_setup) {
+      free(stats->iface);
       close(wifi_socket);
+   }
 }

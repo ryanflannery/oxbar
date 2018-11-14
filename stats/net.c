@@ -166,7 +166,8 @@ net_update(struct net_stats *stats)
 }
 
 void
-net_close(__attribute__((unused)) struct net_stats *stats)
+net_close(struct net_stats *stats)
 {
-   /* nothing to do */
+   if (stats->is_setup)
+      free(stats->iface);
 }
