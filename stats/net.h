@@ -28,14 +28,12 @@ struct net_stats {
    char *iface;
 
    /* raw packet & byte counters (these can rollover) */
-   u_long   raw_ip_packets_in, raw_ip_packets_out;
-   uint64_t raw_bytes_in,      raw_bytes_out;
+   u_long   packets_in, packets_out;
+   uint64_t bytes_in,   bytes_out;
 
    /* diff since last update (handles rollover) */
-   u_long   new_ip_packets_in;
-   u_long   new_ip_packets_out;
-   uint64_t new_bytes_in;
-   uint64_t new_bytes_out;
+   u_long   packets_in_new, packets_out_new;
+   uint64_t bytes_in_new,   bytes_out_new;
 };
 
 void net_init(struct net_stats*);

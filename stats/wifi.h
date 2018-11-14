@@ -21,8 +21,8 @@
 
 struct wifi_stats {
    bool  is_setup;
-   char *iface;
-   float signal_strength;
+   char *iface;            /* network interface used */
+   float signal_strength;  /* signal strength [0,100] */
 };
 
 void wifi_init(struct wifi_stats*);

@@ -42,7 +42,9 @@ wifi_init(struct wifi_stats *stats)
    int ibssid;
    stats->is_setup = false;
 
-   stats->iface = get_egress();
+   if (NULL == (stats->iface = get_egress()))
+      return;
+
    if (-1 == (wifi_socket = socket(AF_INET, SOCK_DGRAM, 0)))
       return;
 

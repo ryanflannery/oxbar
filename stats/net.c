@@ -45,9 +45,9 @@ void
 net_init(struct net_stats *stats)
 {
    stats->iface = get_egress();
-   stats->raw_ip_packets_in = stats->raw_ip_packets_out = 0;
-   stats->raw_bytes_in = stats->raw_bytes_out = 0;
-   stats->is_setup = true;
+   stats->is_setup = NULL != stats->iface;
+   if (stats->is_setup)
+      net_update(stats);   /* to set initial counters */
 }
 
 static void
@@ -60,22 +60,22 @@ net_update_packets(struct net_stats *stats)
    if (-1 == sysctl(mib, sizeof(mib) / sizeof(mib[0]), &current, &len, NULL, 0))
       err(1, "CTL_NET.PF_INET.IPPROTO_IP.IPCTL_STATS");
 
-   if (current.ips_total < stats->raw_ip_packets_in) {
-      stats->new_ip_packets_in = ULONG_MAX - stats->raw_ip_packets_in
-                               + current.ips_total;
-   } else
-      stats->new_ip_packets_in = current.ips_total - stats->raw_ip_packets_in;
+   if (current.ips_total < stats->packets_in)
+      stats->packets_in_new = ULONG_MAX - stats->packets_in
+                            + current.ips_total;
+   else
+      stats->packets_in_new = current.ips_total - stats->packets_in;
 
-   if (current.ips_localout < stats->raw_ip_packets_out) {
-      stats->new_ip_packets_out = ULONG_MAX - stats->raw_ip_packets_out
-                                + current.ips_localout;
+   if (current.ips_localout < stats->packets_out) {
+      stats->packets_out_new = ULONG_MAX - stats->packets_out
+                             + current.ips_localout;
    } else {
-      stats->new_ip_packets_out = current.ips_localout
-                                - stats->raw_ip_packets_out;
+      stats->packets_out_new = current.ips_localout
+                             - stats->packets_out;
    }
 
-   stats->raw_ip_packets_in  = current.ips_total;
-   stats->raw_ip_packets_out = current.ips_localout;
+   stats->packets_in = current.ips_total;
+   stats->packets_out = current.ips_localout;
 }
 
 /*
@@ -131,10 +131,9 @@ net_update_bytes(struct net_stats *stats)
             sa = (struct sockaddr*)(next + rtm->rtm_hdrlen);
             get_rtaddrs(ifm.ifm_addrs, sa, rti_info);
             sdl = (struct sockaddr_dl *)rti_info[RTAX_IFP];
-            if (NULL == sdl || AF_LINK != sdl->sdl_family) {
-               printf("GOT A NULL!");
+            if (NULL == sdl || AF_LINK != sdl->sdl_family)
                continue;
-            }
+
             bzero(name, sizeof(name));
             if (sdl->sdl_nlen >= IFNAMSIZ)
                memcpy(name, sdl->sdl_data, IFNAMSIZ - 1);
@@ -144,10 +143,10 @@ net_update_bytes(struct net_stats *stats)
             if (strcmp(stats->iface, name))
                break;
 
-            stats->new_bytes_in  = ifd->ifi_ibytes - stats->raw_bytes_in;
-            stats->new_bytes_out = ifd->ifi_obytes - stats->raw_bytes_out;
-            stats->raw_bytes_in  = ifd->ifi_ibytes;
-            stats->raw_bytes_out = ifd->ifi_obytes;
+            stats->bytes_in_new  = ifd->ifi_ibytes - stats->bytes_in;
+            stats->bytes_out_new = ifd->ifi_obytes - stats->bytes_out;
+            stats->bytes_in      = ifd->ifi_ibytes;
+            stats->bytes_out     = ifd->ifi_obytes;
             break;
          case RTM_NEWADDR:
             break;
@@ -159,6 +158,9 @@ net_update_bytes(struct net_stats *stats)
 void
 net_update(struct net_stats *stats)
 {
+   if (!stats->is_setup)
+      return;
+
    net_update_packets(stats);
    net_update_bytes(stats);
 }

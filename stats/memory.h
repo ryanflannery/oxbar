@@ -22,8 +22,8 @@
 struct memory_stats {
    bool  is_setup;
 
-   /* raw (byte) values */
-   int   active, free, total;
+   /* raw values in kilobytes */
+   int   active, total, free;    /* "total" means same as in top(1) here */
    int   swap_used, swap_total;
 
    /* percentage values */

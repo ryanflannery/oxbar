@@ -28,9 +28,9 @@ main()
    if (!s.is_setup)
       errx(1, "failed to setup memory!");
 
-   printf("%8s %7s ",   "Active",   "%");
-   printf("%8s %7s ",   "Total",    "%");
-   printf("%8s %7s ",   "Free",     "%");
+   printf("%8s %7s ",   "Act kb",   "%");
+   printf("%8s %7s ",   "Tot kb",   "%");
+   printf("%8s %7s ",   "Free kb",  "%");
    printf("%8s %7s ",   "Swap U",   "%");
    printf("%8s\n",      "Swap T");
 

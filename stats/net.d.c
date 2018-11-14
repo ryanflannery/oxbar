@@ -39,10 +39,10 @@ main()
    {
       net_update(&s);
       printf("%10lu %10lu %10lu %10lu %10llu %10llu %10llu %10llu\n",
-            s.raw_ip_packets_in, s.raw_ip_packets_out,
-            s.new_ip_packets_in, s.new_ip_packets_out,
-            s.raw_bytes_in, s.raw_bytes_out,
-            s.new_bytes_in, s.new_bytes_out);
+            s.packets_in,     s.packets_out,
+            s.packets_in_new, s.packets_in_new,
+            s.bytes_in,       s.bytes_out,
+            s.bytes_in_new,   s.bytes_out_new);
       sleep(1);
    }
 

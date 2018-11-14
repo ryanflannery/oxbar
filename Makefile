@@ -86,6 +86,7 @@ gprof: clean
 TODO::
 	grep -nr TODO * \
 		| grep -v '^TODO' \
+		| grep -v '^README.md' \
 		| grep -v '^CONTRIBUTING.md' \
 		| grep -v '^Makefile' > $@
 
