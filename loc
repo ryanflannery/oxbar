@@ -16,7 +16,7 @@ Lines in core oxbar
       51 ./widgets/util.c
      418 ./gui/xcore.c
      404 ./gui/xdraw.c
-     129 ./gui/gui.c
+     128 ./gui/gui.c
      132 ./gui/chart.c
       71 ./stats/battery.c
       61 ./stats/stats.c
@@ -24,11 +24,11 @@ Lines in core oxbar
       45 ./stats/nprocs.c
       95 ./stats/cpu.c
      120 ./stats/volume.c
-      79 ./stats/wifi.c
-     172 ./stats/net.c
+      85 ./stats/wifi.c
+     173 ./stats/net.c
      136 ./stats/brightness.c
       64 ./stats/util.c
-    3764 total
+    3770 total
 Lines in tests and drivers
      285 ./gui/xcore.t.cc
       54 ./gui/chart.d.c
