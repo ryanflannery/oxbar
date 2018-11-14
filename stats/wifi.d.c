@@ -27,12 +27,13 @@ main()
    if (!s.is_setup)
       errx(1, "failed to setup wifi!");
 
+   printf("iface: '%s'\n\n", s.iface);
    printf("strength%%\n");
 
    while (1)
    {
       wifi_update(&s);
-      printf("%3u%%\n", s.signal_strength);
+      printf("%4.1f%%\n", s.signal_strength);
 
       sleep(1);
    }

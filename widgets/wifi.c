@@ -17,6 +17,6 @@ wwifi_draw(void *wstate, struct xctx *ctx)
    struct widget_wifi_settings *settings = w->settings;
    xdraw_printf(ctx,
          settings->fgcolor,
-         "Wifi: %u%%",
+         "Wifi:% 3.0f%%",
          w->stats->wifi.signal_strength);
 }

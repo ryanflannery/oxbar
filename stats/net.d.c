@@ -30,7 +30,7 @@ main()
    if (!s.is_setup)
       errx(1, "failed to setup core!");
 
-   printf("egress interface is: '%s'\n", s.iface);
+   printf("iface: '%s'\n\n", s.iface);
    printf("%10s %10s %10s %10s %10s %10s %10s %10s\n",
          "#p in", "#p out", "#new in", "#new out",
          "#b in", "#b out", "#b new in", "#b new out");

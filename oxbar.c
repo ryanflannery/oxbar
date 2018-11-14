@@ -16,8 +16,6 @@
 
 /*
  * Various outstanding stuff that doesn't belong elsewhere...
- * TODO don't bomb on more than one egress interface / configurable (XXX MAN)
- * TODO don't use -1 for y/w/h magic - use 0 and use unsigned types (XXX MAN)
  * TODO polish error messages (err/errx calls)
  * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
  */

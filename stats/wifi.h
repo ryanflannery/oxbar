@@ -20,8 +20,9 @@
 #include <stdbool.h>
 
 struct wifi_stats {
-   bool         is_setup;
-   unsigned int signal_strength;
+   bool  is_setup;
+   char *iface;
+   float signal_strength;
 };
 
 void wifi_init(struct wifi_stats*);

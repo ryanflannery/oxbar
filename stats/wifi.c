@@ -32,44 +32,43 @@
 #include "util.h"
 
 static int    wifi_socket;
-static char  *wifi_iface;
 static struct ieee80211_bssid bssid;
 
 /* TODO allow wifi interface to be configured? defaults to egress now */
 
 void
-wifi_init(struct wifi_stats *info)
+wifi_init(struct wifi_stats *stats)
 {
    int ibssid;
-   info->is_setup = false;
+   stats->is_setup = false;
 
-   wifi_iface = get_egress();
+   stats->iface = get_egress();
    if (-1 == (wifi_socket = socket(AF_INET, SOCK_DGRAM, 0)))
       return;
 
    memset(&bssid, 0, sizeof(bssid));
-   strlcpy(bssid.i_name, wifi_iface, sizeof(bssid.i_name));
+   strlcpy(bssid.i_name, stats->iface, sizeof(bssid.i_name));
 
    ibssid = ioctl(wifi_socket, SIOCG80211BSSID, &bssid);
    if (0 == ibssid)
-      info->is_setup = true;   /* egress is a 802.11 if, we're good */
+      stats->is_setup = true;   /* egress is a 802.11 if, we're good */
    else
-      info->is_setup = false;  /* that's not the case - bail */
+      stats->is_setup = false;  /* that's not the case - bail */
 }
 
 void
-wifi_update(struct wifi_stats *info)
+wifi_update(struct wifi_stats *stats)
 {
-   if (!info->is_setup)
+   if (!stats->is_setup)
       return;
 
    struct ieee80211_nodereq request;
    bzero(&request, sizeof(request));
 
    bcopy(bssid.i_bssid, &request.nr_macaddr, sizeof(request.nr_macaddr));
-   strlcpy(request.nr_ifname, wifi_iface, sizeof(request.nr_ifname));
+   strlcpy(request.nr_ifname, stats->iface, sizeof(request.nr_ifname));
    if (0 == ioctl(wifi_socket, SIOCG80211NODE, &request) && request.nr_rssi)
-      info->signal_strength = IEEE80211_NODEREQ_RSSI(&request);
+      stats->signal_strength = (float) IEEE80211_NODEREQ_RSSI(&request);
 }
 
 void

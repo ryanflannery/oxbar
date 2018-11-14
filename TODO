@@ -1,11 +1,11 @@
-gui/xcore.c:220: * TODO cleanup & separate wm hints ... and dragons
+README.md:103:See the [TODO](TODO) file for various TODO's present throughout the code.
+gui/xcore.c:227: * TODO cleanup & separate wm hints ... and dragons
 gui/xdraw.h:40: * TODO This abstraction should also permit vertical rendering (for a vertical
 gui/xcore.t.cc:9:/* TODO either fix googletest's [ASSERT|EXPECT]_EXIT* on openbsd or switch */
-oxbar.c:19: * TODO don't bomb on more than one egress interface / configurable (XXX MAN)
-oxbar.c:20: * TODO don't use -1 for y/w/h magic - use 0 and use unsigned types (XXX MAN)
-oxbar.c:21: * TODO polish error messages (err/errx calls)
-oxbar.c:22: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
+oxbar.c:19: * TODO don't use -1 for y/w/h magic - use 0 and use unsigned types (XXX MAN)
+oxbar.c:20: * TODO polish error messages (err/errx calls)
+oxbar.c:21: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
 settings.c:324: * TODO Create a settings_free() (or refactor to make easier)
 stats/cpu.c:52:   /* TODO Remove duplicate logic in CPU update logic
-stats/wifi.c:38:/* TODO allow wifi interface to be configured? defaults to egress now */
-stats/net.c:77: * TODO Refactor network bytes logic
+stats/wifi.c:37:/* TODO allow wifi interface to be configured? defaults to egress now */
+stats/net.c:82: * TODO Refactor network bytes logic
