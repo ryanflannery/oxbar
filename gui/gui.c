@@ -82,9 +82,6 @@ gui_add_widget(struct gui *gui, xctx_direction_t direction, struct widget* w)
 static void
 draw_widget(struct gui *gui, struct xctx *dest, struct widget *w)
 {
-   if (!w->enabled(w->state))
-      return;
-
    struct xctx *scratchpad = xctx_init_scratchpad(gui->xfont, gui->xwin, L2R, &gui->s->padding);
    if (0 != strlen(gui->s->widget_bgcolor)) xdraw_colorfill(scratchpad, gui->s->widget_bgcolor);
    if (0 != strlen(*w->bgcolor)) xdraw_colorfill(scratchpad, *w->bgcolor);
@@ -107,9 +104,11 @@ draw_widget_list(
    struct xctx *temp = xctx_init_scratchpad(gui->xfont, gui->xwin, L2R, NULL);
 
    TAILQ_FOREACH(wle, widgets, widget_entry) {
-      draw_widget(gui, temp, wle->widget);
-      if (NULL != TAILQ_NEXT(wle, widget_entry))
-         xctx_advance(temp, AFTER_RENDER, gui->s->widget_spacing, 0);
+      if (wle->widget->enabled(wle->widget->state)) {
+         draw_widget(gui, temp, wle->widget);
+         if (NULL != TAILQ_NEXT(wle, widget_entry))
+            xctx_advance(temp, AFTER_RENDER, gui->s->widget_spacing, 0);
+      }
    }
 
    xctx_complete(temp);
