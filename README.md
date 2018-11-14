@@ -68,8 +68,8 @@ cairo, and then clone this repo and run `make install`.
 Roughly:
 ```bash
  $ pkg_add pango cairo           # install dependencies
- $ make install                  # install globally
- $ PREFIX=~/local make install   # install local to a user
+ $ doas make install             # install globally
+ $ PREFIX=~/local make install   # install local to a user (PREFIX is whatever you want)
 ```
 
 
