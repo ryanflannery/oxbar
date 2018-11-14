@@ -91,13 +91,11 @@ oxbar xstatbar
 
 
 # outstanding stuff, prioritized
-Roughly in order or my priority...
-* allow configuring wifi & net interfaces (currently just uses `egress`)
+See the [TODO](TODO) file for various TODO's present throughout the code.
+
+In addition, more long-term stuff I'd like to do, by my priority...
 * gui: icons in the display could help condense it further
 * stats: add collector for hw.sensors & a related widget
 * stats: add a weather component...i like weather
-* gui: support vertical rendering (a sidebar!)
 * when using compton, need '--shadow-exclude 'name = "oxbar"' to disable
   shadow - how can i automate that?
-
-See the [TODO](TODO) file for various TODO's present throughout the code.

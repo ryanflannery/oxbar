@@ -16,6 +16,7 @@
 
 /*
  * Various outstanding stuff that doesn't belong elsewhere...
+ * TODO allow configuration of interfaces used by net & wifi collectors
  * TODO polish error messages (err/errx calls)
  * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
  */

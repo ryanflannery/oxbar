@@ -34,8 +34,6 @@
 static int    wifi_socket;
 static struct ieee80211_bssid bssid;
 
-/* TODO allow wifi interface to be configured? defaults to egress now */
-
 void
 wifi_init(struct wifi_stats *stats)
 {
