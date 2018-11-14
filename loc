@@ -35,15 +35,15 @@ Lines in tests and drivers
      156 ./gui/xcore.d.c
       78 ./gui/xdraw.d.c
       39 ./gui/chart.t.cc
-      57 ./stats/cpu.d.c
-      51 ./stats/net.d.c
-      44 ./stats/battery.d.c
-      41 ./stats/nprocs.d.c
-      45 ./stats/volume.d.c
-      60 ./stats/memory.d.c
-      42 ./stats/wifi.d.c
-      41 ./stats/brightness.d.c
-     993 total
+      58 ./stats/cpu.d.c
+      55 ./stats/net.d.c
+      49 ./stats/battery.d.c
+      46 ./stats/nprocs.d.c
+      49 ./stats/volume.d.c
+      54 ./stats/memory.d.c
+      47 ./stats/wifi.d.c
+      46 ./stats/brightness.d.c
+    1016 total
 Lines in build setup
      111 ./Makefile
      227 ./sample.oxbar.conf
