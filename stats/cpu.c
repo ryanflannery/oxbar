@@ -38,101 +38,53 @@ cpu_init(struct cpu_stats *stats)
    /* allocate array of cpu states */
    stats->cpus = calloc(stats->ncpu, sizeof(struct cpu_states));
    if (NULL == stats->cpus)
-      err(1, "callc failed for %d cpus", stats->ncpu);
+      err(1, "calloc failed for %d cpus", stats->ncpu);
 
    stats->is_setup = true;
+   cpu_update(stats);   /* to set initial counters */
 }
 
 void
 cpu_update(struct cpu_stats *stats)
 {
-   static int  mib[] = { CTL_KERN, 0, 0 };
-   int         state;
+   static int  mib[] = { CTL_KERN, KERN_CPTIME2, 0 };
+   int         cpu, state;
 
-   /* TODO Remove duplicate logic in CPU update logic
-    * The below logic splits based on # of cpus: one path for 1cpu and another
-    * for multiple (bsd vs bsd.mp kernels). I've tested both and they work,
-    * but there are subtle differences (I think only type at this point?).
-    *
-    * I could/should try to consolidate further, but frankly I only use the
-    * multiprocessor path, and I imagine every laptop in the past 15 years
-    * would default to that path also. As such, this is very low priority for
-    * me.
-    */
+   for (cpu = 0; cpu < stats->ncpu; cpu++) {
 
-   /* get RAW cpu ticks & update percentages */
-   if (stats->ncpu > 1) {
-      mib[1] = KERN_CPTIME2;
-      int cpu = 0;
-      for (cpu = 0; cpu < stats->ncpu; cpu++) {
-         /* update raw */
-         mib[2] = cpu;
-         u_int64_t current_ticks[CPUSTATES];
-         size_t size = sizeof(current_ticks);
-         if (sysctl(mib, 3, current_ticks, &size, NULL, 0) < 0)
-            err(1, "cpu_update: KERN.CPTIME2.%d failed", cpu);
-
-         /* calculate diffs from last call */
-         u_int64_t nticks = 0;
-         u_int64_t diffs[CPUSTATES] = { 0 };
-         for (state = 0; state < CPUSTATES; state++) {
-            if (current_ticks[state] < stats->cpus[cpu].raw_ticks[state]) {
-               diffs[state] = INT64_MAX
-                            - stats->cpus[cpu].raw_ticks[state]
-                            + current_ticks[state];
-            } else {
-               diffs[state] = current_ticks[state]
-                            - stats->cpus[cpu].raw_ticks[state];
-            }
-            nticks += diffs[state];
-         }
-
-         if (nticks == 0) nticks = 1;
-
-         /* calculate percents */
-         for (state = 0; state < CPUSTATES; state++) {
-            stats->cpus[cpu].percentages[state] = ((diffs[state] * 1000
-                                                + (nticks / 2)) / nticks) / 10;
-         }
-
-         /* copy current back into CPUS state */
-         for (state = 0; state < CPUSTATES; state++)
-            stats->cpus[cpu].raw_ticks[state] = current_ticks[state];
-      }
-   } else {
       /* update raw */
-      mib[1] = KERN_CPTIME;
-      long current_ticks[CPUSTATES];
+      mib[2] = cpu;
+      u_int64_t current_ticks[CPUSTATES];
       size_t size = sizeof(current_ticks);
-      if (sysctl(mib, 2, current_ticks, &size, NULL, 0) < 0)
-         err(1, "core_update: KERN.CPTIME failed");
+      if (sysctl(mib, 3, current_ticks, &size, NULL, 0) < 0)
+         err(1, "KERN.CPTIME2[%d]", cpu);
 
       /* calculate diffs from last call */
-      long nticks = 0;
-      long diffs[CPUSTATES] = { 0 };
+      u_int64_t nticks = 0;
+      u_int64_t diffs[CPUSTATES] = { 0 };
       for (state = 0; state < CPUSTATES; state++) {
-         if (current_ticks[state] < (long)stats->cpus[0].raw_ticks[state]) {
-            diffs[state] = INT64_MAX
-                         - stats->cpus[0].raw_ticks[state]
+         if (current_ticks[state] < stats->cpus[cpu].raw_ticks[state]) {
+            diffs[state] = INT64_MAX - stats->cpus[cpu].raw_ticks[state]
                          + current_ticks[state];
          } else {
             diffs[state] = current_ticks[state]
-                         - stats->cpus[0].raw_ticks[state];
+                         - stats->cpus[cpu].raw_ticks[state];
          }
          nticks += diffs[state];
       }
 
-      if (nticks == 0) nticks = 1;
+      if (nticks == 0)  /* guard divide-by-zero */
+         nticks = 1;
 
-      /* update percents */
-         for (state = 0; state < CPUSTATES; state++) {
-            stats->cpus[0].percentages[state] = ((diffs[state] * 1000
-                                              + (nticks / 2)) / nticks) / 10;
-         }
+      /* calculate percents */
+      for (state = 0; state < CPUSTATES; state++) {
+         stats->cpus[cpu].percentages[state] = ((diffs[state] * 1000
+                                             + (nticks / 2)) / nticks) / 10;
+      }
 
       /* copy current back into CPUS state */
       for (state = 0; state < CPUSTATES; state++)
-         stats->cpus[0].raw_ticks[state] = current_ticks[state];
+         stats->cpus[cpu].raw_ticks[state] = current_ticks[state];
    }
 }
 

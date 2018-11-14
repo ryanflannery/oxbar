@@ -22,20 +22,20 @@ Lines in core oxbar
       61 ./stats/stats.c
       99 ./stats/memory.c
       45 ./stats/nprocs.c
-     143 ./stats/cpu.c
+      95 ./stats/cpu.c
      120 ./stats/volume.c
       81 ./stats/wifi.c
      172 ./stats/net.c
      136 ./stats/brightness.c
       64 ./stats/util.c
-    3813 total
+    3765 total
 Lines in tests and drivers
      285 ./gui/xcore.t.cc
       54 ./gui/chart.d.c
      156 ./gui/xcore.d.c
       78 ./gui/xdraw.d.c
       39 ./gui/chart.t.cc
-      58 ./stats/cpu.d.c
+      57 ./stats/cpu.d.c
       51 ./stats/net.d.c
       44 ./stats/battery.d.c
       41 ./stats/nprocs.d.c
@@ -43,7 +43,7 @@ Lines in tests and drivers
       60 ./stats/memory.d.c
       42 ./stats/wifi.d.c
       41 ./stats/brightness.d.c
-     994 total
+     993 total
 Lines in build setup
      111 ./Makefile
      227 ./sample.oxbar.conf

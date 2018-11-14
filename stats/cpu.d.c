@@ -31,8 +31,8 @@ main()
 
    printf("# cpus = %d\n\n", s.ncpu);
 
-   printf("%4s: %7s %7s %7s %7s %7s",
-         "cpuX", "user", "nice", "system", "intrpt", "idle\n");
+   printf("%4s: %7s %7s %7s %7s %7s %7s",
+         "cpuX", "user", "nice", "system", "spin", "intrpt", "idle\n");
 
    cpu_update(&s);
    cpu_update(&s);
@@ -41,16 +41,15 @@ main()
    {
       cpu_update(&s);
       for (i = 0; i < s.ncpu; i++) {
-         printf("cpu%1d: %6.1f%% %6.1f%% %6.1f%% %6.1f%% %6.1f%%\n",
+         printf("cpu%1d: %6.1f%% %6.1f%% %6.1f%% %6.1f%% %6.1f%% %6.1f%%\n",
                i,
                s.cpus[i].percentages[CP_USER],
                s.cpus[i].percentages[CP_NICE],
                s.cpus[i].percentages[CP_SYS],
+               s.cpus[i].percentages[CP_SPIN],
                s.cpus[i].percentages[CP_INTR],
                s.cpus[i].percentages[CP_IDLE]);
       }
-      printf("\n");
-
       sleep(1);
    }
 
