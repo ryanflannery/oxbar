@@ -1,4 +1,4 @@
-gui/xcore.c:227: * TODO cleanup & separate wm hints ... and dragons
+gui/xcore.c:232: * TODO cleanup & separate wm hints ... and dragons
 gui/xdraw.h:40: * TODO This abstraction should also permit vertical rendering (for a vertical
 gui/xcore.t.cc:9:/* TODO either fix googletest's [ASSERT|EXPECT]_EXIT* on openbsd or switch */
 oxbar.c:19: * TODO allow configuration of interfaces used by net & wifi collectors

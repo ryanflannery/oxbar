@@ -25,15 +25,15 @@
 
 /* pango font wrapper struct & setup/teardown methods */
 
-struct xfont_settings {          /* user provided settings for xfont    */
-   char  *desc;                  /* free-form font description string   */
-   char  *fgcolor;               /* default foreground color for text   */
+struct xfont_settings {               /* user provided settings for xfont    */
+	char  *desc;                  /* free-form font description string   */
+	char  *fgcolor;               /* default foreground color for text   */
 };
 
-struct xfont {                   /* core xfont struct (read-only)       */
-   struct xfont_settings *settings;
-   PangoFontDescription  *pfont; /* pango font loaded from that string  */
-   int                    height;/* derived font height (in pixels)     */
+struct xfont {                        /* core xfont struct (read-only)       */
+	struct xfont_settings *settings;
+	PangoFontDescription  *pfont; /* pango font loaded from that string  */
+	int                    height;/* derived font height (in pixels)     */
 };
 
 struct xfont *xfont_init(struct xfont_settings *settings);
@@ -41,11 +41,11 @@ void xfont_free(struct xfont *xf);
 
 /* xcb / display-info struct & setup/teardown methods */
 struct xdisp {
-   uint16_t              display_width;
-   uint16_t              display_height;
-   xcb_connection_t     *con;
-   xcb_screen_t         *root_screen;
-   xcb_visualtype_t     *root_visual;
+	uint16_t              display_width;
+	uint16_t              display_height;
+	xcb_connection_t     *con;
+	xcb_screen_t         *root_screen;
+	xcb_visualtype_t     *root_visual;
 };
 
 struct xdisp *xdisp_init();
@@ -53,19 +53,19 @@ void xdisp_free(struct xdisp *x);
 
 /* xcb / window & cairo wrapper struct & setup/teardown methods */
 
-struct xwin_settings {   /* user provided settings                   */
-   char *bgcolor;    /* default background color for whole window    */
-   char *wname;      /* name of window for window manager            */
-   int   x, y;       /* (x,y) pixel coordinates of top-left corner   */
-   int   w, h;       /* (width,height) pixel dimensions of window    */
+struct xwin_settings {    /* user provided settings                       */
+	char *bgcolor;    /* default background color for whole window    */
+	char *wname;      /* name of window for window manager            */
+	int   x, y;       /* (x,y) pixel coordinates of top-left corner   */
+	int   w, h;       /* (width,height) pixel dimensions of window    */
 };
 
-struct xwin {            /* core xwin struct (read-only)             */
-   struct xwin_settings *settings;
-   struct xdisp         *xdisp;  /* x display server                 */
-   xcb_drawable_t        window; /* oxbar xwindow                    */
-   cairo_surface_t      *surface;/* core cairo surface mapped to X   */
-   cairo_t              *cairo;  /* core cairo object for rendering  */
+struct xwin {                         /* core xwin struct (read-only)     */
+	struct xwin_settings *settings;
+	struct xdisp         *xdisp;  /* x display server                 */
+	xcb_drawable_t        window; /* oxbar xwindow                    */
+	cairo_surface_t      *surface;/* core cairo surface mapped to X   */
+	cairo_t              *cairo;  /* core cairo object for rendering  */
 };
 
 struct xwin *xwin_init(struct xdisp *xdisp, struct xwin_settings *settings);

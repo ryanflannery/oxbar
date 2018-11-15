@@ -42,36 +42,36 @@
  */
 
 typedef enum {
-   L2R,
-   R2L,
-   CENTERED,
+	L2R,
+	R2L,
+	CENTERED,
 } xctx_direction_t;
 
 typedef enum {
-   BEFORE_RENDER,
-   AFTER_RENDER
+	BEFORE_RENDER,
+	AFTER_RENDER
 } xctx_state_t;
 
 struct padding {
-   double top, bottom, left, right;
+	double top, bottom, left, right;
 };
 
 struct xctx {
-   bool              is_root;
-   xctx_direction_t  direction;
-   struct xfont     *xfont;
-   cairo_t          *cairo;
-   cairo_surface_t  *surface;
-   int               h, w;
-   struct padding   *padding;
-   double            xoffset;
-   double            yoffset;
+	bool              is_root;
+	xctx_direction_t  direction;
+	struct xfont     *xfont;
+	cairo_t          *cairo;
+	cairo_surface_t  *surface;
+	int               h, w;
+	struct padding   *padding;
+	double            xoffset;
+	double            yoffset;
 };
 
 struct xctx *xctx_init_root(struct xfont *font, struct xwin *win,
-      xctx_direction_t direction, struct padding *padding);
+	xctx_direction_t direction, struct padding *padding);
 struct xctx *xctx_init_scratchpad(struct xfont *font, struct xwin *win,
-      xctx_direction_t direction, struct padding *padding);
+	xctx_direction_t direction, struct padding *padding);
 
 void xctx_free(struct xctx *ctx);
 void xctx_reset(struct xctx *ctx);
@@ -86,50 +86,50 @@ void xctx_advance(struct xctx *ctx, xctx_state_t state, double xplus, double ypl
 /* draw one context onto another */
 void
 xdraw_context(
-      struct xctx     *dest,
-      struct xctx     *source);
+	struct xctx *dest,
+	struct xctx *source);
 
 /* draw a color over an entire context */
 void
 xdraw_colorfill(
-      struct xctx     *ctx,
-      const char *const color);
+	struct xctx      *ctx,
+	const char *const color);
 
 /* draw a colored headerline on a widget */
 
 typedef enum {
-   NONE,    /* don't show them at all */
-   ABOVE,   /* show the headers above the widget in the padding region */
-   BELOW    /* show the headers below the widget in the padding region */
+	NONE,    /* don't show them at all */
+	ABOVE,   /* show the headers above the widget in the padding region */
+	BELOW    /* show the headers below the widget in the padding region */
 } header_style_t;
 
 void
 xdraw_headerline(
-      struct xctx         *ctx,
-      header_style_t  style,
-      const char     *color);
+	struct xctx   *ctx,
+	header_style_t style,
+	const char    *color);
 
 /* draw some colored text (printf(3) style) */
 void
 xdraw_printf(
-      struct xctx *ctx,
-      const char *color,
-      const char *fmt,
-      ...);
+	struct xctx *ctx,
+	const char  *color,
+	const char  *fmt,
+	...);
 
 /* draw simple progress bar showing some % completion */
 void
 xdraw_progress_bar(
-      struct xctx     *ctx,
-      const char *bgcolor,
-      const char *pgcolor,
-      double      width,
-      double      pct);
+	struct xctx *ctx,
+	const char  *bgcolor,
+	const char  *pgcolor,
+	double       width,
+	double       pct);
 
 /* draw a historical bar chart */
 void
 xdraw_chart(
-      struct xctx       *ctx,
-      struct chart *chart);
+	struct xctx  *ctx,
+	struct chart *chart);
 
 #endif

@@ -35,13 +35,13 @@
  */
 
 struct chart {
-   size_t   nseries;    /* how many distinct series are in the chart    */
-   size_t   nsamples;   /* how many samples of each series there are    */
-   size_t   current;    /* index of current SAMPLE                      */
-   bool     percents;   /* true = all values are percents, false = raw  */
-   double **values;     /* the nseries x nsamples array of percents     */
-   char    *bgcolor;    /* background color of the chart                */
-   char   **colors;     /* array of nsamples - colors for each sample   */
+	size_t   nseries;    /* how many distinct series are in the chart    */
+	size_t   nsamples;   /* how many samples of each series there are    */
+	size_t   current;    /* index of current SAMPLE                      */
+	bool     percents;   /* true = all values are percents, false = raw  */
+	double **values;     /* the nseries x nsamples array of percents     */
+	char    *bgcolor;    /* background color of the chart                */
+	char   **colors;     /* array of nsamples - colors for each sample   */
 };
 
 /*
@@ -68,11 +68,11 @@ struct chart {
  */
 struct chart*
 chart_init(
-      size_t   nsamples,
-      size_t   nseries,
-      bool     is_percents,
-      const char  *bgcolor,
-      const char **colors);
+	size_t   nsamples,
+	size_t   nseries,
+	bool     is_percents,
+	const char  *bgcolor,
+	const char **colors);
 
 /* Free all allocated memory with a chart */
 void chart_free(struct chart *c);
