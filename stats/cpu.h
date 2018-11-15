@@ -24,14 +24,14 @@
 
 /* XXX see sys/sched.h for definition of CPUSTATES */
 struct cpu_states {
-   u_int64_t   raw_ticks[CPUSTATES];      /* raw tick counters for each */
-   float       percentages[CPUSTATES];    /* percent time spent in each */
+	u_int64_t   raw[CPUSTATES];            /* raw tick counters for each */
+	float       percentages[CPUSTATES];    /* percent time spent in each */
 };
 
 struct cpu_stats {
-   bool               is_setup;
-   int                ncpu;      /* number of CPUs available */
-   struct cpu_states *cpus;      /* array of cpu states, one for each cpu */
+	bool               is_setup;
+	int                ncpu;      /* number of CPUs available */
+	struct cpu_states *cpus;      /* array of cpu states, one for each cpu */
 };
 
 void cpu_init(struct cpu_stats*);

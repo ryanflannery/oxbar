@@ -28,37 +28,37 @@
 char*
 get_egress()
 {
-   struct ifgroupreq  ifgr;
-   struct ifg_req    *ifg;
-   unsigned int       len;
-   int                ioctlfd;
-   char              *name;
+	struct ifgroupreq  ifgr;
+	struct ifg_req    *ifg;
+	unsigned int       len;
+	int                ioctlfd;
+	char              *name;
 
-   memset(&ifgr, 0, sizeof(ifgr));
-   strlcpy(ifgr.ifgr_name, "egress", sizeof(ifgr.ifgr_name));
+	memset(&ifgr, 0, sizeof(ifgr));
+	strlcpy(ifgr.ifgr_name, "egress", sizeof(ifgr.ifgr_name));
 
-   if ((ioctlfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-      err(1, "egress lookup: socket(AF_INET, SOCK_DGRAM)");
+	if ((ioctlfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+		err(1, "egress lookup: socket(AF_INET, SOCK_DGRAM)");
 
-   if (ioctl(ioctlfd, SIOCGIFGMEMB, (caddr_t)&ifgr) == -1)
-      err(1, "egress lookup: ioctl(SIOCGIFGMEMB)");
+	if (ioctl(ioctlfd, SIOCGIFGMEMB, (caddr_t)&ifgr) == -1)
+		err(1, "egress lookup: ioctl(SIOCGIFGMEMB)");
 
-   len = ifgr.ifgr_len;
-   if (NULL == (ifgr.ifgr_groups = calloc(1, len)))
-      err(1, "egress lookup: calloc w/ len = %d", len);
+	len = ifgr.ifgr_len;
+	if (NULL == (ifgr.ifgr_groups = calloc(1, len)))
+		err(1, "egress lookup: calloc w/ len = %d", len);
 
-   if (ioctl(ioctlfd, SIOCGIFGMEMB, (caddr_t)&ifgr) == -1)
-      err(1, "egress lookup: ioctl(SIOCGIFGMEMB)");
+	if (ioctl(ioctlfd, SIOCGIFGMEMB, (caddr_t)&ifgr) == -1)
+		err(1, "egress lookup: ioctl(SIOCGIFGMEMB)");
 
-   name = NULL;
-   for (ifg = ifgr.ifgr_groups; ifg && len >= sizeof(*ifg); ifg++) {
-      len -= sizeof(*ifg);
-      if (NULL != name)
-         continue;   /* just use first egress interface */
-      if (NULL == (name = strdup(ifg->ifgrq_member)))
-         errx(1, "egress failed: strdup '%s'", ifg->ifgrq_member);
-   }
+	name = NULL;
+	for (ifg = ifgr.ifgr_groups; ifg && len >= sizeof(*ifg); ifg++) {
+		len -= sizeof(*ifg);
+		if (NULL != name)
+			continue;   /* just use first egress interface */
+		if (NULL == (name = strdup(ifg->ifgrq_member)))
+			errx(1, "egress: strdup '%s'", ifg->ifgrq_member);
+	}
 
-   free(ifgr.ifgr_groups);
-   return name;
+	free(ifgr.ifgr_groups);
+	return name;
 }

@@ -24,72 +24,89 @@
 
 #include "cpu.h"
 
+static u_int64_t calc_diffs(u_int64_t*, u_int64_t*, u_int64_t*);
+static void calc_percents(float*, u_int64_t*, u_int64_t);
+
 void
 cpu_init(struct cpu_stats *stats)
 {
-   size_t size;
-   int mib[] = { CTL_HW, HW_NCPUONLINE };
+	size_t size;
+	int mib[] = { CTL_HW, HW_NCPUONLINE };
 
-   /* get number of cpu's */
-   size = sizeof(stats->ncpu);
-   if (sysctl(mib, 2, &(stats->ncpu), &size, NULL, 0) == -1)
-      err(1, "HW.NCPU");
+	/* get number of cpu's */
+	size = sizeof(stats->ncpu);
+	if (sysctl(mib, 2, &(stats->ncpu), &size, NULL, 0) == -1)
+		err(1, "HW.NCPU");
 
-   /* allocate array of cpu states */
-   stats->cpus = calloc(stats->ncpu, sizeof(struct cpu_states));
-   if (NULL == stats->cpus)
-      err(1, "calloc failed for %d cpus", stats->ncpu);
+	/* allocate array of cpu states */
+	stats->cpus = calloc(stats->ncpu, sizeof(struct cpu_states));
+	if (NULL == stats->cpus)
+		err(1, "calloc failed for %d cpus", stats->ncpu);
 
-   stats->is_setup = true;
-   cpu_update(stats);   /* to set initial counters */
+	stats->is_setup = true;
+	cpu_update(stats);   /* to set initial counters */
+}
+
+static u_int64_t
+calc_diffs(u_int64_t *new, u_int64_t *old, u_int64_t *diff)
+{
+	u_int64_t nticks = 0;
+	size_t    state;
+
+	for (state = 0; state < CPUSTATES; state++) {
+		if (new[state] < old[state])
+			diff[state] = INT64_MAX - old[state] + new[state];
+		else
+			diff[state] = new[state] - old[state];
+
+		nticks += diff[state];
+	}
+
+	return nticks;
+}
+
+static void
+calc_percents(float *percents, u_int64_t *diffs, u_int64_t total)
+{
+	size_t state;
+
+	if (0 == total)      /* guard divde-by-zero */
+		total = 1;
+
+	for (state = 0; state < CPUSTATES; state++) {
+		percents[state] = (((float)diffs[state] * 1000.0
+		                + ((float)total / 2.0))
+		                / (float)total) / 10.0;
+	}
 }
 
 void
 cpu_update(struct cpu_stats *stats)
 {
-   static int  mib[] = { CTL_KERN, KERN_CPTIME2, 0 };
-   int         cpu, state;
+	static int  mib[] = { CTL_KERN, KERN_CPTIME2, 0 };
+	int         cpu, state;
+	u_int64_t   current[CPUSTATES];   /* current cpu tick counters */
+	u_int64_t   diffs[CPUSTATES];     /* diffs from previous counters */
+	size_t      size = sizeof(current);
 
-   for (cpu = 0; cpu < stats->ncpu; cpu++) {
+	for (cpu = 0; cpu < stats->ncpu; cpu++) {
+		/* update curreent cpu counters */
+		mib[2] = cpu;
+		if (sysctl(mib, 3, current, &size, NULL, 0) < 0)
+			err(1, "KERN.CPTIME2[%d]", cpu);
 
-      /* update raw */
-      mib[2] = cpu;
-      u_int64_t current_ticks[CPUSTATES];
-      size_t size = sizeof(current_ticks);
-      if (sysctl(mib, 3, current_ticks, &size, NULL, 0) < 0)
-         err(1, "KERN.CPTIME2[%d]", cpu);
+		u_int64_t  nticks; /* total ticks per cpu */
+		nticks = calc_diffs(current, stats->cpus[cpu].raw, diffs);
+		calc_percents(stats->cpus[cpu].percentages, diffs, nticks);
 
-      /* calculate diffs from last call */
-      u_int64_t nticks = 0;
-      u_int64_t diffs[CPUSTATES] = { 0 };
-      for (state = 0; state < CPUSTATES; state++) {
-         if (current_ticks[state] < stats->cpus[cpu].raw_ticks[state]) {
-            diffs[state] = INT64_MAX - stats->cpus[cpu].raw_ticks[state]
-                         + current_ticks[state];
-         } else {
-            diffs[state] = current_ticks[state]
-                         - stats->cpus[cpu].raw_ticks[state];
-         }
-         nticks += diffs[state];
-      }
-
-      if (nticks == 0)  /* guard divide-by-zero */
-         nticks = 1;
-
-      /* calculate percents */
-      for (state = 0; state < CPUSTATES; state++) {
-         stats->cpus[cpu].percentages[state] = ((diffs[state] * 1000
-                                             + (nticks / 2)) / nticks) / 10;
-      }
-
-      /* copy current back into CPUS state */
-      for (state = 0; state < CPUSTATES; state++)
-         stats->cpus[cpu].raw_ticks[state] = current_ticks[state];
-   }
+		/* copy current back into CPUS state */
+		for (state = 0; state < CPUSTATES; state++)
+			stats->cpus[cpu].raw[state] = current[state];
+	}
 }
 
 void
 cpu_close(struct cpu_stats *stats)
 {
-   free(stats->cpus);
+	free(stats->cpus);
 }

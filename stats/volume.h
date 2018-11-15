@@ -20,9 +20,9 @@
 #include <stdbool.h>
 
 struct volume_stats {
-   bool  is_setup;
-   bool  muted;
-   float left, right;
+	bool  is_setup;
+	bool  muted;
+	float left, right;
 };
 
 void volume_init(struct volume_stats*);

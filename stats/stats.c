@@ -21,41 +21,41 @@ struct oxstats OXSTATS;
 void
 stats_init()
 {
-   battery_init(&OXSTATS.battery);
-   brightness_init(&OXSTATS.brightness);
-   cpu_init(&OXSTATS.cpus);
-   memory_init(&OXSTATS.memory);
-   net_init(&OXSTATS.network);
-   nprocs_init(&OXSTATS.nprocs);
-   volume_init(&OXSTATS.volume);
-   wifi_init(&OXSTATS.wifi);
+	battery_init(&OXSTATS.battery);
+	brightness_init(&OXSTATS.brightness);
+	cpu_init(&OXSTATS.cpus);
+	memory_init(&OXSTATS.memory);
+	net_init(&OXSTATS.network);
+	nprocs_init(&OXSTATS.nprocs);
+	volume_init(&OXSTATS.volume);
+	wifi_init(&OXSTATS.wifi);
 
-   /* do first update to initialize everything */
-   stats_update();
+	/* do first update to initialize everything */
+	stats_update();
 }
 
 void
 stats_update()
 {
-   battery_update(&OXSTATS.battery);
-   brightness_update(&OXSTATS.brightness);
-   cpu_update(&OXSTATS.cpus);
-   memory_update(&OXSTATS.memory);
-   net_update(&OXSTATS.network);
-   nprocs_update(&OXSTATS.nprocs);
-   volume_update(&OXSTATS.volume);
-   wifi_update(&OXSTATS.wifi);
+	battery_update(&OXSTATS.battery);
+	brightness_update(&OXSTATS.brightness);
+	cpu_update(&OXSTATS.cpus);
+	memory_update(&OXSTATS.memory);
+	net_update(&OXSTATS.network);
+	nprocs_update(&OXSTATS.nprocs);
+	volume_update(&OXSTATS.volume);
+	wifi_update(&OXSTATS.wifi);
 }
 
 void
 stats_close()
 {
-   battery_close(&OXSTATS.battery);
-   brightness_close(&OXSTATS.brightness);
-   cpu_close(&OXSTATS.cpus);
-   memory_close(&OXSTATS.memory);
-   net_close(&OXSTATS.network);
-   nprocs_close(&OXSTATS.nprocs);
-   volume_close(&OXSTATS.volume);
-   wifi_close(&OXSTATS.wifi);
+	battery_close(&OXSTATS.battery);
+	brightness_close(&OXSTATS.brightness);
+	cpu_close(&OXSTATS.cpus);
+	memory_close(&OXSTATS.memory);
+	net_close(&OXSTATS.network);
+	nprocs_close(&OXSTATS.nprocs);
+	volume_close(&OXSTATS.volume);
+	wifi_close(&OXSTATS.wifi);
 }

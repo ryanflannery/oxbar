@@ -20,8 +20,8 @@
 #include <stdbool.h>
 
 struct brightness_stats {
-   bool  is_setup;
-   float brightness;    /* % brightness of the display from Xrandr(3) */
+	bool  is_setup;
+	float brightness;    /* % brightness of the display from Xrandr(3) */
 };
 
 void brightness_init(struct brightness_stats*);

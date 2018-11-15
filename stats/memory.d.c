@@ -27,28 +27,28 @@ void stop(int __attribute__((unused)) sig) { sig_stop = 1; }
 int
 main()
 {
-   struct memory_stats s;
-   signal(SIGINT, stop);
+	struct memory_stats s;
+	signal(SIGINT, stop);
 
-   memory_init(&s);
-   if (!s.is_setup)
-      errx(1, "failed to setup memory!");
+	memory_init(&s);
+	if (!s.is_setup)
+		errx(1, "failed to setup memory!");
 
-   printf("%8s %7s ",   "Act kb",   "%");
-   printf("%8s %7s ",   "Tot kb",   "%");
-   printf("%8s %7s ",   "Free kb",  "%");
-   printf("%8s %7s ",   "Swap U",   "%");
-   printf("%8s\n",      "Swap T");
+	printf("%8s %7s ",   "Act kb",   "%");
+	printf("%8s %7s ",   "Tot kb",   "%");
+	printf("%8s %7s ",   "Free kb",  "%");
+	printf("%8s %7s ",   "Swap U",   "%");
+	printf("%8s\n",      "Swap T");
 
-   while (!sig_stop) {
-      memory_update(&s);
-      printf("%8d %7.1f ", s.active,      s.active_pct);
-      printf("%8d %7.1f ", s.total,       s.total_pct);
-      printf("%8d %7.1f ", s.free,        s.free_pct);
-      printf("%8d %7.1f ", s.swap_used,   s.swap_used_pct);
-      printf("%8d\n",      s.swap_total);
-      sleep(1);
-   }
+	while (!sig_stop) {
+		memory_update(&s);
+		printf("%8d %7.1f ", s.active,      s.active_pct);
+		printf("%8d %7.1f ", s.total,       s.total_pct);
+		printf("%8d %7.1f ", s.free,        s.free_pct);
+		printf("%8d %7.1f ", s.swap_used,   s.swap_used_pct);
+		printf("%8d\n",      s.swap_total);
+		sleep(1);
+	}
 
-   memory_close(&s);
+	memory_close(&s);
 }

@@ -22,18 +22,18 @@
 #include <stdbool.h>
 
 struct net_stats {
-   bool  is_setup;
+	bool  is_setup;
 
-   /* iface name (first in the 'egress' group) */
-   char *iface;
+	/* iface name (first in the 'egress' group) */
+	char *iface;
 
-   /* raw packet & byte counters (these can rollover) */
-   u_long   packets_in, packets_out;
-   uint64_t bytes_in,   bytes_out;
+	/* raw packet & byte counters (these can rollover) */
+	u_long   packets_in, packets_out;
+	uint64_t bytes_in,   bytes_out;
 
-   /* diff since last update (handles rollover) */
-   u_long   packets_in_new, packets_out_new;
-   uint64_t bytes_in_new,   bytes_out_new;
+	/* diff since last update (handles rollover) */
+	u_long   packets_in_new, packets_out_new;
+	uint64_t bytes_in_new,   bytes_out_new;
 };
 
 void net_init(struct net_stats*);

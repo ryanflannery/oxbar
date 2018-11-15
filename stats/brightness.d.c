@@ -27,20 +27,20 @@ void stop(int __attribute__((unused)) sig) { sig_stop = 1; }
 int
 main()
 {
-   struct brightness_stats s;
-   signal(SIGINT, stop);
+	struct brightness_stats s;
+	signal(SIGINT, stop);
 
-   brightness_init(&s);
-   if (!s.is_setup)
-      errx(1, "failed to setup brightness!");
+	brightness_init(&s);
+	if (!s.is_setup)
+		errx(1, "failed to setup brightness!");
 
-   printf("bright%%\n");
+	printf("bright%%\n");
 
-   while (!sig_stop) {
-      brightness_update(&s);
-      printf("%5.1f\n", s.brightness);
-      sleep(1);
-   }
+	while (!sig_stop) {
+		brightness_update(&s);
+		printf("%5.1f\n", s.brightness);
+		sleep(1);
+	}
 
-   brightness_close(&s);
+	brightness_close(&s);
 }

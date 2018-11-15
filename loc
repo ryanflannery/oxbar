@@ -2,40 +2,41 @@ Lines in core oxbar
      725 ./settings.c
      235 ./oxbar.c
      272 ./widgets.c
-      42 ./widgets/battery.c
-      51 ./widgets/volume.c
-      65 ./widgets/memory.c
-      21 ./widgets/nprocs.c
-      64 ./widgets/net.c
-      80 ./widgets/cpus.c
-      24 ./widgets/time.c
-      22 ./widgets/wifi.c
-      47 ./widgets/cpuslong.c
-      29 ./widgets/bright.c
-      29 ./widgets/cpushort.c
-      51 ./widgets/util.c
+      58 ./widgets/battery.c
+      67 ./widgets/volume.c
+      81 ./widgets/memory.c
+      37 ./widgets/nprocs.c
+      80 ./widgets/net.c
+      96 ./widgets/cpus.c
+      40 ./widgets/time.c
+      38 ./widgets/wifi.c
+      63 ./widgets/cpuslong.c
+      45 ./widgets/bright.c
+      45 ./widgets/cpushort.c
+      67 ./widgets/util.c
      418 ./gui/xcore.c
      404 ./gui/xdraw.c
      128 ./gui/gui.c
      132 ./gui/chart.c
+      15 ./LICENSE.c
       71 ./stats/battery.c
       61 ./stats/stats.c
-      99 ./stats/memory.c
+     103 ./stats/memory.c
       45 ./stats/nprocs.c
-      95 ./stats/cpu.c
-     120 ./stats/volume.c
+     112 ./stats/cpu.c
+     119 ./stats/volume.c
       85 ./stats/wifi.c
-     173 ./stats/net.c
-     136 ./stats/brightness.c
+     177 ./stats/net.c
+     146 ./stats/brightness.c
       64 ./stats/util.c
-    3788 total
+    4029 total
 Lines in tests and drivers
      285 ./gui/xcore.t.cc
       54 ./gui/chart.d.c
      156 ./gui/xcore.d.c
       78 ./gui/xdraw.d.c
       39 ./gui/chart.t.cc
-      58 ./stats/cpu.d.c
+      59 ./stats/cpu.d.c
       55 ./stats/net.d.c
       49 ./stats/battery.d.c
       46 ./stats/nprocs.d.c
@@ -43,7 +44,7 @@ Lines in tests and drivers
       54 ./stats/memory.d.c
       47 ./stats/wifi.d.c
       46 ./stats/brightness.d.c
-    1016 total
+    1017 total
 Lines in build setup
      113 ./Makefile
      227 ./sample.oxbar.conf

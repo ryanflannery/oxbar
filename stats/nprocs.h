@@ -20,8 +20,8 @@
 #include <stdbool.h>
 
 struct nprocs_stats {
-   bool  is_setup;
-   int   nprocs;     /* total # of processes */
+	bool  is_setup;
+	int   nprocs;     /* total # of processes */
 };
 
 void nprocs_init(struct nprocs_stats*);

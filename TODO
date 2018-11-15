@@ -5,4 +5,4 @@ oxbar.c:19: * TODO allow configuration of interfaces used by net & wifi collecto
 oxbar.c:20: * TODO polish error messages (err/errx calls)
 oxbar.c:21: * TODO make window FLOAT & ALWAYS-ON-TOP properties set-able
 settings.c:330: * TODO Create a settings_free() (or refactor to make easier)
-stats/net.c:82: * TODO Refactor network bytes logic
+stats/net.c:83: * TODO Refactor network bytes logic below

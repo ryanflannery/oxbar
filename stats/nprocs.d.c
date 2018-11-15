@@ -27,20 +27,20 @@ void stop(int __attribute__((unused)) sig) { sig_stop = 1; }
 int
 main()
 {
-   struct nprocs_stats s;
-   signal(SIGINT, stop);
+	struct nprocs_stats s;
+	signal(SIGINT, stop);
 
-   nprocs_init(&s);
-   if (!s.is_setup)
-      errx(1, "failed to setup core!");
+	nprocs_init(&s);
+	if (!s.is_setup)
+		errx(1, "failed to setup core!");
 
-   printf("%8s\n", "procs");
+	printf("%8s\n", "procs");
 
-   while (!sig_stop) {
-      nprocs_update(&s);
-      printf("%8d\n", s.nprocs);
-      sleep(1);
-   }
+	while (!sig_stop) {
+		nprocs_update(&s);
+		printf("%8d\n", s.nprocs);
+		sleep(1);
+	}
 
-   nprocs_close(&s);
+	nprocs_close(&s);
 }

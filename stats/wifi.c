@@ -37,49 +37,49 @@ static struct ieee80211_bssid bssid;
 void
 wifi_init(struct wifi_stats *stats)
 {
-   int ibssid;
-   stats->is_setup = false;
+	int ibssid;
+	stats->is_setup = false;
 
-   if (NULL == (stats->iface = get_egress()))
-      return;
+	if (NULL == (stats->iface = get_egress()))
+		return;
 
-   if (-1 == (wifi_socket = socket(AF_INET, SOCK_DGRAM, 0))) {
-      free(stats->iface);
-      return;
-   }
+	if (-1 == (wifi_socket = socket(AF_INET, SOCK_DGRAM, 0))) {
+		free(stats->iface);
+		return;
+	}
 
-   memset(&bssid, 0, sizeof(bssid));
-   strlcpy(bssid.i_name, stats->iface, sizeof(bssid.i_name));
+	memset(&bssid, 0, sizeof(bssid));
+	strlcpy(bssid.i_name, stats->iface, sizeof(bssid.i_name));
 
-   ibssid = ioctl(wifi_socket, SIOCG80211BSSID, &bssid);
-   if (0 == ibssid)
-      stats->is_setup = true;   /* egress is a 802.11 if, we're good */
-   else {
-      stats->is_setup = false;  /* that's not the case - bail */
-      free(stats->iface);
-   }
+	ibssid = ioctl(wifi_socket, SIOCG80211BSSID, &bssid);
+	if (0 == ibssid)
+		stats->is_setup = true;   /* egress is a 802.11, we're good */
+	else {
+		stats->is_setup = false;  /* that's not the case - bail */
+		free(stats->iface);
+	}
 }
 
 void
 wifi_update(struct wifi_stats *stats)
 {
-   if (!stats->is_setup)
-      return;
+	if (!stats->is_setup)
+		return;
 
-   struct ieee80211_nodereq request;
-   bzero(&request, sizeof(request));
+	struct ieee80211_nodereq req;
+	bzero(&req, sizeof(req));
 
-   bcopy(bssid.i_bssid, &request.nr_macaddr, sizeof(request.nr_macaddr));
-   strlcpy(request.nr_ifname, stats->iface, sizeof(request.nr_ifname));
-   if (0 == ioctl(wifi_socket, SIOCG80211NODE, &request) && request.nr_rssi)
-      stats->signal_strength = (float) IEEE80211_NODEREQ_RSSI(&request);
+	bcopy(bssid.i_bssid, &req.nr_macaddr, sizeof(req.nr_macaddr));
+	strlcpy(req.nr_ifname, stats->iface, sizeof(req.nr_ifname));
+	if (0 == ioctl(wifi_socket, SIOCG80211NODE, &req) && req.nr_rssi)
+		stats->signal_strength = (float) IEEE80211_NODEREQ_RSSI(&req);
 }
 
 void
 wifi_close(struct wifi_stats *stats)
 {
-   if (stats->is_setup) {
-      free(stats->iface);
-      close(wifi_socket);
-   }
+	if (stats->is_setup) {
+		free(stats->iface);
+		close(wifi_socket);
+	}
 }

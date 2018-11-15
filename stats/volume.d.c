@@ -27,23 +27,23 @@ void stop(int __attribute__((unused)) sig) { sig_stop = 1; }
 int
 main()
 {
-   struct volume_stats s;
-   signal(SIGINT, stop);
+	struct volume_stats s;
+	signal(SIGINT, stop);
 
-   volume_init(&s);
-   if (!s.is_setup)
-      errx(1, "failed to setup volume!");
+	volume_init(&s);
+	if (!s.is_setup)
+		errx(1, "failed to setup volume!");
 
-   printf("%8s\t%8s\t%8s\n", "mute?", "left", "right");
+	printf("%8s\t%8s\t%8s\n", "mute?", "left", "right");
 
-   while (!sig_stop) {
-      volume_update(&s);
-      printf("%8s\t%8.1f\t%8.1f\n",
-            s.muted ? "TRUE" : "false",
-            s.left,
-            s.right);
-      sleep(1);
-   }
+	while (!sig_stop) {
+		volume_update(&s);
+		printf("%8s\t%8.1f\t%8.1f\n",
+			s.muted ? "TRUE" : "false",
+			s.left,
+			s.right);
+		sleep(1);
+	}
 
-   volume_close(&s);
+	volume_close(&s);
 }

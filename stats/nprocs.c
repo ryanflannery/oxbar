@@ -25,21 +25,21 @@
 void
 nprocs_init(struct nprocs_stats *stats)
 {
-   stats->is_setup = true;
+	stats->is_setup = true;
 }
 
 void
 nprocs_update(struct nprocs_stats *stats)
 {
-   static int mib[] = { CTL_KERN, KERN_NPROCS };
-   static size_t size = sizeof(stats->nprocs);
+	static int mib[] = { CTL_KERN, KERN_NPROCS };
+	static size_t size = sizeof(stats->nprocs);
 
-   if (-1 == sysctl(mib, 2, &stats->nprocs, &size, NULL, 0))
-      err(1, "KERN.NPROCS");
+	if (-1 == sysctl(mib, 2, &stats->nprocs, &size, NULL, 0))
+		err(1, "KERN.NPROCS");
 }
 
 void
 nprocs_close(__attribute__((unused)) struct nprocs_stats *stats)
 {
-   /* nothing to do */
+	/* nothing to do */
 }

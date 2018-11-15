@@ -27,32 +27,33 @@ void stop(int __attribute__((unused)) sig) { sig_stop = 1; }
 int
 main()
 {
-   struct cpu_stats s;
-   int i;
-   signal(SIGINT, stop);
+	struct cpu_stats s;
+	int i;
+	signal(SIGINT, stop);
 
-   cpu_init(&s);
-   if (!s.is_setup)
-      errx(1, "failed to setup cpus!");
+	cpu_init(&s);
+	if (!s.is_setup)
+		errx(1, "failed to setup cpus!");
 
-   printf("#cpus: %d\n\n", s.ncpu);
-   printf("%4s: %7s %7s %7s %7s %7s %7s",
-         "cpuX", "user", "nice", "system", "spin", "intrpt", "idle\n");
+	printf("#cpus: %d\n\n", s.ncpu);
+	printf("%4s: %7s %7s %7s %7s %7s %7s",
+		"cpuX", "user", "nice", "system", "spin", "intrpt", "idle\n");
 
-   while (!sig_stop) {
-      cpu_update(&s);
-      for (i = 0; i < s.ncpu; i++) {
-         printf("cpu%1d: %6.1f%% %6.1f%% %6.1f%% %6.1f%% %6.1f%% %6.1f%%\n",
-               i,
-               s.cpus[i].percentages[CP_USER],
-               s.cpus[i].percentages[CP_NICE],
-               s.cpus[i].percentages[CP_SYS],
-               s.cpus[i].percentages[CP_SPIN],
-               s.cpus[i].percentages[CP_INTR],
-               s.cpus[i].percentages[CP_IDLE]);
-      }
-      sleep(1);
-   }
+	while (!sig_stop) {
+		cpu_update(&s);
+		for (i = 0; i < s.ncpu; i++) {
+			printf("cpu%02d: %6.1f%% %6.1f%% %6.1f%% "
+			               " %6.1f%% %6.1f%% %6.1f%%\n",
+				i,
+				s.cpus[i].percentages[CP_USER],
+				s.cpus[i].percentages[CP_NICE],
+				s.cpus[i].percentages[CP_SYS],
+				s.cpus[i].percentages[CP_SPIN],
+				s.cpus[i].percentages[CP_INTR],
+				s.cpus[i].percentages[CP_IDLE]);
+		}
+		sleep(1);
+	}
 
-   cpu_close(&s);
+	cpu_close(&s);
 }

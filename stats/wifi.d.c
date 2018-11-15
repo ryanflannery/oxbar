@@ -27,21 +27,21 @@ void stop(int __attribute__((unused)) sig) { sig_stop = 1; }
 int
 main()
 {
-   struct wifi_stats s;
-   signal(SIGINT, stop);
+	struct wifi_stats s;
+	signal(SIGINT, stop);
 
-   wifi_init(&s);
-   if (!s.is_setup)
-      errx(1, "failed to setup wifi!");
+	wifi_init(&s);
+	if (!s.is_setup)
+		errx(1, "failed to setup wifi!");
 
-   printf("iface: '%s'\n\n", s.iface);
-   printf("strength%%\n");
+	printf("iface: '%s'\n\n", s.iface);
+	printf("strength%%\n");
 
-   while (!sig_stop) {
-      wifi_update(&s);
-      printf("%4.1f%%\n", s.signal_strength);
-      sleep(1);
-   }
+	while (!sig_stop) {
+		wifi_update(&s);
+		printf("%4.1f%%\n", s.signal_strength);
+		sleep(1);
+	}
 
-   wifi_close(&s);
+	wifi_close(&s);
 }

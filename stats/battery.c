@@ -30,42 +30,42 @@ static int                     apm_dev_fd;
 void
 battery_init(struct battery_stats *stats)
 {
-   stats->is_setup = false;
+	stats->is_setup = false;
 
-   apm_dev_fd = open("/dev/apm", O_RDONLY);
-   if (apm_dev_fd < 0)
-      return;
+	apm_dev_fd = open("/dev/apm", O_RDONLY);
+	if (apm_dev_fd < 0)
+		return;
 
-   stats->is_setup = true;
+	stats->is_setup = true;
 }
 
 void
 battery_update(struct battery_stats *stats)
 {
-   if (!stats->is_setup)
-      return;
+	if (!stats->is_setup)
+		return;
 
-   if (ioctl(apm_dev_fd, APM_IOC_GETPOWER, &(apm_info)) < 0)
-      errx(1, "APM_IOC_GETPOWER");
+	if (ioctl(apm_dev_fd, APM_IOC_GETPOWER, &(apm_info)) < 0)
+		errx(1, "APM_IOC_GETPOWER");
 
-   switch (apm_info.ac_state) {
-   case APM_AC_OFF:
-      stats->plugged_in = false;
-      break;
-   case APM_AC_ON:
-      stats->plugged_in = true;
-      break;
-   default:
-      warnx("battery: failed to decode APM status");
-   }
+	switch (apm_info.ac_state) {
+	case APM_AC_OFF:
+		stats->plugged_in = false;
+		break;
+	case APM_AC_ON:
+		stats->plugged_in = true;
+		break;
+	default:
+		warnx("battery: failed to decode APM status");
+	}
 
-   stats->charge_pct = apm_info.battery_life;
-   stats->minutes_remaining = apm_info.minutes_left;
+	stats->charge_pct = apm_info.battery_life;
+	stats->minutes_remaining = apm_info.minutes_left;
 }
 
 void
 battery_close(struct battery_stats *stats)
 {
-   if (stats->is_setup)
-      close(apm_dev_fd);
+	if (stats->is_setup)
+		close(apm_dev_fd);
 }

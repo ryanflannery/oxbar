@@ -20,10 +20,10 @@
 #include <stdbool.h>
 
 struct battery_stats {
-   bool  is_setup;
-   bool  plugged_in;          /* true: plugged in, false: using battery */
-   float charge_pct;          /* percent battery charged */
-   int   minutes_remaining;   /* minutes remaining on battery charge */
+	bool  is_setup;
+	bool  plugged_in;          /* true: plugged in, false: using battery */
+	float charge_pct;          /* percent battery charged */
+	int   minutes_remaining;   /* minutes remaining on battery charge */
 };
 
 void battery_init(struct battery_stats*);

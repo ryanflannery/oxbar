@@ -20,15 +20,15 @@
 #include <stdbool.h>
 
 struct memory_stats {
-   bool  is_setup;
+	bool  is_setup;
 
-   /* raw values in kilobytes */
-   int   active, total, free;    /* "total" means same as in top(1) here */
-   int   swap_used, swap_total;
+	/* raw values in kilobytes */
+	int   active, total, free;    /* "total" means same as in top(1) here */
+	int   swap_used, swap_total;
 
-   /* percentage values */
-   float active_pct, free_pct, total_pct;
-   float swap_used_pct;
+	/* percentage values */
+	float active_pct, free_pct, total_pct;
+	float swap_used_pct;
 };
 
 void memory_init(struct memory_stats*);

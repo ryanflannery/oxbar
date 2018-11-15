@@ -27,23 +27,23 @@ void stop(int __attribute__((unused)) sig) { sig_stop = 1; }
 int
 main()
 {
-   struct battery_stats s;
-   signal(SIGINT, stop);
+	struct battery_stats s;
+	signal(SIGINT, stop);
 
-   battery_init(&s);
-   if (!s.is_setup)
-      errx(1, "failed to setup battery!");
+	battery_init(&s);
+	if (!s.is_setup)
+		errx(1, "failed to setup battery!");
 
-   printf("%8s\t%8s\t%8s\n", "plugged?", "%", "minutes");
+	printf("%8s\t%8s\t%8s\n", "plugged?", "%", "minutes");
 
-   while (!sig_stop) {
-      battery_update(&s);
-      printf("%8s\t%8.1f\t%8d\n",
-            s.plugged_in ? "TRUE" : "false",
-            s.charge_pct,
-            s.minutes_remaining);
-      sleep(1);
-   }
+	while (!sig_stop) {
+		battery_update(&s);
+		printf("%8s\t%8.1f\t%8d\n",
+			s.plugged_in ? "TRUE" : "false",
+			s.charge_pct,
+			s.minutes_remaining);
+		sleep(1);
+	}
 
-   battery_close(&s);
+	battery_close(&s);
 }
