@@ -5,9 +5,10 @@ MANDIR   ?= $(PREFIX)/man/man1
 SHAREDIR ?= $(PREFIX)/share/oxbar
 
 # build flags
-CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2 `pkg-config --cflags pangocairo`
-LDFLAGS += -L/usr/X11R6/lib `pkg-config --libs pangocairo` \
-	   -lxcb -lxcb-icccm -lxcb-randr -lutil -lpthread -lm
+CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2
+CFLAGS  += `pkg-config --cflags pangocairo`
+LDFLAGS += -L/usr/X11R6/lib -lxcb -lxcb-icccm -lxcb-randr -lutil -lpthread -lm
+LDFLAGS += `pkg-config --libs pangocairo`
 
 # objects (OBJS = this dir, SOBJS = stats/*, GOBJS = giu/*, WOBJS = widgets/*)
 OBJS  = settings.o widgets.o oxbar.o
@@ -78,8 +79,8 @@ iwyu:
 # gprof / memory profiler run and visualize output
 gprof: clean
 	CC=gcc CFLAGS="-g -pg -fno-pie -fPIC" LDFLAGS="-g -pg -fno-pie -lc" $(MAKE)
-	@echo kill with control-c when done sampling and view gprof.png
-	@echo NOTE: longer runs produce tighter results / smaller chart
+	@echo Kill this oxbar with control-c and then view gprof.[analysis|png].
+	@echo NOTE: longer runs produce tighter results / smaller chart.
 	./oxbar
 	gprof oxbar gmon.out > gprof.analysis
 	gprof2dot gprof.analysis | dot -Tpng -o gprof.png
@@ -94,12 +95,17 @@ TODO::
 
 # report # of lines per flie
 loc::
-	@echo Lines in core oxbar > loc
+	cloc --by-file-by-lang . > loc
+	@echo >> loc
+	@echo >> loc
+	@echo Lines in core oxbar >> loc
 	wc -l `find . -name "*.c" -a ! -name "*.d.c"` >> loc
 	@echo Lines in tests and drivers >> loc
 	wc -l `find . -name "*.d.c" -o -name "*.t.cc"` >> loc
 	@echo Lines in build setup >> loc
-	wc -l `find . -name "Makefile" -o -name "testruns.sh" -o -name "*.conf"` >> loc
+	wc -l `find . -name "Makefile" \
+		-o -name "testruns.sh" \
+		-o -name "*.conf"` >> loc
 	cat loc
 
 # rebuild the architecture image showing #include dependencies

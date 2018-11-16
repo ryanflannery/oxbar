@@ -1,3 +1,111 @@
+      88 text files.
+classified 87 files      87 unique files.                              
+       9 files ignored.
+
+github.com/AlDanial/cloc v 1.74  T=1.25 s (64.6 files/s, 6540.9 lines/s)
+------------------------------------------------------------------------------------
+File                                  blank        comment           code
+------------------------------------------------------------------------------------
+./man/oxbar.html                          5             14           1195
+./settings.c                             81            157            487
+./gui/xdraw.c                            49             31            324
+./gui/xcore.c                            56             50            320
+./gui/xcore.t.cc                         38              5            242
+./widgets.c                              34             23            215
+./oxbar.c                                24             37            174
+./stats/net.c                            26             23            128
+./gui/gui.c                              19             16            110
+./stats/brightness.c                     24             20            102
+./gui/xcore.d.c                          22             37             97
+./gui/chart.c                            26             16             92
+./Makefile                               20             12             87
+./README.md                              25              0             76
+./stats/volume.c                         23             21             75
+./gui/xdraw.h                            20             42             73
+./stats/cpu.c                            20             23             69
+./widgets/cpus.c                         15             15             66
+./stats/memory.c                         16             23             64
+./CONTRIBUTING.md                        18              0             63
+./screenshots.sh                         17             24             56
+./stats/wifi.c                           14             15             56
+./widgets/memory.c                       11             15             55
+./widgets/net.c                          11             17             52
+./testruns.sh                             9             10             50
+./gui/xdraw.d.c                          15             15             49
+./gui/xcore.h                            16             34             45
+./stats/battery.c                        12             15             44
+./widgets/cpuslong.c                      7             15             41
+./widgets/volume.c                       11             16             40
+./widgets/util.c                         11             16             40
+./stats/stats.c                           6             16             39
+./gui/Makefile                           15              3             37
+./stats/util.c                           12             15             37
+./gui/gui.h                              10             26             36
+./stats/cpu.d.c                           8             15             36
+./widgets/battery.c                       8             15             35
+./settings.h                              9             19             34
+./stats/README.md                         4              0             34
+./stats/net.d.c                           8             15             32
+./gui/chart.t.cc                          8              0             31
+./stats/memory.d.c                        8             15             31
+./widgets/cpus.h                          7             21             28
+./widgets/net.h                           7             17             27
+./gui/chart.d.c                           6             21             27
+./stats/volume.d.c                        8             15             26
+./stats/battery.d.c                       8             15             26
+./widgets/cpushort.c                      5             15             25
+./gui/chart.h                            10             54             25
+./stats/stats.h                           6             15             25
+./widgets/memory.h                        7             17             24
+./stats/wifi.d.c                          8             15             24
+./stats/nprocs.d.c                        8             15             23
+./stats/brightness.d.c                    8             15             23
+./widgets/bright.c                        7             15             23
+./stats/nprocs.c                          7             16             22
+./widgets/time.c                          5             15             20
+./stats/Makefile                          6              1             19
+./widgets/wifi.c                          4             15             19
+./man/Makefile                            9              0             18
+./stats/cpu.h                             7             16             18
+./widgets/nprocs.c                        5             15             17
+./widgets/battery.h                       6             15             17
+./widgets/bright.h                        6             15             16
+./widgets/volume.h                        6             15             16
+./stats/net.h                             9             18             16
+./widgets/time.h                          6             15             14
+./stats/memory.h                          7             17             14
+./stats/battery.h                         5             15             13
+./widgets/wifi.h                          6             15             13
+./widgets/nprocs.h                        6             15             13
+./stats/wifi.h                            5             15             12
+./stats/volume.h                          5             15             12
+./widgets/Makefile                        5              1             12
+./stats/brightness.h                      5             15             11
+./widgets.h                               5             16             11
+./stats/nprocs.h                          5             15             11
+./widgets/util.h                          5             17             11
+./widgets/cpuslong.h                      5             15              9
+./widgets/cpushort.h                      5             15              8
+./stats/util.h                            3             15              4
+------------------------------------------------------------------------------------
+SUM:                                   1034           1503           5661
+------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+C                               40            656            894           3185
+HTML                             1              5             14           1195
+C/C++ Header                    28            199            539            556
+C++                              2             46              5            273
+Markdown                         3             47              0            173
+make                             5             55             17            173
+Bourne Shell                     2             26             34            106
+-------------------------------------------------------------------------------
+SUM:                            81           1034           1503           5661
+-------------------------------------------------------------------------------
+
+
 Lines in core oxbar
      725 ./settings.c
      235 ./oxbar.c
@@ -45,11 +153,11 @@ Lines in tests and drivers
       46 ./stats/brightness.d.c
     1018 total
 Lines in build setup
-     113 ./Makefile
+     119 ./Makefile
      227 ./sample.oxbar.conf
       27 ./man/Makefile
       69 ./testruns.sh
       18 ./widgets/Makefile
       55 ./gui/Makefile
       26 ./stats/Makefile
-     535 total
+     541 total
