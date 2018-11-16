@@ -1,0 +1,12 @@
+# all object files local to this subdir
+GUI_OBJS = \
+	chart.o \
+	gui.o \
+	xdraw.o \
+	xcore.o
+
+# all test drivers local to this subdir
+GUI_DRIVERS = \
+	chart.d \
+	xdraw.d \
+	xcore.d

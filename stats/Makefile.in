@@ -1,0 +1,23 @@
+# all object files local to this subdir
+STATS_OBJS = \
+	battery.o \
+	brightness.o \
+	cpu.o \
+	memory.o \
+	net.o \
+	nprocs.o \
+	volume.o \
+	wifi.o \
+	util.o \
+	stats.o
+
+# all test drivers local to this subdir
+STATS_DRIVERS = \
+	battery.d \
+	brightness.d \
+	cpu.d \
+	memory.d \
+	net.d \
+	nprocs.d \
+	volume.d \
+	wifi.d

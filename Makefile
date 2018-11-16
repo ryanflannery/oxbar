@@ -4,7 +4,7 @@ BINDIR   ?= $(PREFIX)/bin
 MANDIR   ?= $(PREFIX)/man/man1
 SHAREDIR ?= $(PREFIX)/share/oxbar
 
-# build flags
+# build & link flags
 CFLAGS  += -c -std=c89 -Wall -Wextra -Werror -O2
 CFLAGS  += `pkg-config --cflags pangocairo`
 LDFLAGS += -L/usr/X11R6/lib -lxcb -lxcb-icccm -lxcb-randr -lutil -lpthread -lm
@@ -12,25 +12,24 @@ LDFLAGS += `pkg-config --libs pangocairo`
 
 # objects (OBJS = this dir, SOBJS = stats/*, GOBJS = giu/*, WOBJS = widgets/*)
 OBJS  = settings.o widgets.o oxbar.o
-SOBJS = stats/battery.o stats/brightness.o stats/cpu.o stats/memory.o \
-		stats/net.o stats/nprocs.o stats/stats.o stats/util.o \
-		stats/volume.o stats/wifi.o
 GOBJS = gui/chart.o gui/xcore.o gui/xdraw.o gui/gui.o
+SOBJS = stats/battery.o stats/brightness.o stats/cpu.o stats/memory.o \
+	stats/net.o stats/nprocs.o stats/stats.o stats/util.o \
+	stats/volume.o stats/wifi.o
 WOBJS = widgets/battery.o widgets/bright.o widgets/cpus.o widgets/cpushort.o \
-		widgets/cpuslong.o widgets/net.o widgets/nprocs.o \
-		widgets/memory.o widgets/time.o widgets/util.o \
-		widgets/volume.o widgets/wifi.o
+	widgets/cpuslong.o widgets/net.o widgets/nprocs.o widgets/memory.o \
+	widgets/time.o widgets/util.o widgets/volume.o widgets/wifi.o
 
 .PHONY: clean install testruns cppcheck scan-build iwyu gprof loc gource
 
-oxbar: $(OBJS) $(SOBJS) $(GOBJS) $(WOBJS)
-	$(CC) -o $@ $(LDFLAGS) $(OBJS) $(SOBJS) $(GOBJS) $(WOBJS)
-
-$(SOBJS):
-	$(MAKE) -C stats $(MFLAGS) objects
+oxbar: $(OBJS) $(GOBJS) $(SOBJS) $(WOBJS)
+	$(CC) -o $@ $(LDFLAGS) $(OBJS) $(GOBJS) $(SOBJS) $(WOBJS)
 
 $(GOBJS):
 	$(MAKE) -C gui $(MFLAGS) objects
+
+$(SOBJS):
+	$(MAKE) -C stats $(MFLAGS) objects
 
 $(WOBJS):
 	$(MAKE) -C widgets $(MFLAGS) objects
@@ -39,13 +38,13 @@ $(WOBJS):
 	$(CC) $(CFLAGS) $<
 
 all: oxbar
-	$(MAKE) -C stats   $(MFLAGS) $@
 	$(MAKE) -C gui     $(MFLAGS) $@
+	$(MAKE) -C stats   $(MFLAGS) $@
 	$(MAKE) -C widgets $(MFLAGS) $@
 
 clean:
-	$(MAKE) -C stats   $(MFLAGS) $@
 	$(MAKE) -C gui     $(MFLAGS) $@
+	$(MAKE) -C stats   $(MFLAGS) $@
 	$(MAKE) -C widgets $(MFLAGS) $@
 	@echo make clean \(local\)
 	rm -f $(OBJS)

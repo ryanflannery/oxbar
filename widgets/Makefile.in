@@ -1,0 +1,14 @@
+# all object files local to this subdir
+WIDGET_OBJS = \
+	battery.o \
+	bright.o \
+	cpus.o \
+	cpuslong.o \
+	cpushort.o \
+	net.o \
+	nprocs.o \
+	memory.o \
+	time.o \
+	util.o \
+	volume.o \
+	wifi.o
