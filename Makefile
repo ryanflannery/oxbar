@@ -94,7 +94,8 @@ TODO::
 
 # report # of lines per flie
 loc::
-	cloc --by-file-by-lang . > loc
+	cloc . > loc
+	cloc --by-file . >> loc
 	@echo >> loc
 	@echo >> loc
 	@echo Lines in core oxbar >> loc
