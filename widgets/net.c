@@ -72,9 +72,9 @@ wnet_draw(void *wstate, struct xctx *ctx)
 
 	xdraw_printf(ctx, w->settings->fgcolor, "Net: ");
 	xdraw_chart(ctx, chart_in);
-	xdraw_printf(ctx, w->settings->inbound_text_fgcolor, " %4s ",
-			fmt_memory("% .0f", stats->network.bytes_in_new / 1000));
+	xdraw_printf(ctx, w->settings->inbound_text_fgcolor, "% 4s ",
+			fmt_memory("% 4.0f", stats->network.bytes_in_new / 1000));
 	xdraw_chart(ctx, chart_out);
-	xdraw_printf(ctx, w->settings->outbound_text_fgcolor, " %4s",
-			fmt_memory("% .0f", stats->network.bytes_out_new / 1000));
+	xdraw_printf(ctx, w->settings->outbound_text_fgcolor, "% 4s",
+			fmt_memory("% 4.0f", stats->network.bytes_out_new / 1000));
 }
