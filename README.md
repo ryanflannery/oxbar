@@ -94,6 +94,12 @@ oxbar xstatbar
 See the [TODO](TODO) file for various TODO's present throughout the code.
 
 In addition, more long-term stuff I'd like to do, by my priority...
+* big refactor: make all widgets 100% config-driven... Basically, eliminate
+  the need for individual widget code in `widgets/` entirely, and make them
+  all configurable via a simple syntax. I know how to do most of this, and
+  easily from a configuration standpoint, but not all. My current thoughts
+  would make the configuration too verbose/lengthy, and impractical. Chew on
+  this more, I will...
 * gui: icons in the display could help condense it further
 * stats: add collector for hw.sensors & a related widget
 * stats: add a weather component...i like weather
