@@ -33,6 +33,16 @@
 #include "widgets/volume.h"
 #include "widgets/wifi.h"
 
+/* private functions */
+static struct		 widget_recipe* find_recipe(const char *);
+static void		*get_settings_component(const char * const,
+			                        struct settings*);
+static struct widget	*widget_create_from_recipe(const char *,
+			                           struct settings *,
+			                           struct oxstats*);
+static void		 widgets_create(const char *, struct gui *,
+			                struct settings *, struct oxstats *);
+
 /*
  * Global list of all known widget types and how to create them.
  * When adding a widget, they must be added here.
@@ -64,15 +74,6 @@ const size_t NWIDGET_RECIPES = sizeof(WIDGET_RECIPES) / sizeof(struct widget_rec
 #define MAX_ALL_WIDGETS 1000
 static struct widget *WIDGETS[MAX_ALL_WIDGETS];
 static size_t         NWIDGETS = 0;
-
-/* private functions */
-static struct         widget_recipe* find_recipe(const char*);
-static void          *get_settings_component(const char *const,
-                                             struct settings*);
-static struct widget *widget_create_from_recipe(const char*, struct settings *,
-                                                struct oxstats*);
-static void           widgets_create(const char*, struct gui*, struct settings*,
-                                     struct oxstats*);
 
 static struct widget_recipe*
 find_recipe(const char *name)
