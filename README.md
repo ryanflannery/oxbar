@@ -6,8 +6,8 @@ oxbar supports FreeType font rendering and styling, true transparency & alpha
 blending on all UI components (including the root window), and a simple
 configuration format that can concisely support multiple themes.
 
-It's motivated mostly by the frequent derisions/complaints/threats I get about
-my old xstatbar and its many shortcomings/hacks. Shaming works 'yo.
+It's motivated by the frequent complaints/threats I get about
+my old xstatbar and its many hacks. Shaming works 'yo.
 
 oxbar is released under an
 [ISC license](https://github.com/ryanflannery/oxbar/blob/master/LICENSE)
@@ -21,7 +21,7 @@ oxbar is released under an
 * FreeType fonts styled & rendered easily, with all font options
 * Fully configurable display via the command line or config file
 * Left/Right/Center aligned widgets, and any combination of those
-* Configuration file support multiple themes that can be chosen at runtime
+* Configuration file supports multiple themes that can be chosen at runtime
 * Types of stats supported:
    * Battery/AC status, progress bar, time remaining
    * Brightness level w/ progress bar (via Xrandr(3))
@@ -69,7 +69,8 @@ Roughly:
 ```bash
  $ pkg_add pango cairo           # install dependencies
  $ doas make install             # install globally
- $ PREFIX=~/local make install   # install local to a user (PREFIX is whatever you want)
+ -or-
+ $ PREFIX=~/local make install   # install local to a user (or anywhere)
 ```
 
 
