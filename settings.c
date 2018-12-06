@@ -29,27 +29,17 @@
 #include "gui/xcore.h"
 
 /* useful utilities */
-static void  print_usage();
-static char *get_default_config();
-static void  get_config_and_theme(int argc, char * const argv[],
-                                  char **config_file, char **theme);
-static bool  parse_keyvalue(const char * const keyvalue,
-                            char **key, char **value);
-
-/* parsers for settings that are struct's (not base types) */
-static void parse_padding(struct padding *padding, const char * const str);
-static void parse_header_style(header_style_t *style, const char * const str);
-
-/* core settings api */
-static void settings_set_defaults(struct settings *s);
-static bool settings_set_one_keyvalue(struct settings *s,
-                                      const char *key, const char *value);
-static void settings_set_keyvalue(struct settings *s,
-                                  const char * const keyvalue);
-static void settings_parse_cmdline(struct settings *s,
-                                   int argc, char * const argv[]);
-void settings_reload_config(struct settings *s);
-void settings_init(struct settings *settings, int argc, char *argv[]);
+static void	 print_usage();
+static char	*get_default_config();
+static void	get_config_and_theme(int, char * const[], char **, char **);
+static bool	parse_keyvalue(const char * const, char **, char **);
+static void	parse_padding(struct padding *, const char * const);
+static void	parse_header_style(header_style_t *, const char * const);
+static void	settings_set_defaults(struct settings *);
+static bool	settings_set_one_keyvalue(struct settings *, const char *,
+		                          const char *);
+static void	settings_set_keyvalue(struct settings *, const char * const);
+static void	settings_parse_cmdline(struct settings *, int, char * const[]);
 
 
 /* The set of allowed switches to oxbar, getopt(3) style (used in two places) */
@@ -159,8 +149,7 @@ get_config_and_theme(int argc, char * const argv[],
 
 /*
  * Parse a "key = value" string (value may be quoted) into its components.
- * XXX Note the component vlues (for key and value) are allocated - it's the
- * callers responsibility to free() them.
+ * XXX It is the callers responsibility to free() the resulting key & value
  */
 static bool
 parse_keyvalue(const char * const keyval, char **key, char **value)
