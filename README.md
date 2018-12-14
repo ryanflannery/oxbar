@@ -67,8 +67,9 @@ cairo, and then clone this repo and run `make install`.
 
 Roughly:
 ```bash
- $ pkg_add pango cairo           # install dependencies
- $ doas make install             # install globally
+ $ doas pkg_add pango cairo      # install dependencies (as root)
+ $ make                          # build oxbar
+ $ doas make install             # install globally (as root)
  -or-
  $ PREFIX=~/local make install   # install local to a user (or anywhere)
 ```
