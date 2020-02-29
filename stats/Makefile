@@ -24,3 +24,4 @@ clean:
 	rm -f $(STATS_OBJS)
 	rm -f $(STATS_DRIVERS)
 	rm -f *.d.o
+	rm -f *.core

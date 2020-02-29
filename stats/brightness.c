@@ -87,8 +87,10 @@ brightness_init(struct brightness_stats *stats)
 	if (NULL == prop_reply
 	||  XCB_ATOM_INTEGER != prop_reply->type
 	||  1 != prop_reply->num_items
-	||  32 != prop_reply->format)
+	||  32 != prop_reply->format) {
 		warnx("xcb randr backlight query failed\n");
+		return;
+	}
 
 	query_cookie = xcb_randr_query_output_property(x, outputs[0], atom);
 	query_reply = xcb_randr_query_output_property_reply(x, query_cookie,

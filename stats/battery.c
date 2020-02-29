@@ -36,6 +36,14 @@ battery_init(struct battery_stats *stats)
 	if (apm_dev_fd < 0)
 		return;
 
+	if (ioctl(apm_dev_fd, APM_IOC_GETPOWER, &(apm_info)) < 0)
+		errx(1, "APM_IOC_GETPOWER");
+
+	/* if not on a battery (desktop) don't enable this widget */
+	if (APM_AC_OFF != apm_info.ac_state
+	&&  APM_AC_ON  != apm_info.ac_state)
+		return;
+
 	stats->is_setup = true;
 }
 
@@ -54,6 +62,10 @@ battery_update(struct battery_stats *stats)
 		break;
 	case APM_AC_ON:
 		stats->plugged_in = true;
+		break;
+	case APM_AC_BACKUP:
+	case APM_AC_UNKNOWN:
+		/* likely a desktop machine - see catch in init */
 		break;
 	default:
 		warnx("battery: failed to decode APM status");
