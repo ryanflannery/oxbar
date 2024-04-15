@@ -618,7 +618,7 @@ settings_parse_cmdline(struct settings *s, int argc, char * const argv[])
 void
 settings_reload_config(struct settings *s)
 {
-	char   theme_name[100];
+	char   theme_name[101];
 	size_t length, linenum = 0;
 	char  *line;
 	FILE  *fin;
