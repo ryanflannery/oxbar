@@ -127,8 +127,11 @@ brightness_update(struct brightness_stats *stats)
 	if (NULL == prop_reply
 	||  XCB_ATOM_INTEGER != prop_reply->type
 	||  1 != prop_reply->num_items
-	||  32 != prop_reply->format)
-		warnx("xcb randr backlight query failed\n");
+	||  32 != prop_reply->format) {
+		warnx("xcb randr backlight query failed");
+		free(prop_reply);
+		return;
+	}
 
 	uint8_t value = *xcb_randr_get_output_property_data(prop_reply);
 	stats->brightness = ((float)value - (float)min_backlight)
