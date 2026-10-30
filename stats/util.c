@@ -15,13 +15,16 @@
  */
 
 #include <sys/ioctl.h>
+#include <sys/socket.h>
 
 #include <net/if.h>
 #include <net/if_dl.h>
 
 #include <err.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "util.h"
 
@@ -32,7 +35,7 @@ get_egress()
 	struct ifg_req    *ifg;
 	unsigned int       len;
 	int                ioctlfd;
-	char              *name;
+	char              *name = NULL;
 
 	memset(&ifgr, 0, sizeof(ifgr));
 	strlcpy(ifgr.ifgr_name, "egress", sizeof(ifgr.ifgr_name));
@@ -40,17 +43,32 @@ get_egress()
 	if ((ioctlfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
 		err(1, "egress lookup: socket(AF_INET, SOCK_DGRAM)");
 
-	if (ioctl(ioctlfd, SIOCGIFGMEMB, (caddr_t)&ifgr) == -1)
+	if (ioctl(ioctlfd, SIOCGIFGMEMB, (caddr_t)&ifgr) == -1) {
+		if (errno == ENOENT) {
+			close(ioctlfd);
+			return NULL;
+		}
 		err(1, "egress lookup: ioctl(SIOCGIFGMEMB)");
+	}
 
 	len = ifgr.ifgr_len;
+	if (len == 0) {
+		close(ioctlfd);
+		return NULL;
+	}
+
 	if (NULL == (ifgr.ifgr_groups = calloc(1, len)))
 		err(1, "egress lookup: calloc w/ len = %d", len);
 
-	if (ioctl(ioctlfd, SIOCGIFGMEMB, (caddr_t)&ifgr) == -1)
+	if (ioctl(ioctlfd, SIOCGIFGMEMB, (caddr_t)&ifgr) == -1) {
+		if (errno == ENOENT) {
+			free(ifgr.ifgr_groups);
+			close(ioctlfd);
+			return NULL;
+		}
 		err(1, "egress lookup: ioctl(SIOCGIFGMEMB)");
+	}
 
-	name = NULL;
 	for (ifg = ifgr.ifgr_groups; ifg && len >= sizeof(*ifg); ifg++) {
 		len -= sizeof(*ifg);
 		if (NULL != name)
@@ -60,5 +78,6 @@ get_egress()
 	}
 
 	free(ifgr.ifgr_groups);
+	close(ioctlfd);
 	return name;
 }
